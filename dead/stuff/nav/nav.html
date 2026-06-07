@@ -1133,7 +1133,9 @@ html, body {
   function isDefaultFeedFramePath(path = currentIndexFramePath) {
     try {
       const url = new URL(String(path || ''), window.location.origin);
-      return url.pathname.replace(/\/{2,}/g, '/') === '/dead/stuff/stuff-for-index/feeds/feeds-bridge.html';
+      const normalizedPath = url.pathname.replace(/\/{2,}/g, '/');
+      return normalizedPath === '/dead/stuff/stuff-for-index/thumbnail-grid/index.html' ||
+        normalizedPath === '/dead/stuff/stuff-for-index/feeds/feeds-bridge.html';
     } catch (error) {
       return false;
     }
