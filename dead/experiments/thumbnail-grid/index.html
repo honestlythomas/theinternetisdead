@@ -69,7 +69,8 @@
     }
 
     body.full-grid-mode #slideshowFrame,
-    body.empty-slideshow #slideshowFrame {
+    body.empty-slideshow #slideshowFrame,
+    body.thumbnail-autoplay #slideshowFrame {
       display: none;
     }
 
@@ -308,6 +309,10 @@
       cursor: pointer;
     }
 
+    body.thumbnail-autoplay #menuHint {
+      display: none;
+    }
+
     button:hover,
     button:focus-visible,
     select:focus-visible,
@@ -412,6 +417,37 @@
     body.full-grid-mode .slideNav {
       display: none;
     }
+
+    #slideshowCounter {
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      z-index: 3;
+      display: none;
+      min-width: min(180px, calc(100vw - 32px));
+      padding: 10px 14px;
+      transform: translateX(-50%);
+      border: 2px solid rgba(0, 255, 0, 0.78);
+      background: rgba(0, 0, 0, 0.72);
+      color: var(--page-text);
+      font-family: var(--font-family);
+      font-size: clamp(14px, 1.55vw, 20px);
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+      text-shadow: 0 0 8px rgba(0, 255, 0, 0.76);
+      pointer-events: none;
+    }
+
+    body.thumbnail-autoplay #slideshowCounter {
+      display: block;
+    }
+
+    body.full-grid-mode #slideshowCounter,
+    body.empty-slideshow #slideshowCounter {
+      display: none;
+    }
+
   </style>
 </head>
 <body>
@@ -462,6 +498,7 @@
   </aside>
   <button id="prevSlide" class="slideNav" type="button" aria-label="Previous video">&lt;</button>
   <button id="nextSlide" class="slideNav" type="button" aria-label="Next video">&gt;</button>
+  <div id="slideshowCounter" aria-live="polite">1 Video</div>
   <div id="menuBackdrop" aria-hidden="true">
     <section id="menuPanel" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
       <h1 id="menuTitle">Archive Status</h1>
@@ -487,6 +524,7 @@
     const ZOOM_KEY_SPEED = 1.9;
     const PAN_SPEED = 720;
     const LAZY_LOAD_MARGIN = 420;
+    const THUMBNAIL_PRELOAD_CONCURRENCY = 8;
 
     const canvas = document.getElementById("wallCanvas");
     const ctx = canvas.getContext("2d");
@@ -495,6 +533,7 @@
     const menuHint = document.getElementById("menuHint");
     const headerTitle = document.getElementById("headerTitle");
     const headerTitleLink = document.getElementById("headerTitleLink");
+    const slideshowCounter = document.getElementById("slideshowCounter");
     const sideMenu = document.getElementById("sideMenu");
     const displayModeSelect = document.getElementById("displayModeSelect");
     const sortSelect = document.getElementById("sortSelect");
@@ -526,6 +565,12 @@
     let hoveredTileIndex = -1;
     let slideshowIndex = 0;
     let currentSlideshowEmbedId = "";
+    let thumbnailAutoplay = false;
+    let thumbnailAutoplayTimer = 0;
+    let thumbnailPreloadReady = false;
+    let thumbnailPreloadToken = 0;
+    let thumbnailPreloadLoaded = 0;
+    let thumbnailPreloadTotal = 0;
 
     function getHeaderHeight() {
       return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 0;
@@ -589,26 +634,47 @@
       };
     }
 
+    function getThumbnailQualityRank(url) {
+      const cleanUrl = String(url || "").split("?")[0].toLowerCase();
+      const fileName = cleanUrl.slice(cleanUrl.lastIndexOf("/") + 1);
+      const ranks = {
+        "maxresdefault.jpg": 1000,
+        "maxresdefault.webp": 1000,
+        "hq720.jpg": 900,
+        "hq720.webp": 900,
+        "sddefault.jpg": 800,
+        "sddefault.webp": 800,
+        "hqdefault.jpg": 700,
+        "hqdefault.webp": 700,
+        "0.jpg": 650,
+        "0.webp": 650,
+        "mqdefault.jpg": 500,
+        "mqdefault.webp": 500,
+        "default.jpg": 300,
+        "default.webp": 300
+      };
+
+      if (fileName in ranks) return ranks[fileName];
+      if (fileName.startsWith("sd")) return 760;
+      if (fileName.startsWith("hq")) return 660;
+      if (fileName.startsWith("mq")) return 460;
+      return 0;
+    }
+
     function pickThumbnailCandidates(entry) {
       const candidates = [];
-      const id = String(entry && entry.id || "").trim();
       const thumbnails = Array.isArray(entry && entry.thumbnails) ? entry.thumbnails : [];
 
       thumbnails
         .map((thumbnail) => ({
           url: String(thumbnail && thumbnail.url || "").trim(),
           width: Number(thumbnail && thumbnail.width) || 0,
-          height: Number(thumbnail && thumbnail.height) || 0
+          height: Number(thumbnail && thumbnail.height) || 0,
+          rank: getThumbnailQualityRank(thumbnail && thumbnail.url)
         }))
         .filter((thumbnail) => thumbnail.url)
-        .sort((a, b) => (b.width * b.height) - (a.width * a.height))
+        .sort((a, b) => b.rank - a.rank || (b.width * b.height) - (a.width * a.height))
         .forEach((thumbnail) => candidates.push(thumbnail.url));
-
-      if (id) {
-        candidates.push(`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`);
-        candidates.push(`https://i.ytimg.com/vi/${encodeURIComponent(id)}/mqdefault.jpg`);
-        candidates.push(`https://i.ytimg.com/vi/${encodeURIComponent(id)}/default.jpg`);
-      }
 
       return Array.from(new Set(candidates));
     }
@@ -627,6 +693,12 @@
       return record;
     }
 
+    function shouldSkipLoadedThumbnail(src, image) {
+      if (!image) return true;
+      const rank = getThumbnailQualityRank(src);
+      return rank >= 650 && image.naturalWidth <= 320;
+    }
+
     function loadThumbnail(video) {
       const record = getImageRecord(video);
       if (!record || record.status === "loading" || record.status === "loaded" || record.status === "failed") return;
@@ -642,6 +714,13 @@
       const image = new Image();
       image.crossOrigin = "anonymous";
       image.onload = () => {
+        if (shouldSkipLoadedThumbnail(src, image)) {
+          record.candidateIndex += 1;
+          record.status = "idle";
+          loadThumbnail(video);
+          return;
+        }
+
         record.image = image;
         record.status = "loaded";
       };
@@ -857,10 +936,12 @@
 
       const { x, y, width, height } = getSlideshowFrameRect();
       ctx.save();
+      if (thumbnailAutoplay) {
+        drawSlideshowThumbnail(video, x, y, width, height);
+      }
       ctx.strokeStyle = "rgba(0, 255, 0, 0.9)";
       ctx.lineWidth = 3;
       ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
-      drawSlideshowTitle(video, x, y, width, height);
       ctx.restore();
     }
 
@@ -885,7 +966,7 @@
 
       document.body.classList.toggle("empty-slideshow", !id);
 
-      if (displayMode !== "slideshow" || !id) {
+      if (displayMode !== "slideshow" || thumbnailAutoplay || !id) {
         if (currentSlideshowEmbedId || slideshowFrame.src) {
           slideshowFrame.src = "about:blank";
         }
@@ -899,6 +980,35 @@
       slideshowFrame.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
     }
 
+    function drawSlideshowThumbnail(video, x, y, width, height) {
+      const record = getImageRecord(video);
+      loadThumbnail(video);
+
+      ctx.fillStyle = "#030003";
+      ctx.fillRect(x, y, width, height);
+
+      if (record && record.status === "loaded" && record.image) {
+        drawImageCover(record.image, x, y, width, height);
+        return;
+      }
+
+      ctx.fillStyle = "#050505";
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = "rgba(0, 255, 0, 0.22)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + width, y + height);
+      ctx.moveTo(x + width, y);
+      ctx.lineTo(x, y + height);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(0, 255, 0, 0.72)";
+      ctx.font = `${clamp(width * 0.025, 14, 22)}px "Courier New", monospace`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(record && record.status === "failed" ? "NO SIGNAL" : "LOADING", x + width / 2, y + height / 2);
+    }
+
     function drawEmptySlideshow() {
       ctx.save();
       ctx.fillStyle = "rgba(0, 255, 0, 0.82)";
@@ -907,37 +1017,6 @@
       ctx.textBaseline = "middle";
       ctx.fillText("NO VIDEOS SELECTED", cssWidth / 2, cssHeight / 2);
       ctx.restore();
-    }
-
-    function drawSlideshowTitle(video, x, y, width, height) {
-      const padding = 14;
-      const fontSize = clamp(width * 0.026, 15, 24);
-      const lineHeight = fontSize * 1.25;
-      const maxWidth = width - padding * 2;
-      const maxLines = Math.max(1, Math.floor((height * 0.32) / lineHeight));
-
-      ctx.font = `${fontSize}px "Courier New", monospace`;
-      const lines = getWrappedLines(ctx, video.title || video.id, maxWidth).slice(0, maxLines);
-      const overlayHeight = lines.length * lineHeight + padding * 2;
-
-      ctx.fillStyle = "rgba(0, 0, 0, 0.78)";
-      ctx.fillRect(x, y, width, overlayHeight);
-      ctx.strokeStyle = "rgba(0, 255, 0, 0.72)";
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x + 0.5, y + 0.5, width - 1, overlayHeight - 1);
-      ctx.fillStyle = "#00ff00";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-
-      lines.forEach((line, lineIndex) => {
-        ctx.fillText(line, x + padding, y + padding + lineIndex * lineHeight);
-      });
-
-      ctx.fillStyle = "rgba(0, 255, 0, 0.82)";
-      ctx.font = `13px "Courier New", monospace`;
-      ctx.textAlign = "right";
-      ctx.textBaseline = "bottom";
-      ctx.fillText(`${slideshowIndex + 1} / ${videos.length}`, x + width - padding, y + height - padding);
     }
 
     function getWrappedLines(targetCtx, text, maxWidth) {
@@ -1055,14 +1134,29 @@
 
     function updateHud() {
       const loadedImages = Array.from(imageCache.values()).filter((record) => record.status === "loaded").length;
+      const slideshowStatus = getThumbnailAutoplayStatusText();
       menuHud.innerHTML = [
         `${statusText}`,
         `videos ${videos.length} / ${allVideos.length} | thumbnails ${loadedImages}/${imageCache.size}`,
         displayMode === "fullGrid"
           ? `mode Full Grid | zoom ${zoom.toFixed(2)}x | camera ${Math.round(cameraX)}, ${Math.round(cameraY)}`
-          : `mode Slideshow | slide ${videos.length ? slideshowIndex + 1 : 0} / ${videos.length}`,
-        `<span class="muted">Full Grid: WASD move | Mouse wheel zoom | Q / E zoom out/in | Slideshow: &lt; / &gt; buttons or ArrowLeft / ArrowRight | Shift+Esc menu</span>`
+          : `mode Slideshow | slide ${videos.length ? slideshowIndex + 1 : 0} / ${videos.length} | ${slideshowStatus}`,
+        `<span class="muted">Full Grid: WASD move | Mouse wheel zoom | Q / E zoom out/in | Slideshow: Space play/pause thumbnails | ArrowLeft / ArrowRight | Shift+Esc menu</span>`
       ].join("<br>");
+    }
+
+    function getThumbnailAutoplayStatusText() {
+      if (displayMode !== "slideshow") return "";
+      if (videos.length < 2) return "thumbnail cycling unavailable";
+      if (thumbnailAutoplay) return "thumbnail cycling playing";
+      if (!thumbnailPreloadReady) return `preloading thumbnails ${thumbnailPreloadLoaded}/${thumbnailPreloadTotal}`;
+      return "thumbnail cycling paused";
+    }
+
+    function isTypingTarget(target) {
+      if (!target) return false;
+      const tagName = String(target.tagName || "").toLowerCase();
+      return tagName === "input" || tagName === "select" || tagName === "textarea" || target.isContentEditable;
     }
 
     function updateCamera(deltaSeconds) {
@@ -1148,6 +1242,12 @@
       if (menuOpen) return;
 
       if (displayMode === "slideshow") {
+        if ((event.key === " " || event.code === "Space") && !isTypingTarget(event.target)) {
+          event.preventDefault();
+          setThumbnailAutoplay(!thumbnailAutoplay);
+          return;
+        }
+
         if (event.key === "ArrowLeft") {
           event.preventDefault();
           moveSlideshow(-1);
@@ -1226,11 +1326,49 @@
         .sort(compareVideos);
 
       slideshowIndex = clamp(slideshowIndex, 0, Math.max(0, videos.length - 1));
+      startThumbnailPreload();
       fitFullGridToViewport();
       centerCameraOnMap();
       updateDisplayModeClass();
       updateHeaderTitleForHover();
       updateMenuStatus();
+    }
+
+    async function startThumbnailPreload() {
+      const token = thumbnailPreloadToken + 1;
+      thumbnailPreloadToken = token;
+      thumbnailPreloadReady = videos.length < 2;
+      thumbnailPreloadLoaded = 0;
+      thumbnailPreloadTotal = videos.length;
+      setThumbnailAutoplay(false);
+      updateHud();
+
+      if (!videos.length) return;
+
+      const preloadVideos = videos.slice();
+      let nextIndex = 0;
+
+      async function preloadWorker() {
+        while (nextIndex < preloadVideos.length && token === thumbnailPreloadToken) {
+          const video = preloadVideos[nextIndex];
+          nextIndex += 1;
+          await loadThumbnailForExport(video);
+
+          if (token !== thumbnailPreloadToken) return;
+          thumbnailPreloadLoaded += 1;
+          updateHud();
+        }
+      }
+
+      const workerCount = Math.min(THUMBNAIL_PRELOAD_CONCURRENCY, preloadVideos.length);
+      await Promise.all(Array.from({ length: workerCount }, preloadWorker));
+
+      if (token !== thumbnailPreloadToken) return;
+
+      thumbnailPreloadReady = true;
+      thumbnailPreloadLoaded = thumbnailPreloadTotal;
+      updateDisplayModeClass();
+      updateHud();
     }
 
     function updateMenuStatus() {
@@ -1275,6 +1413,13 @@
         const image = new Image();
         image.crossOrigin = "anonymous";
         image.onload = () => {
+          if (shouldSkipLoadedThumbnail(src, image)) {
+            record.candidateIndex += 1;
+            record.status = "idle";
+            loadThumbnailForExport(video).then(resolve);
+            return;
+          }
+
           record.image = image;
           record.status = "loaded";
           resolve(image);
@@ -1429,12 +1574,21 @@
     function updateDisplayModeClass() {
       document.body.classList.toggle("full-grid-mode", displayMode === "fullGrid");
       document.body.classList.toggle("empty-slideshow", displayMode === "slideshow" && !videos.length);
+      document.body.classList.toggle("thumbnail-autoplay", thumbnailAutoplay);
       prevSlideButton.disabled = displayMode !== "slideshow" || videos.length < 2;
       nextSlideButton.disabled = displayMode !== "slideshow" || videos.length < 2;
+      if (thumbnailAutoplay && videos.length < 2) {
+        setThumbnailAutoplay(false);
+      }
       if (displayMode !== "slideshow") {
+        setThumbnailAutoplay(false);
         updateSlideshowEmbed(null);
       }
       updateTileHoverClass();
+    }
+
+    function canUseThumbnailAutoplay() {
+      return displayMode === "slideshow" && videos.length > 1 && thumbnailPreloadReady;
     }
 
     function updateTileHoverClass() {
@@ -1444,17 +1598,23 @@
     function updateHeaderTitleForHover() {
       if (displayMode === "fullGrid" && hoveredTileIndex >= 0 && videos[hoveredTileIndex] && !menuOpen) {
         const video = videos[hoveredTileIndex];
-        setHeaderTitle(`${video.title || video.id} • ${formatUploadDate(video.uploadDate)}`, video);
+        setHeaderTitle(formatVideoHeaderTitle(video), video);
         return;
       }
 
       if (displayMode === "slideshow" && videos[slideshowIndex]) {
         const video = videos[slideshowIndex];
-        setHeaderTitle(`${video.title || video.id} • ${formatUploadDate(video.uploadDate)}`, video);
+        setHeaderTitle(formatVideoHeaderTitle(video), video);
         return;
       }
 
       setHeaderTitle(DEFAULT_HEADER_TITLE, null);
+    }
+
+    function formatVideoHeaderTitle(video) {
+      const channelName = String(video && (video.channel || video.uploader) || "").trim() || "Unknown Channel";
+      const title = String(video && (video.title || video.id) || "").trim() || "Untitled";
+      return `${channelName} • ${title} • ${formatUploadDate(video && video.uploadDate)}`;
     }
 
     function setHeaderTitle(text, video) {
@@ -1498,7 +1658,39 @@
       slideshowIndex = (slideshowIndex + direction + videos.length) % videos.length;
       updateSlideshowEmbed(getSlideshowVideo());
       updateHeaderTitleForHover();
+      updateSlideshowCounter();
       updateMenuStatus();
+    }
+
+    function updateSlideshowCounter() {
+      const count = slideshowIndex + 1;
+      slideshowCounter.textContent = `${count} ${count === 1 ? "Video" : "Videos"}`;
+    }
+
+    function setThumbnailAutoplay(nextAutoplay) {
+      thumbnailAutoplay = Boolean(nextAutoplay) && canUseThumbnailAutoplay();
+
+      if (thumbnailAutoplayTimer) {
+        window.clearInterval(thumbnailAutoplayTimer);
+        thumbnailAutoplayTimer = 0;
+      }
+
+      if (thumbnailAutoplay) {
+        slideshowIndex = 0;
+        updateSlideshowEmbed(null);
+        updateHeaderTitleForHover();
+        updateSlideshowCounter();
+        updateMenuStatus();
+        thumbnailAutoplayTimer = window.setInterval(() => {
+          moveSlideshow(1);
+        }, 1800);
+      } else if (displayMode === "slideshow") {
+        updateSlideshowEmbed(getSlideshowVideo());
+        updateHeaderTitleForHover();
+      }
+
+      document.body.classList.toggle("thumbnail-autoplay", thumbnailAutoplay);
+      updateHud();
     }
 
     function fitFullGridToViewport() {
