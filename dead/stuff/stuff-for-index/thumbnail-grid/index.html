@@ -214,7 +214,8 @@
     }
 
     .sideMenuInner select,
-    .sideMenuInner button {
+    .sideMenuInner button,
+    .sideMenuInner input[type="search"] {
       min-height: clamp(34px, 4.6vh, 42px);
       font-size: clamp(13px, 1.65vw, 17px);
       border-width: 3px;
@@ -284,7 +285,8 @@
       text-underline-offset: 0.12em;
     }
 
-    select {
+    select,
+    input[type="search"] {
       width: 100%;
       min-height: 42px;
       border: 2px solid var(--accent-color);
@@ -294,6 +296,11 @@
       font-size: clamp(14px, 1.55vw, 20px);
       font-weight: 700;
       padding: 6px 10px;
+    }
+
+    input[type="search"]::placeholder {
+      color: rgba(0, 255, 0, 0.62);
+      opacity: 1;
     }
 
     button {
@@ -316,6 +323,7 @@
     button:hover,
     button:focus-visible,
     select:focus-visible,
+    input[type="search"]:focus-visible,
     input[type="checkbox"]:focus-visible {
       outline: 2px solid #fff;
       outline-offset: 2px;
@@ -459,9 +467,13 @@
   </header>
   <aside id="sideMenu" aria-hidden="true">
     <div class="sideMenuInner">
-      <h1>Video Wall Menu</h1>
+      <h1>Video Archive Viewer</h1>
       <hr class="sidebarDivider">
       <div class="menuGroup">
+        <label class="menuLabel" for="videoSearchInput">
+          <input id="videoSearchInput" type="search" placeholder="Search Videos..." autocomplete="off">
+        </label>
+        <hr class="sidebarDivider">
         <div class="channelGroup">
           <div class="menuLabel"><span class="menuLabelText">Selected Channels:</span></div>
           <label class="checkboxLabel">
@@ -524,7 +536,10 @@
     const ZOOM_KEY_SPEED = 1.9;
     const PAN_SPEED = 720;
     const LAZY_LOAD_MARGIN = 420;
-    const THUMBNAIL_PRELOAD_CONCURRENCY = 8;
+    const THUMBNAIL_PRELOAD_CONCURRENCY = 48;
+    const HOVER_TILE_SCALE = 8;
+    const HOVER_TILE_ANIMATION_SPEED = 10;
+    const LOADING_GRID_IMAGE_PATH = "/dead/images/pngs/static.gif";
 
     const canvas = document.getElementById("wallCanvas");
     const ctx = canvas.getContext("2d");
@@ -537,6 +552,7 @@
     const sideMenu = document.getElementById("sideMenu");
     const displayModeSelect = document.getElementById("displayModeSelect");
     const sortSelect = document.getElementById("sortSelect");
+    const videoSearchInput = document.getElementById("videoSearchInput");
     const honestlyCheckbox = document.getElementById("honestlyCheckbox");
     const cryptidCheckbox = document.getElementById("cryptidCheckbox");
     const menuStatus = document.getElementById("menuStatus");
@@ -546,7 +562,9 @@
     const nextSlideButton = document.getElementById("nextSlide");
     const keys = new Set();
     const imageCache = new Map();
+    const loadingGridImage = new Image();
     const DEFAULT_HEADER_TITLE = "@Honestly_Thomas + @Cryptid_Memes YouTube Archive (2016-Present)";
+    loadingGridImage.src = LOADING_GRID_IMAGE_PATH;
 
     let allVideos = [];
     let videos = [];
@@ -563,6 +581,8 @@
     let menuOpen = false;
     let sideMenuOpen = false;
     let hoveredTileIndex = -1;
+    let activeHoverTileIndex = -1;
+    let hoverTileAnimation = 0;
     let slideshowIndex = 0;
     let currentSlideshowEmbedId = "";
     let routedSlideshowVideoId = "";
@@ -853,6 +873,48 @@
       ctx.restore();
     }
 
+    function drawLoadingThumbnailGrid() {
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, cssWidth, cssHeight);
+
+      const padding = 28;
+      const maxWidth = Math.max(180, cssWidth - padding * 2);
+      const maxHeight = Math.max(120, cssHeight - padding * 2);
+      let width = Math.min(maxWidth, maxHeight * 16 / 9, 860);
+      let height = width * 9 / 16;
+
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = height * 16 / 9;
+      }
+
+      const x = (cssWidth - width) / 2;
+      const y = (cssHeight - height) / 2;
+
+      ctx.save();
+      ctx.fillStyle = "#030003";
+      ctx.fillRect(x, y, width, height);
+
+      if (loadingGridImage.complete && loadingGridImage.naturalWidth) {
+        drawImageCover(loadingGridImage, x, y, width, height);
+      }
+
+      ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = "rgba(0, 255, 0, 0.9)";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+
+      ctx.fillStyle = "#00ff00";
+      ctx.font = `${clamp(width * 0.055, 18, 42)}px "Courier New", monospace`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.shadowColor = "rgba(0, 255, 0, 0.8)";
+      ctx.shadowBlur = 10;
+      ctx.fillText("Loading Thumbnail Grid...", x + width / 2, y + height / 2);
+      ctx.restore();
+    }
+
     function drawImageCover(image, x, y, width, height) {
       const imageRatio = image.width / image.height;
       const targetRatio = width / height;
@@ -872,15 +934,24 @@
       ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
     }
 
-    function drawTile(video, index) {
+    function easeOutCubic(value) {
+      return 1 - Math.pow(1 - clamp(value, 0, 1), 3);
+    }
+
+    function drawTile(video, index, hoverProgress = 0) {
       const rect = getTileRect(index);
       const topLeft = worldToScreen(rect.x, rect.y);
-      const width = rect.width * zoom;
-      const height = rect.height * zoom;
+      const baseWidth = rect.width * zoom;
+      const baseHeight = rect.height * zoom;
+      const drawScale = 1 + (HOVER_TILE_SCALE - 1) * easeOutCubic(hoverProgress);
+      const width = baseWidth * drawScale;
+      const height = baseHeight * drawScale;
+      const drawX = topLeft.x + baseWidth / 2 - width / 2;
+      const drawY = topLeft.y + baseHeight / 2 - height / 2;
       const record = getImageRecord(video);
 
       ctx.save();
-      ctx.translate(topLeft.x, topLeft.y);
+      ctx.translate(drawX, drawY);
 
       ctx.fillStyle = "#030003";
       ctx.fillRect(0, 0, width, height);
@@ -891,7 +962,7 @@
         ctx.fillStyle = "#050505";
         ctx.fillRect(0, 0, width, height);
         ctx.strokeStyle = "rgba(0, 255, 0, 0.22)";
-        ctx.lineWidth = Math.max(1, zoom);
+        ctx.lineWidth = Math.max(1, zoom * drawScale);
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(width, height);
@@ -901,7 +972,7 @@
 
         if (width > 60 && height > 24) {
           ctx.fillStyle = "rgba(0, 255, 0, 0.72)";
-          ctx.font = `${clamp(10 * zoom, 8, 13)}px "Courier New", monospace`;
+          ctx.font = `${clamp(10 * zoom * drawScale, 8, 24)}px "Courier New", monospace`;
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(record && record.status === "failed" ? "NO SIGNAL" : "LOADING", width / 2, height / 2);
@@ -909,14 +980,33 @@
       }
 
       ctx.strokeStyle = "rgba(0, 255, 0, 0.78)";
-      ctx.lineWidth = clamp(1.5 * zoom, 1, 3);
+      ctx.lineWidth = clamp(1.5 * zoom * drawScale, 1, 5);
       ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
 
-      if (index === hoveredTileIndex) {
+      if (index === activeHoverTileIndex && hoverProgress > 0.08) {
         drawHoverTitle(video, width, height);
       }
 
       ctx.restore();
+    }
+
+    function updateHoverTileAnimation(deltaSeconds) {
+      const hasActiveHover = displayMode === "fullGrid" && !menuOpen && hoveredTileIndex >= 0;
+      if (hasActiveHover && activeHoverTileIndex !== hoveredTileIndex) {
+        activeHoverTileIndex = hoveredTileIndex;
+        hoverTileAnimation = Math.min(hoverTileAnimation, 0.35);
+      }
+
+      const targetProgress = hasActiveHover ? 1 : 0;
+      hoverTileAnimation += (targetProgress - hoverTileAnimation) *
+        Math.min(1, deltaSeconds * HOVER_TILE_ANIMATION_SPEED);
+
+      if (!hasActiveHover && hoverTileAnimation < 0.01) {
+        hoverTileAnimation = 0;
+        activeHoverTileIndex = -1;
+      } else if (hasActiveHover && hoverTileAnimation > 0.99) {
+        hoverTileAnimation = 1;
+      }
     }
 
     function getSlideshowVideo() {
@@ -1107,12 +1197,16 @@
 
       if (col < 0 || col >= MAP_COLUMNS || row < 0) {
         hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
         return -1;
       }
 
       const index = row * MAP_COLUMNS + col;
       if (index >= videos.length) {
         hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
         return -1;
       }
 
@@ -1130,7 +1224,7 @@
     }
 
     function handleMouseMove(event) {
-      if (menuOpen || displayMode !== "fullGrid") {
+      if (menuOpen || displayMode !== "fullGrid" || !thumbnailPreloadReady) {
         hoveredTileIndex = -1;
         updateTileHoverClass();
         updateHeaderTitleForHover();
@@ -1148,7 +1242,7 @@
     }
 
     function handleCanvasClick(event) {
-      if (menuOpen || displayMode !== "fullGrid") return;
+      if (menuOpen || displayMode !== "fullGrid" || !thumbnailPreloadReady) return;
       if (event.target !== canvas && event.target.closest("button, select, input, label, #menuBackdrop")) return;
 
       const rect = canvas.getBoundingClientRect();
@@ -1222,11 +1316,27 @@
         return;
       }
 
+      if (!thumbnailPreloadReady) {
+        hoveredTileIndex = -1;
+        updateHoverTileAnimation(deltaSeconds);
+        drawLoadingThumbnailGrid();
+        updateHud();
+        requestAnimationFrame(frame);
+        return;
+      }
+
       updateCamera(deltaSeconds);
+      updateHoverTileAnimation(deltaSeconds);
       drawBackground();
 
       forEachVisibleTile(LAZY_LOAD_MARGIN, loadThumbnail);
-      forEachVisibleTile(40, drawTile);
+      forEachVisibleTile(40, (video, index) => {
+        if (index === activeHoverTileIndex && hoverTileAnimation > 0) return;
+        drawTile(video, index);
+      });
+      if (activeHoverTileIndex >= 0 && videos[activeHoverTileIndex] && hoverTileAnimation > 0) {
+        drawTile(videos[activeHoverTileIndex], activeHoverTileIndex, hoverTileAnimation);
+      }
       updateHud();
 
       requestAnimationFrame(frame);
@@ -1347,10 +1457,23 @@
       return b.uploadDate.localeCompare(a.uploadDate) || a.sourceIndex - b.sourceIndex;
     }
 
+    function videoMatchesSearch(video, query) {
+      if (!query) return true;
+      const searchableText = [
+        video && video.title,
+        video && video.id,
+        video && video.channel,
+        video && video.uploader
+      ].join(" ").toLowerCase();
+      return searchableText.includes(query);
+    }
+
     function applyVideoView() {
       const selectedChannelIds = getSelectedChannelIds();
+      const searchQuery = String(videoSearchInput.value || "").trim().toLowerCase();
       videos = allVideos
         .filter((video) => selectedChannelIds.has(video.channelId))
+        .filter((video) => videoMatchesSearch(video, searchQuery))
         .slice()
         .sort(compareVideos);
 
@@ -1366,7 +1489,7 @@
     async function startThumbnailPreload() {
       const token = thumbnailPreloadToken + 1;
       thumbnailPreloadToken = token;
-      thumbnailPreloadReady = videos.length < 2;
+      thumbnailPreloadReady = videos.length < 1;
       thumbnailPreloadLoaded = 0;
       thumbnailPreloadTotal = videos.length;
       setThumbnailAutoplay(false);
@@ -1385,7 +1508,9 @@
 
           if (token !== thumbnailPreloadToken) return;
           thumbnailPreloadLoaded += 1;
-          updateHud();
+          if (thumbnailPreloadLoaded % 12 === 0 || thumbnailPreloadLoaded === thumbnailPreloadTotal) {
+            updateHud();
+          }
         }
       }
 
@@ -1441,6 +1566,7 @@
       return new Promise((resolve) => {
         const image = new Image();
         image.crossOrigin = "anonymous";
+        image.decoding = "async";
         image.onload = () => {
           if (shouldSkipLoadedThumbnail(src, image)) {
             record.candidateIndex += 1;
@@ -1820,6 +1946,7 @@
     });
     honestlyCheckbox.addEventListener("change", applyVideoView);
     cryptidCheckbox.addEventListener("change", applyVideoView);
+    videoSearchInput.addEventListener("input", applyVideoView);
     screenshotButton.addEventListener("click", saveFullGridScreenshot);
     prevSlideButton.addEventListener("click", () => moveSlideshow(-1));
     nextSlideButton.addEventListener("click", () => moveSlideshow(1));
