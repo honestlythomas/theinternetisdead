@@ -14,6 +14,12 @@ OUTPUT_PATH = ROOT / "dead" / "JSON" / "feed-videos.json"
 LEGACY_FALLBACK_PATH = ROOT / "dead" / "JSON" / "videos.json"
 LOCAL_COOKIES_PATH = ROOT / "cookies.txt"
 YT_DLP_TIMEOUT_SECONDS = int(os.environ.get("YT_DLP_TIMEOUT_SECONDS") or "180")
+FULL_METADATA_REFRESH = os.environ.get("FEED_FULL_METADATA_REFRESH", "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 
 
 def log_progress(message):
@@ -320,8 +326,8 @@ def merge_video_data(base_video, hydrated_video):
     return merged
 
 
-def hydrate_video_entry(video):
-    if not video_needs_hydration(video):
+def hydrate_video_entry(video, force=False):
+    if not force and not video_needs_hydration(video):
         return video
 
     watch_url = build_watch_url(video)
@@ -441,9 +447,36 @@ def entries_by_id(entries):
     return indexed
 
 
-def hydrate_and_slim_video(video, channel_meta):
+def hydrate_and_slim_video(video, channel_meta, force=False):
     video_id = get_video_id(video)
-    return slim_video(hydrate_video_entry({**video, "id": video_id}), channel_meta)
+    return slim_video(hydrate_video_entry({**video, "id": video_id}, force=force), channel_meta)
+
+
+def refresh_existing_entry(existing_entry, discovered_video, channel_meta):
+    refreshed = dict(existing_entry)
+
+    for key in ("title", "description", "duration", "view_count"):
+        value = discovered_video.get(key)
+        if value is None:
+            continue
+        if isinstance(value, str) and not value.strip():
+            continue
+        refreshed[key] = value
+
+    for key, fallback_key in (
+        ("channel", "uploader"),
+        ("channel_id", "channel_id"),
+        ("channel_url", "channel_url"),
+        ("uploader", "channel"),
+        ("uploader_url", "channel_url"),
+    ):
+        if refreshed.get(key):
+            continue
+        value = discovered_video.get(key) or channel_meta.get(key) or channel_meta.get(fallback_key)
+        if value:
+            refreshed[key] = value
+
+    return refreshed
 
 
 def payload_without_generated_at(payload):
@@ -553,9 +586,16 @@ def main():
             new_entries.append(hydrate_and_slim_video(video, channel_meta))
             new_ids_added.append(video_id)
             continue
-        if video_needs_hydration(existing_entry):
-            updated_existing_by_id[video_id] = hydrate_and_slim_video(merge_video_data(video, existing_entry), channel_meta)
+        refreshed_existing_entry = refresh_existing_entry(existing_entry, video, channel_meta)
+        if FULL_METADATA_REFRESH:
+            updated_existing_by_id[video_id] = hydrate_and_slim_video(refreshed_existing_entry, channel_meta, force=True)
             existing_ids_rehydrated.append(video_id)
+            continue
+        if video_needs_hydration(existing_entry):
+            updated_existing_by_id[video_id] = hydrate_and_slim_video(merge_video_data(existing_entry, video), channel_meta)
+            existing_ids_rehydrated.append(video_id)
+        else:
+            updated_existing_by_id[video_id] = refreshed_existing_entry
 
     merged_entries = []
     for existing_entry in existing_entries:

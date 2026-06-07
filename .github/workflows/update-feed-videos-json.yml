@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+    inputs:
+      full_metadata_refresh:
+        description: 'Re-fetch every existing video page to refresh edited titles and metadata. Slower, use when YouTube titles were changed.'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -52,7 +58,8 @@ jobs:
 
       - name: Build merged feed-videos.json
         env:
-          YT_DLP_TIMEOUT_SECONDS: '60'
+          YT_DLP_TIMEOUT_SECONDS: ${{ inputs.full_metadata_refresh && '90' || '60' }}
+          FEED_FULL_METADATA_REFRESH: ${{ inputs.full_metadata_refresh && 'true' || 'false' }}
         run: python dead/scripts/build/build-feed-videos.py
 
       - name: Remove temporary YouTube cookies
