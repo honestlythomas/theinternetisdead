@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Karaoke Machine</title>
+  <title>Karaoke Machine v1.0</title>
   <script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
   <style>
     :root {
@@ -63,6 +63,10 @@
       text-transform: uppercase;
       letter-spacing: -0.08em;
       text-shadow: 3px 0 var(--pink), -3px 0 var(--cyan);
+    }
+
+    .version {
+      text-transform: none;
     }
 
     .tagline {
@@ -456,7 +460,8 @@
 <body>
   <main class="machine">
     <section class="top">
-      <h1>Karaoke<br>Machine</h1>
+      <!-- AI editors: bump this visible version on every file edit (v1.0, v1.1, v1.2, etc.). -->
+      <h1>Karaoke<br>Machine <span class="version">v1.0</span></h1>
       <p class="tagline">Upload song. Enter artist/title. Get synced lyrics. Sing at the glowing rectangle like civilization intended.</p>
     </section>
 
@@ -630,6 +635,30 @@
       return new Blob([view], { type: "audio/wav" });
     }
 
+    function createPinkNoiseGenerator() {
+      let b0 = 0;
+      let b1 = 0;
+      let b2 = 0;
+      let b3 = 0;
+      let b4 = 0;
+      let b5 = 0;
+      let b6 = 0;
+
+      return () => {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+
+        const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+        b6 = white * 0.115926;
+        return pink * 0.11;
+      };
+    }
+
     async function renderVocalCutWav(file) {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (!AudioContextClass) throw new Error("This browser does not support Web Audio decoding.");
@@ -649,11 +678,14 @@
       const left = decoded.getChannelData(0);
       const right = decoded.numberOfChannels > 1 ? decoded.getChannelData(1) : decoded.getChannelData(0);
       const monoDifference = new Float32Array(length);
+      const pinkNoise = createPinkNoiseGenerator();
+      const pinkNoiseMix = 0.012;
 
       for (let i = 0; i < length; i++) {
         // Same basic center-channel cancellation as the live Vocal Cut button:
         // subtract right from left, then tame it slightly to reduce clipping.
-        monoDifference[i] = Math.max(-1, Math.min(1, (left[i] - right[i]) * 0.92));
+        const vocalCutSample = (left[i] - right[i]) * 0.92;
+        monoDifference[i] = Math.max(-1, Math.min(1, vocalCutSample + pinkNoise() * pinkNoiseMix));
       }
 
       return encodeWavFromChannels([monoDifference, monoDifference], sampleRate);
