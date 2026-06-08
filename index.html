@@ -751,6 +751,13 @@
 
       if (event.source !== contentFrame.contentWindow) return;
 
+      if (data.type === 'feedGridHoverTitle') {
+        if (typeof window.updateNavGridHoverTitle === 'function') {
+          window.updateNavGridHoverTitle(String(data.title || '').trim());
+        }
+        return;
+      }
+
       if (data.type !== 'indexFrameVideoRoute') return;
 
       const videoId = String(data.videoId || '').trim();

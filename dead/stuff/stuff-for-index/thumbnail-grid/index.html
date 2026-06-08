@@ -463,7 +463,7 @@
   <iframe id="slideshowFrame" title="Slideshow YouTube video" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
   <header id="topHeader">
     <button id="menuHint" type="button">Open Menu</button>
-    <div id="headerTitle"><a id="headerTitleLink" href="#" target="_blank" rel="noopener noreferrer">@Honestly_Thomas + @Cryptid_Memes YouTube Archive (2016-Present)</a></div>
+    <div id="headerTitle"><a id="headerTitleLink" href="#" target="_blank" rel="noopener noreferrer">Random Video</a></div>
   </header>
   <aside id="sideMenu" aria-hidden="true">
     <div class="sideMenuInner">
@@ -523,6 +523,7 @@
     </section>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
     const FEED_DATA_PATH = "/dead/JSON/feed-videos.json";
     const HONESTLY_THOMAS_CHANNEL_ID = "UCn3WLZT7k8nO24XimlJVJVQ";
@@ -540,9 +541,14 @@
     const HOVER_TILE_SCALE = 8;
     const HOVER_TILE_ANIMATION_SPEED = 10;
     const LOADING_GRID_IMAGE_PATH = "/dead/images/pngs/static.gif";
+    const GRID_PLANE_WIDTH = 11.8;
+    const GRID_TEXTURE_MAX_DIMENSION = 4096;
+    const GRID_TEXTURE_MAX_PIXELS = 14000000;
 
     const canvas = document.getElementById("wallCanvas");
-    const ctx = canvas.getContext("2d");
+    if (!window.THREE) throw new Error("Three.js failed to load.");
+    const textureCanvas = document.createElement("canvas");
+    const ctx = textureCanvas.getContext("2d");
     const slideshowFrame = document.getElementById("slideshowFrame");
     const menuBackdrop = document.getElementById("menuBackdrop");
     const menuHint = document.getElementById("menuHint");
@@ -563,8 +569,49 @@
     const keys = new Set();
     const imageCache = new Map();
     const loadingGridImage = new Image();
-    const DEFAULT_HEADER_TITLE = "@Honestly_Thomas + @Cryptid_Memes YouTube Archive (2016-Present)";
+    const DEFAULT_HEADER_TITLE = "Random Video";
     loadingGridImage.src = LOADING_GRID_IMAGE_PATH;
+
+    const threeScene = new THREE.Scene();
+    const threeCamera = new THREE.PerspectiveCamera(42, 1, 0.1, 120);
+    const threeRenderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    threeRenderer.outputColorSpace = THREE.SRGBColorSpace;
+    threeRenderer.setClearColor(0x000000, 1);
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    function makeCanvasTexture(sourceCanvas) {
+      const texture = new THREE.CanvasTexture(sourceCanvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.generateMipmaps = false;
+      return texture;
+    }
+
+    let gridTexture = makeCanvasTexture(textureCanvas);
+    const gridMaterial = new THREE.MeshBasicMaterial({
+      map: gridTexture,
+      side: THREE.DoubleSide,
+      transparent: true,
+      depthWrite: false
+    });
+    const gridPlane = new THREE.Mesh(new THREE.PlaneGeometry(GRID_PLANE_WIDTH, GRID_PLANE_WIDTH * 9 / 16), gridMaterial);
+    threeScene.add(gridPlane);
+
+    const starfieldSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(48, 96, 48),
+      new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        side: THREE.BackSide
+      })
+    );
+    threeScene.add(starfieldSphere);
+
+    const starfieldGroup = new THREE.Group();
+    threeScene.add(starfieldGroup);
 
     let allVideos = [];
     let videos = [];
@@ -594,6 +641,20 @@
     let thumbnailPreloadToken = 0;
     let thumbnailPreloadLoaded = 0;
     let thumbnailPreloadTotal = 0;
+    let gridTextureScale = 1;
+    let gridTextureNeedsRedraw = true;
+    let planeYaw = 0;
+    let planePitch = 0;
+    let targetPlaneYaw = 0;
+    let targetPlanePitch = 0;
+    let planeDistance = 13;
+    let targetPlaneDistance = 13;
+    let isMiddleDragging = false;
+    let lastPointerX = 0;
+    let lastPointerY = 0;
+    let starfieldReady = false;
+    let starfieldTime = 0;
+    let stars = [];
 
     function getHeaderHeight() {
       return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 0;
@@ -635,12 +696,159 @@
       return Math.max(min, Math.min(max, value));
     }
 
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    const starLayers = [
+      { count: 2160, speedZ: 9, sizeMin: 0.018, sizeMax: 0.052, opacity: 0.35 },
+      { count: 1440, speedZ: 15, sizeMin: 0.028, sizeMax: 0.082, opacity: 0.55 },
+      { count: 840, speedZ: 23, sizeMin: 0.04, sizeMax: 0.125, opacity: 0.85 }
+    ];
+
+    function randomizeStar(star, zMin = -46, zMax = 26) {
+      star.x = rand(-44, 44);
+      star.y = rand(-28, 28);
+      star.z = rand(zMin, zMax);
+      star.speedMul = rand(0.72, 1.28);
+    }
+
+    function getStarColor(index, count, size, layer) {
+      const bucket = index / Math.max(1, count);
+      const sizeRange = Math.max(0.001, layer.sizeMax - layer.sizeMin);
+      const sizeT = clamp((size - layer.sizeMin) / sizeRange, 0, 1);
+      const intensity = 0.42 + sizeT * 0.58;
+      const largeStarGlow = Math.max(0, (sizeT - 0.64) / 0.36) * 0.32;
+      let color;
+
+      if (bucket < 0.33) {
+        color = [1, 0.06, 0.03];
+      } else if (bucket < 0.66) {
+        color = [0.05, 1, 0.18];
+      } else if (bucket < 0.99) {
+        color = [0.12, 0.38, 1];
+      } else {
+        color = [1, 1, 1];
+      }
+
+      return color.map((channel) => clamp(channel * intensity + largeStarGlow, 0, 1));
+    }
+
+    function resetStarfield() {
+      stars.forEach((starLayer) => {
+        if (starLayer.points) {
+          starfieldGroup.remove(starLayer.points);
+          starLayer.points.geometry.dispose();
+          starLayer.points.material.dispose();
+        }
+      });
+
+      stars = starLayers.map((layer) => {
+        const positions = new Float32Array(layer.count * 3);
+        const sizes = new Float32Array(layer.count);
+        const colors = new Float32Array(layer.count * 3);
+        const meta = [];
+        for (let i = 0; i < layer.count; i += 1) {
+          const star = {};
+          randomizeStar(star);
+          const size = rand(layer.sizeMin, layer.sizeMax);
+          const color = getStarColor(i, layer.count, size, layer);
+          meta.push(star);
+          positions[i * 3] = star.x;
+          positions[i * 3 + 1] = star.y;
+          positions[i * 3 + 2] = star.z;
+          sizes[i] = size;
+          colors[i * 3] = color[0];
+          colors[i * 3 + 1] = color[1];
+          colors[i * 3 + 2] = color[2];
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute("starSize", new THREE.BufferAttribute(sizes, 1));
+        geometry.setAttribute("starColor", new THREE.BufferAttribute(colors, 3));
+        const material = new THREE.ShaderMaterial({
+          uniforms: {
+            opacity: { value: layer.opacity },
+            pixelRatio: { value: Math.min(2, deviceScale || 1) }
+          },
+          vertexShader: `
+            attribute float starSize;
+            attribute vec3 starColor;
+            uniform float pixelRatio;
+            varying vec3 vStarColor;
+            void main() {
+              vStarColor = starColor;
+              vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+              gl_PointSize = starSize * pixelRatio * 1800.0 / max(1.0, -mvPosition.z);
+              gl_Position = projectionMatrix * mvPosition;
+            }
+          `,
+          fragmentShader: `
+            uniform float opacity;
+            varying vec3 vStarColor;
+            void main() {
+              vec2 center = gl_PointCoord - vec2(0.5);
+              float d = length(center);
+              float alpha = smoothstep(0.5, 0.08, d) * opacity;
+              gl_FragColor = vec4(vStarColor, alpha);
+            }
+          `,
+          transparent: true,
+          depthWrite: false
+        });
+        const points = new THREE.Points(geometry, material);
+        starfieldGroup.add(points);
+        return { layer, meta, positions, points };
+      });
+      starfieldReady = true;
+    }
+
+    function updateStarfield(deltaSeconds) {
+      if (!starfieldReady) resetStarfield();
+
+      starfieldTime += deltaSeconds;
+
+      for (const starLayer of stars) {
+        const { layer, meta, positions, points } = starLayer;
+
+        for (let i = 0; i < meta.length; i += 1) {
+          const star = meta[i];
+          star.z -= layer.speedZ * star.speedMul * deltaSeconds;
+
+          if (star.z < -48) {
+            randomizeStar(star, 24, 34);
+          }
+
+          positions[i * 3] = star.x;
+          positions[i * 3 + 1] = star.y;
+          positions[i * 3 + 2] = star.z;
+        }
+        points.geometry.attributes.position.needsUpdate = true;
+      }
+    }
+
     function worldTileWidth() {
       return TILE_WIDTH + TILE_GAP;
     }
 
     function worldTileHeight() {
       return TILE_HEIGHT + TILE_GAP;
+    }
+
+    function isMobileGridLayout() {
+      return cssWidth <= 760 && cssHeight > cssWidth;
+    }
+
+    function getMapColumns() {
+      if (!isMobileGridLayout()) return MAP_COLUMNS;
+      if (!videos.length) return 1;
+
+      const targetAspect = 9 / 16;
+      const responsiveColumns = Math.round(Math.sqrt(
+        videos.length * targetAspect * worldTileHeight() / worldTileWidth()
+      ));
+      return clamp(responsiveColumns, 1, Math.min(MAP_COLUMNS, videos.length));
     }
 
     function screenToWorld(screenX, screenY) {
@@ -759,21 +967,29 @@
       cssWidth = window.innerWidth;
       cssHeight = Math.max(1, window.innerHeight - getHeaderHeight());
       deviceScale = Math.max(1, window.devicePixelRatio || 1);
-      canvas.width = Math.max(1, Math.floor(cssWidth * deviceScale));
-      canvas.height = Math.max(1, Math.floor(cssHeight * deviceScale));
       canvas.style.width = `${cssWidth}px`;
       canvas.style.height = `${cssHeight}px`;
-      ctx.setTransform(deviceScale, 0, 0, deviceScale, 0, 0);
+      threeRenderer.setPixelRatio(Math.min(2, deviceScale));
+      threeRenderer.setSize(cssWidth, cssHeight, false);
+      threeCamera.aspect = cssWidth / Math.max(1, cssHeight);
+      threeCamera.updateProjectionMatrix();
+      stars.forEach((starLayer) => {
+        if (starLayer.points && starLayer.points.material.uniforms && starLayer.points.material.uniforms.pixelRatio) {
+          starLayer.points.material.uniforms.pixelRatio.value = Math.min(2, deviceScale);
+        }
+      });
       if (displayMode === "fullGrid" && videos.length) {
         fitFullGridToViewport();
         centerCameraOnMap();
       }
       clampCameraToMap();
+      gridTextureNeedsRedraw = true;
     }
 
     function getTileRect(index) {
-      const col = index % MAP_COLUMNS;
-      const row = Math.floor(index / MAP_COLUMNS);
+      const columns = getMapColumns();
+      const col = index % columns;
+      const row = Math.floor(index / columns);
       return {
         x: col * worldTileWidth(),
         y: row * worldTileHeight(),
@@ -787,13 +1003,67 @@
         return { width: 0, height: 0 };
       }
 
-      const cols = Math.min(MAP_COLUMNS, videos.length);
-      const rows = Math.ceil(videos.length / MAP_COLUMNS);
+      const columns = getMapColumns();
+      const cols = Math.min(columns, videos.length);
+      const rows = Math.ceil(videos.length / columns);
 
       return {
         width: cols * worldTileWidth() - TILE_GAP,
         height: rows * worldTileHeight() - TILE_GAP
       };
+    }
+
+    function getThreeGridTextureScale(bounds) {
+      if (!bounds.width || !bounds.height) return 1;
+      return Math.min(1, Math.max(0.12, Math.min(
+        GRID_TEXTURE_MAX_DIMENSION / Math.max(1, bounds.width),
+        GRID_TEXTURE_MAX_DIMENSION / Math.max(1, bounds.height),
+        Math.sqrt(GRID_TEXTURE_MAX_PIXELS / Math.max(1, bounds.width * bounds.height))
+      )));
+    }
+
+    function setTextureCanvasSize(width, height) {
+      const nextWidth = Math.max(1, Math.floor(width));
+      const nextHeight = Math.max(1, Math.floor(height));
+      if (textureCanvas.width !== nextWidth || textureCanvas.height !== nextHeight) {
+        textureCanvas.width = nextWidth;
+        textureCanvas.height = nextHeight;
+        gridTexture.needsUpdate = true;
+        gridTextureNeedsRedraw = true;
+      }
+    }
+
+    function updateGridPlaneAspect() {
+      const textureAspect = textureCanvas.width / Math.max(1, textureCanvas.height);
+      const planeHeight = GRID_PLANE_WIDTH / Math.max(0.01, textureAspect);
+      gridPlane.geometry.dispose();
+      gridPlane.geometry = new THREE.PlaneGeometry(GRID_PLANE_WIDTH, planeHeight);
+    }
+
+    function redrawFullGridTexture() {
+      const bounds = getMapBounds();
+      if (!bounds.width || !bounds.height) return;
+
+      gridTextureScale = getThreeGridTextureScale(bounds);
+      setTextureCanvasSize(bounds.width * gridTextureScale, bounds.height * gridTextureScale);
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
+
+      videos.forEach((video, index) => {
+        const record = getImageRecord(video);
+        drawExportTile(ctx, video, index, gridTextureScale, record && record.image);
+      });
+
+      updateGridPlaneAspect();
+      gridTexture.dispose();
+      gridTexture = makeCanvasTexture(textureCanvas);
+      gridMaterial.map = gridTexture;
+      gridMaterial.transparent = false;
+      gridMaterial.depthWrite = true;
+      gridMaterial.needsUpdate = true;
+      gridTextureNeedsRedraw = false;
     }
 
     function clampCameraToMap() {
@@ -821,9 +1091,10 @@
     function getVisibleIndexRange(margin) {
       const topLeft = screenToWorld(-margin, -margin);
       const bottomRight = screenToWorld(cssWidth + margin, cssHeight + margin);
-      const minCol = clamp(Math.floor(topLeft.x / worldTileWidth()) - 1, 0, MAP_COLUMNS - 1);
-      const maxCol = clamp(Math.ceil(bottomRight.x / worldTileWidth()) + 1, 0, MAP_COLUMNS - 1);
-      const maxRows = Math.ceil(videos.length / MAP_COLUMNS);
+      const columns = getMapColumns();
+      const minCol = clamp(Math.floor(topLeft.x / worldTileWidth()) - 1, 0, columns - 1);
+      const maxCol = clamp(Math.ceil(bottomRight.x / worldTileWidth()) + 1, 0, columns - 1);
+      const maxRows = Math.ceil(videos.length / columns);
       const minRow = clamp(Math.floor(topLeft.y / worldTileHeight()) - 1, 0, Math.max(0, maxRows - 1));
       const maxRow = clamp(Math.ceil(bottomRight.y / worldTileHeight()) + 1, 0, Math.max(0, maxRows - 1));
 
@@ -836,11 +1107,16 @@
 
       for (let row = range.minRow; row <= range.maxRow; row += 1) {
         for (let col = range.minCol; col <= range.maxCol; col += 1) {
-          const index = row * MAP_COLUMNS + col;
+          const index = row * getMapColumns() + col;
           if (index >= videos.length) continue;
           callback(videos[index], index);
         }
       }
+    }
+
+    function getLoadingGridAspectRatio() {
+      const isMobilePortrait = cssWidth <= 760 && cssHeight > cssWidth;
+      return isMobilePortrait ? 9 / 16 : 16 / 9;
     }
 
     function drawBackground() {
@@ -874,18 +1150,22 @@
     }
 
     function drawLoadingThumbnailGrid() {
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, cssWidth, cssHeight);
+      setTextureCanvasSize(cssWidth, cssHeight);
+      gridMaterial.transparent = true;
+      gridMaterial.depthWrite = false;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, textureCanvas.width, textureCanvas.height);
 
       const padding = 28;
       const maxWidth = Math.max(180, cssWidth - padding * 2);
       const maxHeight = Math.max(120, cssHeight - padding * 2);
-      let width = Math.min(maxWidth, maxHeight * 16 / 9, 860);
-      let height = width * 9 / 16;
+      const loadingAspect = getLoadingGridAspectRatio();
+      let width = Math.min(maxWidth, maxHeight * loadingAspect, 860);
+      let height = width / loadingAspect;
 
       if (height > maxHeight) {
         height = maxHeight;
-        width = height * 16 / 9;
+        width = height * loadingAspect;
       }
 
       const x = (cssWidth - width) / 2;
@@ -914,6 +1194,8 @@
       ctx.shadowBlur = 10;
       ctx.fillText("Loading Thumbnail Grid...", x + width / 2, y + height / 2);
       ctx.restore();
+      updateGridPlaneAspect();
+      gridTexture.needsUpdate = true;
     }
 
     function drawLoadingThumbnailPreview(x, y, width, height) {
@@ -1228,18 +1510,41 @@
     }
 
     function updateHoveredTile(screenX, screenY) {
-      const world = screenToWorld(screenX, screenY);
-      const col = Math.floor(world.x / worldTileWidth());
-      const row = Math.floor(world.y / worldTileHeight());
-
-      if (col < 0 || col >= MAP_COLUMNS || row < 0) {
+      if (!cssWidth || !cssHeight || !thumbnailPreloadReady || displayMode !== "fullGrid") {
         hoveredTileIndex = -1;
         updateTileHoverClass();
         updateHeaderTitleForHover();
         return -1;
       }
 
-      const index = row * MAP_COLUMNS + col;
+      pointer.x = (screenX / cssWidth) * 2 - 1;
+      pointer.y = -(screenY / cssHeight) * 2 + 1;
+      raycaster.setFromCamera(pointer, threeCamera);
+      const hits = raycaster.intersectObject(gridPlane, false);
+      if (!hits.length || !hits[0].uv) {
+        hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
+        return -1;
+      }
+
+      const bounds = getMapBounds();
+      const world = {
+        x: hits[0].uv.x * bounds.width,
+        y: (1 - hits[0].uv.y) * bounds.height
+      };
+      const columns = getMapColumns();
+      const col = Math.floor(world.x / worldTileWidth());
+      const row = Math.floor(world.y / worldTileHeight());
+
+      if (col < 0 || col >= columns || row < 0) {
+        hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
+        return -1;
+      }
+
+      const index = row * columns + col;
       if (index >= videos.length) {
         hoveredTileIndex = -1;
         updateTileHoverClass();
@@ -1260,7 +1565,30 @@
       return hoveredTileIndex;
     }
 
+    function handlePointerDown(event) {
+      if (event.button !== 1 || displayMode !== "fullGrid") return;
+      event.preventDefault();
+      isMiddleDragging = true;
+      lastPointerX = event.clientX;
+      lastPointerY = event.clientY;
+      keys.clear();
+    }
+
     function handleMouseMove(event) {
+      if (isMiddleDragging) {
+        event.preventDefault();
+        const deltaX = event.clientX - lastPointerX;
+        const deltaY = event.clientY - lastPointerY;
+        lastPointerX = event.clientX;
+        lastPointerY = event.clientY;
+        targetPlaneYaw += deltaX * 0.009;
+        targetPlanePitch = clamp(targetPlanePitch + deltaY * 0.009, -Math.PI / 2, Math.PI / 2);
+        hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
+        return;
+      }
+
       if (menuOpen || displayMode !== "fullGrid" || !thumbnailPreloadReady) {
         hoveredTileIndex = -1;
         updateTileHoverClass();
@@ -1272,7 +1600,13 @@
       updateHoveredTile(event.clientX - rect.left, event.clientY - rect.top);
     }
 
+    function handlePointerUp(event) {
+      if (event.button !== 1) return;
+      isMiddleDragging = false;
+    }
+
     function handleMouseLeave() {
+      isMiddleDragging = false;
       hoveredTileIndex = -1;
       updateTileHoverClass();
       updateHeaderTitleForHover();
@@ -1299,9 +1633,9 @@
         `${statusText}`,
         `videos ${videos.length} / ${allVideos.length} | thumbnails ${loadedImages}/${imageCache.size}`,
         displayMode === "fullGrid"
-          ? `mode Full Grid | zoom ${zoom.toFixed(2)}x | camera ${Math.round(cameraX)}, ${Math.round(cameraY)}`
+          ? `mode Full Grid | distance ${planeDistance.toFixed(1)} | rotation ${Math.round(planeYaw * 180 / Math.PI)}deg, ${Math.round(planePitch * 180 / Math.PI)}deg`
           : `mode Slideshow | slide ${videos.length ? slideshowIndex + 1 : 0} / ${videos.length} | ${slideshowStatus}`,
-        `<span class="muted">Full Grid: WASD move | Mouse wheel zoom | Q / E zoom out/in | Slideshow: Space play/pause thumbnails | ArrowLeft / ArrowRight | Shift+Esc menu</span>`
+        `<span class="muted">Full Grid: Middle mouse drag / WASD rotate | Mouse wheel zoom | Q / E zoom out/in | Slideshow: Space play/pause thumbnails | ArrowLeft / ArrowRight | Shift+Esc menu</span>`
       ].join("<br>");
     }
 
@@ -1321,25 +1655,41 @@
 
     function updateCamera(deltaSeconds) {
       if (menuOpen) return;
-      const moveAmount = PAN_SPEED * deltaSeconds / zoom;
+      const rotateAmount = 1.25 * deltaSeconds;
+      const zoomAmount = 7.5 * deltaSeconds;
 
-      if (keys.has("w")) cameraY -= moveAmount;
-      if (keys.has("a")) cameraX -= moveAmount;
-      if (keys.has("s")) cameraY += moveAmount;
-      if (keys.has("d")) cameraX += moveAmount;
+      if (keys.has("w")) targetPlanePitch += rotateAmount;
+      if (keys.has("s")) targetPlanePitch -= rotateAmount;
+      if (keys.has("a")) targetPlaneYaw -= rotateAmount;
+      if (keys.has("d")) targetPlaneYaw += rotateAmount;
 
-      if (keys.has("q")) zoomAt(cssWidth / 2, cssHeight / 2, Math.pow(1 / ZOOM_KEY_SPEED, deltaSeconds));
-      if (keys.has("e")) zoomAt(cssWidth / 2, cssHeight / 2, Math.pow(ZOOM_KEY_SPEED, deltaSeconds));
+      if (keys.has("q")) targetPlaneDistance += zoomAmount;
+      if (keys.has("e")) targetPlaneDistance -= zoomAmount;
 
-      clampCameraToMap();
+      targetPlanePitch = clamp(targetPlanePitch, -Math.PI / 2, Math.PI / 2);
+      targetPlaneDistance = clamp(targetPlaneDistance, 5.5, 48);
     }
 
     function zoomAt(screenX, screenY, factor) {
-      const before = screenToWorld(screenX, screenY);
-      zoom = clamp(zoom * factor, MIN_ZOOM, MAX_ZOOM);
-      cameraX = before.x - (screenX - cssWidth / 2) / zoom;
-      cameraY = before.y - (screenY - cssHeight / 2) / zoom;
-      clampCameraToMap();
+      targetPlaneDistance = clamp(targetPlaneDistance / factor, 5.5, 48);
+    }
+
+    function updateThreeMotion(deltaSeconds) {
+      planeYaw += (targetPlaneYaw - planeYaw) * Math.min(1, deltaSeconds * 10);
+      planePitch += (targetPlanePitch - planePitch) * Math.min(1, deltaSeconds * 10);
+      planeDistance += (targetPlaneDistance - planeDistance) * Math.min(1, deltaSeconds * 10);
+
+      gridPlane.rotation.set(planePitch, planeYaw, 0);
+      threeCamera.position.set(0, 0, planeDistance);
+      threeCamera.lookAt(0, 0, 0);
+      starfieldSphere.rotation.set(0, 0, 0);
+      starfieldGroup.rotation.set(0, 0, 0);
+    }
+
+    function renderThreeScene(deltaSeconds) {
+      updateStarfield(deltaSeconds);
+      updateThreeMotion(deltaSeconds);
+      threeRenderer.render(threeScene, threeCamera);
     }
 
     function frame(now) {
@@ -1347,34 +1697,34 @@
       lastFrameTime = now;
 
       if (displayMode === "slideshow") {
+        gridPlane.visible = false;
         drawSlideshow();
         updateHud();
+        renderThreeScene(deltaSeconds);
         requestAnimationFrame(frame);
         return;
       }
 
+      gridPlane.visible = true;
       if (!thumbnailPreloadReady) {
         hoveredTileIndex = -1;
         updateHoverTileAnimation(deltaSeconds);
         drawLoadingThumbnailGrid();
         updateHud();
+        renderThreeScene(deltaSeconds);
         requestAnimationFrame(frame);
         return;
       }
 
       updateCamera(deltaSeconds);
       updateHoverTileAnimation(deltaSeconds);
-      drawBackground();
+      if (gridTextureNeedsRedraw) {
+        redrawFullGridTexture();
+      }
 
       forEachVisibleTile(LAZY_LOAD_MARGIN, loadThumbnail);
-      forEachVisibleTile(40, (video, index) => {
-        if (index === activeHoverTileIndex && hoverTileAnimation > 0) return;
-        drawTile(video, index);
-      });
-      if (activeHoverTileIndex >= 0 && videos[activeHoverTileIndex] && hoverTileAnimation > 0) {
-        drawTile(videos[activeHoverTileIndex], activeHoverTileIndex, hoverTileAnimation);
-      }
       updateHud();
+      renderThreeScene(deltaSeconds);
 
       requestAnimationFrame(frame);
     }
@@ -1534,6 +1884,7 @@
       thumbnailPreloadReady = videos.length < 1;
       thumbnailPreloadLoaded = 0;
       thumbnailPreloadTotal = videos.length;
+      gridTextureNeedsRedraw = true;
       setThumbnailAutoplay(false);
       updateHud();
 
@@ -1563,6 +1914,8 @@
 
       thumbnailPreloadReady = true;
       thumbnailPreloadLoaded = thumbnailPreloadTotal;
+      gridTextureNeedsRedraw = true;
+      redrawFullGridTexture();
       releaseTypingFocusForGridControls();
       updateDisplayModeClass();
       updateHud();
@@ -1625,6 +1978,7 @@
 
           record.image = image;
           record.status = "loaded";
+          gridTextureNeedsRedraw = true;
           resolve(image);
         };
         image.onerror = () => {
@@ -1799,18 +2153,13 @@
     }
 
     function updateHeaderTitleForHover() {
+      let hoverTitle = "";
       if (displayMode === "fullGrid" && hoveredTileIndex >= 0 && videos[hoveredTileIndex] && !menuOpen) {
         const video = videos[hoveredTileIndex];
-        setHeaderTitle(formatVideoHeaderTitle(video), video);
-        return;
+        hoverTitle = String(video.title || video.id || "").trim();
       }
 
-      if (displayMode === "slideshow" && videos[slideshowIndex]) {
-        const video = videos[slideshowIndex];
-        setHeaderTitle(formatVideoHeaderTitle(video), video);
-        return;
-      }
-
+      postNavHoverTitle(hoverTitle);
       setHeaderTitle(DEFAULT_HEADER_TITLE, null);
     }
 
@@ -1829,7 +2178,21 @@
       }
 
       headerTitleLink.href = "#";
-      headerTitleLink.setAttribute("aria-disabled", "true");
+      headerTitleLink.removeAttribute("aria-disabled");
+    }
+
+    function postNavHoverTitle(title) {
+      window.parent.postMessage({
+        type: "feedGridHoverTitle",
+        title: String(title || "").trim()
+      }, "*");
+    }
+
+    function openRandomVideo() {
+      if (!videos.length) return;
+      slideshowIndex = Math.floor(Math.random() * videos.length);
+      displayModeSelect.value = "slideshow";
+      setDisplayMode("slideshow");
     }
 
     function setDisplayMode(nextMode) {
@@ -1902,14 +2265,14 @@
     function fitFullGridToViewport() {
       const bounds = getMapBounds();
       if (!bounds.width || !bounds.height || !cssWidth || !cssHeight) return;
-
-      const margin = 24;
-      const fitZoom = Math.min(
-        (cssWidth - margin * 2) / bounds.width,
-        (cssHeight - margin * 2) / bounds.height
-      );
-
-      zoom = clamp(fitZoom, MIN_ZOOM, MAX_ZOOM);
+      const aspect = bounds.width / bounds.height;
+      const verticalFov = THREE.MathUtils.degToRad(threeCamera.fov);
+      const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * threeCamera.aspect);
+      const planeHeight = GRID_PLANE_WIDTH / aspect;
+      const distanceForWidth = (GRID_PLANE_WIDTH / 2) / Math.tan(horizontalFov / 2);
+      const distanceForHeight = (planeHeight / 2) / Math.tan(verticalFov / 2);
+      targetPlaneDistance = clamp(Math.max(distanceForWidth, distanceForHeight) * 1.16, 5.5, 48);
+      planeDistance = targetPlaneDistance;
     }
 
     function centerCameraOnMap() {
@@ -1917,6 +2280,10 @@
       cameraX = bounds.width / 2;
       cameraY = bounds.height / 2;
       clampCameraToMap();
+      targetPlaneYaw = 0;
+      targetPlanePitch = 0;
+      planeYaw = 0;
+      planePitch = 0;
     }
 
     async function loadVideos() {
@@ -1975,8 +2342,14 @@
 
     window.addEventListener("resize", resizeCanvas);
     canvas.addEventListener("wheel", handleWheel, { passive: false });
+    canvas.addEventListener("mousedown", handlePointerDown);
     canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseup", handlePointerUp);
     canvas.addEventListener("mouseleave", handleMouseLeave);
+    canvas.addEventListener("auxclick", (event) => {
+      if (event.button === 1) event.preventDefault();
+    });
+    window.addEventListener("mouseup", handlePointerUp);
     canvas.addEventListener("click", handleCanvasClick);
     document.addEventListener("click", handleCanvasClick);
     document.addEventListener("keydown", handleKeydown);
@@ -1998,9 +2371,8 @@
     prevSlideButton.addEventListener("click", () => moveSlideshow(-1));
     nextSlideButton.addEventListener("click", () => moveSlideshow(1));
     headerTitleLink.addEventListener("click", (event) => {
-      if (headerTitleLink.getAttribute("aria-disabled") === "true") {
-        event.preventDefault();
-      }
+      event.preventDefault();
+      openRandomVideo();
     });
 
     resizeCanvas();

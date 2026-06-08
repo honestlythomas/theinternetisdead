@@ -1177,6 +1177,29 @@ html, body {
   }
 
   window.updateNavVideoRouteState = updateNavVideoRouteState;
+
+  function updateNavGridHoverTitle(title = '') {
+    const panel = overlayRoot.querySelector('#nav-state-panel');
+    const text = panel && panel.querySelector('.nav-state-text');
+    if (!panel || !text || !isDefaultFeedFramePath() || isTopLevelVideoRoute()) return;
+
+    const cleanTitle = String(title || '').trim();
+    if (!cleanTitle) {
+      updateNavFrameState();
+      return;
+    }
+
+    text.textContent = cleanTitle;
+    panel.href = '/';
+    panel.dataset.videoId = '';
+    panel.dataset.stateMode = 'grid-hover';
+    panel.title = cleanTitle;
+    panel.setAttribute('aria-label', cleanTitle);
+    panel.classList.remove('is-disabled');
+    window.requestAnimationFrame(fitNavStateText);
+  }
+
+  window.updateNavGridHoverTitle = updateNavGridHoverTitle;
   window.addEventListener('indexFrameChange', (event) => {
     updateNavFrameState(event.detail && event.detail.src);
   });
