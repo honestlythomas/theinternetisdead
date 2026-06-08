@@ -901,6 +901,7 @@
 
       ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
       ctx.fillRect(x, y, width, height);
+      drawLoadingThumbnailPreview(x, y, width, height);
       ctx.strokeStyle = "rgba(0, 255, 0, 0.9)";
       ctx.lineWidth = 3;
       ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
@@ -912,6 +913,42 @@
       ctx.shadowColor = "rgba(0, 255, 0, 0.8)";
       ctx.shadowBlur = 10;
       ctx.fillText("Loading Thumbnail Grid...", x + width / 2, y + height / 2);
+      ctx.restore();
+    }
+
+    function drawLoadingThumbnailPreview(x, y, width, height) {
+      const bounds = getMapBounds();
+      if (!bounds.width || !bounds.height) return;
+
+      const padding = Math.max(8, Math.min(width, height) * 0.035);
+      const previewWidth = Math.max(1, width - padding * 2);
+      const previewHeight = Math.max(1, height - padding * 2);
+      const scale = Math.min(previewWidth / bounds.width, previewHeight / bounds.height);
+      const offsetX = x + (width - bounds.width * scale) / 2;
+      const offsetY = y + (height - bounds.height * scale) / 2;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x + padding, y + padding, previewWidth, previewHeight);
+      ctx.clip();
+      ctx.globalAlpha = 0.9;
+
+      videos.forEach((video, index) => {
+        const record = getImageRecord(video);
+        const rect = getTileRect(index);
+        const tileX = offsetX + rect.x * scale;
+        const tileY = offsetY + rect.y * scale;
+        const tileWidth = Math.max(1, rect.width * scale);
+        const tileHeight = Math.max(1, rect.height * scale);
+
+        if (record && record.status === "loaded" && record.image) {
+          drawImageCover(record.image, tileX, tileY, tileWidth, tileHeight);
+        } else if (record && record.status === "failed") {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.62)";
+          ctx.fillRect(tileX, tileY, tileWidth, tileHeight);
+        }
+      });
+
       ctx.restore();
     }
 
@@ -1353,6 +1390,11 @@
     }
 
     function handleKeydown(event) {
+      if (isTypingTarget(event.target)) {
+        keys.clear();
+        return;
+      }
+
       const key = event.key.toLowerCase();
       if (key === "escape" && event.shiftKey) {
         event.preventDefault();
@@ -1521,8 +1563,14 @@
 
       thumbnailPreloadReady = true;
       thumbnailPreloadLoaded = thumbnailPreloadTotal;
+      releaseTypingFocusForGridControls();
       updateDisplayModeClass();
       updateHud();
+    }
+
+    function releaseTypingFocusForGridControls() {
+      if (!isTypingTarget(document.activeElement)) return;
+      document.activeElement.blur();
     }
 
     function updateMenuStatus() {
@@ -1768,8 +1816,7 @@
 
     function formatVideoHeaderTitle(video) {
       const channelName = String(video && (video.channel || video.uploader) || "").trim() || "Unknown Channel";
-      const title = String(video && (video.title || video.id) || "").trim() || "Untitled";
-      return `${channelName} • ${title} • ${formatUploadDate(video && video.uploadDate)}`;
+      return `${channelName} \u2022 ${formatUploadDate(video && video.uploadDate)}`;
     }
 
     function setHeaderTitle(text, video) {
