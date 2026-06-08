@@ -45,6 +45,10 @@
       cursor: default;
     }
 
+    body.slideshow-mode #wallCanvas {
+      cursor: default;
+    }
+
     body.full-grid-mode #wallCanvas {
       cursor: crosshair;
     }
@@ -66,9 +70,17 @@
       border: 3px solid rgba(0, 255, 0, 0.9);
       background: #000;
       box-shadow: 0 0 28px rgba(0, 255, 0, 0.24);
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 180ms ease, transform 180ms ease;
     }
 
-    body.full-grid-mode #slideshowFrame,
+    body.full-grid-mode #slideshowFrame {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(0.985);
+    }
+
     body.empty-slideshow #slideshowFrame,
     body.thumbnail-autoplay #slideshowFrame {
       display: none;
@@ -93,7 +105,7 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      width: min(100%, calc(100vw - 20px));
+      width: min(48vw, calc(100vw - 320px));
       transform: translate(-50%, -50%);
       min-width: 0;
       color: var(--page-text);
@@ -115,6 +127,34 @@
       color: inherit;
       text-decoration: none;
       cursor: inherit;
+    }
+
+    #headerDisplayMode {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      color: var(--page-text);
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      text-shadow: 0 0 6px rgba(0, 255, 0, 0.72);
+      pointer-events: auto;
+      white-space: nowrap;
+    }
+
+    #displayModeSelect {
+      width: auto;
+      min-width: 124px;
+      min-height: 28px;
+      border-width: 1px;
+      background: var(--panel-bg);
+      font-size: 13px;
+      line-height: 1;
+      padding: 4px 28px 4px 8px;
     }
 
     #menuHint {
@@ -370,6 +410,21 @@
     }
 
     @media (max-width: 720px) {
+      #headerTitle {
+        width: min(42vw, calc(100vw - 220px));
+        font-size: 13px;
+      }
+
+      #headerDisplayMode {
+        gap: 0;
+        font-size: 0;
+      }
+
+      #displayModeSelect {
+        min-width: 106px;
+        font-size: 12px;
+      }
+
       #menuPanel {
         width: min(94vw, calc(88dvh * 16 / 9));
         max-height: 88dvh;
@@ -464,6 +519,13 @@
   <header id="topHeader">
     <button id="menuHint" type="button">Open Menu</button>
     <div id="headerTitle"><a id="headerTitleLink" href="#" target="_blank" rel="noopener noreferrer">Random Video</a></div>
+    <label id="headerDisplayMode" for="displayModeSelect">
+      Display mode
+      <select id="displayModeSelect">
+        <option value="slideshow">Slideshow</option>
+        <option value="fullGrid" selected>Full Grid</option>
+      </select>
+    </label>
   </header>
   <aside id="sideMenu" aria-hidden="true">
     <div class="sideMenuInner">
@@ -485,14 +547,6 @@
             @Cryptid_Memes
           </label>
         </div>
-        <hr class="sidebarDivider">
-        <label class="menuLabel" for="displayModeSelect">
-          <span class="menuLabelText">Display Mode:</span>
-          <select id="displayModeSelect">
-            <option value="slideshow">Slideshow</option>
-            <option value="fullGrid" selected>Full Grid</option>
-          </select>
-        </label>
         <hr class="sidebarDivider">
         <label class="menuLabel" for="sortSelect">
           <span class="menuLabelText">Sort by:</span>
@@ -544,6 +598,7 @@
     const GRID_PLANE_WIDTH = 11.8;
     const GRID_TEXTURE_MAX_DIMENSION = 4096;
     const GRID_TEXTURE_MAX_PIXELS = 14000000;
+    const HOVER_GRID_TEXTURE_SCALE = 0.5;
 
     const canvas = document.getElementById("wallCanvas");
     if (!window.THREE) throw new Error("Three.js failed to load.");
@@ -643,6 +698,8 @@
     let thumbnailPreloadTotal = 0;
     let gridTextureScale = 1;
     let gridTextureNeedsRedraw = true;
+    let renderedHoverTileIndex = -1;
+    let renderedHoverTileProgress = -1;
     let planeYaw = 0;
     let planePitch = 0;
     let targetPlaneYaw = 0;
@@ -1048,22 +1105,70 @@
       setTextureCanvasSize(bounds.width * gridTextureScale, bounds.height * gridTextureScale);
 
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
+      ctx.clearRect(0, 0, textureCanvas.width, textureCanvas.height);
 
       videos.forEach((video, index) => {
         const record = getImageRecord(video);
         drawExportTile(ctx, video, index, gridTextureScale, record && record.image);
       });
 
+      drawHoverGridTexture(bounds);
+
       updateGridPlaneAspect();
       gridTexture.dispose();
       gridTexture = makeCanvasTexture(textureCanvas);
       gridMaterial.map = gridTexture;
-      gridMaterial.transparent = false;
-      gridMaterial.depthWrite = true;
+      gridMaterial.transparent = true;
+      gridMaterial.depthWrite = false;
       gridMaterial.needsUpdate = true;
+      renderedHoverTileIndex = activeHoverTileIndex;
+      renderedHoverTileProgress = hoverTileAnimation;
       gridTextureNeedsRedraw = false;
+    }
+
+    function drawHoverGridTexture(bounds) {
+      if (activeHoverTileIndex < 0 || hoverTileAnimation <= 0.001) return;
+
+      const video = videos[activeHoverTileIndex];
+      const record = getImageRecord(video);
+      if (!video || !record || record.status !== "loaded" || !record.image) return;
+
+      const progress = easeOutCubic(hoverTileAnimation);
+      const rect = getTileRect(activeHoverTileIndex);
+      const startX = rect.x * gridTextureScale;
+      const startY = rect.y * gridTextureScale;
+      const startWidth = rect.width * gridTextureScale;
+      const startHeight = rect.height * gridTextureScale;
+      const textureAspect = textureCanvas.width / Math.max(1, textureCanvas.height);
+      const tileAspect = TILE_WIDTH / TILE_HEIGHT;
+      let endWidth = bounds.width * gridTextureScale * HOVER_GRID_TEXTURE_SCALE;
+      let endHeight = bounds.height * gridTextureScale * HOVER_GRID_TEXTURE_SCALE;
+
+      if (textureAspect > tileAspect) {
+        endHeight = Math.max(startHeight, endHeight);
+        endWidth = endHeight * tileAspect;
+      } else {
+        endWidth = Math.max(startWidth, endWidth);
+        endHeight = endWidth / tileAspect;
+      }
+
+      endWidth = Math.min(textureCanvas.width, Math.max(startWidth, endWidth));
+      endHeight = Math.min(textureCanvas.height, Math.max(startHeight, endHeight));
+      const endX = (textureCanvas.width - endWidth) / 2;
+      const endY = (textureCanvas.height - endHeight) / 2;
+
+      const x = startX + (endX - startX) * progress;
+      const y = startY + (endY - startY) * progress;
+      const width = startWidth + (endWidth - startWidth) * progress;
+      const height = startHeight + (endHeight - startHeight) * progress;
+
+      drawExportImageContain(ctx, record.image, x, y, width, height);
+
+      if (progress < 0.98) {
+        ctx.strokeStyle = "rgba(0, 255, 0, 0.92)";
+        ctx.lineWidth = Math.max(1, 2 * gridTextureScale);
+        ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+      }
     }
 
     function clampCameraToMap() {
@@ -1311,9 +1416,12 @@
 
     function updateHoverTileAnimation(deltaSeconds) {
       const hasActiveHover = displayMode === "fullGrid" && !menuOpen && hoveredTileIndex >= 0;
+      const previousActiveHoverTileIndex = activeHoverTileIndex;
+      const previousHoverTileAnimation = hoverTileAnimation;
+
       if (hasActiveHover && activeHoverTileIndex !== hoveredTileIndex) {
         activeHoverTileIndex = hoveredTileIndex;
-        hoverTileAnimation = Math.min(hoverTileAnimation, 0.35);
+        hoverTileAnimation = 0;
       }
 
       const targetProgress = hasActiveHover ? 1 : 0;
@@ -1325,6 +1433,15 @@
         activeHoverTileIndex = -1;
       } else if (hasActiveHover && hoverTileAnimation > 0.99) {
         hoverTileAnimation = 1;
+      }
+
+      if (
+        activeHoverTileIndex !== previousActiveHoverTileIndex ||
+        Math.abs(hoverTileAnimation - previousHoverTileAnimation) > 0.001 ||
+        renderedHoverTileIndex !== activeHoverTileIndex ||
+        Math.abs(renderedHoverTileProgress - hoverTileAnimation) > 0.001
+      ) {
+        gridTextureNeedsRedraw = true;
       }
     }
 
@@ -1378,7 +1495,7 @@
 
       document.body.classList.toggle("empty-slideshow", !id);
 
-      if (displayMode !== "slideshow" || thumbnailAutoplay || !id) {
+      if (thumbnailAutoplay || !id) {
         if (currentSlideshowEmbedId || slideshowFrame.src) {
           slideshowFrame.src = "about:blank";
         }
@@ -1386,11 +1503,18 @@
         return;
       }
 
-      if (currentSlideshowEmbedId === id) return;
+      if (currentSlideshowEmbedId === id) {
+        if (displayMode === "slideshow") {
+          notifyVideoRouteOpen(video);
+        }
+        return;
+      }
 
       currentSlideshowEmbedId = id;
       slideshowFrame.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
-      notifyVideoRouteOpen(video);
+      if (displayMode === "slideshow") {
+        notifyVideoRouteOpen(video);
+      }
     }
 
     function notifyVideoRouteOpen(video) {
@@ -1696,15 +1820,6 @@
       const deltaSeconds = Math.min(0.05, (now - lastFrameTime) / 1000);
       lastFrameTime = now;
 
-      if (displayMode === "slideshow") {
-        gridPlane.visible = false;
-        drawSlideshow();
-        updateHud();
-        renderThreeScene(deltaSeconds);
-        requestAnimationFrame(frame);
-        return;
-      }
-
       gridPlane.visible = true;
       if (!thumbnailPreloadReady) {
         hoveredTileIndex = -1;
@@ -1716,7 +1831,9 @@
         return;
       }
 
-      updateCamera(deltaSeconds);
+      if (displayMode === "fullGrid") {
+        updateCamera(deltaSeconds);
+      }
       updateHoverTileAnimation(deltaSeconds);
       if (gridTextureNeedsRedraw) {
         redrawFullGridTexture();
@@ -1809,17 +1926,47 @@
         .map((entry, index) => {
           const id = String(entry && entry.id || "").trim();
           if (!id) return null;
+          const title = String(entry && entry.title || id).trim();
+          const channel = String(entry && entry.channel || "").trim();
+          const uploader = String(entry && entry.uploader || "").trim();
+          const uploadDate = String(entry && entry.upload_date || "").trim();
+          const channelId = String(entry && entry.channel_id || "").trim();
+          const channelUrl = String(entry && entry.channel_url || "").trim();
+          const uploaderUrl = String(entry && entry.uploader_url || "").trim();
+          const url = String(entry && entry.url || "").trim();
+          const description = String(entry && entry.description || "").trim();
+          const viewCount = Number(entry && entry.view_count) || 0;
+          const duration = Number(entry && entry.duration) || 0;
+          const searchText = [
+            id,
+            title,
+            description,
+            channel,
+            uploader,
+            channelId,
+            channelUrl,
+            uploaderUrl,
+            url,
+            uploadDate,
+            String(viewCount),
+            String(duration)
+          ].join(" ").toLowerCase();
+
           return {
             id,
-            title: String(entry && entry.title || id).trim(),
+            title,
+            description,
             sourceIndex: index,
-            uploadDate: String(entry && entry.upload_date || "").trim(),
-            viewCount: Number(entry && entry.view_count) || 0,
-            channel: String(entry && entry.channel || "").trim(),
-            uploader: String(entry && entry.uploader || "").trim(),
-            channelId: String(entry && entry.channel_id || "").trim(),
-            channelUrl: String(entry && entry.channel_url || "").trim(),
-            uploaderUrl: String(entry && entry.uploader_url || "").trim(),
+            uploadDate,
+            viewCount,
+            duration,
+            channel,
+            uploader,
+            channelId,
+            channelUrl,
+            uploaderUrl,
+            url,
+            searchText,
             thumbnailCandidates: pickThumbnailCandidates(entry)
           };
         })
@@ -1851,13 +1998,7 @@
 
     function videoMatchesSearch(video, query) {
       if (!query) return true;
-      const searchableText = [
-        video && video.title,
-        video && video.id,
-        video && video.channel,
-        video && video.uploader
-      ].join(" ").toLowerCase();
-      return searchableText.includes(query);
+      return String(video && video.searchText || "").includes(query);
     }
 
     function applyVideoView() {
@@ -1873,6 +2014,8 @@
       startThumbnailPreload();
       fitFullGridToViewport();
       centerCameraOnMap();
+      updateSlideshowEmbed(getSlideshowVideo());
+      updateSlideshowCounter();
       updateDisplayModeClass();
       updateHeaderTitleForHover();
       updateMenuStatus();
@@ -1889,6 +2032,20 @@
       updateHud();
 
       if (!videos.length) return;
+
+      const cachedRecords = videos.map(getImageRecord);
+      const cachedReady = cachedRecords.every((record) => (
+        record && (record.status === "loaded" || record.status === "failed")
+      ));
+
+      if (cachedReady) {
+        thumbnailPreloadReady = true;
+        thumbnailPreloadLoaded = thumbnailPreloadTotal;
+        redrawFullGridTexture();
+        updateDisplayModeClass();
+        updateHud();
+        return;
+      }
 
       const preloadVideos = videos.slice();
       let nextIndex = 0;
@@ -1923,6 +2080,7 @@
 
     function releaseTypingFocusForGridControls() {
       if (!isTypingTarget(document.activeElement)) return;
+      if (document.activeElement === videoSearchInput) return;
       document.activeElement.blur();
     }
 
@@ -2007,6 +2165,27 @@
       }
 
       targetCtx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+    }
+
+    function drawExportImageContain(targetCtx, image, x, y, width, height) {
+      const imageRatio = image.width / image.height;
+      const targetRatio = width / height;
+      let drawWidth = width;
+      let drawHeight = height;
+
+      if (imageRatio > targetRatio) {
+        drawHeight = width / imageRatio;
+      } else {
+        drawWidth = height * imageRatio;
+      }
+
+      targetCtx.drawImage(
+        image,
+        x + (width - drawWidth) / 2,
+        y + (height - drawHeight) / 2,
+        drawWidth,
+        drawHeight
+      );
     }
 
     function drawExportTile(targetCtx, video, index, exportScale, image) {
@@ -2130,6 +2309,7 @@
 
     function updateDisplayModeClass() {
       document.body.classList.toggle("full-grid-mode", displayMode === "fullGrid");
+      document.body.classList.toggle("slideshow-mode", displayMode === "slideshow");
       document.body.classList.toggle("empty-slideshow", displayMode === "slideshow" && !videos.length);
       document.body.classList.toggle("thumbnail-autoplay", thumbnailAutoplay);
       prevSlideButton.disabled = displayMode !== "slideshow" || videos.length < 2;
@@ -2139,7 +2319,8 @@
       }
       if (displayMode !== "slideshow") {
         setThumbnailAutoplay(false);
-        updateSlideshowEmbed(null);
+      } else {
+        updateSlideshowEmbed(getSlideshowVideo());
       }
       updateTileHoverClass();
     }
