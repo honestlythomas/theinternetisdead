@@ -158,6 +158,21 @@ if (window.top === window.self && !allowStandalone) {
       font-weight: 700;
     }
 
+    .messageText a {
+      color: #ffffff;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .messageText a:visited {
+      color: #ffffff;
+    }
+
+    .messageText code {
+      color: #baffc9;
+      font-family: inherit;
+    }
+
     .helpList {
       margin-top: 8px;
     }
@@ -2168,7 +2183,9 @@ const focusSink = document.getElementById('focusSink');
     function normalizeWelcomeMessage(text) {
       const trimmed = String(text || '').trim();
       if (!trimmed) return DEFAULT_WELCOME_MESSAGE;
-      return trimmed.startsWith('System: ') ? trimmed : `System: ${trimmed}`;
+      return trimmed.startsWith('System: ') || trimmed.startsWith('Camera Terminal v1.0:')
+        ? trimmed
+        : `System: ${trimmed}`;
     }
 
     function ensureInitialWelcomeMessage() {
@@ -2266,6 +2283,7 @@ const focusSink = document.getElementById('focusSink');
     function getRenderedSystemText(text) {
       const normalized = String(text || '').trim();
       if (!normalized) return 'System:';
+      if (normalized.startsWith('Camera Terminal v1.0:')) return normalized;
       return normalized.startsWith('System: ') ? normalized : `System: ${normalized}`;
     }
 
@@ -2354,17 +2372,36 @@ const focusSink = document.getElementById('focusSink');
 
       const suffix = repeatLabel || (repeatCount > 1 ? String(repeatCount) : '');
       const finalText = suffix ? `${rendered} (${suffix})` : rendered;
+      const cameraTerminalMatch = finalText.match(/^(Camera Terminal v1\.0:)(\s*)(.*)$/);
+      if (cameraTerminalMatch) {
+        const [, prefixText, prefixSpace = '', remainder = ''] = cameraTerminalMatch;
+        const prefixSpan = document.createElement('strong');
+        prefixSpan.style.color = '#00ffff';
+        prefixSpan.textContent = prefixText.slice(0, -1);
+        messageText.appendChild(prefixSpan);
+        if (prefixSpace || remainder) {
+          messageText.appendChild(document.createTextNode(' '));
+          const bodySpan = document.createElement('span');
+          bodySpan.style.color = '#ffffff';
+          bodySpan.style.textDecoration = 'underline';
+          appendMarkdownText(bodySpan, remainder);
+          messageText.appendChild(bodySpan);
+        }
+        return;
+      }
+
       const genericPrefixMatch = finalText.match(/^([^:]+:)(\s*)(.*)$/);
       if (genericPrefixMatch) {
         const [, prefixText, prefixSpace = '', remainder = ''] = genericPrefixMatch;
         messageText.innerHTML = '';
         appendSpeakerPrefix(messageText, prefixText, 'speakerPrefixLabel');
         if (prefixSpace || remainder) {
-          messageText.appendChild(document.createTextNode(`${prefixSpace}${remainder}`));
+          messageText.appendChild(document.createTextNode(prefixSpace));
+          appendMarkdownText(messageText, remainder);
         }
         return;
       }
-      messageText.textContent = finalText;
+      appendMarkdownText(messageText, finalText);
     }
 
     function formatCommandExecutionMessage(commandToken, state = 'executed', nickname = currentNickname) {
@@ -2860,20 +2897,93 @@ const focusSink = document.getElementById('focusSink');
       return prefixSpan;
     }
 
+    function submitMarkdownCommandLink(rawCommand) {
+      const command = String(rawCommand || '').trim();
+      if (!command) return;
+      showChatBar();
+      chatBar.value = command;
+      updateChatBarVisualState();
+      moveCursorToEnd();
+      void submitMessage();
+    }
+
+    function appendMarkdownText(parentNode, sourceText) {
+      if (!parentNode) return;
+      const source = String(sourceText || '');
+      const markdownPattern = /(\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|`([^`]+)`|\n)/g;
+      let lastIndex = 0;
+      let match = null;
+
+      const appendPlainText = (text) => {
+        if (text) parentNode.appendChild(document.createTextNode(text));
+      };
+
+      while ((match = markdownPattern.exec(source)) !== null) {
+        appendPlainText(source.slice(lastIndex, match.index));
+
+        if (match[2] !== undefined && match[3] !== undefined) {
+          const linkText = match[2];
+          const rawHref = match[3].trim();
+          const link = document.createElement('a');
+          link.href = '#';
+          link.textContent = linkText;
+
+          if (rawHref.startsWith('command:') || rawHref.startsWith('/')) {
+            const command = rawHref.startsWith('command:')
+              ? decodeURIComponent(rawHref.slice('command:'.length))
+              : decodeURIComponent(rawHref);
+            link.addEventListener('click', (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              submitMarkdownCommandLink(command);
+            });
+          } else {
+            link.href = rawHref;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+          }
+
+          parentNode.appendChild(link);
+        } else if (match[4] !== undefined) {
+          const strong = document.createElement('strong');
+          appendMarkdownText(strong, match[4]);
+          parentNode.appendChild(strong);
+        } else if (match[5] !== undefined) {
+          const underline = document.createElement('u');
+          appendMarkdownText(underline, match[5]);
+          parentNode.appendChild(underline);
+        } else if (match[6] !== undefined) {
+          const code = document.createElement('code');
+          code.textContent = match[6];
+          parentNode.appendChild(code);
+        } else if (match[0] === '\n') {
+          parentNode.appendChild(document.createElement('br'));
+        }
+
+        lastIndex = markdownPattern.lastIndex;
+      }
+
+      appendPlainText(source.slice(lastIndex));
+    }
+
     function renderUserMessage(line, messageTextEl = null) {
       const rawContent = line.dataset.rawContent || '';
       const separatorIndex = rawContent.indexOf(':');
       const messageText = messageTextEl || line.querySelector('.messageText');
       if (!messageText) return;
       if (separatorIndex === -1) {
-        messageText.textContent = rawContent;
+        messageText.innerHTML = '';
+        appendMarkdownText(messageText, rawContent);
         return;
       }
       const nickname = rawContent.slice(0, separatorIndex).trim();
       const bodyText = rawContent.slice(separatorIndex + 1).replace(/^\s*/, '');
       messageText.innerHTML = '';
       appendSpeakerPrefix(messageText, `${nickname}:`, 'nicknameLabel');
-      messageText.appendChild(document.createTextNode(bodyText ? ` ${bodyText}` : ''));
+      if (bodyText) {
+        messageText.appendChild(document.createTextNode(' '));
+        appendMarkdownText(messageText, bodyText);
+      }
     }
 
     function formatTimestamp(date = new Date()) {
@@ -2957,7 +3067,7 @@ const focusSink = document.getElementById('focusSink');
         } else if (role === 'user' && typeof displayContent === 'string') {
           renderUserMessage(line, messageText);
         } else {
-          messageText.textContent = displayContent;
+          appendMarkdownText(messageText, displayContent);
         }
       }
 
@@ -6569,16 +6679,17 @@ function createHomepageCustomizeMessageNode(result = {}) {
       const parts = trimmed.split(/\s+/);
       const command = parts[0].toLowerCase();
       const pageCommand = getPageCommandDefinition(command);
+      const builtInCommand = builtInCommands.find((entry) => entry.name === command) || null;
       const embeddedPageOnly = document.body.classList.contains('embedded') && pageCommandMeta.pageOnly;
       // MODIFIED: Only let the parent override a built-in when it explicitly says so.
-      const preferPageCommand = document.body.classList.contains('embedded') && !!pageCommand && (embeddedPageOnly || pageCommand.replaceBuiltIn === true);
+      const preferPageCommand = document.body.classList.contains('embedded') && !!pageCommand && !pageCommand.passthroughBuiltIn && (embeddedPageOnly || pageCommand.replaceBuiltIn === true);
 
       if (preferPageCommand) {
         dispatchPageCommand(command, trimmed, parts.slice(1));
         return true;
       }
 
-      if (embeddedPageOnly && trimmed.startsWith('/') && command !== '/help') {
+      if (embeddedPageOnly && trimmed.startsWith('/') && command !== '/help' && !(pageCommand && pageCommand.passthroughBuiltIn && builtInCommand)) {
         return false;
       }
 

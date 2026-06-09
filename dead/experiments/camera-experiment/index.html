@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/dead/experiments/camera-experiment/</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background: #050505;
+      color: #00ff66;
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    #cameraStack {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .cameraView {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cameraBaseLayer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+      display: block;
+    }
+
+    .cameraEffectLayer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      pointer-events: none;
+    }
+
+    .cameraEffectLayer.visible {
+      display: block;
+    }
+
+    .invertLayer {
+      filter: invert(1);
+    }
+
+    .hueshiftLayer {
+      animation: cameraHueShift 8s linear infinite;
+    }
+
+    .colorLayer {
+      background: transparent;
+    }
+
+    @keyframes cameraHueShift {
+      from {
+        filter: hue-rotate(0deg);
+      }
+
+      to {
+        filter: hue-rotate(360deg);
+      }
+    }
+
+    #cameraButton {
+      appearance: none;
+      border: 2px solid #00ff66;
+      background: #050505;
+      color: #00ff66;
+      font: inherit;
+      font-size: clamp(18px, 4vw, 30px);
+      font-weight: 700;
+      line-height: 1;
+      padding: 18px 24px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 0 1px #001f0d, 0 0 24px rgba(0, 255, 102, 0.32);
+      position: relative;
+      z-index: 4;
+    }
+
+    #cameraButton:hover,
+    #cameraButton:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 4px;
+      background: #0b1f13;
+    }
+
+    #cameraButton[data-state="enabled"] {
+      border-color: #ffffff;
+      color: #ffffff;
+      box-shadow: 0 0 0 1px #00ff66, 0 0 30px rgba(255, 255, 255, 0.35);
+    }
+
+    #cameraButton[data-state="error"] {
+      border-color: #ff2a2a;
+      color: #ff2a2a;
+      box-shadow: 0 0 0 1px #3d0000, 0 0 24px rgba(255, 42, 42, 0.28);
+    }
+
+    #chat-sandbox-frame {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100dvh;
+      border: none;
+      display: block;
+      background: transparent;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #chat-sandbox-frame.chat-overlay-active {
+      pointer-events: auto;
+    }
+
+    #chat-hover-zone {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 96px;
+      display: none;
+      cursor: text;
+      z-index: 11;
+    }
+
+    #chat-hover-zone.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="cameraStack" aria-hidden="true"></div>
+  <button id="cameraButton" type="button" hidden>Enable Camera</button>
+  <div id="chat-hover-zone" aria-hidden="true"></div>
+
+  <iframe
+    id="chat-sandbox-frame"
+    src="/dead/experiments/chat-sandbox/"
+    title="Camera experiment chat overlay"
+    loading="eager"
+    allowfullscreen
+    aria-hidden="true"
+  ></iframe>
+
+  <script>
+    const cameraStack = document.getElementById('cameraStack');
+    const cameraButton = document.getElementById('cameraButton');
+    const chatHoverZone = document.getElementById('chat-hover-zone');
+    const chatSandboxFrame = document.getElementById('chat-sandbox-frame');
+    const BLEND_MODES = [
+      'normal',
+      'multiply',
+      'screen',
+      'overlay',
+      'darken',
+      'lighten',
+      'color-dodge',
+      'color-burn',
+      'hard-light',
+      'soft-light',
+      'difference',
+      'exclusion',
+      'hue',
+      'saturation',
+      'color',
+      'luminosity'
+    ];
+    const COLOR_NAMES = {
+      black: '#000000',
+      blue: '#0000ff',
+      cyan: '#00ffff',
+      green: '#008000',
+      lime: '#00ff00',
+      magenta: '#ff00ff',
+      orange: '#ffa500',
+      purple: '#800080',
+      red: '#ff0000',
+      white: '#ffffff',
+      yellow: '#ffff00'
+    };
+    const DEFAULT_BLEND_MODES = {
+      invert: 'difference',
+      hueshift: 'screen',
+      color: 'multiply'
+    };
+    const cameraViews = [];
+    let activeCameraView = null;
+    let chatSandboxVisible = false;
+    let chatSandboxDvdActive = false;
+    let chatPinnedOpen = false;
+    let chatHoverPreviewOpen = false;
+    let closingHoverPreview = false;
+    let suppressCommandOutput = false;
+
+    function postToChatSandbox(message) {
+      if (!chatSandboxFrame || !chatSandboxFrame.contentWindow) return;
+      chatSandboxFrame.contentWindow.postMessage(message, '*');
+    }
+
+    function syncChatSandboxOverlayState() {
+      const isActive = chatSandboxVisible || chatSandboxDvdActive;
+      chatSandboxFrame.classList.toggle('chat-overlay-active', isActive);
+      chatSandboxFrame.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+      syncChatHoverZone();
+    }
+
+    function syncChatHoverZone() {
+      const shouldCatchHover = chatHoverPreviewOpen || (!chatPinnedOpen && !chatSandboxVisible && !chatSandboxDvdActive);
+      chatHoverZone.classList.toggle('active', shouldCatchHover);
+    }
+
+    function openChatOverlay(options = {}) {
+      if (options.pin) {
+        chatPinnedOpen = true;
+        chatHoverPreviewOpen = false;
+      } else if (options.preview) {
+        chatHoverPreviewOpen = true;
+      }
+
+      chatSandboxVisible = true;
+      syncChatSandboxOverlayState();
+      postToChatSandbox({
+        type: 'chatSandboxOpen',
+        focus: options.focus !== false,
+        seedSlash: !!options.seedSlash
+      });
+    }
+
+    function closeChatOverlayPreview() {
+      if (!chatHoverPreviewOpen || chatPinnedOpen) return;
+      closingHoverPreview = true;
+      chatHoverPreviewOpen = false;
+      chatSandboxVisible = false;
+      syncChatSandboxOverlayState();
+      postToChatSandbox({ type: 'chatSandboxClose' });
+    }
+
+    function registerCameraExperimentCommands() {
+      postToChatSandbox({
+        type: 'pageChatRegister',
+        pageOnly: true,
+        pageId: 'camera-experiment',
+        title: 'Camera Experiment',
+        sourceKey: 'camera-experiment',
+        welcomeMessage: 'Camera Terminal v1.0: [Click Here](command:/camera%20new) to get started or type [/help](command:/help) for commands.',
+        commands: [
+          {
+            name: '/color',
+            usage: '/color',
+            desc: 'show camera color commands and current states',
+            execute: true,
+            suggestions: [
+              'invert',
+              'hueshift',
+              'red',
+              '#ff0000',
+              'rgba(255, 0, 0, 1)',
+              'blendmode',
+              'reset'
+            ]
+          },
+          {
+            name: '/camera',
+            usage: '/camera',
+            desc: 'create or list camera views',
+            execute: false,
+            suggestions: ['new', 'list', 'blendmode', 'opacity 1', 'opacity 0.5', 'opacity 0']
+          },
+          {
+            name: '/dev',
+            usage: '/dev startup',
+            desc: 'developer startup sequence',
+            execute: false,
+            hidden: true,
+            suggestions: ['startup']
+          }
+        ]
+      });
+    }
+
+    function getEnabledLabel(value) {
+      return value ? 'on' : 'off';
+    }
+
+    function createDefaultColorState() {
+      return {
+        invert: false,
+        hueshift: false,
+        color: '',
+        blendModes: { ...DEFAULT_BLEND_MODES }
+      };
+    }
+
+    function getActiveColorState() {
+      return activeCameraView ? activeCameraView.colorState : null;
+    }
+
+    function getColorStatusMessage() {
+      const colorState = getActiveColorState();
+      if (!activeCameraView || !colorState) {
+        return 'No camera views yet. Use /camera new, then enable the camera.';
+      }
+
+      return [
+        `Camera ${activeCameraView.id} color commands:`,
+        `/color invert [${getEnabledLabel(colorState.invert)}]`,
+        `/color hueshift [${getEnabledLabel(colorState.hueshift)}]`,
+        `/color red | /color #ff0000 | /color rgba(255, 0, 0, 1) [${colorState.color || 'none'}]`,
+        `/color blendmode [invert: ${colorState.blendModes.invert}, hueshift: ${colorState.blendModes.hueshift}, color: ${colorState.blendModes.color}]`,
+        '/color reset'
+      ].join('\n');
+    }
+
+    function normalizeBlendMode(value) {
+      const normalized = String(value || '').trim().toLowerCase();
+      return BLEND_MODES.includes(normalized) ? normalized : '';
+    }
+
+    function normalizeColorValue(value) {
+      const raw = String(value || '').trim();
+      if (!raw) return '';
+      const named = COLOR_NAMES[raw.toLowerCase()] || raw;
+      const tester = document.createElement('span');
+      tester.style.color = '';
+      tester.style.color = named;
+      return tester.style.color ? named : '';
+    }
+
+    function syncCameraEffects(cameraView = activeCameraView) {
+      if (!cameraView) return;
+      const { colorState, layers } = cameraView;
+
+      layers.invert.classList.toggle('visible', colorState.invert);
+      layers.hueshift.classList.toggle('visible', colorState.hueshift);
+      layers.color.classList.toggle('visible', !!colorState.color);
+
+      layers.invert.style.mixBlendMode = colorState.blendModes.invert;
+      layers.hueshift.style.mixBlendMode = colorState.blendModes.hueshift;
+      layers.color.style.mixBlendMode = colorState.blendModes.color;
+      layers.color.style.backgroundColor = colorState.color || 'transparent';
+    }
+
+    function resetCameraEffects(cameraView = activeCameraView) {
+      if (!cameraView) return;
+      cameraView.colorState = createDefaultColorState();
+      syncCameraEffects(cameraView);
+    }
+
+    function reportCameraCommand(command, message) {
+      if (suppressCommandOutput) return;
+      postToChatSandbox({
+        type: 'pageChatResult',
+        command,
+        message,
+        announce: true
+      });
+    }
+
+    function createCameraVideo(className) {
+      const video = document.createElement('video');
+      video.className = className;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.muted = true;
+      return video;
+    }
+
+    async function playCameraView(cameraView) {
+      const videos = [cameraView.layers.base, cameraView.layers.invert, cameraView.layers.hueshift];
+      try {
+        await Promise.all(videos.map((video) => video.play()));
+      } catch (error) {
+        console.warn('Camera preview playback needed a browser retry:', error);
+      }
+    }
+
+    async function createCameraView(stream) {
+      const id = cameraViews.length + 1;
+      const view = document.createElement('div');
+      view.className = 'cameraView';
+      view.dataset.cameraId = String(id);
+      view.style.zIndex = String(id);
+
+      const base = createCameraVideo('cameraBaseLayer');
+      const invert = createCameraVideo('cameraEffectLayer invertLayer');
+      const hueshift = createCameraVideo('cameraEffectLayer hueshiftLayer');
+      const color = document.createElement('div');
+      color.className = 'cameraEffectLayer colorLayer';
+      color.setAttribute('aria-hidden', 'true');
+
+      [base, invert, hueshift].forEach((video) => {
+        video.srcObject = stream;
+      });
+
+      view.appendChild(base);
+      view.appendChild(invert);
+      view.appendChild(hueshift);
+      view.appendChild(color);
+      cameraStack.appendChild(view);
+
+      const cameraView = {
+        id,
+        stream,
+        root: view,
+        opacity: 1,
+        blendMode: 'normal',
+        colorState: createDefaultColorState(),
+        createdAt: new Date(),
+        layers: { base, invert, hueshift, color }
+      };
+
+      view.style.mixBlendMode = cameraView.blendMode;
+      cameraViews.push(cameraView);
+      setActiveCameraView(cameraView);
+      applyCameraStackOrder();
+      syncCameraEffects(cameraView);
+      await playCameraView(cameraView);
+      window.__cameraExperimentStreams = cameraViews.map((entry) => entry.stream);
+      return cameraView;
+    }
+
+    async function requestHighestResolutionCameraStream() {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 7680 },
+          height: { ideal: 4320 },
+          frameRate: { ideal: 60 }
+        },
+        audio: false
+      });
+
+      const [videoTrack] = stream.getVideoTracks();
+      if (videoTrack && typeof videoTrack.getCapabilities === 'function' && typeof videoTrack.applyConstraints === 'function') {
+        const capabilities = videoTrack.getCapabilities();
+        const highestConstraints = {};
+        if (capabilities.width && Number.isFinite(capabilities.width.max)) {
+          highestConstraints.width = { ideal: capabilities.width.max };
+        }
+        if (capabilities.height && Number.isFinite(capabilities.height.max)) {
+          highestConstraints.height = { ideal: capabilities.height.max };
+        }
+        if (capabilities.frameRate && Number.isFinite(capabilities.frameRate.max)) {
+          highestConstraints.frameRate = { ideal: capabilities.frameRate.max };
+        }
+        if (Object.keys(highestConstraints).length) {
+          try {
+            await videoTrack.applyConstraints(highestConstraints);
+          } catch (error) {
+            console.warn('Unable to apply maximum camera constraints:', error);
+          }
+        }
+      }
+
+      return stream;
+    }
+
+    function scrollChatToBottom(chatDocument) {
+      const messagesWrap = chatDocument.getElementById('messagesWrap');
+      if (messagesWrap) {
+        messagesWrap.scrollTop = messagesWrap.scrollHeight;
+      }
+    }
+
+    function createBlendModeSelect(chatDocument, layerName) {
+      const cameraView = activeCameraView;
+      const colorState = cameraView ? cameraView.colorState : createDefaultColorState();
+      const label = chatDocument.createElement('label');
+      label.style.display = 'grid';
+      label.style.gridTemplateColumns = '90px minmax(0, 1fr)';
+      label.style.gap = '8px';
+      label.style.alignItems = 'center';
+      label.style.margin = '6px 0';
+
+      const text = chatDocument.createElement('span');
+      text.textContent = layerName;
+
+      const select = chatDocument.createElement('select');
+      select.dataset.cameraBlendLayer = layerName;
+      select.style.width = '100%';
+      select.style.font = 'inherit';
+      select.style.color = '#000';
+      select.style.background = '#9e9e9e';
+      select.style.border = '1px solid #000';
+      select.style.borderRadius = '0';
+      select.style.padding = '4px 6px';
+
+      BLEND_MODES.forEach((mode) => {
+        const option = chatDocument.createElement('option');
+        option.value = mode;
+        option.textContent = mode;
+        option.selected = colorState.blendModes[layerName] === mode;
+        select.appendChild(option);
+      });
+
+      select.addEventListener('change', () => {
+        if (!cameraView) return;
+        colorState.blendModes[layerName] = normalizeBlendMode(select.value) || colorState.blendModes[layerName];
+        syncCameraEffects(cameraView);
+        reportCameraCommand('/color blendmode', `Camera ${cameraView.id} ${layerName} blend mode: ${colorState.blendModes[layerName]}`);
+      });
+
+      label.appendChild(text);
+      label.appendChild(select);
+      return label;
+    }
+
+    function showBlendModePanel() {
+      if (!activeCameraView) {
+        reportCameraCommand('/color blendmode', 'No camera views yet. Use /camera new, then enable the camera.');
+        return;
+      }
+
+      const chatDocument = chatSandboxFrame.contentDocument;
+      if (!chatDocument) {
+        reportCameraCommand('/color blendmode', 'Blend modes: normal, multiply, screen, overlay, darken, lighten, color, luminosity');
+        return;
+      }
+
+      const messages = chatDocument.getElementById('messages');
+      if (!messages) {
+        reportCameraCommand('/color blendmode', 'Blend modes: normal, multiply, screen, overlay, darken, lighten, color, luminosity');
+        return;
+      }
+
+      const message = chatDocument.createElement('div');
+      message.className = 'message';
+      message.dataset.role = 'system';
+
+      const row = chatDocument.createElement('div');
+      row.className = 'messageRow';
+
+      const textWrap = chatDocument.createElement('div');
+      textWrap.className = 'messageText';
+
+      const title = chatDocument.createElement('div');
+      const strong = chatDocument.createElement('strong');
+      strong.textContent = 'Blend mode options';
+      title.appendChild(strong);
+
+      const help = chatDocument.createElement('div');
+      help.className = 'helpList';
+      help.appendChild(createBlendModeSelect(chatDocument, 'invert'));
+      help.appendChild(createBlendModeSelect(chatDocument, 'hueshift'));
+      help.appendChild(createBlendModeSelect(chatDocument, 'color'));
+
+      textWrap.appendChild(title);
+      textWrap.appendChild(help);
+      row.appendChild(textWrap);
+      message.appendChild(row);
+      messages.appendChild(message);
+      scrollChatToBottom(chatDocument);
+    }
+
+    function getCameraStateSummary(cameraView) {
+      const colorState = cameraView.colorState;
+      const activeLabel = cameraView === activeCameraView ? 'active' : 'stacked';
+      const stackIndex = cameraViews.indexOf(cameraView);
+      const stackLabel = stackIndex === cameraViews.length - 1 ? 'top' : `layer ${stackIndex + 1}`;
+      return [
+        activeLabel,
+        stackLabel,
+        `opacity ${cameraView.opacity}`,
+        `blend ${cameraView.blendMode}`,
+        `invert ${getEnabledLabel(colorState.invert)}`,
+        `hueshift ${getEnabledLabel(colorState.hueshift)}`,
+        `color ${colorState.color || 'none'}`
+      ].join(' | ');
+    }
+
+    function setActiveCameraView(cameraView) {
+      if (!cameraView) return;
+      activeCameraView = cameraView;
+    }
+
+    function applyCameraStackOrder() {
+      cameraViews.forEach((cameraView, index) => {
+        cameraView.root.style.zIndex = String(index + 1);
+      });
+    }
+
+    function moveCameraView(cameraView, direction) {
+      const currentIndex = cameraViews.indexOf(cameraView);
+      if (currentIndex === -1) return false;
+      const nextIndex = currentIndex + direction;
+      if (nextIndex < 0 || nextIndex >= cameraViews.length) return false;
+
+      cameraViews.splice(currentIndex, 1);
+      cameraViews.splice(nextIndex, 0, cameraView);
+      applyCameraStackOrder();
+      return true;
+    }
+
+    function animateCameraListReorder(help, renderRows) {
+      const previousRects = new Map();
+      Array.from(help.children).forEach((child) => {
+        const id = child.dataset ? child.dataset.cameraId : '';
+        if (id) previousRects.set(id, child.getBoundingClientRect());
+      });
+
+      renderRows();
+
+      Array.from(help.children).forEach((child) => {
+        const id = child.dataset ? child.dataset.cameraId : '';
+        const previous = previousRects.get(id);
+        if (!previous) return;
+        const next = child.getBoundingClientRect();
+        const deltaY = previous.top - next.top;
+        if (!deltaY) return;
+
+        child.style.transition = 'none';
+        child.style.transform = `translateY(${deltaY}px)`;
+        child.getBoundingClientRect();
+        child.style.transition = 'transform 180ms ease, opacity 160ms ease, border-color 160ms ease, background-color 160ms ease';
+        child.style.transform = '';
+      });
+    }
+
+    function getCameraDisplayName(cameraView) {
+      return cameraView.name || `Camera ${cameraView.id}`;
+    }
+
+    function styleCameraListRow(element) {
+      element.style.position = 'relative';
+      element.style.padding = '4px 8px';
+      element.style.border = '1px solid rgba(0, 255, 102, 0.45)';
+      element.style.background = 'rgba(0, 0, 0, 0.42)';
+      element.style.transition = 'transform 160ms ease, opacity 160ms ease, border-color 160ms ease, background-color 160ms ease';
+      element.style.userSelect = 'none';
+    }
+
+    function styleCameraPreviewPopup(popup) {
+      popup.style.position = 'fixed';
+      popup.style.right = '16px';
+      popup.style.bottom = '72px';
+      popup.style.width = 'min(280px, calc(100vw - 32px))';
+      popup.style.aspectRatio = '16 / 9';
+      popup.style.border = '1px solid #00ff66';
+      popup.style.background = '#000';
+      popup.style.boxShadow = '0 0 18px rgba(0, 255, 102, 0.45)';
+      popup.style.zIndex = '9999';
+      popup.style.overflow = 'hidden';
+      popup.style.pointerEvents = 'none';
+    }
+
+    function createPreviewVideo(chatDocument, stream, className = '') {
+      const video = chatDocument.createElement('video');
+      video.className = className;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.muted = true;
+      video.srcObject = stream;
+      video.style.position = 'absolute';
+      video.style.inset = '0';
+      video.style.width = '100%';
+      video.style.height = '100%';
+      video.style.objectFit = 'cover';
+      return video;
+    }
+
+    function showCameraPreviewPopup(chatDocument, cameraView) {
+      hideCameraPreviewPopup(chatDocument);
+
+      const popup = chatDocument.createElement('div');
+      popup.dataset.cameraPreviewPopup = String(cameraView.id);
+      styleCameraPreviewPopup(popup);
+      popup.style.opacity = String(cameraView.opacity);
+      popup.style.mixBlendMode = cameraView.blendMode;
+
+      const base = createPreviewVideo(chatDocument, cameraView.stream);
+      const invert = createPreviewVideo(chatDocument, cameraView.stream);
+      const hueshift = createPreviewVideo(chatDocument, cameraView.stream);
+      const color = chatDocument.createElement('div');
+
+      [invert, hueshift, color].forEach((node) => {
+        node.style.position = 'absolute';
+        node.style.inset = '0';
+        node.style.width = '100%';
+        node.style.height = '100%';
+        node.style.pointerEvents = 'none';
+        node.style.display = 'none';
+      });
+
+      invert.style.objectFit = 'cover';
+      hueshift.style.objectFit = 'cover';
+      invert.style.filter = 'invert(1)';
+      hueshift.style.animation = 'cameraHueShift 8s linear infinite';
+
+      const { colorState } = cameraView;
+      if (colorState.invert) invert.style.display = 'block';
+      if (colorState.hueshift) hueshift.style.display = 'block';
+      if (colorState.color) {
+        color.style.display = 'block';
+        color.style.backgroundColor = colorState.color;
+      }
+      invert.style.mixBlendMode = colorState.blendModes.invert;
+      hueshift.style.mixBlendMode = colorState.blendModes.hueshift;
+      color.style.mixBlendMode = colorState.blendModes.color;
+
+      const label = chatDocument.createElement('div');
+      label.textContent = getCameraDisplayName(cameraView);
+      label.style.position = 'absolute';
+      label.style.left = '8px';
+      label.style.bottom = '6px';
+      label.style.padding = '2px 6px';
+      label.style.background = 'rgba(0, 0, 0, 0.72)';
+      label.style.color = '#00ff66';
+      label.style.font = '12px "Courier New", Courier, monospace';
+
+      popup.appendChild(base);
+      popup.appendChild(invert);
+      popup.appendChild(hueshift);
+      popup.appendChild(color);
+      popup.appendChild(label);
+      chatDocument.body.appendChild(popup);
+
+      [base, invert, hueshift].forEach((video) => {
+        try { video.play(); } catch (error) {}
+      });
+    }
+
+    function hideCameraPreviewPopup(chatDocument) {
+      chatDocument.querySelectorAll('[data-camera-preview-popup]').forEach((popup) => popup.remove());
+    }
+
+    function ensureCameraPreviewPopupStyles(chatDocument) {
+      if (chatDocument.getElementById('camera-preview-popup-styles')) return;
+      const style = chatDocument.createElement('style');
+      style.id = 'camera-preview-popup-styles';
+      style.textContent = '@keyframes cameraHueShift { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }';
+      chatDocument.head.appendChild(style);
+    }
+
+    function createCameraMoveButton(chatDocument, label, title, onClick) {
+      const button = chatDocument.createElement('button');
+      button.type = 'button';
+      button.textContent = label;
+      button.title = title;
+      button.style.width = '22px';
+      button.style.height = '16px';
+      button.style.display = 'inline-flex';
+      button.style.alignItems = 'center';
+      button.style.justifyContent = 'center';
+      button.style.border = '1px solid rgba(0, 255, 102, 0.55)';
+      button.style.background = 'rgba(0, 0, 0, 0.6)';
+      button.style.color = '#00ff66';
+      button.style.font = '10px "Courier New", Courier, monospace';
+      button.style.lineHeight = '1';
+      button.style.padding = '0';
+      button.style.cursor = 'pointer';
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!button.disabled) onClick();
+      });
+      return button;
+    }
+
+    function createCameraListItem(chatDocument, cameraView) {
+      const row = chatDocument.createElement('span');
+      row.className = 'helpItem';
+      row.dataset.cameraId = String(cameraView.id);
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+      row.style.gap = '8px';
+      row.style.width = 'fit-content';
+      row.style.maxWidth = '100%';
+      styleCameraListRow(row);
+
+      const grip = chatDocument.createElement('span');
+      grip.textContent = '⋮⋮';
+      grip.title = 'Drag to reorder';
+      grip.style.opacity = '0.75';
+      grip.style.letterSpacing = '-2px';
+      grip.style.cursor = 'grab';
+      grip.style.flex = '0 0 auto';
+
+      const controls = chatDocument.createElement('span');
+      controls.style.display = 'inline-flex';
+      controls.style.flexDirection = 'column';
+      controls.style.gap = '1px';
+      controls.style.flex = '0 0 auto';
+
+      const upButton = createCameraMoveButton(chatDocument, '▲', 'Move up in stack', () => {
+        const help = row.parentElement;
+        if (!help) return;
+        animateCameraListReorder(help, () => {
+          if (moveCameraView(cameraView, 1)) {
+            renderCameraListRows(chatDocument, help);
+          }
+        });
+      });
+
+      const downButton = createCameraMoveButton(chatDocument, '▼', 'Move down in stack', () => {
+        const help = row.parentElement;
+        if (!help) return;
+        animateCameraListReorder(help, () => {
+          if (moveCameraView(cameraView, -1)) {
+            renderCameraListRows(chatDocument, help);
+          }
+        });
+      });
+
+      if (cameraViews.indexOf(cameraView) === cameraViews.length - 1) {
+        upButton.disabled = true;
+        upButton.style.opacity = '0.35';
+      }
+      if (cameraViews.indexOf(cameraView) === 0) {
+        downButton.disabled = true;
+        downButton.style.opacity = '0.35';
+      }
+
+      controls.appendChild(upButton);
+      controls.appendChild(downButton);
+
+      const link = chatDocument.createElement('a');
+      link.href = '#';
+      link.style.color = 'inherit';
+      link.style.textDecoration = 'none';
+      link.style.minWidth = '0';
+
+      const nameWrap = chatDocument.createElement('span');
+      nameWrap.style.display = 'inline-flex';
+      nameWrap.style.alignItems = 'center';
+      nameWrap.style.gap = '4px';
+
+      const nameSpan = chatDocument.createElement('span');
+      nameSpan.className = 'helpCommandName';
+      nameSpan.textContent = getCameraDisplayName(cameraView);
+
+      const descSpan = chatDocument.createElement('span');
+      descSpan.className = 'helpCommandDesc';
+      descSpan.textContent = `- ${getCameraStateSummary(cameraView)}`;
+
+      const renameButton = chatDocument.createElement('button');
+      renameButton.type = 'button';
+      renameButton.textContent = '✏️';
+      renameButton.title = `Rename ${getCameraDisplayName(cameraView)}`;
+      renameButton.style.border = '0';
+      renameButton.style.background = 'transparent';
+      renameButton.style.color = 'inherit';
+      renameButton.style.font = 'inherit';
+      renameButton.style.cursor = 'pointer';
+      renameButton.style.padding = '0 2px';
+
+      nameWrap.appendChild(nameSpan);
+      nameWrap.appendChild(renameButton);
+      link.appendChild(nameWrap);
+      link.appendChild(descSpan);
+
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        setActiveCameraView(cameraView);
+        reportCameraCommand('/camera list', `${getCameraDisplayName(cameraView)} selected for /color and /camera opacity commands`);
+      });
+
+      renameButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const nextName = window.prompt(`Rename ${getCameraDisplayName(cameraView)}`, getCameraDisplayName(cameraView));
+        if (!nextName || !nextName.trim()) return;
+        cameraView.name = nextName.trim();
+        nameSpan.textContent = getCameraDisplayName(cameraView);
+        renameButton.title = `Rename ${getCameraDisplayName(cameraView)}`;
+        reportCameraCommand('/camera list', `Camera ${cameraView.id} renamed to ${getCameraDisplayName(cameraView)}`);
+      });
+
+      row.addEventListener('mouseenter', () => {
+        ensureCameraPreviewPopupStyles(chatDocument);
+        showCameraPreviewPopup(chatDocument, cameraView);
+      });
+
+      row.addEventListener('mouseleave', () => {
+        hideCameraPreviewPopup(chatDocument);
+      });
+
+      row.appendChild(controls);
+      row.appendChild(link);
+      return row;
+    }
+
+    function renderCameraListRows(chatDocument, help) {
+      help.innerHTML = '';
+      cameraViews.slice().reverse().forEach((cameraView) => {
+        help.appendChild(createCameraListItem(chatDocument, cameraView));
+      });
+    }
+
+    function showCameraListPanel() {
+      const chatDocument = chatSandboxFrame.contentDocument;
+      if (!chatDocument) {
+        reportCameraCommand('/camera list', cameraViews.length ? cameraViews.map((view) => `Camera ${view.id}: ${getCameraStateSummary(view)}`).join('\n') : 'No camera views stacked.');
+        return;
+      }
+
+      const messages = chatDocument.getElementById('messages');
+      if (!messages) {
+        reportCameraCommand('/camera list', cameraViews.length ? cameraViews.map((view) => `Camera ${view.id}: ${getCameraStateSummary(view)}`).join('\n') : 'No camera views stacked.');
+        return;
+      }
+
+      const message = chatDocument.createElement('div');
+      message.className = 'message';
+      message.dataset.role = 'system';
+
+      const row = chatDocument.createElement('div');
+      row.className = 'messageRow';
+
+      const textWrap = chatDocument.createElement('div');
+      textWrap.className = 'messageText';
+
+      const title = chatDocument.createElement('div');
+      const strong = chatDocument.createElement('strong');
+      strong.textContent = 'Camera stack...';
+      title.appendChild(strong);
+      textWrap.appendChild(title);
+
+      const help = chatDocument.createElement('div');
+      help.className = 'helpList';
+
+      if (!cameraViews.length) {
+        const empty = chatDocument.createElement('div');
+        empty.className = 'helpItem';
+        empty.textContent = 'No camera views stacked. Use /camera new, then enable the camera.';
+        help.appendChild(empty);
+      } else {
+        renderCameraListRows(chatDocument, help);
+      }
+
+      textWrap.appendChild(help);
+      row.appendChild(textWrap);
+      message.appendChild(row);
+      messages.appendChild(message);
+      scrollChatToBottom(chatDocument);
+    }
+
+    function createCameraBlendModeSelect(chatDocument, cameraView) {
+      const label = chatDocument.createElement('label');
+      label.style.display = 'grid';
+      label.style.gridTemplateColumns = '90px minmax(0, 1fr)';
+      label.style.gap = '8px';
+      label.style.alignItems = 'center';
+      label.style.margin = '6px 0';
+
+      const text = chatDocument.createElement('span');
+      text.textContent = `Camera ${cameraView.id}`;
+
+      const select = chatDocument.createElement('select');
+      select.dataset.cameraBlendModeId = String(cameraView.id);
+      select.style.width = '100%';
+      select.style.font = 'inherit';
+      select.style.color = '#000';
+      select.style.background = '#9e9e9e';
+      select.style.border = '1px solid #000';
+      select.style.borderRadius = '0';
+      select.style.padding = '4px 6px';
+
+      BLEND_MODES.forEach((mode) => {
+        const option = chatDocument.createElement('option');
+        option.value = mode;
+        option.textContent = mode;
+        option.selected = cameraView.blendMode === mode;
+        select.appendChild(option);
+      });
+
+      select.addEventListener('change', () => {
+        const blendMode = normalizeBlendMode(select.value) || 'normal';
+        cameraView.blendMode = blendMode;
+        cameraView.root.style.mixBlendMode = blendMode;
+        reportCameraCommand('/camera blendmode', `Camera ${cameraView.id} blend mode: ${blendMode}`);
+      });
+
+      label.appendChild(text);
+      label.appendChild(select);
+      return label;
+    }
+
+    function showCameraBlendModePanel() {
+      const fallbackMessage = cameraViews.length
+        ? cameraViews.map((view) => `Camera ${view.id}: ${view.blendMode}`).join('\n')
+        : 'No camera views stacked.';
+      const chatDocument = chatSandboxFrame.contentDocument;
+      if (!chatDocument) {
+        reportCameraCommand('/camera blendmode', fallbackMessage);
+        return;
+      }
+
+      const messages = chatDocument.getElementById('messages');
+      if (!messages) {
+        reportCameraCommand('/camera blendmode', fallbackMessage);
+        return;
+      }
+
+      const message = chatDocument.createElement('div');
+      message.className = 'message';
+      message.dataset.role = 'system';
+
+      const row = chatDocument.createElement('div');
+      row.className = 'messageRow';
+
+      const textWrap = chatDocument.createElement('div');
+      textWrap.className = 'messageText';
+
+      const title = chatDocument.createElement('div');
+      const strong = chatDocument.createElement('strong');
+      strong.textContent = 'Camera blend modes...';
+      title.appendChild(strong);
+      textWrap.appendChild(title);
+
+      const help = chatDocument.createElement('div');
+      help.className = 'helpList';
+
+      if (!cameraViews.length) {
+        const empty = chatDocument.createElement('div');
+        empty.className = 'helpItem';
+        empty.textContent = 'No camera views stacked. Use /camera new, then enable the camera.';
+        help.appendChild(empty);
+      } else {
+        cameraViews.slice().reverse().forEach((cameraView) => {
+          help.appendChild(createCameraBlendModeSelect(chatDocument, cameraView));
+        });
+      }
+
+      textWrap.appendChild(help);
+      row.appendChild(textWrap);
+      message.appendChild(row);
+      messages.appendChild(message);
+      scrollChatToBottom(chatDocument);
+    }
+
+    async function handleCameraCommand(rawCommand) {
+      const value = String(rawCommand || '').trim().slice('/camera'.length).trim().toLowerCase();
+
+      if (value === 'new') {
+        if (cameraViews.length > 0) {
+          await stackNewCameraViewFromCommand();
+          return true;
+        }
+
+        await createFirstCameraViewFromCommand();
+        return true;
+      }
+
+      if (value === 'list' || !value) {
+        showCameraListPanel();
+        return true;
+      }
+
+      if (value === 'blendmode') {
+        reportCameraCommand('/camera blendmode', cameraViews.length ? 'Select a blend mode for each stacked camera.' : 'No camera views stacked.');
+        showCameraBlendModePanel();
+        return true;
+      }
+
+      if (value === 'opacity' || value.startsWith('opacity ')) {
+        const opacityValue = Number(value.slice('opacity'.length).trim());
+        if (!activeCameraView) {
+          reportCameraCommand('/camera opacity', 'No camera selected. Use /camera new, then enable the camera.');
+          return true;
+        }
+        if (!Number.isFinite(opacityValue) || opacityValue < 0 || opacityValue > 1) {
+          reportCameraCommand('/camera opacity', 'Usage: /camera opacity [0-1]');
+          return true;
+        }
+        activeCameraView.opacity = opacityValue;
+        activeCameraView.root.style.opacity = String(opacityValue);
+        reportCameraCommand('/camera opacity', `Camera ${activeCameraView.id} opacity: ${opacityValue}`);
+        return true;
+      }
+
+      reportCameraCommand('/camera', 'Usage: /camera new, /camera list, /camera blendmode, or /camera opacity [0-1]');
+      return true;
+    }
+
+    function handleColorCommand(rawCommand) {
+      const cameraView = activeCameraView;
+      const colorState = cameraView ? cameraView.colorState : null;
+      const value = String(rawCommand || '').trim().slice('/color'.length).trim();
+      const normalized = value.toLowerCase();
+
+      if (!cameraView || !colorState) {
+        reportCameraCommand('/color', 'No camera views yet. Use /camera new, then enable the camera.');
+        return true;
+      }
+
+      if (!value) {
+        reportCameraCommand('/color', getColorStatusMessage());
+        return true;
+      }
+
+      if (normalized === 'invert') {
+        colorState.invert = !colorState.invert;
+        syncCameraEffects(cameraView);
+        reportCameraCommand('/color invert', `Camera ${cameraView.id} /color invert ${getEnabledLabel(colorState.invert)}`);
+        return true;
+      }
+
+      if (normalized === 'hueshift') {
+        colorState.hueshift = !colorState.hueshift;
+        syncCameraEffects(cameraView);
+        reportCameraCommand('/color hueshift', `Camera ${cameraView.id} /color hueshift ${getEnabledLabel(colorState.hueshift)}`);
+        return true;
+      }
+
+      if (normalized === 'blendmode') {
+        reportCameraCommand('/color blendmode', 'Select blend modes for the invert, hueshift, and color filter layers.');
+        showBlendModePanel();
+        return true;
+      }
+
+      if (normalized.startsWith('blendmode ')) {
+        const [, layerName, modeName] = normalized.match(/^blendmode\s+(invert|hueshift|color)\s+(.+)$/) || [];
+        const blendMode = normalizeBlendMode(modeName);
+        if (!layerName || !blendMode) {
+          reportCameraCommand('/color blendmode', 'Usage: /color blendmode [invert|hueshift|color] [blend-mode]');
+          return true;
+        }
+        colorState.blendModes[layerName] = blendMode;
+        syncCameraEffects(cameraView);
+        reportCameraCommand('/color blendmode', `Camera ${cameraView.id} ${layerName} blend mode: ${blendMode}`);
+        return true;
+      }
+
+      if (normalized === 'reset') {
+        resetCameraEffects(cameraView);
+        reportCameraCommand('/color reset', `/color reset executed: camera ${cameraView.id} colors normal`);
+        return true;
+      }
+
+      const colorValue = normalizeColorValue(value);
+      if (colorValue) {
+        colorState.color = colorValue;
+        syncCameraEffects(cameraView);
+        reportCameraCommand('/color', `Camera ${cameraView.id} color filter: ${colorValue}`);
+        return true;
+      }
+
+      reportCameraCommand('/color', `Unknown color command: ${value}\n${getColorStatusMessage()}`);
+      return true;
+    }
+
+    async function runDevStartupSequence() {
+      const sequence = [
+        '/camera new',
+        '/color red',
+        '/camera new',
+        '/color green',
+        '/camera new',
+        '/color blue',
+        '/camera list'
+      ];
+
+      try {
+        suppressCommandOutput = true;
+        for (const command of sequence.slice(0, -1)) {
+          if (command.startsWith('/camera')) {
+            await handleCameraCommand(command);
+          } else if (command.startsWith('/color')) {
+            handleColorCommand(command);
+          }
+        }
+      } finally {
+        suppressCommandOutput = false;
+      }
+
+      await handleCameraCommand(sequence.at(-1));
+    }
+
+    function handleDevCommand(rawCommand) {
+      const value = String(rawCommand || '').trim().slice('/dev'.length).trim().toLowerCase();
+      if (value === 'startup') {
+        runDevStartupSequence();
+        return true;
+      }
+
+      reportCameraCommand('/dev', 'Usage: /dev startup');
+      return true;
+    }
+
+    async function stackNewCameraViewFromCommand() {
+      try {
+        const stream = await requestHighestResolutionCameraStream();
+        const cameraView = await createCameraView(stream);
+        cameraButton.hidden = true;
+        cameraButton.disabled = false;
+        cameraButton.textContent = 'Enable Camera';
+        cameraButton.removeAttribute('data-state');
+        reportCameraCommand('/camera new', `/camera new executed: camera ${cameraView.id} stacked on top`);
+      } catch (error) {
+        console.error('Unable to stack a new camera view:', error);
+        if (activeCameraView && activeCameraView.stream) {
+          const cameraView = await createCameraView(activeCameraView.stream);
+          cameraButton.hidden = true;
+          cameraButton.disabled = false;
+          cameraButton.textContent = 'Enable Camera';
+          cameraButton.removeAttribute('data-state');
+          reportCameraCommand('/camera new', `/camera new executed: camera ${cameraView.id} stacked on top using the active camera stream`);
+          return;
+        }
+        cameraButton.hidden = false;
+        cameraButton.disabled = false;
+        cameraButton.dataset.state = 'error';
+        cameraButton.textContent = 'Enable Camera';
+        reportCameraCommand('/camera new', 'Camera permission needs a button click. Enable camera button visible.');
+      }
+    }
+
+    async function canCreateCameraWithoutButton() {
+      if (!navigator.permissions || typeof navigator.permissions.query !== 'function') {
+        return false;
+      }
+
+      try {
+        const permission = await navigator.permissions.query({ name: 'camera' });
+        return permission && permission.state === 'granted';
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function showEnableCameraButton(message = '/camera new executed: enable camera button visible') {
+      cameraButton.hidden = false;
+      cameraButton.disabled = false;
+      if (cameraButton.dataset.state !== 'enabled') {
+        cameraButton.textContent = 'Enable Camera';
+        cameraButton.removeAttribute('data-state');
+      }
+      reportCameraCommand('/camera new', message);
+    }
+
+    async function createFirstCameraViewFromCommand() {
+      if (await canCreateCameraWithoutButton()) {
+        try {
+          const stream = await requestHighestResolutionCameraStream();
+          const cameraView = await createCameraView(stream);
+          cameraButton.hidden = true;
+          cameraButton.disabled = false;
+          cameraButton.textContent = 'Enable Camera';
+          cameraButton.removeAttribute('data-state');
+          reportCameraCommand('/camera new', `/camera new executed: camera ${cameraView.id} created`);
+          return;
+        } catch (error) {
+          console.error('Unable to create camera view from granted permission:', error);
+        }
+      }
+
+      showEnableCameraButton();
+    }
+
+    async function enableCamera() {
+      if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+        cameraButton.dataset.state = 'error';
+        cameraButton.textContent = 'Camera Unavailable';
+        return;
+      }
+
+      cameraButton.disabled = true;
+      cameraButton.textContent = 'Requesting Camera';
+
+      try {
+        const stream = await requestHighestResolutionCameraStream();
+        const cameraView = await createCameraView(stream);
+        cameraButton.dataset.state = 'enabled';
+        cameraButton.textContent = `Camera ${cameraView.id} Enabled`;
+        cameraButton.hidden = true;
+      } catch (error) {
+        console.error('Camera access failed:', error);
+        cameraButton.dataset.state = 'error';
+        cameraButton.textContent = 'Camera Denied';
+      } finally {
+        cameraButton.disabled = false;
+      }
+    }
+
+    cameraButton.addEventListener('click', enableCamera);
+
+    chatHoverZone.addEventListener('mouseenter', () => {
+      if (chatPinnedOpen || chatSandboxVisible) return;
+      openChatOverlay({ focus: false, preview: true });
+    });
+
+    chatHoverZone.addEventListener('mouseleave', () => {
+      closeChatOverlayPreview();
+    });
+
+    chatHoverZone.addEventListener('click', () => {
+      chatPinnedOpen = true;
+      chatHoverPreviewOpen = false;
+      chatSandboxVisible = true;
+      syncChatSandboxOverlayState();
+      postToChatSandbox({ type: 'chatSandboxOpen', focus: true });
+    });
+
+    chatSandboxFrame.addEventListener('load', () => {
+      registerCameraExperimentCommands();
+      openChatOverlay({ focus: false, pin: true });
+      syncChatSandboxOverlayState();
+    });
+
+    window.addEventListener('message', async (event) => {
+      if (event.source !== chatSandboxFrame.contentWindow || !event.data) return;
+
+      if (event.data.type === 'chatSandboxState') {
+        chatSandboxVisible = !!event.data.visible || !!event.data.valuePickerActive;
+        if (!chatSandboxVisible) {
+          if (closingHoverPreview) {
+            closingHoverPreview = false;
+          } else {
+            chatPinnedOpen = false;
+          }
+          chatHoverPreviewOpen = false;
+        }
+        syncChatSandboxOverlayState();
+        registerCameraExperimentCommands();
+        return;
+      }
+
+      if (event.data.type === 'chatSandboxDvdState') {
+        chatSandboxDvdActive = !!event.data.active;
+        syncChatSandboxOverlayState();
+        registerCameraExperimentCommands();
+        return;
+      }
+
+      if (event.data.type === 'pageChatExecute') {
+        const commandName = String(event.data.command || '').trim().toLowerCase();
+        const rawCommand = typeof event.data.raw === 'string' ? event.data.raw.trim() : '';
+        if (commandName === '/color') {
+          handleColorCommand(rawCommand);
+          return;
+        }
+        if (commandName === '/camera') {
+          await handleCameraCommand(rawCommand);
+          return;
+        }
+        if (commandName === '/dev') {
+          handleDevCommand(rawCommand);
+        }
+      }
+    });
+
+    window.addEventListener('keydown', (event) => {
+      const activeElement = document.activeElement;
+      const activeTag = activeElement && activeElement.tagName ? activeElement.tagName.toUpperCase() : '';
+      const isTextEntry = activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeElement?.isContentEditable;
+
+      if (event.key === '/' && !isTextEntry) {
+        event.preventDefault();
+        openChatOverlay({ focus: true, seedSlash: true });
+      }
+    });
+  </script>
+</body>
+</html>

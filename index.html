@@ -652,6 +652,7 @@
       }, true);
 
       frameDocument.addEventListener('keydown', handleShellSlashKeydown, true);
+      frameDocument.addEventListener('keydown', handleShellFullscreenKeydown, true);
     }
 
     function isTextEntryTarget(target) {
@@ -661,6 +662,34 @@
         tagName === 'input' ||
         tagName === 'textarea' ||
         tagName === 'select';
+    }
+
+    async function requestContentFrameFullscreen() {
+      if (!contentFrame || typeof contentFrame.requestFullscreen !== 'function') return;
+      try {
+        await contentFrame.requestFullscreen();
+      } catch (error) {
+        console.warn('Unable to fullscreen content iframe:', error);
+      }
+    }
+
+    function handleShellFullscreenKeydown(event) {
+      const fromChatSandboxFrame = event.target && event.target.ownerDocument === chatSandboxFrame.contentDocument;
+      if (
+        String(event.key || '').toLowerCase() !== 'f' ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        chatSandboxVisible ||
+        fromChatSandboxFrame ||
+        isTextEntryTarget(event.target)
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      requestContentFrameFullscreen();
     }
 
     function handleShellSlashKeydown(event) {
@@ -685,9 +714,11 @@
 
       frameDocument.documentElement.dataset.indexShellSlashPatch = 'true';
       frameDocument.addEventListener('keydown', handleShellSlashKeydown, true);
+      frameDocument.addEventListener('keydown', handleShellFullscreenKeydown, true);
     }
 
     window.addEventListener('keydown', handleShellSlashKeydown, true);
+    window.addEventListener('keydown', handleShellFullscreenKeydown, true);
 
     overlayContainer.addEventListener('mouseenter', () => {
       navHovering = true;
