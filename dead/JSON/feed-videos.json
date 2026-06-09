@@ -1,6 +1,6 @@
 {
   "title": "Channel Feed",
-  "generated_at": "2026-06-08T04:43:57.273489Z",
+  "generated_at": "2026-06-09T02:12:24.105944Z",
   "channels": [
     {
       "url": "https://www.youtube.com/@Honestly_Thomas/videos",
@@ -21,12 +21,636 @@
   ],
   "entries": [
     {
+      "id": "ihobueFsDvw",
+      "url": "https://www.youtube.com/watch?v=ihobueFsDvw",
+      "title": "My Website Is Deader Than Your Website",
+      "description": "To all theinternetisdeads out there: my website is the deader-est.\n\nhttps://theinternetisdead.org\n\nDownload the entire site:\nhttps://main.theinternetisdead.zip/\n\n#HonestlyThomas #TheInternetIsDead #GlitchArt #DeadInternet #HauntedInternet #WebArt #InternetArt",
+      "duration": 133.0,
+      "view_count": 1,
+      "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83d\udc80theinternetisdead\ud83e\udea6",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20260609",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/ihobueFsDvw/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/ihobueFsDvw/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
+      "id": "H2dtxPDJYsU",
+      "url": "https://www.youtube.com/watch?v=H2dtxPDJYsU",
+      "title": "Walking + outside * again = content?",
+      "description": "Walking outside again, because apparently that counts as content now.\n\nA tiny field-recording wander with microphones clipped to my glasses, gravel underfoot, trees doing tree things, and the usual suspicion that reality is just another export queue. Nothing huge happens here. That might be the point.\n\nSometimes the archive needs proof that I went outside, touched sunlight, and returned with footage.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #WalkingVideo #OutsideAgain #FieldRecording #GlitchArt #Vlog #CanadianYouTube #HauntedInternet #DigitalArchive",
+      "duration": 182.0,
+      "view_count": 4,
+      "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83d\udc80theinternetisdead\ud83e\udea6",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20260608",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/H2dtxPDJYsU/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/H2dtxPDJYsU/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
+      "id": "TWUqkadqUvs",
+      "url": "https://www.youtube.com/watch?v=TWUqkadqUvs",
+      "title": "Bite Sized Campfire Nuggets",
+      "description": "#honestlythomas #theinternetisdead",
+      "duration": 0,
+      "view_count": 26,
+      "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83d\udc80theinternetisdead\ud83e\udea6",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20260608",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/TWUqkadqUvs/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/TWUqkadqUvs/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
       "id": "zVxtZXE6-9Y",
       "url": "https://www.youtube.com/watch?v=zVxtZXE6-9Y",
       "title": "Boots and Cats (Shrek 2 Party CD)",
-      "description": "",
+      "description": "A recovered party artifact from the swamp dimension.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #Shrek #PussInBoots #BootsAndCats #MemeVideo #Shorts #AbsurdHumor #InternetNostalgia",
       "duration": 0,
-      "view_count": 371,
+      "view_count": 1506,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -233,8 +857,8 @@
       "url": "https://www.youtube.com/watch?v=TdmJachMIS0",
       "title": "Stick Figure - Smoking Love (Smoke Session Music Video)",
       "description": "A laid-back smoke session music video set to \u201cSmoking Love\u201d by Stick Figure.\n\nThis video is all about zoning out, letting the smoke curl through the room, and vibing with that warm reggae haze. Since the artist allows the track to be used in full on YouTube, I turned it into a full smoke session visual, because apparently the internet still lets nice things happen once in a while. \ud83c\udf3f\ud83c\udfb6\n\nMusic: Stick Figure - Smoking Love\nVideo/Edit: Honestly Thomas\n\nFor fans of reggae, chill sessions, hazy visuals, smoke-friendly music videos, and sitting with the vibe instead of pretending life is organized.\n\n#HonestlyThomas #TheInternetIsDead #StickFigure #SmokingLove #Reggae #SmokeSession #MusicVideo #ReggaeVibes #ChillMusic #StonerMusic",
-      "duration": 218.0,
-      "view_count": 0,
+      "duration": 217,
+      "view_count": 4,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -482,7 +1106,7 @@
       "title": "10 Years of YouTube Uploads in 3 Minutes (SMASH CUT)",
       "description": "10 years of videos uploaded to YouTube, compressed into one 3 minute 38 second smash cut.\n\nThis video cycles through 457 thumbnails from my archive to emphasize the scale of what I\u2019ve created over the years. Every thumbnail is a tiny fossil from some upload, experiment, joke, song, glitch, breakdown, idea, or weird little broadcast I threw onto the internet.\n\nIt\u2019s not just a montage. It\u2019s a visual count of time, effort, obsession, survival, and whatever else this channel has been mutating into.\n\n#HonestlyThomas #TheInternetIsDead #YouTubeArchive #SmashCut #VideoArt #GlitchArt #DigitalArchive #digitaldada",
       "duration": 219.0,
-      "view_count": 4,
+      "view_count": 31,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -690,7 +1314,7 @@
       "title": "My Message in a Bottle for The Internet",
       "description": "I made this as a message in a bottle for The Archive.\n\nNot because I think the internet is going to save us. Not because I think the platforms are suddenly going to grow a soul and stop grinding everyone into engagement powder. But because somewhere under all the rot, automation, loneliness, dead links, AI sludge, and algorithmic neglect, there are still people trying to find each other.\n\nThis is about looking for life and community in the face of structural abandonment.\n\nA little field note from the forest.\nA little signal flare from the weird web.\nA little proof that I was here, thinking about all of this, before the machine filed it under \u201ccontent.\u201d\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #TheArchive #DeadInternetTheory #HauntedInternet #InternetArt #DigitalDada",
       "duration": 353.0,
-      "view_count": 15,
+      "view_count": 17,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1106,7 +1730,7 @@
       "title": "Tektite - Get Up And Do It (Official Lyric Video)",
       "description": "An unreleased Tektite track from 2017, pulled out of the archive and left raw on purpose.\n\n\u201cGet Up And Do It\u201d is a self-motivation transmission from an earlier version of me \u2014 back when the internet still felt like a place you could build something weird in, not just a haunted mall full of optimized thumbnails and dead-eyed engagement sludge.\n\nThis one is about discipline, doubt, persistence, haters, creative hunger, and trying to keep moving when the maze keeps rearranging itself. It is about writing anyway. Making anyway. Failing anyway. Getting back up anyway.\n\nIt is rough around the edges because that is where the fingerprints are.\n\nA recovered signal from 2017.\nTektite before the dust settled.\nHonestly Thomas before the internet finished decomposing.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #Tektite #Rap #ExperimentalRap #LyricVideo #UnreleasedMusic #InternetRap #InternetNostalgia #HauntedInternet",
       "duration": 294.0,
-      "view_count": 8,
+      "view_count": 9,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1314,7 +1938,7 @@
       "title": "Say Something, I\u2019m Giving Up On Views",
       "description": "I know everyone feels alone. I know everyone is exhausted, alienated, overstimulated, and trapped in their own private version of the dead mall. That is part of the horror. The difference is that I am shouting my soul into an empty room where people treat my feelings like entertainment, noise, content, or some weird spectacle to silently consume.\n\nThis video is about what it feels like to keep making signals into a world that mostly answers with silence.\n\nNot because I need \u201cviews\u201d as a vanity metric. Views are not witness. Views are not understanding. Views are not someone doing the work to actually hear you.\n\nI feel misread, flattened, ignored, and spiritually starved by a society that keeps replacing human response with dashboards, algorithms, lazy assumptions, and dead-eyed scrolling.\n\nThis is not me begging for attention. This is me naming the difference between being watched and being witnessed.\n\n\u201cDon\u2019t push me cause I\u2019m close to the edge...\u201d Grandmaster Flash & The Furious Five, \u201cThe Message\u201d\n\n#HonestlyThomas #TheInternetIsDead #TheMessage #YouTube #VideoEssay #DigitalCulture #Loneliness #Art #AI #GlitchArt #InternetCulture",
       "duration": 218.0,
-      "view_count": 11,
+      "view_count": 12,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1522,7 +2146,7 @@
       "title": "Why I Still Call Myself A YouTuber After 20 Years",
       "description": "I grew up on YouTube before \u201cYouTuber\u201d sounded like a brand category.\n\nTo me, YouTube used to feel like a place where regular people could broadcast themselves into existence with whatever tools they had. Bad microphones, cheap cameras, laggy screen recorders, weird usernames, bedroom setups, family computers, half-formed ideas, and somehow it all still felt alive.\n\nBefore Honestly Thomas, before Tektite, before this channel became whatever haunted archive it is now, I was a kid trying to make videos under the name theEPICpie Productions. I barely knew what I was doing, but I knew I wanted to make something and put it somewhere outside of myself.\n\nThis is a reflection on why I still call myself a YouTuber, even after the word got poisoned by branding, optimization, algorithms, and the general translation of human expression. Tiny little tragedy, very normal website behavior.\n\nIt\u2019s not about fame. It\u2019s not about being a \u201ccreator\u201d in the sanitized industry sense.\n\nIt\u2019s about the original feeling: Broadcast Yourself.\n\n#HonestlyThomas #TheInternetIsDead #YouTube #OldYouTube #BroadcastYourself #YouTuber #InternetCulture #DigitalNostalgia #DeadInternetTheory",
       "duration": 166.0,
-      "view_count": 64,
+      "view_count": 65,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1730,7 +2354,7 @@
       "title": "Tektite - Alienation #theinternetisdead #undergroundrap",
       "description": "24 seconds of raw rap bars for the ones who still listen, I\u2019m trying to make art in a hostile environment. We\u2019ve all got our scars, but the name of the game now is aim for the stars.\n\nEven when the internet feels dead and everyone still trapped inside it forgot how to answer.\n\nThis is Alienation.\n\n#HonestlyThomas #TheInternetIsDead #Tektite #Alienation #UndergroundRap #RawRap #RapShorts #IndieArtist #NeurodivergentArtist #CanadianRap",
       "duration": 0,
-      "view_count": 380,
+      "view_count": 382,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2146,7 +2770,7 @@
       "title": "Tektite - Formation / Proto-Raps (2017)",
       "description": "These are my earliest, roughest recordings from 2017. Young, dumb proto-rap before I had confidence, polish, or any idea what I was doing.\n\nEverybody has their beginnings. I just chose to hide mine for almost a decade like a responsible coward with a hard drive full of evidence.\n\nThis is not a \u201clook how good I was\u201d upload. This is more like digital archaeology. A little embarrassing, a little funny, weirdly sincere, and probably important to put somewhere before the internet eats the memory entirely.\n\nTektite before Thomas really knew what Tektite was.\n\n#HonestlyThomas #TheInternetIsDead #Tektite #Rap #ExperimentalRap #InternetArchaeology #OldInternet #HauntedInternet",
       "duration": 107.0,
-      "view_count": 27,
+      "view_count": 30,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2354,7 +2978,7 @@
       "title": "Nobody Here (EMPTY ROOM VIBES)",
       "description": "An empty room with the song still playing.\n\nThis short samples \u201cNobody Here\u201d by @sunsetcorp, using it as a haunted little signal from the soft dead center of the internet. vapor, memory, loneliness, compression artifacts, and the strange feeling that someone was here a second ago.\n\nA tiny broadcast for anyone scrolling through the ruins.\n\nOriginal upload: \u201cNobody Here\u201d by @sunsetcorp on YouTube\n#HonestlyThomas #TheInternetIsDead #NobodyHere #SunsetCorp #Vaporwave #GlitchArt #DigitalArt #DeadInternet #Shorts",
       "duration": 0,
-      "view_count": 27,
+      "view_count": 28,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -5474,7 +6098,7 @@
       "title": "The Island by Michael Mitchell (Canada Is For Kids Volume 1)",
       "description": "A Canadian classic I grew up with I had to reupload because it wasn't on YouTube sharing it with all the fans!",
       "duration": 261.0,
-      "view_count": 21,
+      "view_count": 22,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -6722,7 +7346,7 @@
       "title": "YouTube Rewind 2010: Year in Review (1080p Upscaled)",
       "description": "Reuploaded because YouTube deleted or privated their own history how rude! See what the world watched on YouTube in 2010 with YouTube Rewind (1080p Upscale by \u202a@Cryptid_Memes\u202c )",
       "duration": 86.0,
-      "view_count": 2,
+      "view_count": 3,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -9263,7 +9887,7 @@
       "title": "Minecraft Movie Only The Violent Parts Until Steve",
       "description": "Until Steve becomes an atomic bomb of slapstick chaos.\n\nEdited in Clipchamp.\n\nA parody edit of the Minecraft Movie focusing only on the most intense, chaotic, and accidentally hilarious moments.\n\nThis is not a replacement for the movie. Support the official release.\n\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #Tektite #MinecraftMovie #Minecraft #ParodyEdit #MovieEdit #Gaming",
       "duration": 231.0,
-      "view_count": 8898,
+      "view_count": 8997,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -13423,7 +14047,7 @@
       "title": "Goku Dies When Namek Explodes (INTENSE)",
       "description": "Goku dies when Namek explodes, allegedly, emotionally, spiritually, and in whatever format this upload has been compressed into.\n\nA short intense Dragon Ball / Namek explosion edit because apparently childhood anime trauma still has excellent replay value. The planet is exploding, the vibes are screaming, and YouTube compression is doing its ancient ritual on the pixels.\n\nFan edit / not official.\nDragon Ball belongs to its original creators and rights holders. Support the original series/media.\n\nMore cursed web debris:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #DragonBall #Goku #Namek #FanEdit #AnimeEdit",
       "duration": 152.0,
-      "view_count": 2817,
+      "view_count": 2827,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -14463,7 +15087,7 @@
       "title": "Glitch Cyclops Vibes to A Tribe Called Quest   Digital Melatonin #weirdcore #artvibes #atcq",
       "description": "",
       "duration": 33,
-      "view_count": 1600,
+      "view_count": 1610,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -23199,7 +23823,7 @@
       "title": "Goku Admits To Krillin His Uncertainty About Cell",
       "description": "This clip starts with the usual Dragon Ball Z goofiness: Chi-Chi worrying about Gohan, Goku messing with Krillin, and a giant fish being thrown around like this is a normal warm-up before the end of the world.\n\nThen the scene shifts into something much heavier. For one of the rare moments in DBZ, Goku lets Krillin see his uncertainty about Cell and admits how much he needs everyone together right now. It is a quiet little moment of humility from someone usually treated like an unstoppable force.\n\nWhen I originally uploaded this, it felt personal. Goku carrying the weight of the world while still joking around hit me as symbolic of challenges in my own life I had not conquered yet. Funny scene, serious undertone, emotional damage hiding behind a fish. Naturally.\n\n#HonestlyThomas #TheInternetIsDead #DragonBallZ #Goku #Krillin #CellSaga #DBZ #AnimeMoment #EmotionalScene #CreatorLore #VideoArt #InternetDecay",
       "duration": 171.0,
-      "view_count": 17441,
+      "view_count": 17616,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -30271,7 +30895,7 @@
       "title": "The MOST Oldschool RuneScape Video Ever OSRS on CRT TV",
       "description": "Old School RuneScape on a CRT TV because apparently nostalgia wasn\u2019t blurry, heavy, and cursed enough already.\n\nThis is the most oldschool RuneScape video I could physically assemble without mailing myself back to 2007, eating pizza rolls, and getting scammed outside Varrock West Bank. OSRS already lives in a weird pocket dimension of memory, but running it through a CRT makes it feel like the game is being broadcast from a basement server powered by childhood and dust.\n\nA tiny digital relic.\nA medieval point-and-click ghost.\nA monitor heavy enough to win a boss fight.\n\nMore haunted internet debris:\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #OldSchoolRuneScape #OSRS #RuneScape #RetroGaming #CRTV #InternetNostalgia #OldInternet #GamingNostalgia",
       "duration": 129.0,
-      "view_count": 18,
+      "view_count": 19,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -30895,7 +31519,7 @@
       "title": "Mario 64 + Minecraft = Questionable Legality",
       "description": "Mario 64 got surgically removed from his native polygon enclosure and dropped into Minecraft like a plumber-shaped invasive species.\n\nThis is a mod that rips the rendering engine out of Mario 64 through ROM extraction and injects him into Minecraft like he always belonged there. Which he sort of does. Blocks, castles, questionable physics, emotional damage \u2014 spiritually, it checks out.\n\nPlease don\u2019t sue my butthole, Nintendo. You used to be cool.\n\nMore cursed signals:\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #Mario64 #Minecraft #RetroGaming #ModdedMinecraft #Nintendo #GlitchArt #WeirdInternet",
       "duration": 248.0,
-      "view_count": 26,
+      "view_count": 27,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -35055,7 +35679,7 @@
       "title": "Welcome to Dongle Hell (HDMI to CRT TV)",
       "description": "DIY cursed tech from the analog swamp.\n\nI tried getting HDMI onto an old CRT TV, which sounds simple until the dongle chain starts looking like a life-support system for a haunted toaster. HDMI to RCA, adapters on adapters, black and white sadness, signal loss, cable spaghetti, and the slow realization that the past does not want to be compatible with the present.\n\nThis is less of a tutorial and more of a field report from Dongle Hell.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #DongleHell #CRT #RetroTech #GlitchArt #OldInternet #DIYTech",
       "duration": 39.0,
-      "view_count": 4,
+      "view_count": 5,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -38799,7 +39423,7 @@
       "title": "Kid Pix CD ROM Chaos \u2013 Booger Girl 2005 The Definitive Edition",
       "description": "I opened the old Kid Pix portal and accidentally summoned Booger Girl 2005, which is either a lost computer lab masterpiece or evidence that children should never be given unlimited digital stickers.\n\nThis is CD-ROM chaos, educational software brain damage, and early-2000s art class energy compressed into one tiny cursed artifact. The Learning Company did not intend for this, but the dead internet preserves all things: the beautiful, the broken, and the deeply booger-adjacent.\n\nAnother recovered signal from the part of the web where creativity came preloaded on a disc and every sound effect felt like a warning.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #KidPix #OldInternet #InternetNostalgia #RetroGaming #DigitalDada #WeirdInternet",
       "duration": 108.0,
-      "view_count": 3385,
+      "view_count": 3405,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -46287,7 +46911,7 @@
       "title": "Slow Motion Polar Plunge \ud83d\udca6\ud83e\udd76 Why Did I Do This?",
       "description": "",
       "duration": 42,
-      "view_count": 1700,
+      "view_count": 1711,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -55022,7 +55646,7 @@
       "url": "https://www.youtube.com/watch?v=heQ0FPBbH7A",
       "title": "I made a watermelon keyboard theme...",
       "description": "Full-size keyboard nonsense, now in watermelon mode, because apparently even typing needed to become fruit-themed content. \ud83c\udf49\u2328\ufe0f\n\nI made a watermelon keyboard theme with neon green and pink lighting, then filmed it like a tiny desktop rave for anyone whose computer setup needs more \u201csummer snack possessed by RGB.\u201d It\u2019s stupid, bright, and honestly kind of works.\n\n#HonestlyThomas #TheInternetIsDead #WatermelonKeyboard #KeyboardTheme #RGBKeyboard #DeskSetup #TechAesthetic #WeirdTech",
-      "duration": 54.0,
+      "duration": 54,
       "view_count": 3,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
@@ -55189,6 +55813,26 @@
           "height": null
         },
         {
+          "url": "https://i.ytimg.com/vi/heQ0FPBbH7A/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLDUWb2Lrl8MjANkFgO97pfjpOnaiw",
+          "width": 168,
+          "height": 94
+        },
+        {
+          "url": "https://i.ytimg.com/vi/heQ0FPBbH7A/hqdefault.jpg?sqp=-oaymwEiCMQBEG5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLCWJDHlZljlazxMFemskux65mv79g",
+          "width": 196,
+          "height": 110
+        },
+        {
+          "url": "https://i.ytimg.com/vi/heQ0FPBbH7A/hqdefault.jpg?sqp=-oaymwEjCPYBEIoBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLCSMQcyEYCWpV6nIjPmFv0mBvtY7w",
+          "width": 246,
+          "height": 138
+        },
+        {
+          "url": "https://i.ytimg.com/vi/heQ0FPBbH7A/hqdefault.jpg?sqp=-oaymwEjCNACELwBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLDoiAe59HjRPrVeq20ODZ6iPpbo_w",
+          "width": 336,
+          "height": 188
+        },
+        {
           "url": "https://i.ytimg.com/vi_webp/heQ0FPBbH7A/hqdefault.webp",
           "width": null,
           "height": null
@@ -55215,8 +55859,8 @@
         },
         {
           "url": "https://i.ytimg.com/vi/heQ0FPBbH7A/maxresdefault.jpg",
-          "width": null,
-          "height": null
+          "width": 1920,
+          "height": 1080
         },
         {
           "url": "https://i.ytimg.com/vi_webp/heQ0FPBbH7A/maxresdefault.webp",
@@ -61887,7 +62531,7 @@
       "title": "Marty McFly \ud83d\udc3e Pug Maltese Nugget \ud83d\udcab Atomic Dog Forever",
       "description": "",
       "duration": 11,
-      "view_count": 1700,
+      "view_count": 1726,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -64590,7 +65234,7 @@
       "url": "https://www.youtube.com/watch?v=WDT5ZEKgY1c",
       "title": "Peter Tosh \u201cLegalize It\u201d Tribute - Chill Smoke Session 420 Vibes",
       "description": "Questionable employability, but immaculate vibes.\n\nA tiny Peter Tosh \u201cLegalize It\u201d tribute / chill smoke session from the archive, preserved here because apparently I decided my YouTube channel needed historical evidence.\n\nNot official. Just a tribute / fan thing.\nSupport Peter Tosh and the original music.\n\nMore strange personal archive debris:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #PeterTosh #LegalizeIt #Reggae #420Vibes #Archive",
-      "duration": 40.0,
+      "duration": 40,
       "view_count": 2,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
@@ -68212,7 +68856,7 @@
       "title": "fake Jimi Hendrix on a monster can (official music video)",
       "description": "",
       "duration": 12,
-      "view_count": 1400,
+      "view_count": 1491,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -68420,7 +69064,7 @@
       "title": "existential singing",
       "description": "",
       "duration": 21,
-      "view_count": 1200,
+      "view_count": 1283,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -72580,7 +73224,7 @@
       "title": "something wrong with my laptop",
       "description": "Rafael Rozendaal Website\n\"brokenself.com\"",
       "duration": 13,
-      "view_count": 1700,
+      "view_count": 1741,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -77780,7 +78424,7 @@
       "title": "And now I am the dead. Bleh.",
       "description": "TeamFourStar TFS DBZA",
       "duration": 3.0,
-      "view_count": 1626,
+      "view_count": 1627,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -79164,11 +79808,6 @@
           "height": null
         },
         {
-          "url": "https://i.ytimg.com/vi/-b8GMaU1QQk/default.jpg?sqp=-oaymwEkCHgQWvKriqkDGvABAfgB_gmAAtAFigIMCAAQARhKIGUoMjAP&rs=AOn4CLAGVOIEODincKBm-rFXU34xZIQNEQ",
-          "width": 120,
-          "height": 90
-        },
-        {
           "url": "https://i.ytimg.com/vi_webp/-b8GMaU1QQk/default.webp",
           "width": null,
           "height": null
@@ -79177,11 +79816,6 @@
           "url": "https://i.ytimg.com/vi/-b8GMaU1QQk/mqdefault.jpg",
           "width": null,
           "height": null
-        },
-        {
-          "url": "https://i.ytimg.com/vi/-b8GMaU1QQk/mqdefault.jpg?sqp=-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEogZSgyMA8=&rs=AOn4CLCXsWE8oQARVma2bwwP45nj-4Xl4g",
-          "width": 320,
-          "height": 180
         },
         {
           "url": "https://i.ytimg.com/vi_webp/-b8GMaU1QQk/mqdefault.webp",
@@ -79204,11 +79838,6 @@
           "height": null
         },
         {
-          "url": "https://i.ytimg.com/vi/-b8GMaU1QQk/hqdefault.jpg?sqp=-oaymwEmCOADEOgC8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEogZSgyMA8=&rs=AOn4CLA9Ghg6b7uuohNSL1t_rwBS_-RYsA",
-          "width": 480,
-          "height": 360
-        },
-        {
           "url": "https://i.ytimg.com/vi_webp/-b8GMaU1QQk/hqdefault.webp",
           "width": null,
           "height": null
@@ -79217,11 +79846,6 @@
           "url": "https://i.ytimg.com/vi/-b8GMaU1QQk/sddefault.jpg",
           "width": null,
           "height": null
-        },
-        {
-          "url": "https://i.ytimg.com/vi/-b8GMaU1QQk/sddefault.jpg?sqp=-oaymwEmCIAFEOAD8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEogZSgyMA8=&rs=AOn4CLBSFEzoNEiRFRJBcWtewDxfCh7ypQ",
-          "width": 640,
-          "height": 480
         },
         {
           "url": "https://i.ytimg.com/vi_webp/-b8GMaU1QQk/sddefault.webp",
@@ -80504,7 +81128,7 @@
       "title": "Jordan Peterson is an alien",
       "description": "#voiceai #ai #joerogan #jordanpeterson",
       "duration": 55,
-      "view_count": 1500,
+      "view_count": 1536,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -81128,7 +81752,7 @@
       "title": "Creepy Susie Story Time",
       "description": "All credit to Angus Oblong's fucked up head. #shorts",
       "duration": 58,
-      "view_count": 1000,
+      "view_count": 1008,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -83624,7 +84248,7 @@
       "title": "Morty Rapping Til' I Collapse",
       "description": "#shorts #voiceai #rickandmorty voice.ai",
       "duration": 46,
-      "view_count": 1000,
+      "view_count": 1017,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -84664,7 +85288,7 @@
       "title": "Joe Rogan Voice AI",
       "description": "#shorts spread the word, the more people that use the app the better it will get.",
       "duration": 20,
-      "view_count": 1500,
+      "view_count": 1506,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -86952,7 +87576,7 @@
       "title": "Jack Black Sings Fat by Weird Al",
       "description": "voice.ai #shorts",
       "duration": 23,
-      "view_count": 295,
+      "view_count": 297,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -87576,7 +88200,7 @@
       "title": "Become Homer Simpson - voice.ai",
       "description": "#shorts",
       "duration": 17,
-      "view_count": 1500,
+      "view_count": 1566,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -87992,7 +88616,7 @@
       "title": "Homer Simpson voice.ai Singing American Pie",
       "description": "",
       "duration": 23,
-      "view_count": 830,
+      "view_count": 831,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -89031,7 +89655,7 @@
       "url": "https://www.youtube.com/watch?v=bTmOgxeZsK8",
       "title": "Morty Just Doesn't Give A Fuck - Eminem AI Voice Music Video",
       "description": "voice.ai it's going to destroy the world yo.",
-      "duration": 216.0,
+      "duration": 215,
       "view_count": 62,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -90760,8 +91384,8 @@
       "url": "https://www.youtube.com/watch?v=0c0inlhuBJw",
       "title": "Fuck Shit Stack But Every Word Is A Google Image",
       "description": "Word.",
-      "duration": 250.0,
-      "view_count": 30,
+      "duration": 249,
+      "view_count": 31,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -91009,7 +91633,7 @@
       "title": "My Mom - Emimen (But Every Lyric Is A Google Image)",
       "description": "",
       "duration": 118.0,
-      "view_count": 35,
+      "view_count": 36,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -91217,7 +91841,7 @@
       "title": "Blow My Buzz - D12 (But Every Lyric Is A Google Image)",
       "description": "",
       "duration": 98.0,
-      "view_count": 52,
+      "view_count": 53,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -91633,7 +92257,7 @@
       "title": "American Psycho - D12 (But Every Lyric Is A Google Image)",
       "description": "",
       "duration": 113.0,
-      "view_count": 38,
+      "view_count": 39,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -92049,7 +92673,7 @@
       "title": "could I interest you in everything all of the time",
       "description": "apathys a tragedy and boredom is a crime\nanything and everything all of the time.",
       "duration": 24.0,
-      "view_count": 98,
+      "view_count": 99,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -94753,7 +95377,7 @@
       "title": "TFS - Goku Learns What Makes Babies",
       "description": "Source: \u00a0\u00a0\u00a0/\u00a0teamfourstar\u00a0\u00a0\nBulma: \u00a0\u00a0\u00a0/\u00a0megami36\u00a0\u00a0\nGoku: \u00a0\u00a0\u00a0/\u00a0masakoxtreme\u00a0\u00a0\nDr. Briefs: \u00a0\u00a0\u00a0/\u00a0hbi2k\u00a0\u00a0",
       "duration": 9.0,
-      "view_count": 192832,
+      "view_count": 192836,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -95585,7 +96209,7 @@
       "title": "Aladdin and the cave of cheeseburgers (DUB)",
       "description": "This is one of the first dubs/abridged videos I ever saw on YouTube. I couldn't find it anywhere on the site so here you go.",
       "duration": 2306.0,
-      "view_count": 103221,
+      "view_count": 103243,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
