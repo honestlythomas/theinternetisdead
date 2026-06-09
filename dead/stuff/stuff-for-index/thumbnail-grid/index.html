@@ -599,6 +599,7 @@
     const GRID_TEXTURE_MAX_DIMENSION = 4096;
     const GRID_TEXTURE_MAX_PIXELS = 14000000;
     const HOVER_GRID_TEXTURE_SCALE = 0.5;
+    const GRID_AUTO_SPIN_SPEED = 0.38;
 
     const canvas = document.getElementById("wallCanvas");
     if (!window.THREE) throw new Error("Three.js failed to load.");
@@ -706,6 +707,7 @@
     let targetPlanePitch = 0;
     let planeDistance = 13;
     let targetPlaneDistance = 13;
+    let gridAutoSpin = false;
     let isMiddleDragging = false;
     let lastPointerX = 0;
     let lastPointerY = 0;
@@ -1692,6 +1694,7 @@
     function handlePointerDown(event) {
       if (event.button !== 1 || displayMode !== "fullGrid") return;
       event.preventDefault();
+      gridAutoSpin = false;
       isMiddleDragging = true;
       lastPointerX = event.clientX;
       lastPointerY = event.clientY;
@@ -1753,13 +1756,14 @@
     function updateHud() {
       const loadedImages = Array.from(imageCache.values()).filter((record) => record.status === "loaded").length;
       const slideshowStatus = getThumbnailAutoplayStatusText();
+      const gridSpinStatus = gridAutoSpin ? "auto spin on" : "auto spin off";
       menuHud.innerHTML = [
         `${statusText}`,
         `videos ${videos.length} / ${allVideos.length} | thumbnails ${loadedImages}/${imageCache.size}`,
         displayMode === "fullGrid"
-          ? `mode Full Grid | distance ${planeDistance.toFixed(1)} | rotation ${Math.round(planeYaw * 180 / Math.PI)}deg, ${Math.round(planePitch * 180 / Math.PI)}deg`
+          ? `mode Full Grid | distance ${planeDistance.toFixed(1)} | rotation ${Math.round(planeYaw * 180 / Math.PI)}deg, ${Math.round(planePitch * 180 / Math.PI)}deg | ${gridSpinStatus}`
           : `mode Slideshow | slide ${videos.length ? slideshowIndex + 1 : 0} / ${videos.length} | ${slideshowStatus}`,
-        `<span class="muted">Full Grid: Middle mouse drag / WASD rotate | Mouse wheel zoom | Q / E zoom out/in | Slideshow: Space play/pause thumbnails | ArrowLeft / ArrowRight | Shift+Esc menu</span>`
+        `<span class="muted">Full Grid: Space auto spin | Middle mouse drag / WASD rotate | Mouse wheel zoom | Q / E zoom out/in | Slideshow: Space play/pause thumbnails | ArrowLeft / ArrowRight | Shift+Esc menu</span>`
       ].join("<br>");
     }
 
@@ -1781,6 +1785,8 @@
       if (menuOpen) return;
       const rotateAmount = 1.25 * deltaSeconds;
       const zoomAmount = 7.5 * deltaSeconds;
+
+      if (gridAutoSpin) targetPlaneYaw += GRID_AUTO_SPIN_SPEED * deltaSeconds;
 
       if (keys.has("w")) targetPlanePitch += rotateAmount;
       if (keys.has("s")) targetPlanePitch -= rotateAmount;
@@ -1911,6 +1917,15 @@
         return;
       }
 
+      if (event.key === " " || event.code === "Space") {
+        if (!thumbnailPreloadReady) return;
+        event.preventDefault();
+        gridAutoSpin = !gridAutoSpin;
+        keys.clear();
+        updateHud();
+        return;
+      }
+
       if (!["w", "a", "s", "d", "q", "e"].includes(key)) return;
       event.preventDefault();
       keys.add(key);
@@ -2028,6 +2043,7 @@
       thumbnailPreloadLoaded = 0;
       thumbnailPreloadTotal = videos.length;
       gridTextureNeedsRedraw = true;
+      gridAutoSpin = false;
       setThumbnailAutoplay(false);
       updateHud();
 
@@ -2320,6 +2336,7 @@
       if (displayMode !== "slideshow") {
         setThumbnailAutoplay(false);
       } else {
+        gridAutoSpin = false;
         updateSlideshowEmbed(getSlideshowVideo());
       }
       updateTileHoverClass();
@@ -2381,6 +2398,7 @@
       displayMode = nextMode === "fullGrid" ? "fullGrid" : "slideshow";
       displayModeSelect.value = displayMode;
       keys.clear();
+      if (displayMode !== "fullGrid") gridAutoSpin = false;
       hoveredTileIndex = -1;
       updateDisplayModeClass();
       updateHeaderTitleForHover();
