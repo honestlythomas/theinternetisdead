@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-07T21:16:09.376Z",
+  "generatedAt": "2026-06-09T06:19:44.138Z",
   "folders": [
     "/",
     "/dead/",
@@ -15,6 +15,7 @@
     "/dead/experiments/",
     "/dead/experiments/blotter-visualizer/",
     "/dead/experiments/bouncing-rainbow-camera/",
+    "/dead/experiments/camera-experiment/",
     "/dead/experiments/canvas-backgrounds/",
     "/dead/experiments/cec-remote/",
     "/dead/experiments/chat-sandbox/",
