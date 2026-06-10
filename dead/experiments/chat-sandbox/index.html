@@ -2385,6 +2385,9 @@ const focusSink = document.getElementById('focusSink');
           bodySpan.style.color = '#ffffff';
           bodySpan.style.textDecoration = 'underline';
           appendMarkdownText(bodySpan, remainder);
+          bodySpan.querySelectorAll('a').forEach((link) => {
+            link.style.color = '#3399ff';
+          });
           messageText.appendChild(bodySpan);
         }
         return;
