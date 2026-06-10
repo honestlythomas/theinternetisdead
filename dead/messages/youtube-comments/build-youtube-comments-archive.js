@@ -165,6 +165,174 @@ function getEmbedLink(videoId) {
   return `https://www.youtube.com/embed/${encodeURIComponent(cleanVideoId)}`;
 }
 
+const keywordStopWords = new Set([
+  "all",
+  "about",
+  "after",
+  "again",
+  "against",
+  "aint",
+  "also",
+  "although",
+  "always",
+  "and",
+  "are",
+  "but",
+  "can",
+  "cant",
+  "because",
+  "been",
+  "before",
+  "being",
+  "between",
+  "could",
+  "did",
+  "didnt",
+  "does",
+  "doesnt",
+  "doing",
+  "dont",
+  "down",
+  "even",
+  "ever",
+  "every",
+  "for",
+  "from",
+  "get",
+  "getting",
+  "got",
+  "going",
+  "gonna",
+  "good",
+  "gotta",
+  "had",
+  "has",
+  "have",
+  "havent",
+  "hes",
+  "here",
+  "him",
+  "himself",
+  "his",
+  "how",
+  "into",
+  "its",
+  "ive",
+  "just",
+  "know",
+  "like",
+  "little",
+  "look",
+  "looks",
+  "made",
+  "make",
+  "maybe",
+  "more",
+  "most",
+  "much",
+  "need",
+  "never",
+  "not",
+  "now",
+  "off",
+  "only",
+  "one",
+  "out",
+  "people",
+  "probably",
+  "really",
+  "right",
+  "said",
+  "same",
+  "seems",
+  "see",
+  "should",
+  "some",
+  "something",
+  "still",
+  "than",
+  "that",
+  "thats",
+  "the",
+  "their",
+  "them",
+  "then",
+  "there",
+  "these",
+  "they",
+  "thing",
+  "things",
+  "think",
+  "this",
+  "those",
+  "though",
+  "through",
+  "time",
+  "too",
+  "very",
+  "video",
+  "want",
+  "was",
+  "wasnt",
+  "watch",
+  "way",
+  "well",
+  "were",
+  "what",
+  "when",
+  "where",
+  "which",
+  "who",
+  "while",
+  "will",
+  "with",
+  "would",
+  "wouldnt",
+  "yeah",
+  "you",
+  "your",
+  "youre",
+  "youtube",
+]);
+
+function extractKeywords(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .match(/[a-z][a-z0-9-]{2,}/g)
+    ?.filter((word) => !keywordStopWords.has(word) && !/^\d+$/.test(word)) || [];
+}
+
+function buildKeywordTags(entries, limit = 48, perEntryLimit = 5) {
+  const frequencies = new Map();
+
+  for (const entry of entries) {
+    for (const keyword of new Set(extractKeywords(entry.commentText))) {
+      frequencies.set(keyword, (frequencies.get(keyword) || 0) + 1);
+    }
+  }
+
+  const keywords = [...frequencies.entries()]
+    .sort((left, right) => {
+      if (right[1] !== left[1]) {
+        return right[1] - left[1];
+      }
+      return left[0].localeCompare(right[0]);
+    })
+    .slice(0, limit)
+    .map(([keyword, count], index) => ({ keyword, count, rank: index + 1 }));
+  const keywordRank = new Map(keywords.map((tag) => [tag.keyword, tag.rank]));
+
+  for (const entry of entries) {
+    entry.keywords = [...new Set(extractKeywords(entry.commentText))]
+      .filter((keyword) => keywordRank.has(keyword))
+      .sort((left, right) => keywordRank.get(left) - keywordRank.get(right))
+      .slice(0, perEntryLimit);
+  }
+
+  return keywords;
+}
+
 function buildEntries() {
   if (!fs.existsSync(inputDir)) {
     throw new Error(`Input directory does not exist: ${inputDir}`);
@@ -259,8 +427,24 @@ function renderMetaItem(label, value, href) {
             </div>`;
 }
 
+function renderKeywordTag(tag) {
+  return `<button class="keyword-tag" type="button" data-keyword="${escapeAttribute(tag.keyword)}" title="${escapeAttribute(tag.count.toLocaleString("en-US"))} comments">#${escapeHtml(tag.keyword)} <span>${tag.count.toLocaleString("en-US")}</span></button>`;
+}
+
+function renderEntryKeywords(keywords) {
+  if (!keywords || keywords.length === 0) {
+    return "";
+  }
+
+  return `<div class="entry-keywords" aria-label="Frequent keywords">${keywords
+    .map((keyword) => `<button class="entry-keyword" type="button" data-keyword="${escapeAttribute(keyword)}">#${escapeHtml(keyword)}</button>`)
+    .join("")}</div>`;
+}
+
 function buildHtml({ csvFiles, totalRows, skippedRows, duplicatesRemoved, entries }) {
   const generatedAt = new Date().toISOString();
+  const keywordTags = buildKeywordTags(entries);
+  const renderedKeywordTags = keywordTags.map(renderKeywordTag).join("\n        ");
   const renderedEntries = entries
     .map((entry, index) => {
       const displayDate = escapeHtml(entry.date);
@@ -278,6 +462,7 @@ function buildHtml({ csvFiles, totalRows, skippedRows, duplicatesRemoved, entrie
         entry.postId,
         entry.parentCommentId,
         entry.topLevelCommentId,
+        entry.keywords.join(" "),
       ].join(" ");
       const metaItems = [
         renderMetaItem("video", videoValue, entry.videoLink),
@@ -288,21 +473,26 @@ function buildHtml({ csvFiles, totalRows, skippedRows, duplicatesRemoved, entrie
         renderMetaItem("parent", entry.parentCommentId),
         renderMetaItem("thread", entry.topLevelCommentId),
       ].join("");
+      const entryKeywords = renderEntryKeywords(entry.keywords);
 
       return `
-        <article class="comment-entry" id="comment-${index + 1}" data-search="${escapeAttribute(searchText.toLowerCase())}">
+        <article class="comment-entry" id="comment-${index + 1}" data-search="${escapeAttribute(searchText.toLowerCase())}" data-keywords="${escapeAttribute(entry.keywords.join(" "))}">
           <div class="detail-view">
             <header class="comment-header">
               <a class="entry-number" href="#comment-${index + 1}" aria-label="Permalink to comment ${index + 1}">#${index + 1}</a>
               <time datetime="${machineDate}">${displayDate}</time>
             </header>
             <pre class="comment-text">${escapeHtml(entry.commentText)}</pre>
+            ${entryKeywords}
             <dl class="meta-grid">${metaItems}
             </dl>
           </div>
           <div class="simple-view">
             <time class="simple-date" datetime="${machineDate}">${displayDate}</time>
-            <pre class="simple-comment">${escapeHtml(entry.commentText)}</pre>
+            <div class="simple-comment-cell">
+              <pre class="simple-comment">${escapeHtml(entry.commentText)}</pre>
+              ${entryKeywords}
+            </div>
             ${embedLink ? `<iframe class="simple-embed" src="${escapeAttribute(embedLink)}" title="YouTube video for comment ${index + 1}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>` : `<span class="simple-embed-missing">no video id</span>`}
           </div>
         </article>`;
@@ -505,6 +695,67 @@ function buildHtml({ csvFiles, totalRows, skippedRows, duplicatesRemoved, entrie
       font-size: 0.85rem;
     }
 
+    .keyword-panel {
+      margin-top: 16px;
+      border: 1px solid var(--line-dim);
+      background: rgba(2, 4, 3, 0.45);
+    }
+
+    .keyword-panel summary {
+      padding: 10px 12px;
+      color: var(--amber);
+      cursor: pointer;
+      font-size: 0.86rem;
+      text-transform: uppercase;
+    }
+
+    .keyword-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 12px 12px;
+    }
+
+    .keyword-tag,
+    .entry-keyword {
+      border: 1px solid var(--line-dim);
+      border-radius: 0;
+      background: rgba(7, 16, 11, 0.9);
+      color: var(--muted);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .keyword-tag {
+      padding: 7px 9px;
+      font-size: 0.78rem;
+    }
+
+    .keyword-tag span {
+      color: var(--amber);
+    }
+
+    .keyword-tag:hover,
+    .keyword-tag:focus,
+    .keyword-tag.is-active,
+    .entry-keyword:hover,
+    .entry-keyword:focus {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .entry-keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 0 14px 14px;
+    }
+
+    .entry-keyword {
+      padding: 4px 6px;
+      font-size: 0.72rem;
+    }
+
     .comment-list {
       display: grid;
       gap: 14px;
@@ -587,7 +838,7 @@ function buildHtml({ csvFiles, totalRows, skippedRows, duplicatesRemoved, entrie
     }
 
     .simple-date,
-    .simple-comment {
+    .simple-comment-cell {
       min-width: 0;
       padding: 10px 12px;
       background: rgba(2, 4, 3, 0.92);
@@ -603,6 +854,10 @@ function buildHtml({ csvFiles, totalRows, skippedRows, duplicatesRemoved, entrie
       font: inherit;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
+    }
+
+    .simple-comment-cell .entry-keywords {
+      padding: 8px 0 0;
     }
 
     .simple-embed {
@@ -677,6 +932,12 @@ function buildHtml({ csvFiles, totalRows, skippedRows, duplicatesRemoved, entrie
         <input class="search-field" id="comment-search" type="search" placeholder="search comments, dates, ids, links..." autocomplete="off">
         <button class="view-toggle" id="view-toggle" type="button" aria-pressed="false">simple list view</button>
       </div>
+      <details class="keyword-panel" open>
+        <summary>frequent keyword tags</summary>
+        <div class="keyword-tags" id="keyword-tags">
+        ${renderedKeywordTags}
+        </div>
+      </details>
       <p class="filter-status" id="filter-status" aria-live="polite">${entries.length.toLocaleString("en-US")} comments visible</p>
     </header>
     <section class="comment-list" aria-label="YouTube comments">
@@ -689,6 +950,8 @@ ${renderedEntries}
     const search = document.querySelector("#comment-search");
     const toggle = document.querySelector("#view-toggle");
     const status = document.querySelector("#filter-status");
+    const keywordButtons = Array.from(document.querySelectorAll("[data-keyword]"));
+    let activeKeyword = "";
     const total = entries.length;
 
     function pluralize(count, word) {
@@ -701,14 +964,26 @@ ${renderedEntries}
 
       for (const entry of entries) {
         const haystack = entry.dataset.search || "";
-        const matched = terms.every((term) => haystack.includes(term));
+        const keywords = (entry.dataset.keywords || "").split(/\\s+/);
+        const matchedKeyword = !activeKeyword || keywords.includes(activeKeyword);
+        const matched = matchedKeyword && terms.every((term) => haystack.includes(term));
         entry.classList.toggle("is-hidden", !matched);
         if (matched) {
           visible += 1;
         }
       }
 
-      status.textContent = visible.toLocaleString("en-US") + " " + pluralize(visible, "comment") + " visible of " + total.toLocaleString("en-US");
+      const tagText = activeKeyword ? " tagged #" + activeKeyword : "";
+      status.textContent = visible.toLocaleString("en-US") + " " + pluralize(visible, "comment") + " visible of " + total.toLocaleString("en-US") + tagText;
+    }
+
+    function setActiveKeyword(keyword) {
+      activeKeyword = activeKeyword === keyword ? "" : keyword;
+      for (const button of keywordButtons) {
+        button.classList.toggle("is-active", activeKeyword !== "" && button.dataset.keyword === activeKeyword);
+        button.setAttribute("aria-pressed", String(activeKeyword !== "" && button.dataset.keyword === activeKeyword));
+      }
+      updateFilter();
     }
 
     function setSimpleView(enabled) {
@@ -718,6 +993,10 @@ ${renderedEntries}
     }
 
     search.addEventListener("input", updateFilter);
+    for (const button of keywordButtons) {
+      button.setAttribute("aria-pressed", "false");
+      button.addEventListener("click", () => setActiveKeyword(button.dataset.keyword || ""));
+    }
     toggle.addEventListener("click", () => {
       setSimpleView(!document.body.classList.contains("simple-list"));
     });
