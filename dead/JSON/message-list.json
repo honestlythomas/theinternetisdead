@@ -57,7 +57,7 @@
         {
           "title": "Timed Dated Message 042000 05022026",
           "source": "/dead/messages/timed_messages/timed-dated-message_042000_05022026.md",
-          "random_message": "Time is 4:20:00am\r\nDate is May 2, 2026",
+          "random_message": "Time is 4:20:00am\nDate is May 2, 2026",
           "message_time": "04:20:00",
           "message_date": "2026-05-02"
         },
