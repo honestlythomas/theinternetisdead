@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-09T06:19:44.138Z",
+  "generatedAt": "2026-06-12T04:03:42.355Z",
   "folders": [
     "/",
     "/dead/",
@@ -59,6 +59,7 @@
     "/dead/messages/random_messages/",
     "/dead/messages/standard_messages/",
     "/dead/messages/timed_messages/",
+    "/dead/messages/youtube-comments/",
     "/dead/readmes/",
     "/dead/scripts/",
     "/dead/scripts/build/",
