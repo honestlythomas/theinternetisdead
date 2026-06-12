@@ -1,0 +1,44 @@
+name: Generate link thumbnail JPGs
+
+on:
+  push:
+    paths-ignore:
+      - 'dead/JSON/link-thumbnails.json'
+      - 'dead/images/link-thumbnails/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-link-thumbnails
+  cancel-in-progress: false
+
+jobs:
+  generate-link-thumbnails:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Generate link thumbnail JPGs
+        run: npm run generate:link-thumbnails
+
+      - name: Commit generated link thumbnails
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Generate link thumbnail JPGs
+          file_pattern: dead/JSON/link-thumbnails.json dead/images/link-thumbnails/*.jpg

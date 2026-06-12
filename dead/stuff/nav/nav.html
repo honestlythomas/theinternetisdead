@@ -432,42 +432,13 @@ html, body {
 }
 
 #overlay-root .sidebar-title-text {
-  display: block;
   flex: 1 1 auto;
+  flex-direction: column;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal;
-  line-height: 1.1;
 }
 
 #overlay-root .sidebar-title-line {
   display: block;
-}
-
-#overlay-root .sidebar-title-caret {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 28px;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--overlay-text);
-  font-family: inherit;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-#overlay-root .sidebar-title-caret:hover,
-#overlay-root .sidebar-title-caret:focus-visible {
-  outline: none;
-  text-decoration: underline;
 }
 
 #overlay-root .sidebar-section-toggle::-webkit-scrollbar {
@@ -498,7 +469,11 @@ html, body {
   padding: 0 0 10px;
 }
 
-#overlay-root .sidebar-preview-links a {
+#overlay-root .sidebar-title-text,
+#overlay-root .sidebar-preview-links a,
+#overlay-root .sidebar-title-caret,
+#overlay-root .sidebar-game-caret,
+#overlay-root .sidebar-link-preview-image-link {
   --animated-border-width: 1px;
   position: relative;
   display: flex;
@@ -520,7 +495,11 @@ html, body {
 
 #overlay-root .sidebar-item::after,
 #overlay-root .sidebar-header-link .home-link::after,
+#overlay-root .sidebar-title-text::after,
 #overlay-root .sidebar-preview-links a::after,
+#overlay-root .sidebar-title-caret::after,
+#overlay-root .sidebar-game-caret::after,
+#overlay-root .sidebar-link-preview-image-link::after,
 #overlay-root .sidebar-command-panel::after {
   content: "";
   position: absolute;
@@ -533,21 +512,107 @@ html, body {
     repeating-linear-gradient(180deg, lime 0 8px, transparent 8px 14px) 0 0 / var(--animated-border-width) 14px repeat-y;
 }
 
-#overlay-root .sidebar-item:hover::after,
-#overlay-root .sidebar-item:focus-within::after,
 #overlay-root .sidebar-header-link .home-link:hover::after,
 #overlay-root .sidebar-header-link .home-link:focus-visible::after,
+#overlay-root .sidebar-title-text:hover::after,
+#overlay-root .sidebar-title-text:focus-visible::after,
+#overlay-root .sidebar-title-caret:hover::after,
+#overlay-root .sidebar-title-caret:focus-visible::after,
 #overlay-root .sidebar-preview-links a:hover::after,
 #overlay-root .sidebar-preview-links a:focus-visible::after,
+#overlay-root .sidebar-game-caret:hover::after,
+#overlay-root .sidebar-game-caret:focus-visible::after,
+#overlay-root .sidebar-link-preview-image-link:hover::after,
+#overlay-root .sidebar-link-preview-image-link:focus-visible::after,
 #overlay-root .sidebar-command-panel:hover::after,
 #overlay-root .sidebar-command-panel:focus-visible::after {
   animation: sidebar-dash-clockwise .45s linear infinite;
 }
 
+#overlay-root .sidebar-item.is-expanded .sidebar-title-text,
+#overlay-root .sidebar-item.is-expanded .sidebar-title-caret,
+#overlay-root .sidebar-item.is-expanded .sidebar-preview-links a:not(.sidebar-link-preview-image-link),
+#overlay-root .sidebar-item.is-expanded .sidebar-game-caret {
+  animation: overlay-ui-hueshift 1.8s linear infinite;
+}
+
+#overlay-root .sidebar-item.is-expanded .sidebar-title-text::after,
+#overlay-root .sidebar-item.is-expanded .sidebar-title-caret::after,
+#overlay-root .sidebar-item.is-expanded .sidebar-preview-links a:not(.sidebar-link-preview-image-link)::after,
+#overlay-root .sidebar-item.is-expanded .sidebar-game-caret::after {
+  animation: sidebar-dash-clockwise .45s linear infinite, overlay-ui-hueshift 1.8s linear infinite;
+}
+
+#overlay-root .sidebar-preview-links a.sidebar-link-preview-image-link:hover,
+#overlay-root .sidebar-preview-links a.sidebar-link-preview-image-link:focus-visible {
+  animation: overlay-ui-hueshift 1.8s linear infinite;
+}
+
+#overlay-root .sidebar-preview-links a.sidebar-link-preview-image-link:hover::after,
+#overlay-root .sidebar-preview-links a.sidebar-link-preview-image-link:focus-visible::after {
+  animation: sidebar-dash-clockwise .45s linear infinite, overlay-ui-hueshift 1.8s linear infinite;
+}
+
 #overlay-root .sidebar-preview-links a:hover,
-#overlay-root .sidebar-preview-links a:focus-visible {
+#overlay-root .sidebar-preview-links a:focus-visible,
+#overlay-root .sidebar-title-caret:hover,
+#overlay-root .sidebar-title-caret:focus-visible,
+#overlay-root .sidebar-game-caret:hover,
+#overlay-root .sidebar-game-caret:focus-visible,
+#overlay-root .sidebar-link-preview-image-link:hover,
+#overlay-root .sidebar-link-preview-image-link:focus-visible {
   box-shadow: none;
   outline: none;
+}
+
+#overlay-root .sidebar-preview-links a.sidebar-link-preview-image-link {
+  display: block;
+  padding: 0;
+  overflow: visible;
+  line-height: 0;
+  text-decoration: none;
+}
+
+#overlay-root .sidebar-link-preview-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #000;
+}
+
+#overlay-root .sidebar-game-link-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 28px;
+  align-items: stretch;
+  gap: 8px;
+}
+
+#overlay-root .sidebar-title-caret,
+#overlay-root .sidebar-game-caret {
+  box-sizing: border-box;
+  flex: 0 0 28px;
+  width: 28px;
+  min-height: 28px;
+  padding: 0;
+  font-family: inherit;
+  font-size: 22px;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#overlay-root .sidebar-title-caret {
+  height: 28px;
+}
+
+#overlay-root .sidebar-game-caret:hover,
+#overlay-root .sidebar-game-caret:focus-visible,
+#overlay-root .sidebar-title-caret:hover,
+#overlay-root .sidebar-title-caret:focus-visible {
+  outline: none;
+  text-decoration: none;
 }
 
 #overlay-root .sidebar-item.is-expanded .sidebar-preview {
@@ -720,40 +785,6 @@ html, body {
 #overlay-root #sidebar .home-link:hover,
 #overlay-root #sidebar .home-link:focus-visible {
   box-shadow: none;
-}
-
-#overlay-root .sidebar-link-thumbnail-popup {
-  position: fixed;
-  width: min(360px, calc(100vw - 24px));
-  aspect-ratio: 16 / 9;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(-50%) scale(.96);
-  transform-origin: left center;
-  z-index: 10020;
-  background: #000;
-  border: 2px solid var(--overlay-text);
-  box-shadow: 0 0 0 2px #000, 0 0 18px rgba(0, 255, 0, .55);
-  overflow: hidden;
-  transition: opacity .12s ease, transform .12s ease;
-}
-
-#overlay-root .sidebar-link-thumbnail-popup.is-visible {
-  opacity: 1;
-  transform: translateY(-50%) scale(1);
-}
-
-#overlay-root .sidebar-link-thumbnail-popup img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-@media (hover: none), (pointer: coarse), (max-width: 768px) {
-  #overlay-root .sidebar-link-thumbnail-popup {
-    display: none !important;
-  }
 }
 
 @media (max-width: 768px) {
@@ -1052,10 +1083,10 @@ html, body {
     </div>
 
     <div class="sidebar-menu">
-      <div class="sidebar-item is-expanded">
-        <div class="sidebar-section-toggle" aria-expanded="true">
+      <div class="sidebar-item">
+        <div class="sidebar-section-toggle" aria-expanded="false">
           <button type="button" class="sidebar-title-caret" data-sidebar-category-direction="-1" aria-label="Previous sidebar category">&lt;</button>
-          <span class="sidebar-title-text" id="sidebar-category-title">
+          <span class="sidebar-title-text" id="sidebar-category-title" role="button" tabindex="0" aria-expanded="false">
             <span class="sidebar-title-line">Tektite's</span>
             <span class="sidebar-title-line">Browser Games</span>
           </span>
@@ -1063,7 +1094,14 @@ html, body {
         </div>
         <div class="sidebar-preview">
           <div class="sidebar-preview-links" id="sidebar-category-links">
-            <a href="/dead/games/shooter-game/" data-index-frame-src="/dead/games/shooter-game/" data-sidebar-category-link="true">+ Shooter Game</a>
+            <a class="sidebar-link-preview-image-link" href="/dead/games/shooter-game/" data-index-frame-src="/dead/games/shooter-game/" data-sidebar-category-link="true" aria-label="Open Shooter Game">
+              <img class="sidebar-link-preview-image" src="/dead/images/link-thumbnails/dead-games-shooter-game.jpg" alt="" loading="lazy">
+            </a>
+            <div class="sidebar-game-link-row">
+              <button type="button" class="sidebar-game-caret" data-sidebar-game-direction="-1" aria-label="Previous browser game">&lt;</button>
+              <a href="/dead/games/shooter-game/" data-index-frame-src="/dead/games/shooter-game/" data-sidebar-category-link="true">Shooter Game</a>
+              <button type="button" class="sidebar-game-caret" data-sidebar-game-direction="1" aria-label="Next browser game">&gt;</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1561,7 +1599,6 @@ html, body {
   const sidebar = overlayRoot.querySelector('#sidebar');
   const backdrop = overlayRoot.querySelector('#sidebar-backdrop');
   const toggles = overlayRoot.querySelectorAll('[data-action="toggle-sidebar"]');
-  const sidebarSectionToggles = overlayRoot.querySelectorAll('#sidebar .sidebar-section-toggle');
   const logoLinks = overlayRoot.querySelectorAll('.logo-link');
   const navStatePanel = overlayRoot.querySelector('#nav-state-panel');
   const sidebarContextLink = overlayRoot.querySelector('#sidebar-context-link');
@@ -1585,33 +1622,130 @@ html, body {
     tools: /^\/dead\/tools\/[^/]+\/$/,
   };
 
+  function setSidebarCarouselExpanded(isExpanded) {
+    const item = sidebarCategoryTitle && sidebarCategoryTitle.closest('.sidebar-item');
+    const toggle = sidebarCategoryTitle && sidebarCategoryTitle.closest('.sidebar-section-toggle');
+    if (!item || !toggle || !sidebarCategoryTitle) return;
+
+    item.classList.toggle('is-expanded', isExpanded);
+    toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    sidebarCategoryTitle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+  }
+
+  function toggleSidebarCarouselExpanded() {
+    const item = sidebarCategoryTitle && sidebarCategoryTitle.closest('.sidebar-item');
+    setSidebarCarouselExpanded(!(item && item.classList.contains('is-expanded')));
+  }
+
   const sidebarCategories = [
     {
       titlePrefix: "Tektite's",
       titleSuffix: 'Browser Games',
+      carousel: true,
       links: [
-        { text: '+ Shooter Game', href: '/dead/games/shooter-game/', frameSrc: '/dead/games/shooter-game/' },
-        { text: '+ Tektite 3D Game', href: '/dead/games/tektite-3D-game/', frameSrc: '/dead/games/tektite-3D-game/' },
+        // BEGIN generated browser games carousel links
+        { text: 'Shooter Game', href: '/dead/games/shooter-game/', frameSrc: '/dead/games/shooter-game/', thumbnail: '/dead/images/link-thumbnails/dead-games-shooter-game.jpg' },
+        { text: 'Tektite 3D Game', href: '/dead/games/tektite-3D-game/', frameSrc: '/dead/games/tektite-3D-game/', thumbnail: '/dead/images/link-thumbnails/dead-games-tektite-3d-game.jpg' },
+        // END generated browser games carousel links
       ],
     },
     {
       titlePrefix: "Tektite's",
       titleSuffix: 'Web Experiments',
+      carousel: true,
       links: [
-        { text: '+ Placeholder Experiment 1', href: '#' },
-        { text: '+ Placeholder Experiment 2', href: '#' },
+        // BEGIN generated web experiments carousel links
+        { text: 'Blotter Visualizer', href: '/dead/experiments/blotter-visualizer/', frameSrc: '/dead/experiments/blotter-visualizer/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-blotter-visualizer.jpg' },
+        { text: 'Camera Experiment', href: '/dead/experiments/camera-experiment/', frameSrc: '/dead/experiments/camera-experiment/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-camera-experiment.jpg' },
+        { text: 'Canvas Backgrounds', href: '/dead/experiments/canvas-backgrounds/', frameSrc: '/dead/experiments/canvas-backgrounds/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds.jpg' },
+        { text: 'Cec Remote', href: '/dead/experiments/cec-remote/', frameSrc: '/dead/experiments/cec-remote/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-cec-remote.jpg' },
+        { text: 'Chat Sandbox', href: '/dead/experiments/chat-sandbox/', frameSrc: '/dead/experiments/chat-sandbox/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-chat-sandbox.jpg' },
+        { text: 'Gods Eye', href: '/dead/experiments/gods-eye/', frameSrc: '/dead/experiments/gods-eye/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-gods-eye.jpg' },
+        { text: 'Mandala Visuals', href: '/dead/experiments/mandala-visuals/', frameSrc: '/dead/experiments/mandala-visuals/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-mandala-visuals.jpg' },
+        { text: 'Photosphere', href: '/dead/experiments/photosphere/', frameSrc: '/dead/experiments/photosphere/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-photosphere.jpg' },
+        { text: 'Sound Machine', href: '/dead/experiments/sound-machine/', frameSrc: '/dead/experiments/sound-machine/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-sound-machine.jpg' },
+        { text: 'Stacks', href: '/dead/experiments/stacks/', frameSrc: '/dead/experiments/stacks/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-stacks.jpg' },
+        { text: 'Thumbnail Grid', href: '/dead/experiments/thumbnail-grid/', frameSrc: '/dead/experiments/thumbnail-grid/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-thumbnail-grid.jpg' },
+        { text: 'Weird Secret', href: '/dead/experiments/weird-secret/', frameSrc: '/dead/experiments/weird-secret/', thumbnail: '/dead/images/link-thumbnails/dead-experiments-weird-secret.jpg' },
+        // END generated web experiments carousel links
       ],
     },
     {
       titlePrefix: "Tektite's",
       titleSuffix: 'Web Tools',
+      carousel: true,
       links: [
-        { text: '+ Placeholder Tool 1', href: '#' },
-        { text: '+ Placeholder Tool 2', href: '#' },
+        // BEGIN generated web tools carousel links
+        { text: 'Bookmark Manager', href: '/dead/tools/bookmark-manager/', frameSrc: '/dead/tools/bookmark-manager/', thumbnail: '/dead/images/link-thumbnails/dead-tools-bookmark-manager.jpg' },
+        { text: 'Camera Studio', href: '/dead/tools/camera-studio/', frameSrc: '/dead/tools/camera-studio/', thumbnail: '/dead/images/link-thumbnails/dead-tools-camera-studio.jpg' },
+        { text: 'Dead Tv', href: '/dead/tools/dead-tv/', frameSrc: '/dead/tools/dead-tv/', thumbnail: '/dead/images/link-thumbnails/dead-tools-dead-tv.jpg' },
+        { text: 'Karaoke Machine', href: '/dead/tools/karaoke-machine/', frameSrc: '/dead/tools/karaoke-machine/', thumbnail: '/dead/images/link-thumbnails/dead-tools-karaoke-machine.jpg' },
+        { text: 'Multimedia Editor', href: '/dead/tools/multimedia-editor/', frameSrc: '/dead/tools/multimedia-editor/', thumbnail: '/dead/images/link-thumbnails/dead-tools-multimedia-editor.jpg' },
+        { text: 'Music Crunchifier', href: '/dead/tools/music-crunchifier/', frameSrc: '/dead/tools/music-crunchifier/', thumbnail: '/dead/images/link-thumbnails/dead-tools-music-crunchifier.jpg' },
+        { text: 'Music Player', href: '/dead/tools/music-player/', frameSrc: '/dead/tools/music-player/', thumbnail: '/dead/images/link-thumbnails/dead-tools-music-player.jpg' },
+        { text: 'Pdf Viewer', href: '/dead/tools/pdf-viewer/', frameSrc: '/dead/tools/pdf-viewer/', thumbnail: '/dead/images/link-thumbnails/dead-tools-pdf-viewer.jpg' },
+        // END generated web tools carousel links
       ],
     },
   ];
   let sidebarCategoryIndex = 0;
+
+  function createSidebarCategoryLink(linkData) {
+    const link = document.createElement('a');
+    link.href = linkData.href;
+    link.textContent = linkData.text;
+    link.dataset.sidebarCategoryLink = 'true';
+    if (linkData.frameSrc) {
+      link.dataset.indexFrameSrc = linkData.frameSrc;
+    }
+    return link;
+  }
+
+  function createSidebarCarouselCaret(direction, label) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'sidebar-game-caret';
+    button.dataset.sidebarGameDirection = String(direction);
+    button.setAttribute('aria-label', label);
+    button.textContent = direction < 0 ? '<' : '>';
+    return button;
+  }
+
+  function renderSidebarCarousel(category) {
+    const links = Array.isArray(category.links) ? category.links : [];
+    if (!links.length) return;
+
+    category.carouselIndex = (Number(category.carouselIndex) || 0) % links.length;
+    if (category.carouselIndex < 0) category.carouselIndex += links.length;
+    const linkData = links[category.carouselIndex];
+    const labelSubject = String(category.titleSuffix || 'item').toLowerCase();
+
+    if (linkData.thumbnail) {
+      const imageLink = document.createElement('a');
+      imageLink.className = 'sidebar-link-preview-image-link';
+      imageLink.href = linkData.href;
+      imageLink.dataset.sidebarCategoryLink = 'true';
+      if (linkData.frameSrc) {
+        imageLink.dataset.indexFrameSrc = linkData.frameSrc;
+      }
+      imageLink.setAttribute('aria-label', `Open ${linkData.text.replace(/^\+\s*/, '')}`);
+
+      const image = document.createElement('img');
+      image.className = 'sidebar-link-preview-image';
+      image.src = linkData.thumbnail;
+      image.alt = '';
+      image.loading = 'lazy';
+      imageLink.appendChild(image);
+      sidebarCategoryLinks.appendChild(imageLink);
+    }
+
+    const row = document.createElement('div');
+    row.className = 'sidebar-game-link-row';
+    row.appendChild(createSidebarCarouselCaret(-1, `Previous ${labelSubject}`));
+    row.appendChild(createSidebarCategoryLink(linkData));
+    row.appendChild(createSidebarCarouselCaret(1, `Next ${labelSubject}`));
+    sidebarCategoryLinks.appendChild(row);
+  }
 
   function renderSidebarCategory() {
     if (!sidebarCategoryTitle || !sidebarCategoryLinks) return;
@@ -1625,15 +1759,22 @@ html, body {
     });
     sidebarCategoryLinks.replaceChildren();
 
+    if (category.carousel) {
+      renderSidebarCarousel(category);
+      return;
+    }
+
     category.links.forEach((linkData) => {
-      const link = document.createElement('a');
-      link.href = linkData.href;
-      link.textContent = linkData.text;
-      link.dataset.sidebarCategoryLink = 'true';
-      if (linkData.frameSrc) {
-        link.dataset.indexFrameSrc = linkData.frameSrc;
+      if (linkData.thumbnail) {
+        const image = document.createElement('img');
+        image.className = 'sidebar-link-preview-image';
+        image.src = linkData.thumbnail;
+        image.alt = '';
+        image.loading = 'lazy';
+        sidebarCategoryLinks.appendChild(image);
       }
-      sidebarCategoryLinks.appendChild(link);
+
+      sidebarCategoryLinks.appendChild(createSidebarCategoryLink(linkData));
     });
   }
 
@@ -1655,6 +1796,20 @@ html, body {
 
   if (sidebarCategoryLinks) {
     sidebarCategoryLinks.addEventListener('click', (event) => {
+      const carouselButton = event.target.closest && event.target.closest('[data-sidebar-game-direction]');
+      if (carouselButton && sidebarCategoryLinks.contains(carouselButton)) {
+        event.preventDefault();
+        event.stopPropagation();
+        const direction = Number(carouselButton.dataset.sidebarGameDirection) || 0;
+        const category = sidebarCategories[sidebarCategoryIndex];
+        const links = Array.isArray(category && category.links) ? category.links : [];
+        if (category && category.carousel && links.length) {
+          category.carouselIndex = ((Number(category.carouselIndex) || 0) + direction + links.length) % links.length;
+          renderSidebarCategory();
+        }
+        return;
+      }
+
       const link = event.target.closest && event.target.closest('a');
       if (!link || !sidebarCategoryLinks.contains(link)) return;
 
@@ -1791,133 +1946,6 @@ html, body {
   }
 
   loadSidebarListsFromSiteMap();
-
-  const sidebarThumbnailPopup = document.createElement('div');
-  sidebarThumbnailPopup.className = 'sidebar-link-thumbnail-popup';
-  sidebarThumbnailPopup.setAttribute('aria-hidden', 'true');
-  sidebarThumbnailPopup.innerHTML = '<img alt="" loading="lazy">';
-  overlayRoot.appendChild(sidebarThumbnailPopup);
-
-  const sidebarThumbnailImage = sidebarThumbnailPopup.querySelector('img');
-  const sidebarThumbnailMap = new Map();
-  let sidebarThumbnailLoadStarted = false;
-
-  function isDesktopThumbnailView() {
-    return window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches;
-  }
-
-  function normalizeSidebarThumbnailPath(path) {
-    const rawPath = String(path || '').trim();
-    if (!rawPath) return '';
-
-    let url;
-    try {
-      url = new URL(rawPath, window.location.origin);
-    } catch (error) {
-      return '';
-    }
-
-    let pathname = url.pathname.replace(/\/{2,}/g, '/');
-    if (pathname !== '/' && pathname.endsWith('/index.html')) {
-      pathname = pathname.slice(0, -'index.html'.length);
-    }
-    if (pathname !== '/' && pathname.endsWith('.html')) {
-      pathname = pathname.slice(0, -'.html'.length);
-    }
-    if (pathname !== '/' && pathname.endsWith('/')) {
-      pathname = pathname.slice(0, -1);
-    }
-    return pathname || '/';
-  }
-
-  function rememberSidebarThumbnail(path, thumbnail) {
-    const key = normalizeSidebarThumbnailPath(path);
-    if (!key || !thumbnail) return;
-    sidebarThumbnailMap.set(key, thumbnail);
-  }
-
-  function startSidebarThumbnailLoad() {
-    if (sidebarThumbnailLoadStarted) return;
-    sidebarThumbnailLoadStarted = true;
-
-    fetch('/dead/JSON/link-thumbnails.json', { cache: 'force-cache' })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        const thumbnails = data && Array.isArray(data.thumbnails) ? data.thumbnails : [];
-        thumbnails.forEach((entry) => {
-          rememberSidebarThumbnail(entry.urlPath, entry.thumbnail);
-          rememberSidebarThumbnail(entry.sourcePath, entry.thumbnail);
-        });
-      })
-      .catch(() => {
-        // The nav still works without previews. A tragedy, but a survivable one.
-      });
-  }
-
-  function getSidebarThumbnailForLink(link) {
-    const framePath = link.dataset.indexFrameSrc || link.getAttribute('href') || '';
-    return sidebarThumbnailMap.get(normalizeSidebarThumbnailPath(framePath)) || '';
-  }
-
-  function positionSidebarThumbnailPopup(link) {
-    if (!sidebarThumbnailPopup || !link) return;
-    const rect = link.getBoundingClientRect();
-    const width = Math.min(360, Math.max(220, window.innerWidth - 24));
-    const height = width * 9 / 16;
-    const gap = 12;
-    const viewportPad = 12;
-
-    let left = rect.right + gap;
-    if (left + width > window.innerWidth - viewportPad) {
-      left = rect.left;
-    }
-    left = Math.max(viewportPad, Math.min(left, window.innerWidth - width - viewportPad));
-
-    let centerY = rect.top + (rect.height / 2);
-    centerY = Math.max(viewportPad + (height / 2), Math.min(centerY, window.innerHeight - viewportPad - (height / 2)));
-
-    sidebarThumbnailPopup.style.width = `${width}px`;
-    sidebarThumbnailPopup.style.left = `${left}px`;
-    sidebarThumbnailPopup.style.top = `${centerY}px`;
-  }
-
-  function showSidebarThumbnail(link) {
-    if (!isDesktopThumbnailView()) return;
-    if (link && link.closest('.logo')) return;
-    startSidebarThumbnailLoad();
-    const thumbnail = getSidebarThumbnailForLink(link);
-    if (!thumbnail || !sidebarThumbnailImage) return;
-    sidebarThumbnailImage.src = thumbnail;
-    positionSidebarThumbnailPopup(link);
-    sidebarThumbnailPopup.classList.add('is-visible');
-  }
-
-  function hideSidebarThumbnail() {
-    sidebarThumbnailPopup.classList.remove('is-visible');
-  }
-
-  sidebar.addEventListener('mouseover', (event) => {
-    const link = event.target.closest && event.target.closest('a');
-    if (!link || !sidebar.contains(link)) return;
-    showSidebarThumbnail(link);
-  });
-  sidebar.addEventListener('focusin', (event) => {
-    const link = event.target.closest && event.target.closest('a');
-    if (!link || !sidebar.contains(link)) return;
-    showSidebarThumbnail(link);
-  });
-  sidebar.addEventListener('mouseout', (event) => {
-    const link = event.target.closest && event.target.closest('a');
-    if (!link || !sidebar.contains(link)) return;
-    const related = event.relatedTarget;
-    if (related && link.contains(related)) return;
-    hideSidebarThumbnail();
-  });
-  sidebar.addEventListener('focusout', hideSidebarThumbnail);
-
-  if (isDesktopThumbnailView()) {
-    startSidebarThumbnailLoad();
-  }
 
   if (!sidebar || !backdrop) return;
 
@@ -2134,7 +2162,6 @@ html, body {
   }
 
   function closeSidebar() {
-    hideSidebarThumbnail();
     sidebar.classList.remove('open');
     backdrop.classList.remove('open');
     sidebar.setAttribute('aria-hidden', 'true');
@@ -2165,7 +2192,6 @@ html, body {
   });
 
   backdrop.addEventListener('click', closeSidebar);
-  sidebar.addEventListener('scroll', hideSidebarThumbnail, true);
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
@@ -2173,21 +2199,22 @@ html, body {
     }
   });
 
-  sidebarSectionToggles.forEach((button) => {
-    button.addEventListener('click', (event) => {
-      const item = button.closest('.sidebar-item');
-      if (!item || !item.querySelector('.sidebar-preview')) return;
-
+  if (sidebarCategoryTitle) {
+    sidebarCategoryTitle.addEventListener('click', (event) => {
       event.preventDefault();
-      event.stopImmediatePropagation();
-
-      item.classList.add('is-expanded');
-      button.setAttribute('aria-expanded', 'true');
+      event.stopPropagation();
+      toggleSidebarCarouselExpanded();
     });
-  });
+
+    sidebarCategoryTitle.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      event.stopPropagation();
+      toggleSidebarCarouselExpanded();
+    });
+  }
 
   window.addEventListener('resize', () => {
-    hideSidebarThumbnail();
     refreshOverlayLogoHoverTint();
     updateOverlayClock();
     fitNavStateText();

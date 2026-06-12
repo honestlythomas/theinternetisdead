@@ -1,0 +1,11 @@
+{
+  "name": "theinternetisdead-site",
+  "private": true,
+  "scripts": {
+    "generate:link-thumbnails": "node dead/scripts/build/generate-link-thumbnails.js",
+    "generate:nav-carousels": "node dead/scripts/build/update-nav-carousels.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.52.0"
+  }
+}

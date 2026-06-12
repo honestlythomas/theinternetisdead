@@ -1,0 +1,41 @@
+name: Generate nav carousels
+
+on:
+  push:
+    paths:
+      - 'dead/games/**'
+      - 'dead/experiments/**'
+      - 'dead/tools/**'
+      - 'dead/JSON/link-thumbnails.json'
+      - 'dead/scripts/build/update-nav-carousels.js'
+      - 'dead/stuff/nav/nav.html'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-nav-carousels
+  cancel-in-progress: false
+
+jobs:
+  generate-nav-carousels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate nav carousels
+        run: npm run generate:nav-carousels
+
+      - name: Commit generated nav carousels
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Generate nav carousels
+          file_pattern: dead/stuff/nav/nav.html
