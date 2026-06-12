@@ -21,7 +21,7 @@ html, body {
 #overlay-root {
   --overlay-bg: #512A67;
   --overlay-text: lime;
-  --sidebar-bg: #110019;
+  --sidebar-bg: rgba(81,42,103,.5);
   --page-bg: transparent;
   --border-color: var(--overlay-text);
   --preview-bg: #000000;
@@ -152,11 +152,16 @@ html, body {
 }
 
 #overlay-root .sidebar-header-link .home-link {
+  --animated-border-width: 1px;
+  position: relative;
   font-size: calc(22px * var(--overlay-font-scale, 1));
   padding: 8px 12px;
+  border: var(--animated-border-width) solid darkgreen;
   width: var(--sidebar-header-button-width, auto);
   min-width: 0;
+  align-items: center;
   justify-content: center;
+  text-align: center;
   flex: 0 0 auto;
 }
 
@@ -320,6 +325,15 @@ html, body {
   to { filter: hue-rotate(360deg); }
 }
 
+@keyframes sidebar-dash-clockwise {
+  from {
+    background-position: 0 0, 100% 0, 0 100%, 0 0;
+  }
+  to {
+    background-position: 14px 0, 100% 14px, -14px 100%, 0 -14px;
+  }
+}
+
 #overlay-root .clock-time {
   font-family: inherit !important;
 }
@@ -352,10 +366,12 @@ html, body {
   max-width: 92vw;
   height: 100vh;
   background: var(--sidebar-bg);
+  border-right: 3px solid lime;
   transition: left .25s ease;
   box-shadow: 2px 0 10px rgba(0,0,0,.6);
   display: flex;
   flex-direction: column;
+  font-family: 'Courier New', Courier, monospace !important;
   z-index: 9998;
 }
 
@@ -378,24 +394,34 @@ html, body {
 }
 
 #overlay-root .sidebar-item {
+  --animated-border-width: 2px;
+  position: relative;
   margin-bottom: 12px;
-  overflow: hidden;
+  overflow: visible;
   background: var(--overlay-bg);
-  border: 2px solid var(--border-color);
-  animation: overlay-ui-hueshift 1.8s linear infinite;
+  border: var(--animated-border-width) solid darkgreen;
 }
 
 #overlay-root .sidebar-section-toggle {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
+  min-height: 44px;
   border: 0;
   background: transparent;
   color: var(--overlay-text);
-  font: inherit;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: inherit;
+  appearance: none;
+  -webkit-appearance: none;
   text-decoration: none;
   font-weight: bold;
   text-align: center;
-  padding: 10px;
+  padding: 0 10px;
+  line-height: 1.2;
+  transform: translateY(3px);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -403,6 +429,45 @@ html, body {
   -ms-overflow-style: none;
   transition: filter .18s ease, box-shadow .18s ease;
   cursor: pointer;
+}
+
+#overlay-root .sidebar-title-text {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.1;
+}
+
+#overlay-root .sidebar-title-line {
+  display: block;
+}
+
+#overlay-root .sidebar-title-caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--overlay-text);
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#overlay-root .sidebar-title-caret:hover,
+#overlay-root .sidebar-title-caret:focus-visible {
+  outline: none;
+  text-decoration: underline;
 }
 
 #overlay-root .sidebar-section-toggle::-webkit-scrollbar {
@@ -434,11 +499,15 @@ html, body {
 }
 
 #overlay-root .sidebar-preview-links a {
-  display: block;
+  --animated-border-width: 1px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #000;
   color: var(--overlay-text);
   text-decoration: underline;
-  border: 1px solid var(--border-color);
+  border: var(--animated-border-width) solid darkgreen;
   font-weight: 700;
   text-align: center;
   padding: 6px 8px;
@@ -449,10 +518,35 @@ html, body {
   transition: filter .18s ease, box-shadow .18s ease;
 }
 
+#overlay-root .sidebar-item::after,
+#overlay-root .sidebar-header-link .home-link::after,
+#overlay-root .sidebar-preview-links a::after,
+#overlay-root .sidebar-command-panel::after {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--animated-border-width));
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, lime 0 8px, transparent 8px 14px) 0 0 / 14px var(--animated-border-width) repeat-x,
+    repeating-linear-gradient(180deg, lime 0 8px, transparent 8px 14px) 100% 0 / var(--animated-border-width) 14px repeat-y,
+    repeating-linear-gradient(90deg, lime 0 8px, transparent 8px 14px) 0 100% / 14px var(--animated-border-width) repeat-x,
+    repeating-linear-gradient(180deg, lime 0 8px, transparent 8px 14px) 0 0 / var(--animated-border-width) 14px repeat-y;
+}
+
+#overlay-root .sidebar-item:hover::after,
+#overlay-root .sidebar-item:focus-within::after,
+#overlay-root .sidebar-header-link .home-link:hover::after,
+#overlay-root .sidebar-header-link .home-link:focus-visible::after,
+#overlay-root .sidebar-preview-links a:hover::after,
+#overlay-root .sidebar-preview-links a:focus-visible::after,
+#overlay-root .sidebar-command-panel:hover::after,
+#overlay-root .sidebar-command-panel:focus-visible::after {
+  animation: sidebar-dash-clockwise .45s linear infinite;
+}
+
 #overlay-root .sidebar-preview-links a:hover,
 #overlay-root .sidebar-preview-links a:focus-visible {
-  box-shadow: 0 0 0 1px var(--overlay-text);
-  animation: overlay-ui-hueshift 1.8s linear infinite;
+  box-shadow: none;
   outline: none;
 }
 
@@ -465,6 +559,7 @@ html, body {
   margin-top: auto;
   padding: 16px 14px;
   font-size: 0.75rem;
+  font-weight: 700;
   opacity: 0.75;
   text-align: center;
   line-height: 1.35;
@@ -494,6 +589,51 @@ html, body {
 
 #overlay-root .sidebar-footer-row {
   display: block;
+}
+
+#overlay-root .sidebar-hidden-footer-block {
+  display: none;
+}
+
+#overlay-root .sidebar-bottom.is-info-expanded .sidebar-hidden-footer-block {
+  display: block;
+}
+
+#overlay-root .sidebar-info-toggle {
+  display: inline;
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: lime;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#overlay-root .sidebar-info-toggle:hover,
+#overlay-root .sidebar-info-toggle:focus-visible {
+  outline: none;
+  text-decoration-thickness: 2px;
+}
+
+#overlay-root .sidebar-owner-row {
+  display: block;
+  margin-bottom: 6px;
+  color: lime;
+  font-family: "Courier New", monospace;
+}
+
+#overlay-root .sidebar-owner-avatar {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  border: 2px solid lime;
+  object-fit: cover;
 }
 
 #overlay-root .youtube-footer-row {
@@ -541,6 +681,45 @@ html, body {
 
 #overlay-root .sidebar-command-panel {
   display: none;
+}
+
+#overlay-root .sidebar-menu-command-panel {
+  --animated-border-width: 3px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  margin: 10px 0 0;
+  padding: 0 12px;
+  overflow: hidden;
+  background: #000;
+  border: var(--animated-border-width) solid darkgreen;
+  color: var(--overlay-text);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#overlay-root .sidebar-menu-command-panel:visited {
+  color: var(--overlay-text);
+}
+
+#overlay-root .sidebar-menu-command-panel:hover,
+#overlay-root .sidebar-menu-command-panel:focus-visible {
+  outline: none;
+}
+
+#overlay-root #sidebar .home-link:hover,
+#overlay-root #sidebar .home-link:focus-visible {
+  box-shadow: none;
 }
 
 #overlay-root .sidebar-link-thumbnail-popup {
@@ -734,6 +913,8 @@ html, body {
 
 
   #overlay-root .sidebar-command-panel {
+    --animated-border-width: 3px;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -746,7 +927,7 @@ html, body {
     padding: 0 12px;
     overflow: hidden;
     background: #000;
-    border: 3px solid var(--overlay-text);
+    border: var(--animated-border-width) solid darkgreen;
     color: var(--overlay-text);
     font-family: 'Courier New', Courier, monospace !important;
     font-size: calc(17px * var(--overlay-font-scale, 1));
@@ -766,7 +947,6 @@ html, body {
   #overlay-root .sidebar-command-panel:hover,
   #overlay-root .sidebar-command-panel:focus-visible {
     outline: none;
-    animation: overlay-ui-hueshift 1.8s linear infinite;
   }
 
   #overlay-root .sidebar-command-panel-text {
@@ -774,6 +954,10 @@ html, body {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  #overlay-root .sidebar-menu-command-panel {
+    display: none;
   }
 
   #overlay-root .sidebar-header-link {
@@ -798,7 +982,8 @@ html, body {
   }
 
   #overlay-root .sidebar.open .sidebar-item {
-    animation: overlay-ui-hueshift 1.8s linear infinite;
+    border-style: solid;
+    border-color: darkgreen;
   }
 
   #overlay-root .sidebar-preview {
@@ -867,70 +1052,52 @@ html, body {
     </div>
 
     <div class="sidebar-menu">
-      <div class="sidebar-item">
-        <button type="button" class="sidebar-section-toggle" aria-expanded="false">Tektite's Browser Games</button>
-        <div class="sidebar-preview">
-          <div class="sidebar-preview-links" data-site-map-list="games">
-            <a href="/dead/games/" data-index-frame-src="/dead/games/" data-site-map-static="true">* All My Games *</a>
-            <a href="/dead/games/shooter-game/" data-index-frame-src="/dead/games/shooter-game/">+ Shooter Game</a>
-          </div>
+      <div class="sidebar-item is-expanded">
+        <div class="sidebar-section-toggle" aria-expanded="true">
+          <button type="button" class="sidebar-title-caret" data-sidebar-category-direction="-1" aria-label="Previous sidebar category">&lt;</button>
+          <span class="sidebar-title-text" id="sidebar-category-title">
+            <span class="sidebar-title-line">Tektite's</span>
+            <span class="sidebar-title-line">Browser Games</span>
+          </span>
+          <button type="button" class="sidebar-title-caret" data-sidebar-category-direction="1" aria-label="Next sidebar category">&gt;</button>
         </div>
-      </div>
-
-      <div class="sidebar-item">
-        <button type="button" class="sidebar-section-toggle" aria-expanded="false">Tektite's Web Experiments</button>
         <div class="sidebar-preview">
-          <div class="sidebar-preview-links" data-site-map-list="experiments">
-            <a href="/dead/experiments/" data-index-frame-src="/dead/experiments/" data-site-map-static="true">* All Web Experiments *</a>
-            <a href="/dead/experiments/blotter-visualizer/" data-index-frame-src="/dead/experiments/blotter-visualizer/">+ Blotter Visualizer</a>
-            <a href="/dead/experiments/canvas-backgrounds/" data-index-frame-src="/dead/experiments/canvas-backgrounds/">+ Canvas Backgrounds</a>
-            <a href="/dead/experiments/chat-sandbox/" data-index-frame-src="/dead/experiments/chat-sandbox/">+ Chat Sandbox</a>
-            <a href="/dead/experiments/gods-eye/" data-index-frame-src="/dead/experiments/gods-eye/">+ God's Eye Art</a>
-            <a href="/dead/experiments/mandala-visuals/" data-index-frame-src="/dead/experiments/mandala-visuals/">+ Mandala Visuals</a>
-            <a href="/dead/experiments/photosphere/" data-index-frame-src="/dead/experiments/photosphere/">+ Photosphere</a>
-            <a href="/dead/experiments/sound-machine/" data-index-frame-src="/dead/experiments/sound-machine/">+ Sound Machine</a>
-            <a href="/dead/experiments/stacks/" data-index-frame-src="/dead/experiments/stacks/">+ Stacks</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="sidebar-item">
-        <button type="button" class="sidebar-section-toggle" aria-expanded="false">Tektite's Tools</button>
-        <div class="sidebar-preview">
-          <div class="sidebar-preview-links" data-site-map-list="tools">
-            <a href="/dead/tools/" data-index-frame-src="/dead/tools/" data-site-map-static="true">* All Tools *</a>
-            <a href="/dead/tools/bookmark-manager/" data-index-frame-src="/dead/tools/bookmark-manager/">+ Bookmark Manager</a>
-            <a href="/dead/tools/dead-tv/" data-index-frame-src="/dead/tools/dead-tv/">+ Dead TV</a>
-            <a href="/dead/tools/karaoke-machine/" data-index-frame-src="/dead/tools/karaoke-machine/">+ Karaoke Machine</a>
-            <a href="/dead/tools/multimedia-editor/" data-index-frame-src="/dead/tools/multimedia-editor/">+ Multimedia Editor</a>
-            <a href="/dead/tools/music-player/" data-index-frame-src="/dead/tools/music-player/">+ Music Player</a>
-            <a href="/dead/tools/pdf-viewer/" data-index-frame-src="/dead/tools/pdf-viewer/">+ PDF Viewer</a>
+          <div class="sidebar-preview-links" id="sidebar-category-links">
+            <a href="/dead/games/shooter-game/" data-index-frame-src="/dead/games/shooter-game/" data-sidebar-category-link="true">+ Shooter Game</a>
           </div>
         </div>
       </div>
     </div>
 
     <div class="sidebar-bottom">
-      <span class="sidebar-footer-row youtube-footer-row">
-        Main YouTube: <a href="https://youtube.com/@Honestly_Thomas" class="youtube-link">@Honestly_Thomas</a>
+      <span class="sidebar-hidden-footer-block" id="sidebar-hidden-footer-block">
+        <img class="sidebar-owner-avatar" src="https://unavatar.io/youtube/UCn3WLZT7k8nO24XimlJVJVQ" alt="Thomas Harrison">
+        <span class="sidebar-owner-row">Thomas Harrison "Honestly Thomas" Tektite/Jinclops</span>
+        <span class="sidebar-footer-row youtube-footer-row">
+          Main YouTube: <a href="https://youtube.com/@Honestly_Thomas" class="youtube-link">@Honestly_Thomas</a>
+        </span>
+        <span class="sidebar-footer-row youtube-footer-row">
+          Alt YouTube: <a href="https://youtube.com/@Cryptid_Memes" class="youtube-link">@Cryptid_Memes</a>
+        </span>
+        <span class="sidebar-footer-row">
+          <a href="https://github.com/honestlythomas/theinternetisdead" class="github-link">Github</a>
+          <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+          <a href="https://main.theinternetisdead.zip" class="download-site-link">Download Site</a>
+        </span>
+        <span class="sidebar-footer-row">
+          <a href="/about.html" class="about-link" data-index-frame-src="/about.html">About</a>
+          <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+          <a href="/privacy.html" class="privacy-link" data-index-frame-src="/privacy.html">Privacy</a>
+          <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+          <a href="/dead/site-map.html" class="site-map-link" data-index-frame-src="/dead/site-map.html">Site-Map</a>
+        </span>
       </span>
-      <span class="sidebar-footer-row youtube-footer-row">
-        Alt YouTube: <a href="https://youtube.com/@Cryptid_Memes" class="youtube-link">@Cryptid_Memes</a>
-      </span>
-      <span class="sidebar-footer-row">
-        <a href="https://github.com/honestlythomas/theinternetisdead" class="github-link">Github</a>
-        <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
-        <a href="https://main.theinternetisdead.zip" class="download-site-link">Download Site</a>
-      </span>
-      <span class="sidebar-footer-row">
-        <a href="/about.html" class="about-link" data-index-frame-src="/about.html">About</a>
-        <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
-        <a href="/privacy.html" class="privacy-link" data-index-frame-src="/privacy.html">Privacy</a>
-        <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
-        <a href="/dead/site-map.html" class="site-map-link" data-index-frame-src="/dead/site-map.html">Site-Map</a>
-      </span>
+      <button type="button" class="sidebar-info-toggle" aria-expanded="false" aria-controls="sidebar-hidden-footer-block">+ MORE INFO +</button>
       <span class="privacy-note">No accounts. No server saves.<br>Your browser hoards the cursed data.</span>
-      <span class="copyright-note"><span class="copyright-name">Thomas Harrison "Honestly Thomas" Tektite/Jinclops</span>Copyright - 2025 <a href="/">theinternetisdead.org</a></span>
+      <span class="copyright-note">Copyright - 2025 <a href="/">theinternetisdead.org</a></span>
+      <a class="sidebar-command-panel sidebar-menu-command-panel" id="sidebar-menu-command-panel" href="#" aria-label="Open chat">
+        <span class="sidebar-command-panel-text">Enter command...</span>
+      </a>
     </div>
   </div>
 </div>
@@ -1399,8 +1566,13 @@ html, body {
   const navStatePanel = overlayRoot.querySelector('#nav-state-panel');
   const sidebarContextLink = overlayRoot.querySelector('#sidebar-context-link');
   const sidebarCommandLink = overlayRoot.querySelector('#sidebar-command-link');
-  const sidebarCommandPanel = overlayRoot.querySelector('#sidebar-command-panel');
+  const sidebarCommandPanels = overlayRoot.querySelectorAll('.sidebar-command-panel');
   const sidebarLogoLink = overlayRoot.querySelector('#sidebar-logo-link');
+  const sidebarInfoToggle = overlayRoot.querySelector('.sidebar-info-toggle');
+  const sidebarBottom = overlayRoot.querySelector('.sidebar-bottom');
+  const sidebarCategoryTitle = overlayRoot.querySelector('#sidebar-category-title');
+  const sidebarCategoryLinks = overlayRoot.querySelector('#sidebar-category-links');
+  const sidebarCategoryButtons = overlayRoot.querySelectorAll('[data-sidebar-category-direction]');
   const sidebarSiteMapLists = {
     games: overlayRoot.querySelector('[data-site-map-list="games"]'),
     experiments: overlayRoot.querySelector('[data-site-map-list="experiments"]'),
@@ -1412,6 +1584,102 @@ html, body {
     experiments: /^\/dead\/experiments\/[^/]+\/$/,
     tools: /^\/dead\/tools\/[^/]+\/$/,
   };
+
+  const sidebarCategories = [
+    {
+      titlePrefix: "Tektite's",
+      titleSuffix: 'Browser Games',
+      links: [
+        { text: '+ Shooter Game', href: '/dead/games/shooter-game/', frameSrc: '/dead/games/shooter-game/' },
+        { text: '+ Tektite 3D Game', href: '/dead/games/tektite-3D-game/', frameSrc: '/dead/games/tektite-3D-game/' },
+      ],
+    },
+    {
+      titlePrefix: "Tektite's",
+      titleSuffix: 'Web Experiments',
+      links: [
+        { text: '+ Placeholder Experiment 1', href: '#' },
+        { text: '+ Placeholder Experiment 2', href: '#' },
+      ],
+    },
+    {
+      titlePrefix: "Tektite's",
+      titleSuffix: 'Web Tools',
+      links: [
+        { text: '+ Placeholder Tool 1', href: '#' },
+        { text: '+ Placeholder Tool 2', href: '#' },
+      ],
+    },
+  ];
+  let sidebarCategoryIndex = 0;
+
+  function renderSidebarCategory() {
+    if (!sidebarCategoryTitle || !sidebarCategoryLinks) return;
+    const category = sidebarCategories[sidebarCategoryIndex];
+    sidebarCategoryTitle.replaceChildren();
+    [category.titlePrefix, category.titleSuffix].forEach((lineText) => {
+      const line = document.createElement('span');
+      line.className = 'sidebar-title-line';
+      line.textContent = lineText;
+      sidebarCategoryTitle.appendChild(line);
+    });
+    sidebarCategoryLinks.replaceChildren();
+
+    category.links.forEach((linkData) => {
+      const link = document.createElement('a');
+      link.href = linkData.href;
+      link.textContent = linkData.text;
+      link.dataset.sidebarCategoryLink = 'true';
+      if (linkData.frameSrc) {
+        link.dataset.indexFrameSrc = linkData.frameSrc;
+      }
+      sidebarCategoryLinks.appendChild(link);
+    });
+  }
+
+  function cycleSidebarCategory(direction) {
+    const step = Number(direction) || 0;
+    sidebarCategoryIndex = (sidebarCategoryIndex + step + sidebarCategories.length) % sidebarCategories.length;
+    renderSidebarCategory();
+  }
+
+  sidebarCategoryButtons.forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      cycleSidebarCategory(button.dataset.sidebarCategoryDirection);
+    });
+  });
+
+  renderSidebarCategory();
+
+  if (sidebarCategoryLinks) {
+    sidebarCategoryLinks.addEventListener('click', (event) => {
+      const link = event.target.closest && event.target.closest('a');
+      if (!link || !sidebarCategoryLinks.contains(link)) return;
+
+      const framePath = link.dataset.indexFrameSrc;
+      if (framePath && requestIndexFrameSource(framePath)) {
+        event.preventDefault();
+      } else if ((link.getAttribute('href') || '') === '#') {
+        event.preventDefault();
+      }
+      closeSidebar();
+    });
+  }
+
+  function setSidebarInfoExpanded(isExpanded) {
+    if (!sidebarBottom || !sidebarInfoToggle) return;
+    sidebarBottom.classList.toggle('is-info-expanded', isExpanded);
+    sidebarInfoToggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    sidebarInfoToggle.textContent = isExpanded ? '- LESS INFO -' : '+ MORE INFO +';
+  }
+
+  if (sidebarInfoToggle && sidebarBottom) {
+    sidebarInfoToggle.addEventListener('click', () => {
+      setSidebarInfoExpanded(!sidebarBottom.classList.contains('is-info-expanded'));
+    });
+  }
 
   function normalizeSidebarSitePath(path) {
     try {
@@ -1913,9 +2181,8 @@ html, body {
       event.preventDefault();
       event.stopImmediatePropagation();
 
-      const shouldExpand = !item.classList.contains('is-expanded');
-      item.classList.toggle('is-expanded', shouldExpand);
-      button.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+      item.classList.add('is-expanded');
+      button.setAttribute('aria-expanded', 'true');
     });
   });
 
@@ -2085,34 +2352,38 @@ html, body {
     });
   }
 
-  if (sidebarCommandPanel) {
+  if (sidebarCommandPanels.length) {
     function syncSidebarCommandPanelBehavior() {
-      if (shouldUseIndexChatBehavior()) {
-        sidebarCommandPanel.setAttribute('href', '#');
-        sidebarCommandPanel.setAttribute('aria-label', 'Open chat');
-      } else {
-        sidebarCommandPanel.setAttribute('href', '/');
-        sidebarCommandPanel.setAttribute('aria-label', 'Go to the main page');
-      }
+      sidebarCommandPanels.forEach((sidebarCommandPanel) => {
+        if (shouldUseIndexChatBehavior()) {
+          sidebarCommandPanel.setAttribute('href', '#');
+          sidebarCommandPanel.setAttribute('aria-label', 'Open chat');
+        } else {
+          sidebarCommandPanel.setAttribute('href', '/');
+          sidebarCommandPanel.setAttribute('aria-label', 'Go to the main page');
+        }
+      });
     }
 
     syncSidebarCommandPanelBehavior();
 
-    sidebarCommandPanel.addEventListener('click', (event) => {
-      if (shouldUseIndexChatBehavior()) {
-        handleChatActivate(event);
-        return;
-      }
-      closeSidebar();
-    });
+    sidebarCommandPanels.forEach((sidebarCommandPanel) => {
+      sidebarCommandPanel.addEventListener('click', (event) => {
+        if (shouldUseIndexChatBehavior()) {
+          handleChatActivate(event);
+          return;
+        }
+        closeSidebar();
+      });
 
-    sidebarCommandPanel.addEventListener('keydown', (event) => {
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-      if (shouldUseIndexChatBehavior()) {
-        handleChatActivate(event);
-        return;
-      }
-      closeSidebar();
+      sidebarCommandPanel.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        if (shouldUseIndexChatBehavior()) {
+          handleChatActivate(event);
+          return;
+        }
+        closeSidebar();
+      });
     });
 
     window.addEventListener('resize', syncSidebarCommandPanelBehavior);
