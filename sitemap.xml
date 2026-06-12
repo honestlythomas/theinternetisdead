@@ -2,494 +2,630 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://theinternetisdead.org/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/audio/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
-    <loc>https://theinternetisdead.org/dead/audio/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <loc>https://theinternetisdead.org/dead/downloads/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/downloads/extensions/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/downloads/extensions/theinternetisdead-extension-suite/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/downloads/extensions/theinternetisdead-extension-suite/assets/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/downloads/extensions/theinternetisdead-extension-suite/icons/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/YouTube/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/blotter-visualizer/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
-    <loc>https://theinternetisdead.org/dead/experiments/blotter-visualizer/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <loc>https://theinternetisdead.org/dead/experiments/bouncing-rainbow-camera/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/camera-experiment/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
-    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/cursed-background.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/demon-ascii.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/dot-lavalamp.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/rainbow-background.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/starfield-background_reactive.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/starfield-background_warp.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/starfield-background.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <loc>https://theinternetisdead.org/dead/experiments/cec-remote/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/chat-sandbox/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/chat-sandbox/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/gods-eye/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/gods-eye/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/01-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/02-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/03-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/04-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/05-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/06-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/07-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/08-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/09-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/10-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/11-mandala-visuals.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/photosphere/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/photosphere/themes/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/photosphere/themes/inner-space/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/photosphere/themes/zentangle/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/photosphere/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/sound-machine/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/sound-machine/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/stacks/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/experiments/stacks/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/test/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/experiments/test/habisky-mofo/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
-    <loc>https://theinternetisdead.org/dead/experiments/test/habisky-mofo/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <loc>https://theinternetisdead.org/dead/experiments/thumbnail-grid/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
-    <loc>https://theinternetisdead.org/dead/experiments/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <loc>https://theinternetisdead.org/dead/experiments/weird-secret/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/gamers/</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/gamers/shmelf/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/shooter-game/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/audio/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/controller-buttons/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/controller-buttons/controls.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/enemy-gifs/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/enemy-webps/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/JSON/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/levels/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/levels/shooter-game-level1.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/levels/shooter-game-level2.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/scripts/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/games/shooter-game/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/tektite-3D-game/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/tektite-3D-game/assets/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/games/tektite-3D-game/assets/audio/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/tektite-3D-game/assets/png/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/games/tektite-3D-game/assets/scripts/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/games/tektite-3D-game/assets/webp/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/games/tektite-3D-game/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/games/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/images/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/images/link-thumbnails/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/images/link-thumbnails/_review/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/images/link-thumbnails/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/images/pngs/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
-    <loc>https://theinternetisdead.org/dead/images/pngs/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/images/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <loc>https://theinternetisdead.org/dead/images/tektite-tv-oldschool-logos/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/JSON/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/messages/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/messages/random_messages/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/messages/standard_messages/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/messages/timed_messages/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/messages/youtube-comments/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/readmes/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/readmes/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/scripts/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/scripts/build/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/scripts/chat/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/scripts/page-helpers/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/stuff/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/stuff/nav/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/stuff/nav/nav.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/gaming-grid/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
-    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/gaming-grid/gaming-grid.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/feeds-bridge.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/feeds-header.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/feeds-host.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/feeds.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/thumbnail-grid/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/stuff/wtf/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/stuff/wtf/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/tools/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/tools/bookmark-manager/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/tools/bookmark-manager/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/tools/camera-studio/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/tools/camera-studio/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/tools/dead-tv/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/tools/dead-tv/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/tools/karaoke-machine/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/tools/karaoke-machine/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/tools/multimedia-editor/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
-    <loc>https://theinternetisdead.org/dead/tools/multimedia-editor/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <loc>https://theinternetisdead.org/dead/tools/music-crunchifier/</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/tools/music-player/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/tools/music-player/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/tools/pdf-viewer/</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/tools/pdf-viewer/pdfs/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/tools/pdf-viewer/creepy-susie.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/tools/pdf-viewer/doodle-book.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/tools/pdf-viewer/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/tools/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/dead/videos/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/videos/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://theinternetisdead.org/dead/site-map.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/404.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/about.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/audio/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/downloads/extensions/theinternetisdead-extension-suite/popup.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/downloads/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/blotter-visualizer/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/bouncing-rainbow-camera/bouncing_camera.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/camera-experiment/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/cursed-background.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/demon-ascii.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/dot-lavalamp.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/rainbow-background.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/starfield-background_reactive.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/starfield-background_warp.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/canvas-backgrounds/starfield-background.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/cec-remote/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/chat-sandbox/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/gods-eye/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/01-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/02-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/03-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/04-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/05-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/06-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/07-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/08-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/09-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/10-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/11-mandala-visuals.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/mandala-visuals/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/photosphere/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/sound-machine/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/stacks/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/test/habisky-mofo/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/thumbnail-grid/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/experiments/weird-secret/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/games/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/controller-buttons/controls.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/levels/shooter-game-level1.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/games/shooter-game/assets/levels/shooter-game-level2.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/games/shooter-game/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/games/tektite-3D-game/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/images/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/images/link-thumbnails/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/images/pngs/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/images/tektite-tv-oldschool-logos/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/messages/youtube-comments/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/readmes/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/site-map.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/stuff/nav/nav.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/feeds-bridge.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/feeds-header.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/feeds-host.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/feeds.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/gaming-grid/gaming-grid.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/feeds/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/stuff/stuff-for-index/thumbnail-grid/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/stuff/wtf/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/bookmark-manager/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/camera-studio/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/dead-tv/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/karaoke-machine/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/multimedia-editor/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/music-crunchifier/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/music-player/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/pdf-viewer/creepy-susie.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/pdf-viewer/doodle-book.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/tools/pdf-viewer/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/dead/videos/index.html</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/index.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
+  </url>
+  <url>
+    <loc>https://theinternetisdead.org/other.html</loc>
+    <lastmod>2026-06-12</lastmod>
   </url>
   <url>
     <loc>https://theinternetisdead.org/privacy.html</loc>
-    <lastmod>2026-05-08</lastmod>
+    <lastmod>2026-06-12</lastmod>
   </url>
 </urlset>
