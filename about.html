@@ -1,1 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | theinternetisdead.org</title>
+  <script>
+    const standaloneParams = new URLSearchParams(window.location.search);
+    const allowStandalone = standaloneParams.get('standalone') === 'true';
 
+    if (window.top === window.self && !allowStandalone) {
+      const shellFramePath = '/about.html';
+      window.sessionStorage.setItem('deadRootShellFramePath', shellFramePath);
+      window.location.replace('/?frame=' + encodeURIComponent(shellFramePath));
+    }
+  </script>
+  <style>
+    :root {
+      --panel-bg: rgba(81, 42, 103, 0.88);
+      --panel-bg-soft: rgba(16, 0, 28, 0.58);
+      --panel-bg-dark: rgba(0, 0, 0, 0.48);
+      --text: #00ff00;
+      --body-text: #baffba;
+      --muted: #88d688;
+      --accent: #00ff00;
+      --hover-bg: #2a0042;
+      --font: "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.55;
+      overflow: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    html {
+      background: transparent !important;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    body {
+      padding: 28px 24px 42px;
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: transparent !important;
+      isolation: isolate;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 980px;
+      text-shadow: 0 0 6px rgba(0, 255, 0, 0.28);
+    }
+
+    a {
+      color: var(--text);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    a:hover,
+    a:focus {
+      background: var(--hover-bg);
+      color: var(--text);
+      outline: none;
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+
+    h1 {
+      display: inline-block;
+      font-size: 28px;
+      line-height: 1.1;
+      margin: 0 0 10px;
+      padding: 4px 10px 5px;
+      border: 2px solid var(--accent);
+      background: var(--panel-bg-dark);
+      box-shadow: 0 0 18px rgba(0, 255, 0, 0.18);
+    }
+
+    h2 {
+      font-size: 18px;
+      line-height: 1.25;
+      margin: 34px 0 12px;
+      border-top: 2px solid var(--accent);
+      padding: 12px 10px 0 0;
+      text-shadow: 0 0 10px rgba(0, 255, 0, 0.36);
+    }
+
+    h3 {
+      font-size: 15px;
+      margin: 0 0 8px;
+    }
+
+    p,
+    ul {
+      margin: 0 0 16px;
+      color: var(--body-text);
+      max-width: 82ch;
+    }
+
+    ul {
+      padding-left: 28px;
+    }
+
+    li {
+      margin: 5px 0;
+    }
+
+    li::marker {
+      color: var(--accent);
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: bold;
+    }
+
+    .site-note {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .ascii {
+      white-space: pre;
+      line-height: 1.1;
+      color: var(--text);
+      background: var(--panel-bg-soft);
+      border-left: 2px solid var(--accent);
+      padding: 12px 14px;
+      margin: 18px 0 24px;
+      overflow-x: auto;
+      max-width: max-content;
+    }
+
+    .box,
+    .section-card {
+      border: 2px solid var(--accent);
+      background: var(--panel-bg);
+      box-shadow: 0 0 0 1px rgba(0, 255, 0, 0.16), inset 0 0 28px rgba(0, 0, 0, 0.22);
+    }
+
+    .box {
+      padding: 18px;
+      margin: 22px 0 28px;
+      max-width: 900px;
+    }
+
+    .box p:last-child,
+    .section-card p:last-child,
+    .section-card ul:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin: 18px 0 8px;
+      max-width: 980px;
+    }
+
+    .section-card {
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .section-card p {
+      font-size: 15px;
+      max-width: none;
+    }
+
+    .tiny {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 28px;
+    }
+
+    @media (max-width: 780px) {
+      body {
+        padding: 16px 14px 32px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      h2 {
+        font-size: 16px;
+      }
+
+      p,
+      ul {
+        max-width: none;
+      }
+
+      .section-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>About</h1>
+    <p class="site-note">A map of the site, the shell, and the strange collection living inside it.</p>
+
+    <div class="ascii" aria-hidden="true">
++--------------------------------------------------+
+| THE INTERNET IS DEAD. THE PAGE STILL LOADS.      |
++--------------------------------------------------+
+    </div>
+
+    <div class="box">
+      <p><strong>theinternetisdead.org</strong> is a personal web art archive by Thomas Harrison / Honestly Thomas / Tektite. It is part retro terminal, part experimental desktop, part game shelf, part media dump, and part hand-built proof that a website can still feel like a place.</p>
+      <p>The site runs as a static shell: the top navigation, starfield, command-like URL display, and sidebar stay around while the main iframe loads games, experiments, tools, videos, archives, and strange little utilities.</p>
+    </div>
+
+    <h2>What Exists Here</h2>
+    <p>The site is organized around a few big zones. Some are polished enough to use. Some are sketches. Some are artifacts from experiments that were worth keeping because they still have a pulse.</p>
+
+    <div class="section-grid">
+      <section class="section-card">
+        <h3>Games</h3>
+        <p>The games section includes browser games such as <strong>Shooter Game</strong> and <strong>Tektite 3D Game</strong>. Expect arcade controls, canvas effects, audio, level assets, controller experiments, and deliberately loud old-web energy.</p>
+      </section>
+
+      <section class="section-card">
+        <h3>Experiments</h3>
+        <p>The experiments area contains visual and interactive tests: canvas backgrounds, blotter-style visuals, chat sandbox systems, mandalas, photo spheres, sound tools, stacks, camera experiments, and other pages built to see what the browser can be pushed into doing.</p>
+      </section>
+
+      <section class="section-card">
+        <h3>Tools</h3>
+        <p>The tools section is a grab bag of usable browser utilities: bookmark management, camera studio work, Dead TV, karaoke, multimedia editing, music playback, PDF viewing, and related interface experiments.</p>
+      </section>
+
+      <section class="section-card">
+        <h3>Videos And Feeds</h3>
+        <p>The home feed and video routes surface archived video metadata, thumbnails, channel-style browsing, YouTube-related material, and large generated indexes that turn the site into a navigable media wall.</p>
+      </section>
+
+      <section class="section-card">
+        <h3>Downloads And Extensions</h3>
+        <p>The downloads area includes extension-suite work and packaged site artifacts. It is where browser extension experiments, stored themes, icons, readmes, and downloadable builds collect.</p>
+      </section>
+
+      <section class="section-card">
+        <h3>Site Infrastructure</h3>
+        <p>Behind the scenes are JSON indexes, thumbnail maps, build scripts, page helpers, nav overlays, chat command code, generated site maps, and enough glue to make a static site behave like a small operating system.</p>
+      </section>
+    </div>
+
+    <h2>Notable Pieces</h2>
+    <ul>
+      <li><strong>The iframe shell:</strong> a persistent frame around the site with sidebar navigation, URL state, a clock, and a starfield canvas behind the loaded page.</li>
+      <li><strong>The thumbnail grid:</strong> the front-door browsing surface for many site entries, media items, and generated link previews.</li>
+      <li><strong>Canvas backgrounds:</strong> standalone visual backgrounds including the starfield used by the shell.</li>
+      <li><strong>Chat sandbox:</strong> a local command/interface experiment that can overlay parts of the site.</li>
+      <li><strong>Dead TV and media tools:</strong> pages that treat media browsing as an interface playground rather than a plain list.</li>
+      <li><strong>Repo-generated indexes:</strong> JSON and sitemap data that expose the shape of the whole project.</li>
+    </ul>
+
+    <h2>How To Read It</h2>
+    <p>This is not a normal portfolio landing page. It is closer to a living archive: a site where tools, games, half-finished interfaces, archived media, old jokes, build outputs, and working experiments are allowed to coexist.</p>
+    <p>The useful parts are real. The rough parts are also real. The point is not to sand the site into a generic product surface, but to keep the weirdness browseable, playable, and recoverable.</p>
+
+    <h2>Useful Links</h2>
+    <ul>
+      <li><a href="/dead/games/" data-index-frame-src="/dead/games/">Games</a></li>
+      <li><a href="/dead/experiments/" data-index-frame-src="/dead/experiments/">Experiments</a></li>
+      <li><a href="/dead/tools/" data-index-frame-src="/dead/tools/">Tools</a></li>
+      <li><a href="/" data-index-frame-src="/dead/stuff/stuff-for-index/thumbnail-grid/index.html">Home Feed / Videos</a></li>
+      <li><a href="/dead/site-map.html" data-index-frame-src="/dead/site-map.html">Site Map</a></li>
+      <li><a href="https://github.com/honestlythomas/theinternetisdead">GitHub Repository</a></li>
+      <li><a href="https://main.theinternetisdead.zip">Download Site</a></li>
+    </ul>
+
+    <p class="tiny">
+      Return to <a href="/" data-index-frame-src="/dead/stuff/stuff-for-index/thumbnail-grid/index.html">theinternetisdead.org</a>.
+    </p>
+  </main>
+</body>
+</html>

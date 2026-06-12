@@ -463,7 +463,9 @@ html, body {
 
 #overlay-root .about-link,
 #overlay-root .privacy-link,
-#overlay-root .site-map-link {
+#overlay-root .site-map-link,
+#overlay-root .github-link,
+#overlay-root .download-site-link {
   display: inline;
   color: lime;
   font-family: "Courier New", monospace;
@@ -472,9 +474,15 @@ html, body {
 
 #overlay-root .about-link:hover,
 #overlay-root .privacy-link:hover,
-#overlay-root .site-map-link:hover {
+#overlay-root .site-map-link:hover,
+#overlay-root .github-link:hover,
+#overlay-root .download-site-link:hover {
   text-decoration: underline;
   opacity: 1;
+}
+
+#overlay-root .sidebar-footer-row {
+  display: block;
 }
 
 #overlay-root .privacy-note {
@@ -888,11 +896,18 @@ html, body {
     </div>
 
     <div class="sidebar-bottom">
-      <a href="/about.html" class="about-link" data-index-frame-src="/about.html">About</a>
-      <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
-      <a href="/privacy.html" class="privacy-link" data-index-frame-src="/privacy.html">Privacy</a>
-      <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
-      <a href="/dead/site-map.html" class="site-map-link" data-index-frame-src="/dead/site-map.html">Site-Map</a>
+      <span class="sidebar-footer-row">
+        <a href="https://github.com/honestlythomas/theinternetisdead" class="github-link">Github</a>
+        <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+        <a href="https://main.theinternetisdead.zip" class="download-site-link">Download Site</a>
+      </span>
+      <span class="sidebar-footer-row">
+        <a href="/about.html" class="about-link" data-index-frame-src="/about.html">About</a>
+        <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+        <a href="/privacy.html" class="privacy-link" data-index-frame-src="/privacy.html">Privacy</a>
+        <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+        <a href="/dead/site-map.html" class="site-map-link" data-index-frame-src="/dead/site-map.html">Site-Map</a>
+      </span>
       <span class="privacy-note">No accounts. No server saves.<br>Your browser hoards the cursed data.</span>
       <span class="copyright-note"><span class="copyright-name">Thomas Harrison "Honestly Thomas" Tektite/Jinclops</span>Copyright - 2025 <a href="/">theinternetisdead.org</a></span>
     </div>

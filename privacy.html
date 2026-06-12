@@ -4,36 +4,83 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy | theinternetisdead.org</title>
+  <script>
+    const standaloneParams = new URLSearchParams(window.location.search);
+    const allowStandalone = standaloneParams.get('standalone') === 'true';
+
+    if (window.top === window.self && !allowStandalone) {
+      const shellFramePath = '/privacy.html';
+      window.sessionStorage.setItem('deadRootShellFramePath', shellFramePath);
+      window.location.replace('/?frame=' + encodeURIComponent(shellFramePath));
+    }
+  </script>
   <style>
+    :root {
+      --page-bg: #000;
+      --panel-bg: rgba(81, 42, 103, 0.88);
+      --panel-bg-soft: rgba(16, 0, 28, 0.58);
+      --text: #00ff00;
+      --body-text: #baffba;
+      --muted: #88d688;
+      --accent: #00ff00;
+      --hover-bg: #2a0042;
+      --font: "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     html,
     body {
       margin: 0;
       padding: 0;
-      background: #000;
-      color: #fff;
-      font-family: "Courier New", Courier, monospace;
+      color: var(--text);
+      font-family: var(--font);
       font-size: 16px;
-      line-height: 1.45;
+      line-height: 1.55;
+      overflow: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    html {
+      background: transparent !important;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
     }
 
     body {
-      padding: 24px;
+      padding: 28px 24px 42px;
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: transparent !important;
+      isolation: isolate;
     }
 
     main {
+      position: relative;
+      z-index: 1;
       max-width: 900px;
+      text-shadow: 0 0 6px rgba(0, 255, 0, 0.28);
     }
 
     a {
-      color: #fff;
+      color: var(--text);
       text-decoration: underline;
+      text-underline-offset: 3px;
     }
 
     a:hover,
     a:focus {
-      background: #fff;
-      color: #000;
+      background: var(--hover-bg);
+      color: var(--text);
       outline: none;
+      box-shadow: 0 0 0 2px var(--accent);
     }
 
     h1,
@@ -41,50 +88,107 @@
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 0.04em;
+      color: var(--text);
     }
 
     h1 {
-      font-size: 24px;
-      margin: 0 0 8px;
+      display: inline-block;
+      font-size: 28px;
+      line-height: 1.1;
+      margin: 0 0 10px;
+      padding: 4px 10px 5px;
+      border: 2px solid var(--accent);
+      background: rgba(0, 0, 0, 0.45);
+      box-shadow: 0 0 18px rgba(0, 255, 0, 0.18);
     }
 
     h2 {
       font-size: 18px;
-      margin: 32px 0 8px;
-      border-top: 1px solid #fff;
-      padding-top: 12px;
+      line-height: 1.25;
+      margin: 34px 0 12px;
+      border-top: 2px solid var(--accent);
+      padding: 12px 10px 0 0;
+      text-shadow: 0 0 10px rgba(0, 255, 0, 0.36);
     }
 
     p,
     ul {
       margin: 0 0 16px;
+      color: var(--body-text);
+      max-width: 78ch;
     }
 
     ul {
-      padding-left: 24px;
+      padding-left: 28px;
+    }
+
+    li {
+      margin: 5px 0;
+    }
+
+    li::marker {
+      color: var(--accent);
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: bold;
     }
 
     .site-note {
-      margin: 0 0 28px;
-      opacity: 0.85;
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 15px;
     }
 
     .box {
-      border: 1px solid #fff;
-      padding: 16px;
-      margin: 20px 0;
+      border: 2px solid var(--accent);
+      background: var(--panel-bg);
+      box-shadow: 0 0 0 1px rgba(0, 255, 0, 0.16), inset 0 0 28px rgba(0, 0, 0, 0.22);
+      padding: 18px;
+      margin: 22px 0 28px;
+      max-width: 900px;
+    }
+
+    .box p:last-child {
+      margin-bottom: 0;
     }
 
     .tiny {
       font-size: 13px;
-      opacity: 0.8;
+      color: var(--muted);
+      margin-top: 28px;
     }
 
     .ascii {
       white-space: pre;
       line-height: 1.1;
+      color: var(--text);
+      background: var(--panel-bg-soft);
+      border-left: 2px solid var(--accent);
+      padding: 12px 14px;
       margin: 18px 0 24px;
       overflow-x: auto;
+      max-width: max-content;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 16px 14px 32px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      h2 {
+        font-size: 16px;
+      }
+
+      p,
+      ul {
+        max-width: none;
+      }
     }
   </style>
 </head>

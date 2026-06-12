@@ -270,6 +270,10 @@
         return DEFAULT_IFRAME_PATH;
       }
 
+      if (/^\/(?:about|privacy)\.html$/i.test(path)) {
+        return `${path}${window.location.search || ''}${window.location.hash || ''}`;
+      }
+
       if (
         /^\/dead\/games\/(?:[^/]+\/?)?(?:index\.html)?$/i.test(path) ||
         /^\/dead\/experiments\/(?:[^/]+\/?)?(?:index\.html)?$/i.test(path) ||
@@ -385,16 +389,20 @@
     }
 
     function replaceContentFrameSource(nextPath) {
+      const framePathWithCacheBust = /^\/(?:about|privacy)\.html(?:[?#]|$)/i.test(nextPath)
+        ? `${nextPath}${nextPath.includes('?') ? '&' : '?'}shellv=${Date.now()}`
+        : nextPath;
+
       try {
         if (contentFrame.contentWindow) {
-          contentFrame.contentWindow.location.replace(nextPath);
+          contentFrame.contentWindow.location.replace(framePathWithCacheBust);
           return;
         }
       } catch (error) {
         // Fall back to src assignment if the frame is unavailable.
       }
 
-      contentFrame.src = nextPath;
+      contentFrame.src = framePathWithCacheBust;
     }
 
     function setFrameSource(value, options = {}) {
@@ -837,7 +845,16 @@
     const resizeObserver = new ResizeObserver(syncOverlayHeight);
     resizeObserver.observe(overlayContainer);
 
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && /^(?:localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname)) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => registration.unregister());
+        if (navigator.serviceWorker.controller) {
+          window.location.reload();
+        }
+      }).catch((error) => {
+        console.warn('Unable to unregister local service worker', error);
+      });
+    } else if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js').then((registration) => {
         registration.update();
       }).catch((error) => {
