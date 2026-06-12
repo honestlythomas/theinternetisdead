@@ -1,5 +1,14 @@
 <title>/dead/stuff/nav/nav.html</title>
 <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+<script>
+(function () {
+  const path = (window.location.pathname || '').replace(/\/+$/, '') || '/';
+  const params = new URLSearchParams(window.location.search || '');
+  if (path === '/dead/stuff/nav/nav.html' && params.get('standalone') !== 'true') {
+    window.location.replace('/');
+  }
+}());
+</script>
 <style>
 html, body {
   margin: 0;
@@ -464,6 +473,7 @@ html, body {
 #overlay-root .about-link,
 #overlay-root .privacy-link,
 #overlay-root .site-map-link,
+#overlay-root .youtube-link,
 #overlay-root .github-link,
 #overlay-root .download-site-link {
   display: inline;
@@ -475,6 +485,7 @@ html, body {
 #overlay-root .about-link:hover,
 #overlay-root .privacy-link:hover,
 #overlay-root .site-map-link:hover,
+#overlay-root .youtube-link:hover,
 #overlay-root .github-link:hover,
 #overlay-root .download-site-link:hover {
   text-decoration: underline;
@@ -483,6 +494,10 @@ html, body {
 
 #overlay-root .sidebar-footer-row {
   display: block;
+}
+
+#overlay-root .youtube-footer-row {
+  text-decoration: underline;
 }
 
 #overlay-root .privacy-note {
@@ -801,7 +816,7 @@ html, body {
 
 <div id="overlay-root">
   <div class="topbar">
-    <div class="hamburger" data-action="toggle-sidebar" aria-label="Open sidebar" role="button" tabindex="0">☰</div>
+    <div class="hamburger" data-action="toggle-sidebar" aria-label="Open sidebar" role="button" tabindex="0">&#9776;</div>
 
     <div class="logo">
       <a class="logo-link" href="/" aria-label="Go to the main page">
@@ -829,7 +844,7 @@ html, body {
 
   <div id="sidebar" class="sidebar" aria-hidden="true">
     <div class="topbar">
-      <div class="hamburger" data-action="toggle-sidebar" aria-label="Close sidebar" role="button" tabindex="0">✕</div>
+      <div class="hamburger" data-action="toggle-sidebar" aria-label="Close sidebar" role="button" tabindex="0">&#10005;</div>
 
       <div class="logo">
         <a class="logo-link sidebar-logo-link" id="sidebar-logo-link" href="/" aria-label="Go to the main page">
@@ -896,6 +911,12 @@ html, body {
     </div>
 
     <div class="sidebar-bottom">
+      <span class="sidebar-footer-row youtube-footer-row">
+        Main YouTube: <a href="https://youtube.com/@Honestly_Thomas" class="youtube-link">@Honestly_Thomas</a>
+      </span>
+      <span class="sidebar-footer-row youtube-footer-row">
+        Alt YouTube: <a href="https://youtube.com/@Cryptid_Memes" class="youtube-link">@Cryptid_Memes</a>
+      </span>
       <span class="sidebar-footer-row">
         <a href="https://github.com/honestlythomas/theinternetisdead" class="github-link">Github</a>
         <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
@@ -1013,12 +1034,12 @@ html, body {
   function formatOverlayDate(now = new Date(), timeZone = DEFAULT_OVERLAY_CLOCK_STATE.zone) {
     const weekday = new Intl.DateTimeFormat('en-CA', {
       timeZone,
-      weekday: 'short'
+      weekday: 'long'
     }).format(now);
 
     const month = new Intl.DateTimeFormat('en-CA', {
       timeZone,
-      month: 'short'
+      month: 'long'
     }).format(now);
 
     const day = new Intl.DateTimeFormat('en-CA', {
@@ -1031,7 +1052,7 @@ html, body {
       year: 'numeric'
     }).format(now);
 
-    return `${weekday} / ${month} ${day} / ${year}`;
+    return `${weekday} ${month} ${day}, ${year}`;
   }
 
   function fitClockTextToContainer(el) {
@@ -1040,8 +1061,16 @@ html, body {
     if (!box) return;
 
     const isDate = getOverlayClockState().mode === 'date';
-    const basePx = isMobileOverlayView() ? (isDate ? 16 : 20) : (isDate ? 22 : 34);
-    const minPx = isDate ? 6 : (isMobileOverlayView() ? 12 : 15);
+    const setClockFontSize = (size) => {
+      el.style.setProperty('font-size', `calc(${size}px * var(--overlay-font-scale, 1))`, 'important');
+    };
+    if (!isDate) {
+      setClockFontSize(isMobileOverlayView() ? 20 : 34);
+      return;
+    }
+
+    const basePx = isMobileOverlayView() ? 12 : 16;
+    const minPx = 4;
     const availableWidth = Math.max(1, box.clientWidth);
     const measureTextWidth = () => {
       const range = document.createRange();
@@ -1052,17 +1081,17 @@ html, body {
     };
 
     let size = basePx;
-    el.style.fontSize = `calc(${size}px * var(--overlay-font-scale, 1))`;
+    setClockFontSize(size);
 
     while (size > minPx && measureTextWidth() > availableWidth) {
       size -= 1;
-      el.style.fontSize = `calc(${size}px * var(--overlay-font-scale, 1))`;
+      setClockFontSize(size);
     }
 
     const fittedWidth = measureTextWidth();
     if (fittedWidth > availableWidth) {
       const scale = availableWidth / Math.max(1, fittedWidth);
-      el.style.fontSize = `calc(${Math.max(1, Math.floor(size * scale))}px * var(--overlay-font-scale, 1))`;
+      setClockFontSize(Math.max(1, Math.floor(size * scale)));
     }
   }
 
