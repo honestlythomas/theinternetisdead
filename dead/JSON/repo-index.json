@@ -1,7 +1,8 @@
 {
-  "generatedAt": "2026-06-12T04:03:42.355Z",
+  "generatedAt": "2026-06-14T06:22:29.568Z",
   "folders": [
     "/",
+    "/buy/",
     "/dead/",
     "/dead/audio/",
     "/dead/downloads/",
@@ -51,7 +52,6 @@
     "/dead/games/tektite-3D-game/assets/webp/",
     "/dead/images/",
     "/dead/images/link-thumbnails/",
-    "/dead/images/link-thumbnails/_review/",
     "/dead/images/pngs/",
     "/dead/images/tektite-tv-oldschool-logos/",
     "/dead/JSON/",
