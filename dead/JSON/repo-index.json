@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T06:22:29.568Z",
+  "generatedAt": "2026-06-19T05:48:27.874Z",
   "folders": [
     "/",
     "/buy/",
@@ -82,6 +82,9 @@
     "/dead/tools/music-player/",
     "/dead/tools/pdf-viewer/",
     "/dead/tools/pdf-viewer/pdfs/",
-    "/dead/videos/"
+    "/dead/videos/",
+    "/workers/",
+    "/workers/ghost-counter/",
+    "/workers/ghost-counter/src/"
   ]
 }
