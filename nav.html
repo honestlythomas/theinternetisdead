@@ -790,12 +790,23 @@ html, body {
 }
 
 #overlay-root .sidebar-radio-current {
+  border: 1px solid darkgreen;
+  background: #000;
+  color: #ff00ff;
+  font: inherit;
+  font-weight: 700;
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   text-decoration: underline;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+#overlay-root .sidebar-radio-current option {
+  background: #000;
+  color: #ff00ff;
 }
 
 #overlay-root .sidebar-radio-current:hover,
@@ -1358,7 +1369,9 @@ html, body {
       </div>
       <span class="sidebar-radio-title sidebar-radio-caption" aria-label="Radio station selector">
         <button class="sidebar-radio-caret" type="button" data-radio-direction="-1" aria-label="Previous radio station">&lt;</button>
-        <span class="sidebar-radio-current" id="sidebar-radio-current" role="button" tabindex="0" aria-label="Next radio station">Q107 - Toronto's Rock</span>
+        <select class="sidebar-radio-current" id="sidebar-radio-current" aria-label="Select radio station">
+          <option value="0">Q107 - Toronto's Rock</option>
+        </select>
         <button class="sidebar-radio-caret" type="button" data-radio-direction="1" aria-label="Next radio station">&gt;</button>
       </span>
     </div>
@@ -2041,6 +2054,22 @@ html, body {
     {
       title: 'Country 102 Bracebridge',
       src: 'https://tunein.com/embed/player/s307771/'
+    },
+    {
+      title: 'Bounce 104.1 Midland',
+      src: 'https://tunein.com/embed/player/s2802/'
+    },
+    {
+      title: 'BIG 101.1 Barrie',
+      src: 'https://tunein.com/embed/player/s31196/'
+    },
+    {
+      title: 'Moose FM 99.5 Bracebridge',
+      src: 'https://tunein.com/embed/player/s12325/'
+    },
+    {
+      title: 'Moose FM 105.5 Huntsville',
+      src: 'https://tunein.com/embed/player/s12327/'
     }
   ];
 
@@ -2054,7 +2083,21 @@ html, body {
     sidebarRadioStationIndex = nextIndex;
     sidebarRadioPlayer.src = station.src;
     sidebarRadioPlayer.title = station.title;
-    sidebarRadioCurrent.textContent = station.title;
+    sidebarRadioCurrent.value = String(nextIndex);
+  }
+
+  if (sidebarRadioCurrent && sidebarRadioStations.length) {
+    sidebarRadioCurrent.innerHTML = '';
+    sidebarRadioStations.forEach((station, index) => {
+      const option = document.createElement('option');
+      option.value = String(index);
+      option.textContent = station.title;
+      sidebarRadioCurrent.appendChild(option);
+    });
+    sidebarRadioCurrent.addEventListener('change', () => {
+      setSidebarRadioStation(Number(sidebarRadioCurrent.value) || 0);
+    });
+    setSidebarRadioStation(sidebarRadioStationIndex);
   }
 
   sidebarRadioCarets.forEach((button) => {
@@ -2063,17 +2106,6 @@ html, body {
       setSidebarRadioStation(sidebarRadioStationIndex + direction);
     });
   });
-
-  if (sidebarRadioCurrent) {
-    sidebarRadioCurrent.addEventListener('click', () => {
-      setSidebarRadioStation(sidebarRadioStationIndex + 1);
-    });
-    sidebarRadioCurrent.addEventListener('keydown', (event) => {
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-      event.preventDefault();
-      setSidebarRadioStation(sidebarRadioStationIndex + 1);
-    });
-  }
 
   function setSidebarInfoExpanded(isExpanded) {
     if (!sidebarBottom || !sidebarInfoToggle) return;
