@@ -1045,8 +1045,8 @@ html, body {
 
     <div class="clock">
       <div class="clock-box">
-        <div class="clock-text" aria-label="Toronto time">
-          <span class="clock-time">11:42:47</span><span class="clock-period">pm</span>
+        <div class="clock-text" aria-label="? Ghosts Online">
+          <span class="clock-time">?</span><span class="clock-period"> Ghosts Online</span>
         </div>
       </div>
     </div>
@@ -1071,8 +1071,8 @@ html, body {
 
       <div class="clock sidebar-clock">
         <div class="clock-box">
-          <div class="clock-text" aria-label="Toronto time">
-            <span class="clock-time">11:42:47</span><span class="clock-period">pm</span>
+          <div class="clock-text" aria-label="? Ghosts Online">
+            <span class="clock-time">?</span><span class="clock-period"> Ghosts Online</span>
           </div>
         </div>
       </div>
@@ -1269,12 +1269,15 @@ html, body {
     const setClockFontSize = (size) => {
       el.style.setProperty('font-size', `calc(${size}px * var(--overlay-font-scale, 1))`, 'important');
     };
-    if (!isDate) {
+    const isGhostCounter = el.dataset.clockDisplay === 'ghosts';
+    if (!isDate && !isGhostCounter) {
       setClockFontSize(isMobileOverlayView() ? 20 : 34);
       return;
     }
 
-    const basePx = isMobileOverlayView() ? 12 : 16;
+    const basePx = isGhostCounter
+      ? (isMobileOverlayView() ? 20 : 34)
+      : (isMobileOverlayView() ? 12 : 16);
     const minPx = 4;
     const availableWidth = Math.max(1, box.clientWidth);
     const measureTextWidth = () => {
@@ -1455,7 +1458,80 @@ html, body {
   updateNavFrameState();
   window.requestAnimationFrame(fitNavStateText);
 
+  function formatGhostsOnlineText(count) {
+    return count === 1 ? '1 Ghost Online' : `${Number.isFinite(count) ? count : '?'} Ghosts Online`;
+  }
+
+  function setGhostsOnline(count) {
+    const clockEls = overlayRoot.querySelectorAll('.clock-text');
+    if (!clockEls.length) return;
+
+    const label = formatGhostsOnlineText(count);
+    const match = label.match(/^(\S+)(.*)$/);
+    const countText = match ? match[1] : '?';
+    const suffixText = match ? match[2] : ' Ghosts Online';
+
+    window.__ghostsOnlineCount = count;
+    clockEls.forEach((el) => {
+      const timeEl = el.querySelector('.clock-time');
+      const periodEl = el.querySelector('.clock-period');
+      el.dataset.clockDisplay = 'ghosts';
+      if (timeEl) timeEl.textContent = countText;
+      if (periodEl) periodEl.textContent = suffixText;
+      el.setAttribute('aria-label', label);
+      fitClockTextToContainer(el);
+    });
+  }
+
+  window.setGhostsOnline = setGhostsOnline;
+
+  function connectGhostCounterSocket() {
+    if (!window.WebSocket) {
+      setGhostsOnline(null);
+      return;
+    }
+
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socketUrl = `${protocol}//${window.location.host}/api/ghosts-online`;
+    let socket;
+
+    try {
+      socket = new WebSocket(socketUrl);
+    } catch (error) {
+      window.setTimeout(connectGhostCounterSocket, 5000);
+      return;
+    }
+
+    socket.addEventListener('message', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const count = Number(data && data.count);
+        if (Number.isFinite(count) && count >= 0) {
+          setGhostsOnline(count);
+        }
+      } catch (error) {
+        // Ignore malformed counter messages and keep the last visible count.
+      }
+    });
+
+    socket.addEventListener('close', () => {
+      window.setTimeout(connectGhostCounterSocket, 5000);
+    });
+
+    socket.addEventListener('error', () => {
+      try {
+        socket.close();
+      } catch (error) {
+        window.setTimeout(connectGhostCounterSocket, 5000);
+      }
+    });
+  }
+
   function updateOverlayClock() {
+    setGhostsOnline(window.__ghostsOnlineCount);
+  }
+
+  function updateOverlayClockSnapshotOnly() {
     const clockEls = overlayRoot.querySelectorAll('.clock-text');
     if (!clockEls.length) return;
 
@@ -1580,20 +1656,13 @@ html, body {
   }
 
   refreshOverlayLogoHoverTint();
-  setOverlayClockState(getOverlayClockState());
-  setInterval(updateOverlayClock, 1000);
+  setGhostsOnline(null);
+  connectGhostCounterSocket();
 
   const nativeClocks = overlayRoot.querySelectorAll('.clock-text');
   nativeClocks.forEach((nativeClock) => {
-    nativeClock.setAttribute('role', 'button');
-    nativeClock.setAttribute('tabindex', '0');
-    nativeClock.setAttribute('aria-label', 'Toggle Toronto time and date');
-    nativeClock.addEventListener('click', toggleOverlayClockMode);
-    nativeClock.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        toggleOverlayClockMode(event);
-      }
-    });
+    nativeClock.setAttribute('role', 'status');
+    nativeClock.removeAttribute('tabindex');
   });
 
   const sidebar = overlayRoot.querySelector('#sidebar');
