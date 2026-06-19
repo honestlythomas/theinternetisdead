@@ -4,12 +4,10 @@ This folder contains shared site stuff outside the experiments and games section
 
 ## Subfolders
 
-- `nav/`
 - `stuff-for-index/feeds/`
 
 ## Files
 
-- `nav/nav.html`
 
 ## Notes
 

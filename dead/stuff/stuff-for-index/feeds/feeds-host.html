@@ -186,8 +186,8 @@
 
     async function loadOverlay() {
       try {
-        const response = await fetch('/dead/stuff/nav/nav.html', { cache: 'no-store' });
-        if (!response.ok) throw new Error('Failed to load /dead/stuff/nav/nav.html');
+        const response = await fetch('/nav.html', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Failed to load /nav.html');
         const html = await response.text();
         const temp = document.createElement('div');
         temp.innerHTML = html;
@@ -217,8 +217,8 @@
         syncOverlayLayoutHeight();
         requestAnimationFrame(syncOverlayLayoutHeight);
       } catch (error) {
-        console.error('Error loading /dead/stuff/nav/nav.html', error);
-        overlayContainer.innerHTML = '<div class="overlay-error">Error loading /dead/stuff/nav/nav.html</div>';
+        console.error('Error loading /nav.html', error);
+        overlayContainer.innerHTML = '<div class="overlay-error">Error loading /nav.html</div>';
       }
     }
 

@@ -108,7 +108,7 @@
 
   <iframe
     id="content-frame"
-    src="/dead/stuff/stuff-for-index/thumbnail-grid/index.html"
+    src="/homepage.html"
     title="TheInternetIsDead page"
     loading="eager"
     allowtransparency="true"
@@ -125,9 +125,9 @@
   ></iframe>
 
   <script>
-    const DEFAULT_IFRAME_PATH = '/dead/stuff/stuff-for-index/thumbnail-grid/index.html';
+    const DEFAULT_IFRAME_PATH = '/homepage.html';
     const REPO_INDEX_PATH = '/dead/JSON/repo-index.json';
-    const NAV_PATH = '/dead/stuff/nav/nav.html';
+    const NAV_PATH = '/nav.html';
     const ROOT_SHELL_FRAME_KEY = 'deadRootShellFramePath';
     const EXPERIMENT_SHORT_PATHS = new Set([
       'blotter-visualizer',
@@ -817,6 +817,7 @@
         if (restoringVideoIdFromHistory === videoId) {
           restoringVideoIdFromHistory = '';
         } else {
+          window.__indexPreviousVideoRouteUrl = window.location.href;
           window.history.pushState(videoHistoryState, '', nextUrl);
         }
       } else {
@@ -830,6 +831,13 @@
           videoTitle: String(data.videoTitle || '').trim(),
           url: nextUrl
         });
+      }
+      if (isVideoOpen && contentFrame.contentWindow) {
+        contentFrame.contentWindow.postMessage({
+          type: 'feedGridOpenVideo',
+          videoId,
+          videoTitle: String(data.videoTitle || '').trim()
+        }, '*');
       }
       if (data.action !== 'open') {
         requestFeedHeaderState();
