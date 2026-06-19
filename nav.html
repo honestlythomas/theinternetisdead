@@ -426,6 +426,38 @@ html, body {
   left: 0;
 }
 
+/* Keep the slide-out sidebar header locked to the main nav header size.
+   Without this, tall sidebar content like embeds can make the flex header shrink,
+   because apparently even CSS wants to improvise jazz in production. */
+#overlay-root .sidebar > .topbar {
+  flex: 0 0 var(--topbar-height);
+  height: var(--topbar-height);
+  min-height: var(--topbar-height);
+  max-height: var(--topbar-height);
+  flex-wrap: nowrap;
+  align-content: center;
+  padding: 0 16px;
+  row-gap: 0;
+}
+
+#overlay-root .sidebar > .topbar > .hamburger {
+  position: static;
+  top: auto;
+  left: auto;
+}
+
+#overlay-root .sidebar > .topbar > .logo {
+  margin-left: 14px;
+  padding-left: 0;
+  flex: 0 1 auto;
+  justify-content: flex-start;
+}
+
+#overlay-root .sidebar > .topbar .logo img {
+  height: 46px;
+  max-width: none;
+}
+
 #overlay-root .sidebar-menu {
   padding: 20px;
   flex: 1;
@@ -668,13 +700,66 @@ html, body {
 }
 
 #overlay-root .sidebar-bottom {
-  margin-top: auto;
+  margin-top: 0;
   padding: 16px 14px;
   font-size: 0.75rem;
   font-weight: 700;
   opacity: 0.75;
   text-align: center;
   line-height: 1.35;
+}
+
+#overlay-root .sidebar-info-top {
+  display: block;
+  flex: 0 0 auto;
+  padding: 16px 14px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.75;
+  text-align: center;
+  line-height: 1.35;
+}
+
+#overlay-root .sidebar-social-fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 8px 14px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#overlay-root .sidebar-social-fill::-webkit-scrollbar {
+  display: none;
+}
+
+#overlay-root .sidebar-social-card {
+  width: 100%;
+  min-height: 420px;
+  background: #000;
+  border: 1px solid darkgreen;
+  overflow: hidden;
+}
+
+#overlay-root .sidebar-social-fill .twitter-timeline {
+  display: block;
+  width: 100%;
+  min-height: 420px;
+}
+
+#overlay-root .sidebar-social-fallback {
+  display: block;
+  margin-top: 8px;
+  color: lime;
+  font-family: "Courier New", monospace;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: underline;
+}
+
+#overlay-root .sidebar-social-fill iframe {
+  max-width: 100% !important;
 }
 
 #overlay-root .about-link,
@@ -701,6 +786,10 @@ html, body {
 
 #overlay-root .sidebar-footer-row {
   display: block;
+}
+
+#overlay-root .sidebar-utility-row {
+  margin-bottom: 4px;
 }
 
 #overlay-root .sidebar-hidden-footer-block {
@@ -949,8 +1038,10 @@ html, body {
   }
 
   #overlay-root .sidebar .topbar {
+    flex: 0 0 auto;
     height: auto;
     min-height: 0;
+    max-height: none;
     padding: 10px 8px var(--mobile-nav-state-gap);
     row-gap: var(--mobile-nav-state-gap);
   }
@@ -966,6 +1057,11 @@ html, body {
     padding-left: 0;
     flex: 0 0 100%;
     justify-content: center;
+  }
+
+  #overlay-root .sidebar > .topbar .logo img {
+    height: 58px;
+    max-width: min(100%, 78vw, 430px);
   }
 
   #overlay-root #sidebar .sidebar-clock {
@@ -1129,30 +1225,37 @@ html, body {
       </a>
     </div>
 
-    <div class="sidebar-bottom">
-      <span class="sidebar-hidden-footer-block" id="sidebar-hidden-footer-block">
-        <img class="sidebar-owner-avatar" src="https://unavatar.io/youtube/UCn3WLZT7k8nO24XimlJVJVQ" alt="Thomas Harrison">
-        <span class="sidebar-owner-row">Thomas Harrison "Honestly Thomas" Tektite/Jinclops</span>
-        <span class="sidebar-footer-row youtube-footer-row">
-          Main YouTube: <a href="https://youtube.com/@Honestly_Thomas" class="youtube-link">@Honestly_Thomas</a>
-        </span>
-        <span class="sidebar-footer-row youtube-footer-row">
-          Alt YouTube: <a href="https://youtube.com/@Cryptid_Memes" class="youtube-link">@Cryptid_Memes</a>
-        </span>
-        <span class="sidebar-footer-row">
-          <a href="https://github.com/honestlythomas/theinternetisdead" class="github-link">Github</a>
-          <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
-          <a href="https://main.theinternetisdead.zip" class="download-site-link">Download Site</a>
-        </span>
-        <span class="sidebar-footer-row">
-          <a href="/about.html" class="about-link" data-index-frame-src="/about.html">About</a>
-          <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
-          <a href="/privacy.html" class="privacy-link" data-index-frame-src="/privacy.html">Privacy</a>
-          <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
-          <a href="/dead/site-map.html" class="site-map-link" data-index-frame-src="/dead/site-map.html">Site-Map</a>
-        </span>
+    <div class="sidebar-info-top" id="sidebar-info-top">
+      <img class="sidebar-owner-avatar" src="https://unavatar.io/youtube/UCn3WLZT7k8nO24XimlJVJVQ" alt="Thomas Harrison">
+      <span class="sidebar-owner-row">Thomas Harrison "Honestly Thomas" Tektite/Jinclops</span>
+      <span class="sidebar-footer-row youtube-footer-row">
+        Main YouTube: <a href="https://youtube.com/@Honestly_Thomas" class="youtube-link">@Honestly_Thomas</a>
       </span>
-      <button type="button" class="sidebar-info-toggle" aria-expanded="false" aria-controls="sidebar-hidden-footer-block">+ MORE INFO +</button>
+      <span class="sidebar-footer-row youtube-footer-row">
+        Alt YouTube: <a href="https://youtube.com/@Cryptid_Memes" class="youtube-link">@Cryptid_Memes</a>
+      </span>
+    </div>
+
+    <div class="sidebar-social-fill" id="sidebar-social-fill" aria-label="Posts by HONESTLYTHOMAS">
+      <div class="sidebar-social-card">
+        <a class="twitter-timeline" data-theme="dark" data-height="420" data-chrome="noheader nofooter transparent" data-dnt="true" href="https://twitter.com/HONESTLYTHOMAS?ref_src=twsrc%5Etfw">Posts by HONESTLYTHOMAS</a>
+      </div>
+      <a class="sidebar-social-fallback" href="https://twitter.com/HONESTLYTHOMAS">Open @HONESTLYTHOMAS on X</a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <span class="sidebar-footer-row sidebar-utility-row">
+        <a href="https://github.com/honestlythomas/theinternetisdead" class="github-link">Github</a>
+        <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+        <a href="https://main.theinternetisdead.zip" class="download-site-link">Download Site</a>
+      </span>
+      <span class="sidebar-footer-row sidebar-utility-row">
+        <a href="/about.html" class="about-link" data-index-frame-src="/about.html">About</a>
+        <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+        <a href="/privacy.html" class="privacy-link" data-index-frame-src="/privacy.html">Privacy</a>
+        <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+        <a href="/dead/site-map.html" class="site-map-link" data-index-frame-src="/dead/site-map.html">Site-Map</a>
+      </span>
       <span class="privacy-note">No accounts. No server saves.<br>Your browser hoards the cursed data.</span>
       <span class="copyright-note">Copyright - 2025 <a href="/">theinternetisdead.org</a></span>
       <a class="sidebar-command-panel sidebar-menu-command-panel" id="sidebar-menu-command-panel" href="#" aria-label="Open chat">
@@ -2149,6 +2252,7 @@ html, body {
     backdrop.classList.add('open');
     sidebar.setAttribute('aria-hidden', 'false');
     document.body.classList.add('sidebar-open');
+    window.requestAnimationFrame(loadSidebarTimeline);
   }
 
   function closeSidebar() {
@@ -2425,6 +2529,48 @@ html, body {
     window.addEventListener('resize', syncSidebarLogoBehavior);
     window.addEventListener('pageshow', syncSidebarLogoBehavior);
   }
+
+  function loadSidebarTimeline() {
+    const timelineHost = overlayRoot.querySelector('#sidebar-social-fill');
+    if (!timelineHost) return;
+
+    const runWidgetLoad = () => {
+      if (!window.twttr || !window.twttr.widgets || typeof window.twttr.widgets.load !== 'function') return;
+      window.twttr.widgets.load(timelineHost);
+    };
+
+    if (window.twttr && typeof window.twttr.ready === 'function') {
+      window.twttr.ready(runWidgetLoad);
+      runWidgetLoad();
+      return;
+    }
+
+    const existingScript = document.getElementById('twitter-wjs') || document.querySelector('script[src="https://platform.twitter.com/widgets.js"], script[src="https://platform.x.com/widgets.js"]');
+    if (existingScript) {
+      existingScript.addEventListener('load', runWidgetLoad, { once: true });
+      runWidgetLoad();
+      return;
+    }
+
+    window.twttr = window.twttr || {
+      _e: [],
+      ready(callback) {
+        this._e.push(callback);
+      }
+    };
+
+    window.twttr.ready(runWidgetLoad);
+
+    const script = document.createElement('script');
+    script.id = 'twitter-wjs';
+    script.async = true;
+    script.charset = 'utf-8';
+    script.src = 'https://platform.twitter.com/widgets.js';
+    script.onload = runWidgetLoad;
+    (document.head || document.body).appendChild(script);
+  }
+
+  loadSidebarTimeline();
 
   logoLinks.forEach((link) => {
     if (link === sidebarLogoLink) return;
