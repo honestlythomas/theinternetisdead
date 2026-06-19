@@ -351,6 +351,21 @@ html, body {
   margin-left: 0;
 }
 
+#overlay-root .clock-text.is-you-dummy {
+  color: magenta;
+  -webkit-text-stroke: 3px red;
+  paint-order: stroke fill;
+  text-shadow:
+    -3px -3px 0 red,
+    0 -3px 0 red,
+    3px -3px 0 red,
+    -3px 0 0 red,
+    3px 0 0 red,
+    -3px 3px 0 red,
+    0 3px 0 red,
+    3px 3px 0 red;
+}
+
 #overlay-root .sidebar-backdrop {
   position: fixed;
   inset: 0;
@@ -1466,8 +1481,34 @@ html, body {
   updateNavFrameState();
   window.requestAnimationFrame(fitNavStateText);
 
+  const YOU_DUMMY_TEXT = "It's YOU dummy!";
+
   function formatGhostsOnlineText(count) {
     return count === 1 ? '1 Ghost Online' : `${Number.isFinite(count) ? count : '?'} Ghosts Online`;
+  }
+
+  function setGhostCounterLabel(el, label) {
+    const match = label.match(/^(\S+)(.*)$/);
+    const countText = match ? match[1] : '?';
+    const suffixText = match ? match[2].trimStart() : 'Ghosts Online';
+    const timeEl = el.querySelector('.clock-time');
+    const periodEl = el.querySelector('.clock-period');
+
+    if (timeEl) timeEl.textContent = countText;
+    if (periodEl) periodEl.textContent = suffixText;
+    el.setAttribute('aria-label', label);
+    fitClockTextToContainer(el);
+  }
+
+  function showYouDummyLabel(el) {
+    if (window.__ghostsOnlineCount !== 1) return;
+    el.classList.add('is-you-dummy');
+    setGhostCounterLabel(el, YOU_DUMMY_TEXT);
+  }
+
+  function restoreGhostCounterLabel(el) {
+    el.classList.remove('is-you-dummy');
+    setGhostCounterLabel(el, formatGhostsOnlineText(window.__ghostsOnlineCount));
   }
 
   function setGhostsOnline(count) {
@@ -1475,19 +1516,16 @@ html, body {
     if (!clockEls.length) return;
 
     const label = formatGhostsOnlineText(count);
-    const match = label.match(/^(\S+)(.*)$/);
-    const countText = match ? match[1] : '?';
-    const suffixText = match ? match[2].trimStart() : 'Ghosts Online';
 
     window.__ghostsOnlineCount = count;
     clockEls.forEach((el) => {
-      const timeEl = el.querySelector('.clock-time');
-      const periodEl = el.querySelector('.clock-period');
       el.dataset.clockDisplay = 'ghosts';
-      if (timeEl) timeEl.textContent = countText;
-      if (periodEl) periodEl.textContent = suffixText;
-      el.setAttribute('aria-label', label);
-      fitClockTextToContainer(el);
+      if (count === 1 && el.matches(':hover')) {
+        showYouDummyLabel(el);
+        return;
+      }
+      el.classList.remove('is-you-dummy');
+      setGhostCounterLabel(el, label);
     });
   }
 
@@ -1671,6 +1709,8 @@ html, body {
   nativeClocks.forEach((nativeClock) => {
     nativeClock.setAttribute('role', 'status');
     nativeClock.removeAttribute('tabindex');
+    nativeClock.addEventListener('mouseenter', () => showYouDummyLabel(nativeClock));
+    nativeClock.addEventListener('mouseleave', () => restoreGhostCounterLabel(nativeClock));
   });
 
   const sidebar = overlayRoot.querySelector('#sidebar');
