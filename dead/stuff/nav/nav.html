@@ -343,6 +343,14 @@ html, body {
   margin-left: 0.12ch;
 }
 
+#overlay-root .clock-text[data-clock-display="ghosts"] {
+  column-gap: 0.35ch;
+}
+
+#overlay-root .clock-text[data-clock-display="ghosts"] .clock-period {
+  margin-left: 0;
+}
+
 #overlay-root .sidebar-backdrop {
   position: fixed;
   inset: 0;
@@ -1045,8 +1053,8 @@ html, body {
 
     <div class="clock">
       <div class="clock-box">
-        <div class="clock-text" aria-label="? Ghosts Online">
-          <span class="clock-time">?</span><span class="clock-period"> Ghosts Online</span>
+        <div class="clock-text" data-clock-display="ghosts" aria-label="? Ghosts Online">
+          <span class="clock-time">?</span><span class="clock-period">Ghosts Online</span>
         </div>
       </div>
     </div>
@@ -1071,8 +1079,8 @@ html, body {
 
       <div class="clock sidebar-clock">
         <div class="clock-box">
-          <div class="clock-text" aria-label="? Ghosts Online">
-            <span class="clock-time">?</span><span class="clock-period"> Ghosts Online</span>
+          <div class="clock-text" data-clock-display="ghosts" aria-label="? Ghosts Online">
+            <span class="clock-time">?</span><span class="clock-period">Ghosts Online</span>
           </div>
         </div>
       </div>
@@ -1469,7 +1477,7 @@ html, body {
     const label = formatGhostsOnlineText(count);
     const match = label.match(/^(\S+)(.*)$/);
     const countText = match ? match[1] : '?';
-    const suffixText = match ? match[2] : ' Ghosts Online';
+    const suffixText = match ? match[2].trimStart() : 'Ghosts Online';
 
     window.__ghostsOnlineCount = count;
     clockEls.forEach((el) => {
