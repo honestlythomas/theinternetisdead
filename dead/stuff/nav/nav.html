@@ -171,6 +171,7 @@ html, body {
   align-items: center;
   isolation: isolate;
   cursor: pointer;
+  overflow: visible;
 }
 
 #overlay-root .logo-tint-layer {
@@ -209,6 +210,20 @@ html, body {
   display: block;
   -webkit-user-drag: none;
   user-select: none;
+  transition: filter .18s ease;
+}
+
+#overlay-root .logo-link:hover img[src$="deadlogo-green.png"],
+#overlay-root .logo-link:focus-visible img[src$="deadlogo-green.png"] {
+  filter:
+    drop-shadow(-3px -3px 0 #ff004c)
+    drop-shadow(0 -3px 0 #ff8c00)
+    drop-shadow(3px -3px 0 #ffe600)
+    drop-shadow(-3px 0 0 #00d26a)
+    drop-shadow(3px 0 0 #00d9ff)
+    drop-shadow(-3px 3px 0 #3b5bff)
+    drop-shadow(0 3px 0 #8f00ff)
+    drop-shadow(3px 3px 0 #ff00c8);
 }
 
 #overlay-root .spacer {
