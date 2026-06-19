@@ -25,7 +25,6 @@
   "dead-games-shooter-game-assets-README.md",
   "dead-games-shooter-game-assets-scripts-README.md",
   "dead-games-shooter-game-README.md",
-  "dead-images-link-thumbnails-README.md",
   "dead-images-pngs-README.md",
   "dead-images-README.md",
   "dead-json-README.md",
@@ -40,5 +39,6 @@
   "dead-tools-pdf-viewer-pdfs-README.md",
   "dead-tools-pdf-viewer-README.md",
   "github-workflows-README.md",
-  "root-README.md"
+  "root-README.md",
+  "workers-ghost-counter-README.md"
 ]
