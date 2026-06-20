@@ -1034,6 +1034,7 @@
 
     window.addEventListener('resize', syncOverlayHeight);
     window.addEventListener('orientationchange', syncOverlayHeight);
+    window.addEventListener('overlayHeaderLayoutChange', syncOverlayHeight);
     window.addEventListener('popstate', (event) => {
       restoreFrameFromHistoryState(event.state);
     });

@@ -78,6 +78,10 @@ html, body {
   border-bottom: 3px solid lime;
 }
 
+#overlay-root .mobile-header-load-more {
+  display: none;
+}
+
 #overlay-root .hamburger {
   width: 44px;
   height: 44px;
@@ -1287,6 +1291,45 @@ html, body {
     max-height: 720px;
     opacity: 1;
   }
+
+  #overlay-root > .topbar > .mobile-header-load-more {
+    display: block;
+    flex: 0 0 100%;
+    order: 2;
+    width: fit-content;
+    max-width: calc(100% - 16px);
+    margin: 0 auto;
+    padding: 0 8px;
+    background: transparent;
+    border: 0;
+    color: var(--overlay-text);
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: calc(15px * var(--overlay-font-scale, 1));
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: underline;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #overlay-root > .topbar > .mobile-header-load-more:hover,
+  #overlay-root > .topbar > .mobile-header-load-more:focus-visible {
+    outline: none;
+    animation: overlay-ui-hueshift 1.8s linear infinite;
+  }
+
+  #overlay-root:not(.is-mobile-header-expanded) > .topbar {
+    min-height: 88px;
+    padding-bottom: 8px;
+    row-gap: 4px;
+  }
+
+  #overlay-root:not(.is-mobile-header-expanded) > .topbar > .clock,
+  #overlay-root:not(.is-mobile-header-expanded) > .topbar > .nav-state-panel,
+  #overlay-root:not(.is-mobile-header-expanded) > .topbar > .root-command-panel {
+    display: none;
+  }
 }
 </style>
 
@@ -1301,6 +1344,8 @@ html, body {
         <span class="logo-tint-layer" aria-hidden="true" style="--tint-mask: url('/dead/images/pngs/deadlogo-green.png');"></span>
       </a>
     </div>
+
+    <button class="mobile-header-load-more" id="mobile-header-load-more" type="button" aria-expanded="false">+ Load More +</button>
 
     <div class="spacer"></div>
 
@@ -2032,6 +2077,7 @@ html, body {
   const backdrop = overlayRoot.querySelector('#sidebar-backdrop');
   const toggles = overlayRoot.querySelectorAll('[data-action="toggle-sidebar"]');
   const logoLinks = overlayRoot.querySelectorAll('.logo-link');
+  const mobileHeaderLoadMore = overlayRoot.querySelector('#mobile-header-load-more');
   const navStatePanel = overlayRoot.querySelector('#nav-state-panel');
   const sidebarContextLink = overlayRoot.querySelector('#sidebar-context-link');
   const sidebarCommandLink = overlayRoot.querySelector('#sidebar-command-link');
@@ -2082,6 +2128,31 @@ html, body {
   ];
 
   let sidebarRadioStationIndex = 0;
+
+  function notifyOverlayHeaderLayoutChange() {
+    window.dispatchEvent(new CustomEvent('overlayHeaderLayoutChange'));
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new CustomEvent('overlayHeaderLayoutChange'));
+    });
+  }
+
+  function setMobileHeaderExpanded(expanded) {
+    const isExpanded = !!expanded;
+    overlayRoot.classList.toggle('is-mobile-header-expanded', isExpanded);
+    if (mobileHeaderLoadMore) {
+      mobileHeaderLoadMore.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+      mobileHeaderLoadMore.textContent = isExpanded ? '- Show Less -' : '+ Load More +';
+    }
+    notifyOverlayHeaderLayoutChange();
+  }
+
+  if (mobileHeaderLoadMore) {
+    mobileHeaderLoadMore.addEventListener('click', () => {
+      setMobileHeaderExpanded(!overlayRoot.classList.contains('is-mobile-header-expanded'));
+    });
+  }
+
+  setMobileHeaderExpanded(false);
 
   function setSidebarRadioStation(index) {
     if (!sidebarRadioPlayer || !sidebarRadioCurrent || !sidebarRadioStations.length) return;
