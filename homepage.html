@@ -538,22 +538,42 @@
 
     @media (max-width: 760px) {
       body {
-        overflow: auto;
+        overflow: hidden;
       }
 
       .homepage-grid {
-        grid-template-columns: 1fr;
-        height: auto;
-        min-height: 100vh;
-        min-height: 100dvh;
+        display: block;
+        grid-template-columns: none;
+        height: 100vh;
+        height: 100dvh;
+        width: 100vw;
+        min-height: 0;
+        overflow: hidden;
+        touch-action: pan-y;
+      }
+
+      .column-wrap {
+        display: none !important;
+        width: 100%;
+        height: calc(100vh - (var(--homepage-column-gap) * 2));
+        height: calc(100dvh - (var(--homepage-column-gap) * 2));
+      }
+
+      .column-wrap.is-mobile-active {
+        display: block !important;
+      }
+
+      .column-wrap[hidden] {
+        display: none !important;
       }
 
       .posts-column {
-        min-height: 42vh;
+        min-height: 0;
       }
 
       .white-screen {
-        min-height: 52vh;
+        min-height: 0;
+        overflow: auto;
       }
     }
   </style>
@@ -567,7 +587,7 @@
   ></iframe>
 
   <main class="homepage-grid" aria-label="Homepage layout">
-    <div class="column-wrap">
+    <div class="column-wrap is-mobile-active">
       <section class="posts-column" aria-label="Homepage listings">
         <a class="column-title" href="https://youtube.com/@Honestly_Thomas" target="_blank" rel="noopener noreferrer">My Latest YouTube Broadcasts📡</a>
         <div class="broadcast-search-row">
@@ -618,10 +638,69 @@
     const loadMoreBroadcasts = document.getElementById('load-more-broadcasts');
     const videoEmbedView = document.getElementById('video-embed-view');
     const videoEmbedFrame = document.getElementById('video-embed-frame');
+    const homepageGrid = document.querySelector('.homepage-grid');
+    const homepageColumns = Array.from(document.querySelectorAll('.column-wrap'));
+    const mobileLayoutQuery = window.matchMedia('(max-width: 760px)');
     let allBroadcastEntries = [];
     let broadcastEntries = [];
     let renderedBroadcastCount = 0;
     let openVideoId = '';
+    let activeHomepageColumn = 0;
+    let homepageSwipeStartX = 0;
+    let homepageSwipeStartY = 0;
+
+    function isMobileHomepageLayout() {
+      return mobileLayoutQuery.matches || homepageGrid.getBoundingClientRect().width <= 760;
+    }
+
+    function setActiveHomepageColumn(index) {
+      activeHomepageColumn = Math.max(0, Math.min(homepageColumns.length - 1, index));
+      const isMobile = isMobileHomepageLayout();
+      homepageColumns.forEach((column, columnIndex) => {
+        const isActive = columnIndex === activeHomepageColumn;
+        column.classList.toggle('is-mobile-active', isActive);
+        column.hidden = isMobile && !isActive;
+        column.setAttribute('aria-hidden', isMobile && !isActive ? 'true' : 'false');
+      });
+    }
+
+    function syncHomepageColumnsForViewport() {
+      if (isMobileHomepageLayout()) {
+        setActiveHomepageColumn(activeHomepageColumn);
+        return;
+      }
+
+      homepageColumns.forEach((column) => {
+        column.classList.remove('is-mobile-active');
+        column.hidden = false;
+        column.removeAttribute('aria-hidden');
+      });
+    }
+
+    function handleHomepageSwipeEnd(endX, endY) {
+      if (!isMobileHomepageLayout()) return;
+      const deltaX = endX - homepageSwipeStartX;
+      const deltaY = endY - homepageSwipeStartY;
+      if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
+      setActiveHomepageColumn(activeHomepageColumn + (deltaX < 0 ? 1 : -1));
+    }
+
+    syncHomepageColumnsForViewport();
+
+    mobileLayoutQuery.addEventListener('change', syncHomepageColumnsForViewport);
+
+    homepageGrid.addEventListener('touchstart', (event) => {
+      if (!isMobileHomepageLayout() || event.touches.length !== 1) return;
+      homepageSwipeStartX = event.touches[0].clientX;
+      homepageSwipeStartY = event.touches[0].clientY;
+    }, { passive: true });
+
+    homepageGrid.addEventListener('touchend', (event) => {
+      if (!isMobileHomepageLayout() || event.changedTouches.length !== 1) return;
+      handleHomepageSwipeEnd(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+    }, { passive: true });
+
+    window.addEventListener('resize', syncHomepageColumnsForViewport);
 
     function formatUploadDate(value) {
       const raw = String(value || '').trim();
