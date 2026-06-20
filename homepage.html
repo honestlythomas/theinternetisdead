@@ -137,6 +137,8 @@
 
     .posts-column {
       position: relative;
+      display: flex;
+      flex-direction: column;
       min-width: 0;
       min-height: 0;
       height: 100%;
@@ -177,8 +179,8 @@
       box-sizing: border-box;
       width: calc(100% - 32px);
       max-width: none;
-      margin: 16px 16px 0;
-      padding: 8px 10px;
+      margin: 12px 16px 0;
+      padding: 7px 10px;
       border: 2px solid #512A67;
       outline: 0;
       font-size: 14px;
@@ -191,14 +193,15 @@
     .broadcast-search-row {
       box-sizing: border-box;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 38px;
+      grid-template-columns: minmax(0, 1fr) 38px 38px;
       gap: 10px;
       width: calc(100% - 32px);
-      margin: 10px 16px 0;
+      margin: 8px 16px 0;
     }
 
     .broadcast-search,
     .broadcast-sort,
+    .broadcast-grid-action,
     .broadcast-search-action {
       box-sizing: border-box;
       padding: 8px 10px;
@@ -240,10 +243,16 @@
       border-right: 0;
     }
 
+    .broadcast-search-row.is-sorting .broadcast-grid-action {
+      border-left: 0;
+      border-right: 0;
+    }
+
     .broadcast-search-row.is-sorting .broadcast-search-action {
       border-left: 0;
     }
 
+    .broadcast-grid-action,
     .broadcast-search-action {
       display: grid;
       place-items: center;
@@ -252,6 +261,10 @@
       padding: 0;
       cursor: pointer;
       line-height: 1;
+    }
+
+    .broadcast-grid-action {
+      font-size: 16px;
     }
 
     .broadcast-search::placeholder {
@@ -265,6 +278,9 @@
     }
 
     .broadcast-search-action:hover,
+    .broadcast-grid-action:hover,
+    .broadcast-grid-action:focus-visible,
+    .broadcast-grid-action[aria-pressed="true"],
     .broadcast-search-action:focus-visible {
       border-color: #512A67;
       color: #00ff00;
@@ -282,16 +298,67 @@
     .broadcast-feed {
       display: grid;
       gap: 14px;
-      padding: 16px;
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 12px 16px 16px;
+    }
+
+    .broadcast-carousel {
+      position: relative;
+      display: block;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .broadcast-carousel-button {
+      position: absolute;
+      top: 50%;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 58px;
+      padding: 0;
+      background: #000;
+      border: 2px solid #512A67;
+      border-radius: 0;
+      color: #ff00ff;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      transform: translateY(-50%);
+    }
+
+    .broadcast-carousel-button-previous {
+      left: 10px;
+    }
+
+    .broadcast-carousel-button-next {
+      right: 10px;
+    }
+
+    .broadcast-carousel-button:hover,
+    .broadcast-carousel-button:focus-visible {
+      border-color: #00ff00;
+      color: #00ff00;
+      outline: 0;
+    }
+
+    .broadcast-carousel-button:disabled {
+      opacity: 0.45;
+      cursor: default;
     }
 
     .broadcast-card {
       position: relative;
-      height: auto;
+      height: 100%;
+      min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 10px;
+      gap: 7px;
+      padding: 8px 10px;
       background: rgba(0, 0, 0, 0.82);
       border: 2px solid #512A67;
       color: #ff00ff;
@@ -338,17 +405,43 @@
     .broadcast-middle {
       position: relative;
       z-index: 1;
+      display: grid;
+      align-items: center;
+      flex: 1 1 auto;
       min-height: 0;
       overflow: hidden;
+    }
+
+    .broadcast-grid-card {
+      padding: 0;
+    }
+
+    .broadcast-grid-card::before {
+      display: none;
+    }
+
+    .broadcast-grid-frame {
+      position: relative;
+      z-index: 2;
+      display: block;
+      flex: 1 1 auto;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      border: 0;
+      background: #000;
+      pointer-events: auto;
     }
 
     .broadcast-thumbnail-link {
       position: relative;
       z-index: 1;
       display: block;
+      align-self: center;
       background: #000;
       border: 1px solid #512A67;
       line-height: 0;
+      margin-inline: 54px;
     }
 
     .broadcast-thumbnail {
@@ -490,8 +583,7 @@
       box-decoration-break: clone;
     }
 
-    .feed-status,
-    .load-more-broadcasts {
+    .feed-status {
       margin: 0 16px 16px;
       padding: 8px 10px;
       background: #000;
@@ -501,17 +593,6 @@
       font-size: 14px;
       font-weight: 700;
       text-align: center;
-    }
-
-    .load-more-broadcasts {
-      display: block;
-      width: calc(100% - 32px);
-      cursor: pointer;
-    }
-
-    .load-more-broadcasts:hover,
-    .load-more-broadcasts:focus-visible {
-      text-decoration: underline;
     }
 
     .white-screen .column-title {
@@ -575,6 +656,28 @@
         min-height: 0;
         overflow: auto;
       }
+
+      .broadcast-carousel {
+        display: block;
+      }
+
+      .broadcast-carousel-button {
+        width: 30px;
+        height: 52px;
+        font-size: 22px;
+      }
+
+      .broadcast-carousel-button-previous {
+        left: 8px;
+      }
+
+      .broadcast-carousel-button-next {
+        right: 8px;
+      }
+
+      .broadcast-thumbnail-link {
+        margin-inline: 46px;
+      }
     }
   </style>
 </head>
@@ -598,11 +701,11 @@
             <option value="most-viewed">Most Viewed</option>
             <option value="least-viewed">Least Viewed</option>
           </select>
+          <button class="broadcast-grid-action" id="broadcast-grid-action" type="button" aria-label="Show thumbnail grid" aria-pressed="false">🌐</button>
           <button class="broadcast-search-action" id="broadcast-search-action" type="button" aria-label="Show sorting options">⚙️</button>
         </div>
         <div class="broadcast-feed" id="broadcast-feed"></div>
         <p class="feed-status" id="broadcast-feed-status">Loading broadcasts...</p>
-        <button class="load-more-broadcasts" id="load-more-broadcasts" type="button" hidden>Load More</button>
       </section>
     </div>
 
@@ -626,16 +729,14 @@
   </section>
   <script>
     const FEED_VIDEOS_PATH = '/dead/JSON/feed-videos.json';
-    const INITIAL_BROADCAST_COUNT = 3;
-    const BROADCAST_BATCH_SIZE = 3;
 
     const broadcastFeed = document.getElementById('broadcast-feed');
     const broadcastStatus = document.getElementById('broadcast-feed-status');
     const broadcastSearch = document.getElementById('broadcast-search');
     const broadcastSearchRow = document.querySelector('.broadcast-search-row');
+    const broadcastGridAction = document.getElementById('broadcast-grid-action');
     const broadcastSearchAction = document.getElementById('broadcast-search-action');
     const broadcastSort = document.getElementById('broadcast-sort');
-    const loadMoreBroadcasts = document.getElementById('load-more-broadcasts');
     const videoEmbedView = document.getElementById('video-embed-view');
     const videoEmbedFrame = document.getElementById('video-embed-frame');
     const homepageGrid = document.querySelector('.homepage-grid');
@@ -643,7 +744,8 @@
     const mobileLayoutQuery = window.matchMedia('(max-width: 760px)');
     let allBroadcastEntries = [];
     let broadcastEntries = [];
-    let renderedBroadcastCount = 0;
+    let activeBroadcastIndex = 0;
+    let isThumbnailGridOpen = false;
     let openVideoId = '';
     let activeHomepageColumn = 0;
     let homepageSwipeStartX = 0;
@@ -729,16 +831,67 @@
       }
     }
 
-    function getMaxresThumbnail(entry) {
+    function getThumbnailCandidates(entry) {
       const thumbnails = Array.isArray(entry.thumbnails) ? entry.thumbnails : [];
-      const maxres = thumbnails.find((thumbnail) => /maxresdefault\.jpg(?:[?#]|$)/i.test(String(thumbnail.url || '')));
-      if (maxres && maxres.url) return maxres.url;
-
-      const jpg = thumbnails.find((thumbnail) => /maxresdefault/i.test(String(thumbnail.url || '')));
-      if (jpg && jpg.url) return jpg.url;
-
       const videoId = getVideoId(entry);
-      return videoId ? `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/maxresdefault.jpg` : '';
+      const youtubeCandidates = videoId
+        ? ['hqdefault', 'sddefault', 'mqdefault', 'default', 'maxresdefault'].map((name) => (
+          `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/${name}.jpg`
+        ))
+        : [];
+
+      const feedCandidates = thumbnails
+        .map((thumbnail) => String(thumbnail && thumbnail.url || '').trim())
+        .filter(Boolean);
+      const score = (url) => {
+        if (/hqdefault/i.test(url)) return 0;
+        if (/sddefault/i.test(url)) return 1;
+        if (/mqdefault/i.test(url)) return 2;
+        if (/maxresdefault/i.test(url)) return 4;
+        if (/(?:^|\/)default\.jpg(?:[?#]|$)/i.test(url)) return 3;
+        return 5;
+      };
+
+      return Array.from(new Set([...feedCandidates, ...youtubeCandidates]))
+        .sort((a, b) => score(a) - score(b));
+    }
+
+    function getThumbnailUrl(entry) {
+      return getThumbnailCandidates(entry)[0] || '';
+    }
+
+    function getThumbnailPlaceholder(title) {
+      const label = String(title || 'Video thumbnail')
+        .replace(/[&<>"']/g, (character) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        })[character]);
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#000"/><rect x="1" y="1" width="638" height="358" fill="none" stroke="#512A67" stroke-width="2"/><text x="320" y="174" fill="#ff00ff" font-family="Courier New, monospace" font-size="26" font-weight="700" text-anchor="middle">Video Thumbnail</text><text x="320" y="214" fill="#00ff00" font-family="Courier New, monospace" font-size="18" text-anchor="middle">${label}</text></svg>`)}`;
+    }
+
+    function setCardThumbnailBackground(article, thumbnailUrl) {
+      article.style.setProperty('--broadcast-thumbnail', thumbnailUrl ? `url("${thumbnailUrl.replace(/"/g, '%22')}")` : 'none');
+    }
+
+    function applyThumbnailFallbacks(image, candidates, article, title) {
+      const thumbnailCandidates = Array.from(new Set([...candidates.filter(Boolean), getThumbnailPlaceholder(title)]));
+      let thumbnailIndex = 0;
+
+      image.addEventListener('error', () => {
+        thumbnailIndex += 1;
+        if (thumbnailIndex < thumbnailCandidates.length) {
+          image.src = thumbnailCandidates[thumbnailIndex];
+          if (article) setCardThumbnailBackground(article, thumbnailCandidates[thumbnailIndex]);
+        }
+      });
+
+      if (thumbnailCandidates.length) {
+        image.src = thumbnailCandidates[0];
+        if (article) setCardThumbnailBackground(article, thumbnailCandidates[0]);
+      }
     }
 
     function getVideoRoute(entry) {
@@ -764,6 +917,7 @@
       if (openVideoId === requestedId && document.body.classList.contains('video-view-open')) return;
 
       openVideoId = requestedId;
+      videoEmbedFrame.removeAttribute('src');
       videoEmbedFrame.src = getYouTubeEmbedUrl(requestedId);
       videoEmbedFrame.title = videoTitle || getVideoTitleById(requestedId) || 'YouTube video player';
       videoEmbedView.hidden = false;
@@ -811,9 +965,10 @@
 
       const url = getVideoRoute(entry);
       const title = String(entry.title || 'Untitled broadcast');
-      const thumbnailUrl = getMaxresThumbnail(entry);
+      const thumbnailCandidates = getThumbnailCandidates(entry);
+      const thumbnailUrl = getThumbnailUrl(entry);
       const channelName = String(entry.channel || entry.uploader || 'Unknown channel');
-      article.style.setProperty('--broadcast-thumbnail', thumbnailUrl ? `url("${thumbnailUrl.replace(/"/g, '%22')}")` : 'none');
+      setCardThumbnailBackground(article, thumbnailUrl || getThumbnailPlaceholder(title));
 
       const channel = document.createElement('div');
       channel.className = 'broadcast-channel';
@@ -834,24 +989,22 @@
       const middle = document.createElement('div');
       middle.className = 'broadcast-middle';
 
-      if (thumbnailUrl) {
-        const thumbnailLink = document.createElement('a');
-        thumbnailLink.className = 'broadcast-thumbnail-link';
-        thumbnailLink.href = url;
-        if (url !== '#') {
-          thumbnailLink.dataset.indexFrameSrc = url;
-          thumbnailLink.dataset.videoRouteId = getVideoId(entry);
-          thumbnailLink.dataset.videoTitle = title;
-        }
-
-        const image = document.createElement('img');
-        image.className = 'broadcast-thumbnail';
-        image.src = thumbnailUrl;
-        image.alt = title;
-        image.loading = 'lazy';
-        thumbnailLink.appendChild(image);
-        middle.appendChild(thumbnailLink);
+      const thumbnailLink = document.createElement('a');
+      thumbnailLink.className = 'broadcast-thumbnail-link';
+      thumbnailLink.href = url;
+      if (url !== '#') {
+        thumbnailLink.dataset.indexFrameSrc = url;
+        thumbnailLink.dataset.videoRouteId = getVideoId(entry);
+        thumbnailLink.dataset.videoTitle = title;
       }
+
+      const image = document.createElement('img');
+      image.className = 'broadcast-thumbnail';
+      image.alt = title;
+      image.loading = 'lazy';
+      applyThumbnailFallbacks(image, thumbnailCandidates, article, title);
+      thumbnailLink.appendChild(image);
+      middle.appendChild(thumbnailLink);
 
       const description = document.createElement('p');
       description.className = 'broadcast-description';
@@ -877,6 +1030,55 @@
       article.appendChild(details);
 
       return article;
+    }
+
+    function createThumbnailGridCard() {
+      const article = document.createElement('article');
+      article.className = 'broadcast-card broadcast-grid-card';
+
+      const frame = document.createElement('iframe');
+      frame.className = 'broadcast-grid-frame';
+      frame.src = '/dead/stuff/stuff-for-index/thumbnail-grid/index.html?v=no-header';
+      frame.title = 'Thumbnail grid';
+      frame.loading = 'lazy';
+      article.appendChild(frame);
+
+      return article;
+    }
+
+    function createBroadcastCarousel(entry) {
+      const carousel = document.createElement('div');
+      carousel.className = 'broadcast-carousel';
+
+      const previousButton = document.createElement('button');
+      previousButton.className = 'broadcast-carousel-button broadcast-carousel-button-previous';
+      previousButton.type = 'button';
+      previousButton.textContent = '\u2039';
+      previousButton.setAttribute('aria-label', 'Previous video');
+      previousButton.disabled = broadcastEntries.length <= 1;
+      previousButton.addEventListener('click', () => {
+        cycleBroadcast(-1);
+      });
+
+      const nextButton = document.createElement('button');
+      nextButton.className = 'broadcast-carousel-button broadcast-carousel-button-next';
+      nextButton.type = 'button';
+      nextButton.textContent = '\u203a';
+      nextButton.setAttribute('aria-label', 'Next video');
+      nextButton.disabled = broadcastEntries.length <= 1;
+      nextButton.addEventListener('click', () => {
+        cycleBroadcast(1);
+      });
+
+      carousel.append(previousButton, createBroadcastCard(entry), nextButton);
+      return carousel;
+    }
+
+    function createThumbnailGridView() {
+      const carousel = document.createElement('div');
+      carousel.className = 'broadcast-carousel';
+      carousel.appendChild(createThumbnailGridCard());
+      return carousel;
     }
 
     function getSearchText(entry) {
@@ -918,19 +1120,37 @@
       broadcastEntries = sortBroadcastEntries(filteredEntries);
 
       broadcastFeed.replaceChildren();
-      renderedBroadcastCount = 0;
+      activeBroadcastIndex = 0;
       broadcastStatus.hidden = broadcastEntries.length > 0;
       broadcastStatus.textContent = broadcastEntries.length > 0 ? '' : 'No broadcasts found.';
-      renderBroadcasts(INITIAL_BROADCAST_COUNT);
+      renderBroadcasts();
     }
 
-    function renderBroadcasts(count) {
-      const nextCount = Math.min(count, broadcastEntries.length);
-      for (let i = renderedBroadcastCount; i < nextCount; i += 1) {
-        broadcastFeed.appendChild(createBroadcastCard(broadcastEntries[i]));
+    function renderBroadcasts() {
+      broadcastFeed.replaceChildren();
+      broadcastGridAction.setAttribute('aria-pressed', isThumbnailGridOpen ? 'true' : 'false');
+      broadcastGridAction.setAttribute('aria-label', isThumbnailGridOpen ? 'Show video card' : 'Show thumbnail grid');
+
+      if (isThumbnailGridOpen) {
+        broadcastStatus.hidden = true;
+        broadcastFeed.appendChild(createThumbnailGridView());
+        return;
       }
-      renderedBroadcastCount = nextCount;
-      loadMoreBroadcasts.hidden = renderedBroadcastCount >= broadcastEntries.length;
+
+      if (!broadcastEntries.length) {
+        broadcastStatus.hidden = false;
+        broadcastStatus.textContent = 'No broadcasts found.';
+        return;
+      }
+
+      activeBroadcastIndex = Math.max(0, Math.min(activeBroadcastIndex, broadcastEntries.length - 1));
+      broadcastFeed.appendChild(createBroadcastCarousel(broadcastEntries[activeBroadcastIndex]));
+    }
+
+    function cycleBroadcast(direction) {
+      if (!broadcastEntries.length) return;
+      activeBroadcastIndex = (activeBroadcastIndex + direction + broadcastEntries.length) % broadcastEntries.length;
+      renderBroadcasts();
     }
 
     document.addEventListener('click', (event) => {
@@ -960,6 +1180,10 @@
 
     broadcastSearch.addEventListener('input', applyBroadcastSearch);
     broadcastSort.addEventListener('change', applyBroadcastSearch);
+    broadcastGridAction.addEventListener('click', () => {
+      isThumbnailGridOpen = !isThumbnailGridOpen;
+      renderBroadcasts();
+    });
     broadcastSearchAction.addEventListener('click', () => {
       const isSorting = broadcastSearchRow.classList.toggle('is-sorting');
       broadcastSearchAction.setAttribute('aria-label', isSorting ? 'Show search videos' : 'Show sorting options');
@@ -983,10 +1207,6 @@
     window.addEventListener('pageshow', syncVideoEmbedFromParentRoute);
     window.setInterval(syncVideoEmbedFromParentRoute, 250);
 
-    loadMoreBroadcasts.addEventListener('click', () => {
-      renderBroadcasts(renderedBroadcastCount + BROADCAST_BATCH_SIZE);
-    });
-
     fetch(FEED_VIDEOS_PATH, { cache: 'no-store' })
       .then((response) => {
         if (!response.ok) throw new Error(`Failed to load ${FEED_VIDEOS_PATH}`);
@@ -996,7 +1216,7 @@
         allBroadcastEntries = Array.isArray(feed.entries) ? feed.entries : [];
         broadcastEntries = sortBroadcastEntries(allBroadcastEntries);
         broadcastStatus.hidden = true;
-        renderBroadcasts(INITIAL_BROADCAST_COUNT);
+        renderBroadcasts();
         syncVideoEmbedFromParentRoute();
       })
       .catch((error) => {

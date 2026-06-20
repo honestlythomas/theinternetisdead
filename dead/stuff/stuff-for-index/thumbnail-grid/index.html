@@ -11,7 +11,7 @@
       --panel-bg: rgba(0, 0, 0, 0.72);
       --accent-color: #00ff00;
       --font-family: "Courier New", monospace;
-      --header-height: 45px;
+      --header-height: 0px;
     }
 
     * {
@@ -38,9 +38,9 @@
     #wallCanvas {
       display: block;
       width: 100vw;
-      height: calc(100vh - var(--header-height));
-      height: calc(100dvh - var(--header-height));
-      margin-top: var(--header-height);
+      height: 100vh;
+      height: 100dvh;
+      margin-top: 0;
       background: #000;
       cursor: default;
     }
@@ -55,6 +55,74 @@
 
     body.full-grid-mode.tile-hover #wallCanvas {
       cursor: pointer;
+    }
+
+    .grid-rotation-controls {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    body.slideshow-mode .grid-rotation-controls,
+    body.menu-open .grid-rotation-controls {
+      display: none;
+    }
+
+    .grid-rotation-button {
+      position: fixed;
+      display: grid;
+      place-items: center;
+      width: clamp(46px, 7vw, 86px);
+      height: clamp(46px, 7vw, 86px);
+      padding: 0;
+      border: 2px solid rgba(0, 255, 0, 0.62);
+      background: rgba(0, 0, 0, 0.36);
+      color: rgba(0, 255, 0, 0.82);
+      font-family: var(--font-family);
+      font-size: clamp(28px, 5.6vw, 62px);
+      font-weight: 700;
+      line-height: 1;
+      text-shadow: 0 0 12px rgba(0, 255, 0, 0.86);
+      pointer-events: auto;
+      user-select: none;
+      touch-action: none;
+      cursor: pointer;
+      opacity: 0.58;
+    }
+
+    .grid-rotation-button:hover,
+    .grid-rotation-button:focus-visible,
+    .grid-rotation-button.is-active {
+      background: rgba(0, 0, 0, 0.62);
+      border-color: rgba(0, 255, 0, 0.96);
+      color: #00ff00;
+      opacity: 0.9;
+      outline: 0;
+    }
+
+    .grid-rotation-button-up {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .grid-rotation-button-down {
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .grid-rotation-button-left {
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+    }
+
+    .grid-rotation-button-right {
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
     }
 
     #slideshowFrame {
@@ -86,98 +154,6 @@
       display: none;
     }
 
-    #topHeader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 4;
-      display: flex;
-      align-items: center;
-      height: var(--header-height);
-      padding: 7px 10px;
-      border-bottom: 3px solid lime;
-      background: rgba(0, 0, 0, 0.72);
-      pointer-events: none;
-    }
-
-    #headerTitle {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: min(48vw, calc(100vw - 320px));
-      transform: translate(-50%, -50%);
-      min-width: 0;
-      color: var(--page-text);
-      font-family: var(--font-family);
-      font-size: clamp(13px, 1.7vw, 22px);
-      font-weight: 700;
-      line-height: 1;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-shadow: 0 0 6px rgba(0, 255, 0, 0.72);
-      pointer-events: auto;
-      user-select: text;
-      cursor: text;
-    }
-
-    #headerTitleLink {
-      color: inherit;
-      text-decoration: none;
-      cursor: inherit;
-    }
-
-    #headerDisplayMode {
-      position: relative;
-      z-index: 1;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
-      color: var(--page-text);
-      font-family: var(--font-family);
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1;
-      text-shadow: 0 0 6px rgba(0, 255, 0, 0.72);
-      pointer-events: auto;
-      white-space: nowrap;
-    }
-
-    #displayModeSelect {
-      width: auto;
-      min-width: 124px;
-      min-height: 28px;
-      border-width: 1px;
-      background: var(--panel-bg);
-      font-size: 13px;
-      line-height: 1;
-      padding: 4px 28px 4px 8px;
-    }
-
-    #menuHint {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: auto;
-      min-height: 28px;
-      padding: 5px 10px;
-      border: 1px solid rgba(0, 255, 0, 0.52);
-      background: var(--panel-bg);
-      color: var(--page-text);
-      font-family: var(--font-family);
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1;
-      cursor: pointer;
-      pointer-events: auto;
-      text-shadow: 0 0 6px rgba(0, 255, 0, 0.72);
-      position: relative;
-      z-index: 1;
-    }
-
     #menuBackdrop {
       position: fixed;
       inset: 0;
@@ -191,7 +167,7 @@
 
     #sideMenu {
       position: fixed;
-      top: var(--header-height);
+      top: 0;
       left: 0;
       bottom: 0;
       z-index: 4;
@@ -356,10 +332,6 @@
       cursor: pointer;
     }
 
-    body.thumbnail-autoplay #menuHint {
-      display: none;
-    }
-
     button:hover,
     button:focus-visible,
     select:focus-visible,
@@ -410,21 +382,6 @@
     }
 
     @media (max-width: 720px) {
-      #headerTitle {
-        width: min(42vw, calc(100vw - 220px));
-        font-size: 13px;
-      }
-
-      #headerDisplayMode {
-        gap: 0;
-        font-size: 0;
-      }
-
-      #displayModeSelect {
-        min-width: 106px;
-        font-size: 12px;
-      }
-
       #menuPanel {
         width: min(94vw, calc(88dvh * 16 / 9));
         max-height: 88dvh;
@@ -515,18 +472,13 @@
 </head>
 <body>
   <canvas id="wallCanvas" aria-label="Canvas video wall"></canvas>
+  <div class="grid-rotation-controls" aria-label="Grid rotation controls">
+    <button class="grid-rotation-button grid-rotation-button-up" type="button" data-grid-rotate="up" aria-label="Rotate grid up">↑</button>
+    <button class="grid-rotation-button grid-rotation-button-down" type="button" data-grid-rotate="down" aria-label="Rotate grid down">↓</button>
+    <button class="grid-rotation-button grid-rotation-button-left" type="button" data-grid-rotate="left" aria-label="Rotate grid left">←</button>
+    <button class="grid-rotation-button grid-rotation-button-right" type="button" data-grid-rotate="right" aria-label="Rotate grid right">→</button>
+  </div>
   <iframe id="slideshowFrame" title="Slideshow YouTube video" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-  <header id="topHeader">
-    <button id="menuHint" type="button">Open Menu</button>
-    <div id="headerTitle"><a id="headerTitleLink" href="#" target="_blank" rel="noopener noreferrer">Random Video</a></div>
-    <label id="headerDisplayMode" for="displayModeSelect">
-      Display mode
-      <select id="displayModeSelect">
-        <option value="slideshow">Slideshow</option>
-        <option value="fullGrid" selected>Full Grid</option>
-      </select>
-    </label>
-  </header>
   <aside id="sideMenu" aria-hidden="true">
     <div class="sideMenuInner">
       <h1>Video Archive Viewer</h1>
@@ -600,6 +552,7 @@
     const GRID_TEXTURE_MAX_PIXELS = 14000000;
     const HOVER_GRID_TEXTURE_SCALE = 0.5;
     const GRID_AUTO_SPIN_SPEED = 0.38;
+    const GRID_ROTATION_CONTROL_SPEED = 1.7;
 
     const canvas = document.getElementById("wallCanvas");
     if (!window.THREE) throw new Error("Three.js failed to load.");
@@ -607,13 +560,10 @@
     const ctx = textureCanvas.getContext("2d");
     const slideshowFrame = document.getElementById("slideshowFrame");
     const menuBackdrop = document.getElementById("menuBackdrop");
-    const menuHint = document.getElementById("menuHint");
-    const headerTitle = document.getElementById("headerTitle");
-    const headerTitleLink = document.getElementById("headerTitleLink");
     const slideshowCounter = document.getElementById("slideshowCounter");
     const sideMenu = document.getElementById("sideMenu");
-    const displayModeSelect = document.getElementById("displayModeSelect");
     const sortSelect = document.getElementById("sortSelect");
+    const gridRotationButtons = Array.from(document.querySelectorAll("[data-grid-rotate]"));
     const videoSearchInput = document.getElementById("videoSearchInput");
     const honestlyCheckbox = document.getElementById("honestlyCheckbox");
     const cryptidCheckbox = document.getElementById("cryptidCheckbox");
@@ -623,9 +573,9 @@
     const prevSlideButton = document.getElementById("prevSlide");
     const nextSlideButton = document.getElementById("nextSlide");
     const keys = new Set();
+    const activeGridRotationControls = new Set();
     const imageCache = new Map();
     const loadingGridImage = new Image();
-    const DEFAULT_HEADER_TITLE = "Random Video";
     loadingGridImage.src = LOADING_GRID_IMAGE_PATH;
 
     const threeScene = new THREE.Scene();
@@ -1709,7 +1659,7 @@
         lastPointerX = event.clientX;
         lastPointerY = event.clientY;
         targetPlaneYaw += deltaX * 0.009;
-        targetPlanePitch = clamp(targetPlanePitch + deltaY * 0.009, -Math.PI / 2, Math.PI / 2);
+        targetPlanePitch += deltaY * 0.009;
         hoveredTileIndex = -1;
         updateTileHoverClass();
         updateHeaderTitleForHover();
@@ -1748,9 +1698,30 @@
       if (clickedTileIndex < 0) return;
 
       slideshowIndex = clickedTileIndex;
-      displayModeSelect.value = "slideshow";
       setDisplayMode("slideshow");
       updateSlideshowEmbed(getSlideshowVideo());
+    }
+
+    function setGridRotationControl(button, isActive) {
+      const direction = String(button && button.dataset.gridRotate || "").trim();
+      if (!direction) return;
+
+      button.classList.toggle("is-active", isActive);
+      if (isActive) {
+        gridAutoSpin = false;
+        keys.clear();
+        activeGridRotationControls.add(direction);
+        return;
+      }
+
+      activeGridRotationControls.delete(direction);
+    }
+
+    function clearGridRotationControls() {
+      activeGridRotationControls.clear();
+      gridRotationButtons.forEach((button) => {
+        button.classList.remove("is-active");
+      });
     }
 
     function updateHud() {
@@ -1784,6 +1755,7 @@
     function updateCamera(deltaSeconds) {
       if (menuOpen) return;
       const rotateAmount = 1.25 * deltaSeconds;
+      const controlRotateAmount = GRID_ROTATION_CONTROL_SPEED * deltaSeconds;
       const zoomAmount = 7.5 * deltaSeconds;
 
       if (gridAutoSpin) targetPlaneYaw += GRID_AUTO_SPIN_SPEED * deltaSeconds;
@@ -1792,11 +1764,14 @@
       if (keys.has("s")) targetPlanePitch -= rotateAmount;
       if (keys.has("a")) targetPlaneYaw -= rotateAmount;
       if (keys.has("d")) targetPlaneYaw += rotateAmount;
+      if (activeGridRotationControls.has("up")) targetPlanePitch += controlRotateAmount;
+      if (activeGridRotationControls.has("down")) targetPlanePitch -= controlRotateAmount;
+      if (activeGridRotationControls.has("left")) targetPlaneYaw -= controlRotateAmount;
+      if (activeGridRotationControls.has("right")) targetPlaneYaw += controlRotateAmount;
 
       if (keys.has("q")) targetPlaneDistance += zoomAmount;
       if (keys.has("e")) targetPlaneDistance -= zoomAmount;
 
-      targetPlanePitch = clamp(targetPlanePitch, -Math.PI / 2, Math.PI / 2);
       targetPlaneDistance = clamp(targetPlaneDistance, 5.5, 48);
     }
 
@@ -2105,7 +2080,8 @@
       if (honestlyCheckbox.checked) channelLabels.push("@Honestly_Thomas");
       if (cryptidCheckbox.checked) channelLabels.push("@Cryptid_Memes");
       const channels = channelLabels.length ? channelLabels.join(" + ") : "no channels selected";
-      menuStatus.textContent = `${videos.length} / ${allVideos.length} videos | ${displayModeSelect.options[displayModeSelect.selectedIndex].text} | ${sortSelect.options[sortSelect.selectedIndex].text} | ${channels}`;
+      const displayModeLabel = displayMode === "fullGrid" ? "Full Grid" : "Slideshow";
+      menuStatus.textContent = `${videos.length} / ${allVideos.length} videos | ${displayModeLabel} | ${sortSelect.options[sortSelect.selectedIndex].text} | ${channels}`;
     }
 
     function getExportScale(bounds) {
@@ -2311,6 +2287,7 @@
       document.body.classList.toggle("menu-open", menuOpen);
       menuBackdrop.setAttribute("aria-hidden", menuOpen ? "false" : "true");
       keys.clear();
+      if (menuOpen) clearGridRotationControls();
       if (menuOpen) hoveredTileIndex = -1;
       updateTileHoverClass();
       updateHeaderTitleForHover();
@@ -2320,7 +2297,6 @@
       sideMenuOpen = Boolean(nextOpen);
       document.body.classList.toggle("side-menu-open", sideMenuOpen);
       sideMenu.setAttribute("aria-hidden", sideMenuOpen ? "false" : "true");
-      menuHint.textContent = sideMenuOpen ? "Close Menu" : "Open Menu";
     }
 
     function updateDisplayModeClass() {
@@ -2358,25 +2334,11 @@
       }
 
       postNavHoverTitle(hoverTitle);
-      setHeaderTitle(DEFAULT_HEADER_TITLE, null);
     }
 
     function formatVideoHeaderTitle(video) {
       const channelName = String(video && (video.channel || video.uploader) || "").trim() || "Unknown Channel";
       return `${channelName} \u2022 ${formatUploadDate(video && video.uploadDate)}`;
-    }
-
-    function setHeaderTitle(text, video) {
-      headerTitleLink.textContent = text;
-
-      if (video && video.id) {
-        headerTitleLink.href = `https://www.youtube.com/watch?v=${encodeURIComponent(video.id)}`;
-        headerTitleLink.removeAttribute("aria-disabled");
-        return;
-      }
-
-      headerTitleLink.href = "#";
-      headerTitleLink.removeAttribute("aria-disabled");
     }
 
     function postNavHoverTitle(title) {
@@ -2386,19 +2348,12 @@
       }, "*");
     }
 
-    function openRandomVideo() {
-      if (!videos.length) return;
-      slideshowIndex = Math.floor(Math.random() * videos.length);
-      displayModeSelect.value = "slideshow";
-      setDisplayMode("slideshow");
-    }
-
     function setDisplayMode(nextMode) {
       const previousMode = displayMode;
       displayMode = nextMode === "fullGrid" ? "fullGrid" : "slideshow";
-      displayModeSelect.value = displayMode;
       keys.clear();
       if (displayMode !== "fullGrid") gridAutoSpin = false;
+      if (displayMode !== "fullGrid") clearGridRotationControls();
       hoveredTileIndex = -1;
       updateDisplayModeClass();
       updateHeaderTitleForHover();
@@ -2553,12 +2508,6 @@
     document.addEventListener("click", handleCanvasClick);
     document.addEventListener("keydown", handleKeydown);
     document.addEventListener("keyup", handleKeyup);
-    displayModeSelect.addEventListener("change", () => {
-      setDisplayMode(displayModeSelect.value);
-    });
-    menuHint.addEventListener("click", () => {
-      setSideMenuOpen(!sideMenuOpen);
-    });
     sortSelect.addEventListener("change", () => {
       currentSort = sortSelect.value;
       applyVideoView();
@@ -2569,10 +2518,28 @@
     screenshotButton.addEventListener("click", saveFullGridScreenshot);
     prevSlideButton.addEventListener("click", () => moveSlideshow(-1));
     nextSlideButton.addEventListener("click", () => moveSlideshow(1));
-    headerTitleLink.addEventListener("click", (event) => {
-      event.preventDefault();
-      openRandomVideo();
+    gridRotationButtons.forEach((button) => {
+      button.addEventListener("pointerdown", (event) => {
+        if (displayMode !== "fullGrid" || menuOpen) return;
+        event.preventDefault();
+        button.setPointerCapture(event.pointerId);
+        setGridRotationControl(button, true);
+      });
+
+      button.addEventListener("pointerup", (event) => {
+        event.preventDefault();
+        setGridRotationControl(button, false);
+      });
+
+      button.addEventListener("pointercancel", () => {
+        setGridRotationControl(button, false);
+      });
+
+      button.addEventListener("lostpointercapture", () => {
+        setGridRotationControl(button, false);
+      });
     });
+    window.addEventListener("blur", clearGridRotationControls);
 
     resizeCanvas();
     updateDisplayModeClass();
