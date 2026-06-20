@@ -3396,42 +3396,21 @@ const focusSink = document.getElementById('focusSink');
       }
     }
 
-    function clearLocalChatDisplay() {
+    function clearLocalNonPublicChatDisplay() {
       Array.from(messages.children).forEach((child) => {
-        child.remove();
+        if (child.dataset.liveChatMessage !== 'true') {
+          child.remove();
+        }
       });
-      renderedSupabaseMessageKeys.clear();
       homepageCustomizePanelVisible = false;
       clearAllDvdMedia();
       updateMessagesVisibility();
     }
 
-    async function clearSupabaseChatHistory(password) {
-      const adminPassword = String(password || '');
-      if (!adminPassword) {
-        clearLocalChatDisplay();
-        addSystemMessage('Local chat display cleared. Public chat history remains online.');
-        return true;
-      }
-
-      try {
-        const client = await getSupabaseChatClient();
-        const { error } = await client.functions.invoke('clear-chat', {
-          body: {
-            password: adminPassword,
-            room: SUPABASE_CHAT_ROOM
-          }
-        });
-
-        if (error) throw error;
-        clearLocalChatDisplay();
-        addSystemMessage('Public chat history cleared.');
-        return true;
-      } catch (error) {
-        console.error('Unable to clear public chat history:', error);
-        addSystemMessage('Unable to clear public chat history.');
-        return false;
-      }
+    function clearLocalChatCommand() {
+      clearLocalNonPublicChatDisplay();
+      addSystemMessage('Local chat display cleared. Public chat history remains online.');
+      return true;
     }
 
     function isSensitiveClearCommand(raw) {
@@ -7417,7 +7396,7 @@ function createHomepageCustomizeMessageNode(result = {}) {
       }
 
       if (command === '/clear') {
-        await clearSupabaseChatHistory(trimmed.slice(parts[0].length).trim());
+        clearLocalChatCommand();
         return true;
       }
 
