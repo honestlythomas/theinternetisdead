@@ -42,6 +42,8 @@ if (window.top === window.self && !allowStandalone) {
       --chatbar-text: rgba(255, 255, 255, 1);
       --chat-bg: rgba(0, 0, 0, 0);
       --message-text-color: rgba(255, 255, 255, 1);
+      --chat-preview-opacity: 0;
+      --chat-preview-offset: 56px;
       will-change: filter;
     }
 
@@ -61,7 +63,8 @@ if (window.top === window.self && !allowStandalone) {
       padding-bottom: 0;
     }
 
-    body.chat-open #messagesWrap {
+    body.chat-open #messagesWrap,
+    body.chat-preview #messagesWrap {
       padding-bottom: 56px;
     }
 
@@ -69,8 +72,16 @@ if (window.top === window.self && !allowStandalone) {
       display: none;
     }
 
-    body.chat-open #messagesWrap.visible {
+    body.chat-open #messagesWrap.visible,
+    body.chat-preview #messagesWrap.visible {
       display: block;
+    }
+
+    body.chat-preview #messagesWrap.visible {
+      opacity: var(--chat-preview-opacity);
+      pointer-events: none;
+      transform: translateY(var(--chat-preview-offset));
+      transition: opacity 90ms linear, transform 90ms linear;
     }
 
     #messagesWrap::-webkit-scrollbar {
@@ -913,6 +924,16 @@ if (window.top === window.self && !allowStandalone) {
       pointer-events: none;
       visibility: hidden;
       z-index: 31;
+    }
+
+    body.chat-preview #chatBarWrap:not(.visible) {
+      display: flex;
+      opacity: var(--chat-preview-opacity);
+      pointer-events: auto;
+      transform: translateY(var(--chat-preview-offset));
+      transition: opacity 90ms linear, transform 90ms linear;
+      visibility: visible;
+      cursor: text;
     }
 
     #chatBarWrap.visible {
@@ -1835,6 +1856,8 @@ const focusSink = document.getElementById('focusSink');
     let historyIndex = -1;
     let historyDraft = '';
     let chatInputArmed = false;
+    let chatPreviewVisible = false;
+    let chatPreviewProgress = 0;
     let homepageCustomizePanelVisible = false;
     let screenshotAnimationActive = false;
     let dvdAnimationFrameId = null;
@@ -2237,6 +2260,11 @@ const focusSink = document.getElementById('focusSink');
 
     function showChatBar() {
       if (isScreenshotAnimationLocked()) return;
+      chatPreviewVisible = false;
+      chatPreviewProgress = 0;
+      document.body.classList.remove('chat-preview');
+      document.body.style.setProperty('--chat-preview-opacity', '0');
+      document.body.style.setProperty('--chat-preview-offset', '56px');
       chatBarWrap.classList.add('visible');
       document.body.classList.add('chat-open');
       disarmChatInput();
@@ -2258,6 +2286,33 @@ const focusSink = document.getElementById('focusSink');
       disarmChatInput();
       chatBar.blur();
       notifyParentChatSandboxState();
+    }
+
+    function setChatPreviewVisible(visible, progress = chatPreviewProgress) {
+      const nextVisible = !!visible && !chatBarWrap.classList.contains('visible');
+      const nextProgress = nextVisible ? Math.max(0, Math.min(1, Number(progress) || 0)) : 0;
+      if (chatPreviewVisible === nextVisible && Math.abs(chatPreviewProgress - nextProgress) < 0.001) return;
+      chatPreviewVisible = nextVisible;
+      chatPreviewProgress = nextProgress;
+      document.body.style.setProperty('--chat-preview-opacity', nextVisible ? nextProgress.toFixed(3) : '0');
+      document.body.style.setProperty('--chat-preview-offset', `${(56 - (56 * nextProgress)).toFixed(2)}px`);
+      document.body.classList.toggle('chat-preview', nextVisible);
+      if (nextVisible) {
+        ensureInitialWelcomeMessage();
+        updateMessagesVisibility();
+        requestAnimationFrame(scrollToBottom);
+      }
+    }
+
+    function openChatFromPreview() {
+      if (!chatPreviewVisible || chatBarWrap.classList.contains('visible')) return;
+      setChatPreviewVisible(false);
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'openChatFromChild', seedSlash: false }, '*');
+      } else {
+        showChatBar();
+        armChatInput();
+      }
     }
 
     function refreshScriptStatusVisibility() {
@@ -7266,10 +7321,36 @@ function createHomepageCustomizeMessageNode(result = {}) {
     updateMessagesVisibility();
 
     chatBarWrap.addEventListener('click', (event) => {
+      if (chatPreviewVisible && !chatBarWrap.classList.contains('visible')) {
+        event.preventDefault();
+        event.stopPropagation();
+        openChatFromPreview();
+        return;
+      }
+
       if (event.target !== chatClose) {
         armChatInput();
       }
     });
+
+    document.addEventListener('pointermove', (event) => {
+      if (!chatPreviewVisible || chatBarWrap.classList.contains('visible')) return;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'chatSandboxPreviewPointer',
+          clientY: event.clientY
+        }, '*');
+      }
+    }, true);
+
+    document.addEventListener('click', (event) => {
+      if (!chatPreviewVisible || chatBarWrap.classList.contains('visible')) return;
+      const target = event.target && event.target.closest ? event.target.closest('#chatBarWrap') : null;
+      if (target) return;
+      event.preventDefault();
+      event.stopPropagation();
+      openChatFromPreview();
+    }, true);
 
     chatClose.addEventListener('click', (event) => {
       event.stopPropagation();
@@ -7383,7 +7464,13 @@ function createHomepageCustomizeMessageNode(result = {}) {
 
       if (event.data.type === 'chatSandboxClose') {
         if (isScreenshotAnimationLocked()) return;
+        setChatPreviewVisible(false);
         hideChatBar();
+        return;
+      }
+
+      if (event.data.type === 'chatSandboxPreview') {
+        setChatPreviewVisible(!!event.data.visible, event.data.progress);
         return;
       }
 
