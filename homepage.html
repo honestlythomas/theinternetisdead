@@ -895,6 +895,8 @@
       const data = event.data || {};
       if (data.type === 'feedGridOpenVideo' && data.videoId) {
         openVideoEmbed(String(data.videoId || ''), String(data.videoTitle || ''));
+      } else if (data.type === 'feedGridCloseVideo') {
+        closeVideoEmbed();
       }
     });
 

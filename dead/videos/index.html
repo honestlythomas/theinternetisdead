@@ -41,7 +41,11 @@
       window.sessionStorage.setItem('deadVideoId', videoId);
     }
 
-    window.location.replace('/');
+    if (window.top && window.top !== window) {
+      window.top.location.replace('/');
+    } else {
+      window.location.replace('/');
+    }
   </script>
 </body>
 </html>

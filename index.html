@@ -206,10 +206,66 @@
       return `/dead/videos/?vid=${encodeURIComponent(videoId)}`;
     }
 
+    function getVideoIdFromUrl(url) {
+      const queryVideoId = url.searchParams.get('vid') || url.searchParams.get('id') || url.searchParams.get('v') || '';
+      if (queryVideoId.trim()) return queryVideoId.trim();
+
+      const videoPathMatch = url.pathname.replace(/\/{2,}/g, '/').match(/^\/dead\/videos\/([^/]+)\/?$/);
+      return videoPathMatch ? decodeURIComponent(videoPathMatch[1]) : '';
+    }
+
+    function isVideoRouteUrl(url) {
+      const path = url.pathname.replace(/\/{2,}/g, '/');
+      return /^\/dead\/videos\/?$/i.test(path) || /^\/dead\/videos\/[^/]+\/?$/i.test(path);
+    }
+
     function isVideoQueryRoute(pathname = window.location.pathname) {
       const path = String(pathname || '').replace(/\/{2,}/g, '/');
       if (!/^\/dead\/videos\/?$/i.test(path)) return false;
       return !!getVideoIdFromCurrentUrl();
+    }
+
+    function isDefaultFramePath(path = currentFramePath) {
+      try {
+        const url = new URL(String(path || ''), window.location.origin);
+        return url.pathname.replace(/\/{2,}/g, '/') === DEFAULT_IFRAME_PATH;
+      } catch (error) {
+        return String(path || '').replace(/\/{2,}/g, '/') === DEFAULT_IFRAME_PATH;
+      }
+    }
+
+    function isShellOnlyFrameUrl(url) {
+      const path = url.pathname.replace(/\/{2,}/g, '/');
+      return path === '/' ||
+        path === '/index.html' ||
+        path === '/nav.html' ||
+        /^\/dead\/videos\/?$/i.test(path) ||
+        /^\/dead\/videos\/[^/]+\/?$/i.test(path);
+    }
+
+    function getSafePreviousVideoRouteUrl() {
+      try {
+        const currentUrl = new URL(window.location.href);
+        if (isVideoRouteUrl(currentUrl)) return '/';
+        if (isDefaultFramePath()) return '/';
+        return currentUrl.origin === window.location.origin ? currentUrl.href : '/';
+      } catch (error) {
+        return '/';
+      }
+    }
+
+    function seedVideoRouteHistory(videoId, routeUrl = getVideoRouteUrl(videoId)) {
+      window.history.replaceState(
+        { framePath: DEFAULT_IFRAME_PATH, videoId: null },
+        '',
+        '/'
+      );
+      window.history.pushState(
+        { framePath: DEFAULT_IFRAME_PATH, videoId },
+        '',
+        routeUrl
+      );
+      window.__indexPreviousVideoRouteUrl = '/';
     }
 
 
@@ -218,6 +274,7 @@
       window.sessionStorage.removeItem('deadVideoId');
     }
     let restoringVideoIdFromHistory = pendingVideoId;
+    let pendingCloseVideoOnHome = false;
 
     function getShortFolderRedirect(pathname) {
       const normalizedPath = String(pathname || '').replace(/\/{2,}/g, '/');
@@ -372,6 +429,11 @@
       try {
         const url = new URL(rawValue, window.location.origin);
         if (url.origin !== window.location.origin) return DEFAULT_IFRAME_PATH;
+        if (isShellOnlyFrameUrl(url)) {
+          const videoId = getVideoIdFromUrl(url);
+          if (videoId) pendingVideoId = videoId;
+          return DEFAULT_IFRAME_PATH;
+        }
         const shortPathRedirect = getShortPathRedirect(url.pathname);
         let normalizedPath = shortPathRedirect || url.pathname;
         if (url.searchParams.get('standalone') === 'true') {
@@ -381,6 +443,23 @@
       } catch (error) {
         const withLeadingSlash = rawValue.startsWith('/') ? rawValue : `/${rawValue}`;
         const normalizedPath = withLeadingSlash.replace(/\/{2,}/g, '/');
+        try {
+          const fallbackUrl = new URL(normalizedPath, window.location.origin);
+          if (isShellOnlyFrameUrl(fallbackUrl)) {
+            const videoId = getVideoIdFromUrl(fallbackUrl);
+            if (videoId) pendingVideoId = videoId;
+            return DEFAULT_IFRAME_PATH;
+          }
+        } catch (fallbackError) {
+          if (
+            normalizedPath === '/' ||
+            normalizedPath === '/index.html' ||
+            normalizedPath === '/nav.html' ||
+            /^\/dead\/videos(?:\/|$)/i.test(normalizedPath)
+          ) {
+            return DEFAULT_IFRAME_PATH;
+          }
+        }
         const redirectedPath = getShortPathRedirect(normalizedPath) || normalizedPath;
         return rawValue.includes('standalone=true')
           ? (getDeadStandaloneIndexPath(redirectedPath) || redirectedPath)
@@ -439,6 +518,16 @@
       pendingVideoId = restoredVideoId;
       restoringVideoIdFromHistory = restoredVideoId;
       setFrameSource(getFramePathFromBrowserLocation(state));
+      if (!restoredVideoId) {
+        pendingCloseVideoOnHome = true;
+        closeVideoInHomepageFrame();
+      }
+    }
+
+    function closeVideoInHomepageFrame() {
+      if (!isDefaultFramePath() || !contentFrame.contentWindow) return;
+      contentFrame.contentWindow.postMessage({ type: 'feedGridCloseVideo' }, '*');
+      pendingCloseVideoOnHome = false;
     }
 
     async function loadNav() {
@@ -742,6 +831,9 @@
       patchContentFrameShellLinks();
       postNavHoverState();
       requestFeedHeaderState();
+      if (pendingCloseVideoOnHome) {
+        closeVideoInHomepageFrame();
+      }
       if (!pendingVideoId || !contentFrame.contentWindow) return;
       contentFrame.contentWindow.postMessage({ type: 'feedGridOpenVideo', videoId: pendingVideoId }, '*');
       pendingVideoId = '';
@@ -817,11 +909,12 @@
         if (restoringVideoIdFromHistory === videoId) {
           restoringVideoIdFromHistory = '';
         } else {
-          window.__indexPreviousVideoRouteUrl = window.location.href;
+          window.__indexPreviousVideoRouteUrl = getSafePreviousVideoRouteUrl();
           window.history.pushState(videoHistoryState, '', nextUrl);
         }
       } else {
         restoringVideoIdFromHistory = '';
+        pendingCloseVideoOnHome = true;
         window.history.replaceState({ framePath: DEFAULT_IFRAME_PATH, videoId: null }, '', nextUrl);
       }
       if (typeof window.updateNavVideoRouteState === 'function') {
@@ -881,16 +974,15 @@
     } else if (startupFramePath) {
       if (isVideoQueryRoute()) {
         setFrameSource(startupFramePath);
-        window.history.replaceState(
-          { framePath: DEFAULT_IFRAME_PATH, videoId: pendingVideoId || null },
-          '',
+        seedVideoRouteHistory(
+          pendingVideoId,
           `${window.location.pathname || '/'}${window.location.search || ''}${window.location.hash || ''}`
         );
       } else {
         setFrameSource(startupFramePath, { historyMode: 'replace' });
       }
     } else if (pendingVideoId) {
-      window.history.replaceState({ videoId: pendingVideoId }, '', getVideoRouteUrl(pendingVideoId));
+      seedVideoRouteHistory(pendingVideoId);
       window.dispatchEvent(new CustomEvent('indexFrameChange', {
         detail: { src: currentFramePath, links: iframeLinks.slice() }
       }));
