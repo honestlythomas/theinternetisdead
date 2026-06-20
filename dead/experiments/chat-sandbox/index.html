@@ -1926,7 +1926,8 @@ const focusSink = document.getElementById('focusSink');
     const builtInCommands = [
       { name: '/upload_file', value: '/upload_file', execute: true, desc: 'open a file picker to embed one file into chat' },
       { name: '/upload_folder', value: '/upload_folder', execute: true, desc: 'open a folder picker to browse and embed local files' },
-      { name: '/clear', value: '/clear', execute: true, desc: 'clear the visible chat messages' },
+      { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
+      { name: '/clear_public', value: '/clear_public ', execute: false, desc: 'admin: clear public chat history through the server-side function', hidden: true },
       { name: '/color', value: '/color', execute: true, desc: 'show only the color commands' },
       { name: '/color_hueshift', value: '/color_hueshift', execute: true, desc: 'toggle a global hue shift and override local hue-shift effects while active' },
       { name: '/color_invert', value: '/color_invert', execute: true, desc: 'toggle a global full-color invert on or off' },
@@ -3411,6 +3412,42 @@ const focusSink = document.getElementById('focusSink');
       clearLocalNonPublicChatDisplay();
       addSystemMessage('Local chat display cleared. Public chat history remains online.');
       return true;
+    }
+
+    function clearPublicChatDisplay() {
+      Array.from(messages.querySelectorAll('.message[data-live-chat-message="true"]')).forEach((line) => {
+        line.remove();
+      });
+      renderedSupabaseMessageKeys.clear();
+      updateMessagesVisibility();
+    }
+
+    async function clearSupabaseChatHistory(password) {
+      const adminPassword = String(password || '');
+      if (!adminPassword) {
+        addSystemMessage('Usage: /clear_public [admin password]');
+        return true;
+      }
+
+      try {
+        const client = await getSupabaseChatClient();
+        const { error } = await client.functions.invoke('clear-chat', {
+          body: {
+            password: adminPassword,
+            room: SUPABASE_CHAT_ROOM
+          }
+        });
+
+        if (error) throw error;
+        clearLocalNonPublicChatDisplay();
+        clearPublicChatDisplay();
+        addSystemMessage('Public chat history cleared.');
+        return true;
+      } catch (error) {
+        console.error('Unable to clear public chat history:', error);
+        addSystemMessage('Unable to clear public chat history.');
+        return false;
+      }
     }
 
     function isSensitiveClearCommand(raw) {
@@ -7397,6 +7434,11 @@ function createHomepageCustomizeMessageNode(result = {}) {
 
       if (command === '/clear') {
         clearLocalChatCommand();
+        return true;
+      }
+
+      if (command === '/clear_public') {
+        await clearSupabaseChatHistory(trimmed.slice(parts[0].length).trim());
         return true;
       }
 
