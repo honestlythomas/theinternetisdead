@@ -1795,13 +1795,29 @@ const focusSink = document.getElementById('focusSink');
 
     const CHAT_NICKNAME_STORAGE_KEY = 'tektiteChatNickname';
     const CHAT_NICKNAME_EXPLICIT_STORAGE_KEY = 'tektiteChatNicknameExplicit';
+    const SUPABASE_PROJECT_URL = 'https://fumidkcwrhzgfdmuakqj.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BcNJhaZkgo4r5VH1aJ_stQ_P-kEDY_r';
+    const SUPABASE_CHAT_ROOM = 'index';
+    const SUPABASE_CHAT_TABLE = 'site_chat_messages';
+    const SUPABASE_CHAT_SCHEMA = 'public';
+    const SUPABASE_CHAT_MAX_VISIBLE = 75;
+    const SUPABASE_CHAT_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+
+    function generateAnonymousNickname() {
+      return `Anonymous Ghost ${Math.floor(Math.random() * 900) + 100}`;
+    }
+
+    function normalizeNickname(value) {
+      return String(value || '').trim().slice(0, 40);
+    }
 
     function loadSavedNickname() {
       try {
         const savedNickname = window.localStorage.getItem(CHAT_NICKNAME_STORAGE_KEY);
-        return savedNickname && savedNickname.trim() ? savedNickname.trim() : 'User';
+        const normalized = normalizeNickname(savedNickname);
+        return normalized || generateAnonymousNickname();
       } catch (error) {
-        return 'User';
+        return generateAnonymousNickname();
       }
     }
 
@@ -1929,6 +1945,7 @@ const focusSink = document.getElementById('focusSink');
       { name: '/script_load', value: '/script_load', execute: true, desc: 'choose a .txt file and send each line into chat every 0.33 seconds' },
       { name: '/settings_load', value: '/settings_load', execute: true, desc: 'choose a settings.json file and load saved settings' },
       { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User'] },
+      { name: '/nick', value: '/nick ', execute: false, desc: 'alias for /nickname', suggestions: ['Tektite', 'Guest', 'User'] },
       { name: '/color_randomize', value: '/color_randomize', execute: true, desc: 'toggle the automatic random color shuffle on or off' },
       { name: '/color_reset', value: '/color_reset', execute: true, desc: 'restore default appearance settings' },
       { name: '/settings_save', value: '/settings_save', execute: true, desc: 'download a settings.json with the current command-configurable state' },
@@ -1943,6 +1960,10 @@ const focusSink = document.getElementById('focusSink');
     let pageCommandMeta = { pageOnly: false, pageId: '', title: '', sourceKey: '' };
     let pendingPageCommand = null;
     let commandCycleIndex = -1;
+    let supabaseChatClient = null;
+    let supabaseChatChannel = null;
+    let supabaseChatReadyPromise = null;
+    const renderedSupabaseMessageKeys = new Set();
     let commandCyclePrefix = '';
 
     function isNearBottom(threshold = 8) {
@@ -3165,6 +3186,258 @@ const focusSink = document.getElementById('focusSink');
         requestAnimationFrame(scrollToBottom);
       }
       return line;
+    }
+
+    function getSupabaseMessageKey(record) {
+      if (record && (record.id || record.id === 0)) return `id:${record.id}`;
+      return [
+        record && record.created_at || '',
+        record && record.nickname || '',
+        record && record.body || ''
+      ].join('|');
+    }
+
+    function pruneSupabaseMessages() {
+      const publicMessages = Array.from(messages.querySelectorAll('.message[data-live-chat-message="true"]'));
+      while (publicMessages.length > SUPABASE_CHAT_MAX_VISIBLE) {
+        const line = publicMessages.shift();
+        if (line) line.remove();
+      }
+      updateMessagesVisibility();
+    }
+
+    function addPublicChatMessage(record) {
+      if (!record || record.room !== SUPABASE_CHAT_ROOM) return null;
+      const body = String(record.body || '').trim();
+      const nickname = normalizeNickname(record.nickname) || generateAnonymousNickname();
+      if (!body || body.length > 500) return null;
+
+      const messageKey = getSupabaseMessageKey(record);
+      if (renderedSupabaseMessageKeys.has(messageKey)) return null;
+      renderedSupabaseMessageKeys.add(messageKey);
+
+      const wasPinnedToBottom = isNearBottom();
+      const line = document.createElement('div');
+      line.className = 'message';
+      line.dataset.role = 'user';
+      line.dataset.liveChatMessage = 'true';
+      line.dataset.rawContent = `${nickname}: ${body}`;
+      line.addEventListener('click', async (event) => {
+        if (!document.body.classList.contains('debug')) return;
+        if (event.target.closest('.messageDelete')) return;
+        await copyMessageWithTimestamp(line);
+      });
+
+      const meta = document.createElement('div');
+      meta.className = 'messageMeta';
+
+      const timestamp = document.createElement('div');
+      timestamp.className = 'timestamp';
+      const createdAt = record.created_at ? new Date(record.created_at) : new Date();
+      timestamp.textContent = Number.isNaN(createdAt.getTime()) ? formatTimestamp() : formatTimestamp(createdAt);
+      meta.appendChild(timestamp);
+
+      const row = document.createElement('div');
+      row.className = 'messageRow';
+
+      const messageText = document.createElement('div');
+      messageText.className = 'messageText';
+      appendSpeakerPrefix(messageText, `${nickname}:`, 'nicknameLabel');
+      messageText.appendChild(document.createTextNode(` ${body}`));
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'messageDelete';
+      deleteBtn.type = 'button';
+      deleteBtn.setAttribute('aria-label', 'Delete message');
+      deleteBtn.textContent = 'x';
+      deleteBtn.addEventListener('click', () => {
+        line.remove();
+        updateMessagesVisibility();
+      });
+
+      row.appendChild(messageText);
+      row.appendChild(deleteBtn);
+      line.appendChild(meta);
+      line.appendChild(row);
+      messages.appendChild(line);
+      pruneSupabaseMessages();
+      if (wasPinnedToBottom) {
+        requestAnimationFrame(scrollToBottom);
+      }
+      return line;
+    }
+
+    function loadSupabaseScript() {
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        return Promise.resolve(window.supabase);
+      }
+
+      return new Promise((resolve, reject) => {
+        const existingScript = document.querySelector(`script[src="${SUPABASE_CHAT_CDN}"]`);
+        if (existingScript) {
+          existingScript.addEventListener('load', () => resolve(window.supabase), { once: true });
+          existingScript.addEventListener('error', () => reject(new Error('Unable to load Supabase chat client')), { once: true });
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = SUPABASE_CHAT_CDN;
+        script.async = true;
+        script.onload = () => {
+          if (window.supabase && typeof window.supabase.createClient === 'function') {
+            resolve(window.supabase);
+          } else {
+            reject(new Error('Supabase chat client did not initialize'));
+          }
+        };
+        script.onerror = () => reject(new Error('Unable to load Supabase chat client'));
+        document.head.appendChild(script);
+      });
+    }
+
+    async function getSupabaseChatClient() {
+      if (supabaseChatClient) return supabaseChatClient;
+      const supabaseModule = await loadSupabaseScript();
+      supabaseChatClient = supabaseModule.createClient(SUPABASE_PROJECT_URL, SUPABASE_PUBLISHABLE_KEY);
+      return supabaseChatClient;
+    }
+
+    async function loadRecentSupabaseMessages(client) {
+      const { data, error } = await client
+        .from(SUPABASE_CHAT_TABLE)
+        .select('id, room, nickname, body, created_at')
+        .eq('room', SUPABASE_CHAT_ROOM)
+        .order('created_at', { ascending: false })
+        .limit(SUPABASE_CHAT_MAX_VISIBLE);
+
+      if (error) throw error;
+      (Array.isArray(data) ? data.slice().reverse() : []).forEach(addPublicChatMessage);
+    }
+
+    async function initializeSupabaseLiveChat() {
+      if (supabaseChatReadyPromise) return supabaseChatReadyPromise;
+
+      supabaseChatReadyPromise = (async () => {
+        const client = await getSupabaseChatClient();
+
+        if (!supabaseChatChannel) {
+          supabaseChatChannel = client
+            .channel('site_chat_messages:index')
+            .on(
+              'postgres_changes',
+              {
+                event: 'INSERT',
+                schema: SUPABASE_CHAT_SCHEMA,
+                table: SUPABASE_CHAT_TABLE,
+                filter: `room=eq.${SUPABASE_CHAT_ROOM}`
+              },
+              (payload) => addPublicChatMessage(payload.new)
+            );
+
+          await new Promise((resolve) => {
+            const fallbackTimer = window.setTimeout(resolve, 2500);
+            supabaseChatChannel.subscribe((status) => {
+              if (status === 'SUBSCRIBED') {
+                window.clearTimeout(fallbackTimer);
+                resolve();
+              } else if (status === 'CHANNEL_ERROR') {
+                addSystemMessage('Live chat connection error. Try refreshing if messages stop moving.');
+              }
+            });
+          });
+        }
+
+        await loadRecentSupabaseMessages(client);
+
+        return client;
+      })().catch((error) => {
+        console.error('Unable to initialize live chat:', error);
+        supabaseChatReadyPromise = null;
+        addSystemMessage('Live chat is unavailable right now. Try refreshing in a moment.');
+        throw error;
+      });
+
+      return supabaseChatReadyPromise;
+    }
+
+    async function sendSupabaseChatMessage(rawBody) {
+      const body = String(rawBody || '').trim();
+      if (!body) {
+        addSystemMessage('Message is empty.');
+        return false;
+      }
+      if (body.length > 500) {
+        addSystemMessage('Message is too long. Keep public chat messages to 500 characters.');
+        return false;
+      }
+
+      const nickname = normalizeNickname(currentNickname) || generateAnonymousNickname();
+      currentNickname = nickname;
+
+      try {
+        const client = await initializeSupabaseLiveChat();
+        const { data, error } = await client
+          .from(SUPABASE_CHAT_TABLE)
+          .insert({
+            room: SUPABASE_CHAT_ROOM,
+            nickname,
+            body
+          })
+          .select('id, room, nickname, body, created_at')
+          .single();
+
+        if (error) throw error;
+        if (data) addPublicChatMessage(data);
+        return true;
+      } catch (error) {
+        console.error('Unable to send live chat message:', error);
+        addSystemMessage('Unable to send live chat message. Try again in a moment.');
+        return false;
+      }
+    }
+
+    function clearLocalChatDisplay() {
+      Array.from(messages.children).forEach((child) => {
+        child.remove();
+      });
+      renderedSupabaseMessageKeys.clear();
+      homepageCustomizePanelVisible = false;
+      clearAllDvdMedia();
+      updateMessagesVisibility();
+    }
+
+    async function clearSupabaseChatHistory(password) {
+      const adminPassword = String(password || '');
+      if (!adminPassword) {
+        clearLocalChatDisplay();
+        addSystemMessage('Local chat display cleared. Public chat history remains online.');
+        return true;
+      }
+
+      try {
+        const client = await getSupabaseChatClient();
+        const { error } = await client.functions.invoke('clear-chat', {
+          body: {
+            password: adminPassword,
+            room: SUPABASE_CHAT_ROOM
+          }
+        });
+
+        if (error) throw error;
+        clearLocalChatDisplay();
+        addSystemMessage('Public chat history cleared.');
+        return true;
+      } catch (error) {
+        console.error('Unable to clear public chat history:', error);
+        addSystemMessage('Unable to clear public chat history.');
+        return false;
+      }
+    }
+
+    function isSensitiveClearCommand(raw) {
+      const trimmed = String(raw || '').trim();
+      if (!trimmed.toLowerCase().startsWith('/clear')) return false;
+      return !!trimmed.slice('/clear'.length).trim();
     }
 
     function addSystemMessage(text, options = {}) {
@@ -6751,13 +7024,27 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return false;
       }
 
-      if (command === '/nickname') {
-        const newNickname = trimmed.slice(parts[0].length).trim();
-        if (newNickname) {
-          currentNickname = newNickname;
-          saveNickname(newNickname);
-          addSystemMessage(formatCommandExecutionMessage('/nickname', 'executed', newNickname));
+      if (command === '/nickname' || command === '/nick') {
+        const rawNickname = trimmed.slice(parts[0].length).trim();
+        if (rawNickname.toLowerCase() === 'reset') {
+          currentNickname = generateAnonymousNickname();
+          saveNickname('');
+          addSystemMessage(`${command} reset: ${currentNickname}`);
+          return true;
         }
+
+        if (!rawNickname) {
+          addSystemMessage(`Usage: ${command} [name]`);
+          return true;
+        }
+        if (rawNickname.length > 40) {
+          addSystemMessage('Nickname is too long. Keep it to 40 characters.');
+          return true;
+        }
+        const newNickname = normalizeNickname(rawNickname);
+        currentNickname = newNickname;
+        saveNickname(newNickname);
+        addSystemMessage(formatCommandExecutionMessage(command, 'executed', newNickname));
         return true;
       }
 
@@ -7130,12 +7417,7 @@ function createHomepageCustomizeMessageNode(result = {}) {
       }
 
       if (command === '/clear') {
-        Array.from(messages.children).forEach((child) => {
-          child.remove();
-        });
-        homepageCustomizePanelVisible = false;
-        clearAllDvdMedia();
-        updateMessagesVisibility();
+        await clearSupabaseChatHistory(trimmed.slice(parts[0].length).trim());
         return true;
       }
 
@@ -7166,7 +7448,9 @@ function createHomepageCustomizeMessageNode(result = {}) {
       const raw = chatBar.value;
       if (!raw.trim()) return;
 
-      inputHistory.push(raw);
+      if (!isSensitiveClearCommand(raw)) {
+        inputHistory.push(raw);
+      }
       resetHistoryNavigation();
 
       const trimmed = raw.trim();
@@ -7177,7 +7461,7 @@ function createHomepageCustomizeMessageNode(result = {}) {
           const commandToken = trimmed.split(/\s+/)[0];
           addSystemMessage(`${commandToken} is not a known command`);
         } else {
-          addMessage(`${currentNickname}: ${raw}`, 'user');
+          await sendSupabaseChatMessage(raw);
         }
       }
 
@@ -7186,6 +7470,8 @@ function createHomepageCustomizeMessageNode(result = {}) {
       resetCommandCycle();
       hideCommandArgumentSuggestionPopup();
     }
+
+    void initializeSupabaseLiveChat();
 
     renderCommandHueShiftFrame();
     updateChatBarState();
