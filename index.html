@@ -594,6 +594,9 @@
         window.dispatchEvent(new CustomEvent('indexFrameLinksReady', {
           detail: { src: currentFramePath, links: iframeLinks.slice() }
         }));
+        if (chatSandboxReady) {
+          registerIndexChatCommands();
+        }
       } catch (error) {
         console.error(`Error loading ${REPO_INDEX_PATH}`, error);
       }
@@ -853,18 +856,12 @@
         if (data.type === 'chatSandboxState') {
           chatSandboxVisible = !!data.visible || !!data.valuePickerActive;
           syncChatSandboxOverlayState();
-          if (chatSandboxReady) {
-            registerIndexChatCommands();
-          }
           return;
         }
 
         if (data.type === 'chatSandboxDvdState') {
           chatSandboxDvdActive = !!data.active;
           syncChatSandboxOverlayState();
-          if (chatSandboxReady) {
-            registerIndexChatCommands();
-          }
           return;
         }
 

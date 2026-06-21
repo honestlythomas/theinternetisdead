@@ -222,7 +222,6 @@ window.addEventListener('message', (event) => {
     if (!event.data) return;
     if (event.source === (frame ? frame.contentWindow : null)) {
         if (event.data.type === 'chatSandboxState' || event.data.type === 'chatSandboxDvdState') {
-            registerPageCommands();
             return;
         }
         if (event.data.type === 'pageChatExecute') {
