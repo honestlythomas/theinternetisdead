@@ -87,11 +87,6 @@
       z-index: 1100;
     }
 
-    #chat-sandbox-frame.chat-overlay-preview {
-      clip-path: inset(calc(100% - max(33.333dvh, 180px)) 0 0 0);
-      pointer-events: auto;
-    }
-
     #chat-sandbox-frame.chat-overlay-active {
       clip-path: none;
       pointer-events: auto;
@@ -175,8 +170,6 @@
     let navHovering = false;
     let chatSandboxVisible = false;
     let chatSandboxDvdActive = false;
-    let chatSandboxPreviewVisible = false;
-    let chatSandboxPreviewProgress = 0;
     let chatSandboxReady = false;
     let shellBackgroundStars = [];
     let shellBackgroundReady = false;
@@ -626,21 +619,12 @@
 
     function syncChatSandboxOverlayState() {
       const isActive = chatSandboxVisible || chatSandboxDvdActive;
-      const isPreviewing = chatSandboxPreviewVisible && !isActive;
-      chatSandboxFrame.classList.toggle('chat-overlay-preview', isPreviewing);
       chatSandboxFrame.classList.toggle('chat-overlay-active', isActive);
-      chatSandboxFrame.setAttribute('aria-hidden', (isActive || isPreviewing) ? 'false' : 'true');
-      postToChatSandbox({
-        type: 'chatSandboxPreview',
-        visible: isPreviewing,
-        progress: isPreviewing ? chatSandboxPreviewProgress : 0
-      });
+      chatSandboxFrame.setAttribute('aria-hidden', isActive ? 'false' : 'true');
     }
 
     window.__indexOpenChatOverlay = function openIndexChatOverlay(options = {}) {
       chatSandboxVisible = true;
-      chatSandboxPreviewVisible = false;
-      chatSandboxPreviewProgress = 0;
       syncChatSandboxOverlayState();
       postToChatSandbox({
         type: 'chatSandboxOpen',
@@ -767,7 +751,6 @@
 
       frameDocument.addEventListener('keydown', handleShellSlashKeydown, true);
       frameDocument.addEventListener('keydown', handleShellFullscreenKeydown, true);
-      frameDocument.addEventListener('pointermove', handleHomepageFramePointerMove, true);
     }
 
     function isTextEntryTarget(target) {
@@ -818,55 +801,6 @@
       window.__indexOpenChatOverlay({ focus: true, seedSlash: true });
     }
 
-    function setChatSandboxPreviewVisible(visible) {
-      const nextVisible = !!visible && !chatSandboxVisible && !chatSandboxDvdActive;
-      if (chatSandboxPreviewVisible === nextVisible) return;
-      chatSandboxPreviewVisible = nextVisible;
-      if (!nextVisible) {
-        chatSandboxPreviewProgress = 0;
-      }
-      syncChatSandboxOverlayState();
-    }
-
-    function isHomepageFrameActive() {
-      return normalizeIframePath(currentFramePath) === normalizeIframePath(DEFAULT_IFRAME_PATH);
-    }
-
-    function updateChatSandboxPreviewFromViewportY(clientY) {
-      if (!isHomepageFrameActive() || chatSandboxVisible || chatSandboxDvdActive) {
-        setChatSandboxPreviewVisible(false);
-        return;
-      }
-
-      const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0);
-      if (!viewportHeight) {
-        setChatSandboxPreviewVisible(false);
-        return;
-      }
-
-      const lowerThirdTop = viewportHeight * (2 / 3);
-      const rawProgress = (clientY - lowerThirdTop) / Math.max(1, viewportHeight - lowerThirdTop);
-      const clampedProgress = Math.max(0, Math.min(1, rawProgress));
-      const easedProgress = clampedProgress * clampedProgress;
-
-      if (easedProgress <= 0) {
-        setChatSandboxPreviewVisible(false);
-        return;
-      }
-
-      chatSandboxPreviewProgress = easedProgress;
-      setChatSandboxPreviewVisible(true);
-      if (chatSandboxPreviewVisible) {
-        syncChatSandboxOverlayState();
-      }
-    }
-
-    function handleHomepageFramePointerMove(event) {
-      if (!event) return;
-      const frameRect = contentFrame.getBoundingClientRect();
-      updateChatSandboxPreviewFromViewportY(frameRect.top + event.clientY);
-    }
-
     function patchChatSandboxSlashKey() {
       let frameDocument;
       try {
@@ -883,12 +817,6 @@
 
     window.addEventListener('keydown', handleShellSlashKeydown, true);
     window.addEventListener('keydown', handleShellFullscreenKeydown, true);
-    window.addEventListener('pointermove', (event) => {
-      updateChatSandboxPreviewFromViewportY(event.clientY);
-    }, true);
-    window.addEventListener('pointerleave', () => {
-      setChatSandboxPreviewVisible(false);
-    });
 
     overlayContainer.addEventListener('mouseenter', () => {
       navHovering = true;
@@ -898,14 +826,6 @@
     overlayContainer.addEventListener('mouseleave', () => {
       navHovering = false;
       postNavHoverState();
-    });
-
-    chatSandboxFrame.addEventListener('pointermove', (event) => {
-      updateChatSandboxPreviewFromViewportY(event.clientY);
-    }, true);
-
-    chatSandboxFrame.addEventListener('mouseleave', () => {
-      setChatSandboxPreviewVisible(false);
     });
 
     contentFrame.addEventListener('load', () => {
@@ -932,9 +852,6 @@
       if (event.source === chatSandboxFrame.contentWindow) {
         if (data.type === 'chatSandboxState') {
           chatSandboxVisible = !!data.visible || !!data.valuePickerActive;
-          if (chatSandboxVisible) {
-            chatSandboxPreviewVisible = false;
-          }
           syncChatSandboxOverlayState();
           if (chatSandboxReady) {
             registerIndexChatCommands();
@@ -951,27 +868,11 @@
           return;
         }
 
-        if (data.type === 'chatSandboxPreviewPointer') {
-          const frameRect = chatSandboxFrame.getBoundingClientRect();
-          updateChatSandboxPreviewFromViewportY(frameRect.top + (Number(data.clientY) || 0));
-          return;
-        }
-
         if (data.type === 'pageChatExecute') {
           handleIndexChatCommand(data);
           return;
         }
 
-        if (data.type === 'openChatFromChild') {
-          window.__indexOpenChatOverlay({ focus: true, seedSlash: !!data.seedSlash });
-          return;
-        }
-
-        return;
-      }
-
-      if (data.type === 'openChatFromChild') {
-        window.__indexOpenChatOverlay({ focus: true, seedSlash: !!data.seedSlash });
         return;
       }
 

@@ -1440,7 +1440,7 @@ html, body {
       </span>
       <span class="copyright-note">Copyright - 2025 <a href="/">theinternetisdead.org</a></span>
       <a class="sidebar-command-panel sidebar-menu-command-panel" id="sidebar-menu-command-panel" href="#" aria-label="Open chat">
-        <span class="sidebar-command-panel-text">Enter command...</span>
+        <span class="sidebar-command-panel-text">Open Chat</span>
       </a>
     </div>
   </div>
@@ -2532,6 +2532,8 @@ html, body {
     if (frame && frame.tagName === 'IFRAME') {
       const src = (frame.getAttribute('src') || '').trim();
       if (
+        src === '/chat.html' ||
+        src.endsWith('/chat.html') ||
         src.includes('/dead/experiments/chat-sandbox/chat-sandbox.html') ||
         src.includes('/dead/experiments/chat-sandbox/')
       ) {
@@ -2789,7 +2791,8 @@ html, body {
   if (sidebarCommandPanels.length) {
     function syncSidebarCommandPanelBehavior() {
       sidebarCommandPanels.forEach((sidebarCommandPanel) => {
-        if (shouldUseIndexChatBehavior()) {
+        const opensIndexChat = sidebarCommandPanel.id === 'sidebar-menu-command-panel' && shouldUseIndexChatBehavior();
+        if (opensIndexChat) {
           sidebarCommandPanel.setAttribute('href', '#');
           sidebarCommandPanel.setAttribute('aria-label', 'Open chat');
         } else {
@@ -2803,7 +2806,7 @@ html, body {
 
     sidebarCommandPanels.forEach((sidebarCommandPanel) => {
       sidebarCommandPanel.addEventListener('click', (event) => {
-        if (shouldUseIndexChatBehavior()) {
+        if (sidebarCommandPanel.id === 'sidebar-menu-command-panel' && shouldUseIndexChatBehavior()) {
           handleChatActivate(event);
           return;
         }
@@ -2812,7 +2815,7 @@ html, body {
 
       sidebarCommandPanel.addEventListener('keydown', (event) => {
         if (event.key !== 'Enter' && event.key !== ' ') return;
-        if (shouldUseIndexChatBehavior()) {
+        if (sidebarCommandPanel.id === 'sidebar-menu-command-panel' && shouldUseIndexChatBehavior()) {
           handleChatActivate(event);
           return;
         }
@@ -2826,31 +2829,18 @@ html, body {
 
   if (sidebarLogoLink) {
     function syncSidebarLogoBehavior() {
-      if (shouldUseIndexChatBehavior()) {
-        sidebarLogoLink.setAttribute('href', '#');
-        sidebarLogoLink.setAttribute('aria-label', 'Open chat');
-      } else {
-        sidebarLogoLink.setAttribute('href', '/');
-        sidebarLogoLink.setAttribute('aria-label', 'Go to the main page');
-      }
+      sidebarLogoLink.setAttribute('href', '/');
+      sidebarLogoLink.setAttribute('aria-label', 'Go to the main page');
     }
 
     syncSidebarLogoBehavior();
 
     sidebarLogoLink.addEventListener('click', (event) => {
-      if (shouldUseIndexChatBehavior()) {
-        handleChatActivate(event);
-        return;
-      }
       closeSidebar();
     });
 
     sidebarLogoLink.addEventListener('keydown', (event) => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
-      if (shouldUseIndexChatBehavior()) {
-        handleChatActivate(event);
-        return;
-      }
       closeSidebar();
     });
 
