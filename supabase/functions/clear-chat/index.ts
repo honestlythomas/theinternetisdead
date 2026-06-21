@@ -48,6 +48,12 @@ function normalizeRoom(value: unknown): string {
   return /^[a-z0-9_-]{1,80}$/i.test(room) ? room : "index";
 }
 
+function normalizeMaxMessages(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(parsed)) return 20;
+  return Math.min(100, Math.max(1, Math.floor(parsed)));
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", {
@@ -59,17 +65,11 @@ Deno.serve(async (request) => {
     return jsonResponse(request, 405, { ok: false, error: "method_not_allowed" });
   }
 
-  let body: { password?: unknown; room?: unknown };
+  let body: { action?: unknown; maxMessages?: unknown; password?: unknown; room?: unknown };
   try {
     body = await request.json();
   } catch (_error) {
     return jsonResponse(request, 400, { ok: false, error: "invalid_request" });
-  }
-
-  const expectedPassword = Deno.env.get("CHAT_ADMIN_PASSWORD") || "";
-  const providedPassword = typeof body.password === "string" ? body.password : "";
-  if (!expectedPassword || !timingSafeEqual(providedPassword, expectedPassword)) {
-    return jsonResponse(request, 401, { ok: false, error: "unauthorized" });
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
@@ -84,6 +84,48 @@ Deno.serve(async (request) => {
       persistSession: false,
     },
   });
+
+  if (body.action === "prune") {
+    const maxMessages = normalizeMaxMessages(body.maxMessages);
+    const { data: staleRows, error: selectError } = await supabase
+      .schema("public")
+      .from("site_chat_messages")
+      .select("id")
+      .eq("room", room)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .range(maxMessages, 1000);
+
+    if (selectError) {
+      return jsonResponse(request, 500, { ok: false, error: "prune_select_failed" });
+    }
+
+    const staleIds = (staleRows || [])
+      .map((row) => row && (typeof row.id === "string" || typeof row.id === "number") ? row.id : "")
+      .filter((id) => id !== "");
+
+    if (!staleIds.length) {
+      return jsonResponse(request, 200, { ok: true, room, maxMessages, deleted: 0 });
+    }
+
+    const { error: pruneError } = await supabase
+      .schema("public")
+      .from("site_chat_messages")
+      .delete()
+      .in("id", staleIds);
+
+    if (pruneError) {
+      return jsonResponse(request, 500, { ok: false, error: "prune_delete_failed" });
+    }
+
+    return jsonResponse(request, 200, { ok: true, room, maxMessages, deleted: staleIds.length });
+  }
+
+  const expectedPassword = Deno.env.get("CHAT_ADMIN_PASSWORD") || "";
+  const providedPassword = typeof body.password === "string" ? body.password : "";
+  if (!expectedPassword || !timingSafeEqual(providedPassword, expectedPassword)) {
+    return jsonResponse(request, 401, { ok: false, error: "unauthorized" });
+  }
 
   const { error } = await supabase
     .schema("public")

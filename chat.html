@@ -94,6 +94,34 @@
 
     .message[data-role="system"] { color: var(--chat-muted); }
 
+    .message a,
+    .message a:visited {
+      color: #ffffff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .publicChatImage {
+      display: block;
+      max-width: min(420px, calc(100vw - 70px));
+      max-height: 320px;
+      width: auto;
+      height: auto;
+      margin-top: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      background: rgba(0, 0, 0, 0.35);
+      object-fit: contain;
+    }
+
+    .messageTimestamp {
+      color: #ffffff;
+      font-size: 12px;
+      line-height: 1;
+      margin-right: 6px;
+      text-shadow: none;
+      white-space: nowrap;
+    }
+
     .message[data-error="true"] {
       color: var(--chat-danger);
       border-color: rgba(255, 85, 119, 0.5);
@@ -192,8 +220,14 @@
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BcNJhaZkgo4r5VH1aJ_stQ_P-kEDY_r';
     const SUPABASE_CHAT_ROOM = 'index';
     const SUPABASE_CHAT_TABLE = 'site_chat_messages';
-    const SUPABASE_CHAT_MAX_VISIBLE = 75;
-    const PUBLIC_CHAT_REFRESH_MS = 2500;
+    const SUPABASE_CHAT_MAX_VISIBLE = 20;
+    const PUBLIC_CHAT_FETCH_LIMIT = SUPABASE_CHAT_MAX_VISIBLE + 1;
+    const PUBLIC_CHAT_REFRESH_MS = 5000;
+    const PUBLIC_CHAT_PRUNE_RETRY_MS = 30000;
+    const PUBLIC_CHAT_IMAGE_MAX_SOURCE_BYTES = 5 * 1024 * 1024;
+    const PUBLIC_CHAT_IMAGE_MAX_BODY_CHARS = 700000;
+    const PUBLIC_CHAT_IMAGE_MAX_DIMENSION = 960;
+    const PUBLIC_CHAT_IMAGE_PAYLOAD_TYPE = 'theinternetisdead.publicChatImage.v1';
 
     const commands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
@@ -212,6 +246,9 @@
     let renderedPublicMessageKeys = new Set();
     let suggestionIndex = -1;
     let publicChatRefreshInFlight = false;
+    let publicChatPruneInFlight = false;
+    let lastPublicChatPruneAttemptMs = 0;
+    let scrollFrameId = 0;
 
     function generateAnonymousNickname() {
       return `Anonymous Ghost ${Math.floor(Math.random() * 900) + 100}`;
@@ -252,8 +289,59 @@
       }[char]));
     }
 
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/`/g, '&#96;');
+    }
+
+    function splitUrlTrailingPunctuation(value) {
+      let url = String(value || '');
+      let trailing = '';
+      while (/[),.!?:;]$/.test(url)) {
+        trailing = url.slice(-1) + trailing;
+        url = url.slice(0, -1);
+      }
+      return { url, trailing };
+    }
+
+    function getSafeHttpUrl(value) {
+      try {
+        const url = new URL(value);
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') return '';
+        return url.href;
+      } catch (error) {
+        return '';
+      }
+    }
+
+    function linkifyText(value) {
+      const text = String(value || '');
+      const pattern = /https?:\/\/[^\s<>"']+/gi;
+      let result = '';
+      let cursor = 0;
+      text.replace(pattern, (match, offset) => {
+        result += escapeHtml(text.slice(cursor, offset));
+        const { url, trailing } = splitUrlTrailingPunctuation(match);
+        const safeUrl = getSafeHttpUrl(url);
+        result += safeUrl
+          ? `<a href="${escapeAttribute(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>${escapeHtml(trailing)}`
+          : escapeHtml(match);
+        cursor = offset + match.length;
+        return match;
+      });
+      result += escapeHtml(text.slice(cursor));
+      return result;
+    }
+
     function scrollToBottom() {
       messages.scrollTop = messages.scrollHeight;
+    }
+
+    function scheduleScrollToBottom() {
+      if (scrollFrameId) return;
+      scrollFrameId = requestAnimationFrame(() => {
+        scrollFrameId = 0;
+        scrollToBottom();
+      });
     }
 
     function addMessage(role, html, options = {}) {
@@ -267,7 +355,7 @@
       while (messages.children.length > SUPABASE_CHAT_MAX_VISIBLE + 30) {
         messages.firstElementChild?.remove();
       }
-      requestAnimationFrame(scrollToBottom);
+      scheduleScrollToBottom();
       return line;
     }
 
@@ -303,13 +391,54 @@
       return String(message.id || `${message.created_at || ''}:${message.nickname || ''}:${message.body || ''}`);
     }
 
+    function formatPublicMessageTimestamp(value) {
+      const date = new Date(value || '');
+      if (Number.isNaN(date.getTime())) return '';
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Toronto',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }).format(date);
+    }
+
+    function parsePublicChatPayload(body) {
+      const raw = String(body || '');
+      if (!raw.startsWith('{')) return { type: 'text', text: raw };
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.type === PUBLIC_CHAT_IMAGE_PAYLOAD_TYPE && typeof parsed.src === 'string') {
+          return {
+            type: 'image',
+            src: parsed.src,
+            alt: typeof parsed.name === 'string' ? parsed.name : 'pasted image',
+            caption: typeof parsed.caption === 'string' ? parsed.caption : ''
+          };
+        }
+      } catch (error) {
+      }
+      return { type: 'text', text: raw };
+    }
+
+    function renderPublicChatBody(body) {
+      const payload = parsePublicChatPayload(body);
+      if (payload.type !== 'image') return linkifyText(payload.text);
+      if (!/^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(payload.src)) {
+        return escapeHtml('[unsupported image]');
+      }
+      const captionHtml = payload.caption ? `<div>${linkifyText(payload.caption)}</div>` : '';
+      return `${captionHtml}<img class="publicChatImage" src="${escapeAttribute(payload.src)}" alt="${escapeAttribute(payload.alt)}" loading="lazy" decoding="async" />`;
+    }
+
     function addPublicChatMessage(message) {
       const key = publicMessageKey(message);
       if (!key || renderedPublicMessageKeys.has(key)) return;
       renderedPublicMessageKeys.add(key);
+      const timestamp = escapeHtml(formatPublicMessageTimestamp(message.created_at));
+      const timestampHtml = timestamp ? `<span class="messageTimestamp">${timestamp}</span>` : '';
       const nickname = escapeHtml(message.nickname || 'Anonymous');
-      const body = escapeHtml(message.body || '');
-      const line = addMessage('public', `<strong>${nickname}:</strong> ${body}`, { publicMessage: true });
+      const body = renderPublicChatBody(message.body || '');
+      const line = addMessage('public', `${timestampHtml}<strong>${nickname}:</strong> ${body}`, { publicMessage: true });
       line.dataset.publicMessageKey = key;
     }
 
@@ -332,8 +461,11 @@
       if (publicChatRefreshInFlight) return false;
       publicChatRefreshInFlight = true;
       try {
-        const rows = await supabaseRequest(`/rest/v1/${SUPABASE_CHAT_TABLE}?room=eq.${encodeURIComponent(SUPABASE_CHAT_ROOM)}&select=id,room,nickname,body,created_at&order=created_at.desc&limit=${SUPABASE_CHAT_MAX_VISIBLE}`);
-        const orderedRows = Array.isArray(rows) ? rows.reverse() : [];
+        const rows = await supabaseRequest(`/rest/v1/${SUPABASE_CHAT_TABLE}?room=eq.${encodeURIComponent(SUPABASE_CHAT_ROOM)}&select=id,room,nickname,body,created_at&order=created_at.desc&limit=${PUBLIC_CHAT_FETCH_LIMIT}`);
+        if (Array.isArray(rows) && rows.length > SUPABASE_CHAT_MAX_VISIBLE) {
+          prunePublicChatHistory();
+        }
+        const orderedRows = Array.isArray(rows) ? rows.slice(0, SUPABASE_CHAT_MAX_VISIBLE).reverse() : [];
         const nextKeys = new Set(orderedRows.map(publicMessageKey).filter(Boolean));
         Array.from(messages.querySelectorAll('[data-live-chat-message="true"]')).forEach((line) => {
           const key = line.dataset.publicMessageKey || '';
@@ -352,6 +484,49 @@
       }
     }
 
+    async function prunePublicChatHistory(options = {}) {
+      if (publicChatPruneInFlight) return false;
+      const now = Date.now();
+      if (!options.force && now - lastPublicChatPruneAttemptMs < PUBLIC_CHAT_PRUNE_RETRY_MS) return false;
+      lastPublicChatPruneAttemptMs = now;
+      publicChatPruneInFlight = true;
+      try {
+        await supabaseRequest('/functions/v1/clear-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'prune',
+            room: SUPABASE_CHAT_ROOM,
+            maxMessages: SUPABASE_CHAT_MAX_VISIBLE
+          })
+        });
+        return true;
+      } catch (error) {
+        console.warn('Unable to prune public chat history:', error);
+        return false;
+      } finally {
+        publicChatPruneInFlight = false;
+      }
+    }
+
+    async function insertPublicChatBody(body) {
+      const nickname = normalizeNickname(currentNickname);
+      currentNickname = nickname;
+      const rows = await supabaseRequest(`/rest/v1/${SUPABASE_CHAT_TABLE}?select=id,room,nickname,body,created_at`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation'
+        },
+        body: JSON.stringify({ room: SUPABASE_CHAT_ROOM, nickname, body })
+      });
+      const [message] = Array.isArray(rows) ? rows : [];
+      if (message) addPublicChatMessage(message);
+      await prunePublicChatHistory({ force: true });
+      loadRecentPublicMessages();
+      return true;
+    }
+
     async function sendPublicMessage(rawBody) {
       const body = String(rawBody || '').trim();
       if (!body) return false;
@@ -359,25 +534,78 @@
         addSystemMessage('Message is too long. Keep public chat messages to 500 characters.', { error: true });
         return false;
       }
-      const nickname = normalizeNickname(currentNickname);
-      currentNickname = nickname;
       try {
-        const rows = await supabaseRequest(`/rest/v1/${SUPABASE_CHAT_TABLE}?select=id,room,nickname,body,created_at`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation'
-          },
-          body: JSON.stringify({ room: SUPABASE_CHAT_ROOM, nickname, body })
-        });
-        const [message] = Array.isArray(rows) ? rows : [];
-        if (message) addPublicChatMessage(message);
-        loadRecentPublicMessages();
-        return true;
+        return await insertPublicChatBody(body);
       } catch (error) {
         console.error('Unable to send public chat message:', error);
         addSystemMessage('Unable to send public chat message.', { error: true });
         return false;
+      }
+    }
+
+    function readImageElement(src) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error('Unable to read pasted image.'));
+        image.src = src;
+      });
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('Unable to read pasted image.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function createImageDataUrl(file) {
+      if (!file || !String(file.type || '').startsWith('image/')) {
+        throw new Error('Paste an image file.');
+      }
+      if (file.size > PUBLIC_CHAT_IMAGE_MAX_SOURCE_BYTES) {
+        throw new Error('Image is too large. Keep pasted images under 5 MB.');
+      }
+
+      const sourceDataUrl = await readFileAsDataUrl(file);
+      const image = await readImageElement(sourceDataUrl);
+      const scale = Math.min(1, PUBLIC_CHAT_IMAGE_MAX_DIMENSION / Math.max(image.naturalWidth || 1, image.naturalHeight || 1));
+      const width = Math.max(1, Math.round((image.naturalWidth || 1) * scale));
+      const height = Math.max(1, Math.round((image.naturalHeight || 1) * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Unable to process pasted image.');
+      context.drawImage(image, 0, 0, width, height);
+
+      const qualities = [0.76, 0.66, 0.56, 0.46];
+      for (const quality of qualities) {
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        if (dataUrl.length <= PUBLIC_CHAT_IMAGE_MAX_BODY_CHARS) return dataUrl;
+      }
+      throw new Error('Image is too large after compression.');
+    }
+
+    async function sendPublicImage(file) {
+      try {
+        addSystemMessage('Uploading pasted image...');
+        const src = await createImageDataUrl(file);
+        const payload = JSON.stringify({
+          type: PUBLIC_CHAT_IMAGE_PAYLOAD_TYPE,
+          name: file.name || 'pasted image',
+          mime: 'image/jpeg',
+          src
+        });
+        if (payload.length > PUBLIC_CHAT_IMAGE_MAX_BODY_CHARS + 512) {
+          throw new Error('Image payload is too large.');
+        }
+        await insertPublicChatBody(payload);
+      } catch (error) {
+        console.error('Unable to send pasted image:', error);
+        addSystemMessage(error && error.message ? error.message : 'Unable to send pasted image.', { error: true });
       }
     }
 
@@ -553,6 +781,16 @@
     });
 
     chatInput.addEventListener('input', renderSuggestions);
+
+    chatInput.addEventListener('paste', (event) => {
+      const items = Array.from(event.clipboardData && event.clipboardData.items ? event.clipboardData.items : []);
+      const imageItem = items.find((item) => item && item.kind === 'file' && String(item.type || '').startsWith('image/'));
+      if (!imageItem) return;
+      const file = imageItem.getAsFile();
+      if (!file) return;
+      event.preventDefault();
+      sendPublicImage(file);
+    });
 
     chatInput.addEventListener('keydown', (event) => {
       if (event.key === 'Tab' && chatInput.value.startsWith('/')) {
