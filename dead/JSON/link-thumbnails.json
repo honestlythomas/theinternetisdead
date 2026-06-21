@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-21T04:01:01.542Z",
+  "generatedAt": "2026-06-21T21:05:24.293Z",
   "viewport": {
     "width": 1920,
     "height": 1080
@@ -17,7 +17,7 @@
       "urlPath": "/",
       "thumbnail": "/dead/images/link-thumbnails/home.jpg",
       "url": "/",
-      "bytes": 249292,
+      "bytes": 249510,
       "status": "captured"
     },
     {
@@ -35,7 +35,7 @@
       "urlPath": "/about.html",
       "thumbnail": "/dead/images/link-thumbnails/about.jpg",
       "url": "/about.html",
-      "bytes": 223969,
+      "bytes": 224440,
       "status": "captured"
     },
     {
@@ -44,7 +44,7 @@
       "urlPath": "/buy/",
       "thumbnail": "/dead/images/link-thumbnails/buy.jpg",
       "url": "/buy/",
-      "bytes": 173898,
+      "bytes": 173952,
       "status": "captured"
     },
     {
@@ -53,7 +53,7 @@
       "urlPath": "/chat.html",
       "thumbnail": "/dead/images/link-thumbnails/chat.jpg",
       "url": "/chat.html",
-      "bytes": 180669,
+      "bytes": 156216,
       "status": "captured"
     },
     {
@@ -89,7 +89,7 @@
       "urlPath": "/dead/experiments/",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments.jpg",
       "url": "/dead/experiments/",
-      "bytes": 196741,
+      "bytes": 196352,
       "status": "captured"
     },
     {
@@ -98,7 +98,7 @@
       "urlPath": "/dead/experiments/blotter-visualizer/",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-blotter-visualizer.jpg",
       "url": "/dead/experiments/blotter-visualizer/",
-      "bytes": 56447,
+      "bytes": 56486,
       "status": "captured"
     },
     {
@@ -125,7 +125,7 @@
       "urlPath": "/dead/experiments/canvas-backgrounds/",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds.jpg",
       "url": "/dead/experiments/canvas-backgrounds/",
-      "bytes": 456844,
+      "bytes": 423773,
       "status": "captured"
     },
     {
@@ -134,7 +134,7 @@
       "urlPath": "/dead/experiments/canvas-backgrounds/cursed-background.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-cursed-background.jpg",
       "url": "/dead/experiments/canvas-backgrounds/cursed-background.html",
-      "bytes": 431095,
+      "bytes": 451364,
       "status": "captured"
     },
     {
@@ -143,7 +143,7 @@
       "urlPath": "/dead/experiments/canvas-backgrounds/demon-ascii.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-demon-ascii.jpg",
       "url": "/dead/experiments/canvas-backgrounds/demon-ascii.html",
-      "bytes": 53100,
+      "bytes": 53480,
       "status": "captured"
     },
     {
@@ -152,7 +152,7 @@
       "urlPath": "/dead/experiments/canvas-backgrounds/dot-lavalamp.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-dot-lavalamp.jpg",
       "url": "/dead/experiments/canvas-backgrounds/dot-lavalamp.html",
-      "bytes": 141313,
+      "bytes": 142977,
       "status": "captured"
     },
     {
@@ -161,7 +161,7 @@
       "urlPath": "/dead/experiments/canvas-backgrounds/rainbow-background.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-rainbow-background.jpg",
       "url": "/dead/experiments/canvas-backgrounds/rainbow-background.html",
-      "bytes": 992955,
+      "bytes": 994505,
       "status": "captured"
     },
     {
@@ -170,7 +170,7 @@
       "urlPath": "/dead/experiments/canvas-backgrounds/starfield-background_reactive.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-starfield-background-reactive.jpg",
       "url": "/dead/experiments/canvas-backgrounds/starfield-background_reactive.html",
-      "bytes": 120859,
+      "bytes": 118478,
       "status": "captured"
     },
     {
@@ -179,7 +179,7 @@
       "urlPath": "/dead/experiments/canvas-backgrounds/starfield-background_warp.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-starfield-background-warp.jpg",
       "url": "/dead/experiments/canvas-backgrounds/starfield-background_warp.html",
-      "bytes": 168789,
+      "bytes": 169871,
       "status": "captured"
     },
     {
@@ -188,7 +188,7 @@
       "urlPath": "/dead/experiments/canvas-backgrounds/starfield-background.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-starfield-background.jpg",
       "url": "/dead/experiments/canvas-backgrounds/starfield-background.html",
-      "bytes": 27039,
+      "bytes": 26748,
       "status": "captured"
     },
     {
@@ -206,7 +206,7 @@
       "urlPath": "/dead/experiments/chat-sandbox/",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-chat-sandbox.jpg",
       "url": "/dead/experiments/chat-sandbox/",
-      "bytes": 53005,
+      "bytes": 52752,
       "status": "captured"
     },
     {
@@ -215,7 +215,7 @@
       "urlPath": "/dead/experiments/gods-eye/",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-gods-eye.jpg",
       "url": "/dead/experiments/gods-eye/",
-      "bytes": 123945,
+      "bytes": 123753,
       "status": "captured"
     },
     {
@@ -224,7 +224,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/",
-      "bytes": 1178736,
+      "bytes": 1168286,
       "status": "captured"
     },
     {
@@ -233,7 +233,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/01-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-01-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/01-mandala-visuals.html",
-      "bytes": 1228231,
+      "bytes": 1238115,
       "status": "captured"
     },
     {
@@ -242,7 +242,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/02-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-02-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/02-mandala-visuals.html",
-      "bytes": 871174,
+      "bytes": 873202,
       "status": "captured"
     },
     {
@@ -251,7 +251,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/03-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-03-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/03-mandala-visuals.html",
-      "bytes": 78045,
+      "bytes": 75618,
       "status": "captured"
     },
     {
@@ -260,7 +260,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/04-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-04-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/04-mandala-visuals.html",
-      "bytes": 237712,
+      "bytes": 235720,
       "status": "captured"
     },
     {
@@ -269,7 +269,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/05-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-05-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/05-mandala-visuals.html",
-      "bytes": 199660,
+      "bytes": 207987,
       "status": "captured"
     },
     {
@@ -278,7 +278,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/06-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-06-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/06-mandala-visuals.html",
-      "bytes": 118716,
+      "bytes": 122267,
       "status": "captured"
     },
     {
@@ -287,7 +287,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/07-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-07-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/07-mandala-visuals.html",
-      "bytes": 55972,
+      "bytes": 59173,
       "status": "captured"
     },
     {
@@ -296,7 +296,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/08-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-08-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/08-mandala-visuals.html",
-      "bytes": 120412,
+      "bytes": 119919,
       "status": "captured"
     },
     {
@@ -305,7 +305,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/09-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-09-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/09-mandala-visuals.html",
-      "bytes": 407580,
+      "bytes": 406230,
       "status": "captured"
     },
     {
@@ -314,7 +314,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/10-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-10-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/10-mandala-visuals.html",
-      "bytes": 135135,
+      "bytes": 141191,
       "status": "captured"
     },
     {
@@ -323,7 +323,7 @@
       "urlPath": "/dead/experiments/mandala-visuals/11-mandala-visuals.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-11-mandala-visuals.jpg",
       "url": "/dead/experiments/mandala-visuals/11-mandala-visuals.html",
-      "bytes": 136541,
+      "bytes": 132589,
       "status": "captured"
     },
     {
@@ -332,7 +332,7 @@
       "urlPath": "/dead/experiments/photosphere/",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-photosphere.jpg",
       "url": "/dead/experiments/photosphere/",
-      "bytes": 253145,
+      "bytes": 253347,
       "status": "captured"
     },
     {
@@ -341,7 +341,7 @@
       "urlPath": "/dead/experiments/sound-machine/",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-sound-machine.jpg",
       "url": "/dead/experiments/sound-machine/",
-      "bytes": 153446,
+      "bytes": 151833,
       "status": "captured"
     },
     {
@@ -350,7 +350,7 @@
       "urlPath": "/dead/experiments/stacks/",
       "thumbnail": "/dead/images/link-thumbnails/dead-experiments-stacks.jpg",
       "url": "/dead/experiments/stacks/",
-      "bytes": 135038,
+      "bytes": 132179,
       "status": "captured"
     },
     {
@@ -386,7 +386,7 @@
       "urlPath": "/dead/games/",
       "thumbnail": "/dead/images/link-thumbnails/dead-games.jpg",
       "url": "/dead/games/",
-      "bytes": 158075,
+      "bytes": 158258,
       "status": "captured"
     },
     {
@@ -395,7 +395,7 @@
       "urlPath": "/dead/games/shooter-game/",
       "thumbnail": "/dead/images/link-thumbnails/dead-games-shooter-game.jpg",
       "url": "/dead/games/shooter-game/",
-      "bytes": 117126,
+      "bytes": 116686,
       "status": "captured"
     },
     {
@@ -413,7 +413,7 @@
       "urlPath": "/dead/games/shooter-game/assets/levels/shooter-game-level1.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-games-shooter-game-assets-levels-shooter-game-level1.jpg",
       "url": "/dead/games/shooter-game/assets/levels/shooter-game-level1.html",
-      "bytes": 90975,
+      "bytes": 88332,
       "status": "captured"
     },
     {
@@ -422,7 +422,7 @@
       "urlPath": "/dead/games/shooter-game/assets/levels/shooter-game-level2.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-games-shooter-game-assets-levels-shooter-game-level2.jpg",
       "url": "/dead/games/shooter-game/assets/levels/shooter-game-level2.html",
-      "bytes": 36107,
+      "bytes": 35954,
       "status": "captured"
     },
     {
@@ -494,7 +494,7 @@
       "urlPath": "/dead/stuff/stuff-for-index/feeds/",
       "thumbnail": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds.jpg",
       "url": "/dead/stuff/stuff-for-index/feeds/",
-      "bytes": 274903,
+      "bytes": 275180,
       "status": "captured"
     },
     {
@@ -503,7 +503,7 @@
       "urlPath": "/dead/stuff/stuff-for-index/feeds/feeds-bridge.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds-bridge.jpg",
       "url": "/dead/stuff/stuff-for-index/feeds/feeds-bridge.html",
-      "bytes": 258266,
+      "bytes": 258556,
       "status": "captured"
     },
     {
@@ -521,7 +521,7 @@
       "urlPath": "/dead/stuff/stuff-for-index/feeds/feeds-host.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds-host.jpg",
       "url": "/dead/stuff/stuff-for-index/feeds/feeds-host.html",
-      "bytes": 251814,
+      "bytes": 251869,
       "status": "captured"
     },
     {
@@ -530,7 +530,7 @@
       "urlPath": "/dead/stuff/stuff-for-index/feeds/feeds.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds.jpg",
       "url": "/dead/stuff/stuff-for-index/feeds/feeds.html",
-      "bytes": 258001,
+      "bytes": 258839,
       "status": "captured"
     },
     {
@@ -539,7 +539,7 @@
       "urlPath": "/dead/stuff/stuff-for-index/feeds/gaming-grid/gaming-grid.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-gaming-grid-gaming-grid.jpg",
       "url": "/dead/stuff/stuff-for-index/feeds/gaming-grid/gaming-grid.html",
-      "bytes": 348909,
+      "bytes": 315135,
       "status": "captured"
     },
     {
@@ -548,7 +548,7 @@
       "urlPath": "/dead/stuff/stuff-for-index/thumbnail-grid/",
       "thumbnail": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-thumbnail-grid.jpg",
       "url": "/dead/stuff/stuff-for-index/thumbnail-grid/",
-      "bytes": 152017,
+      "bytes": 151118,
       "status": "captured"
     },
     {
@@ -575,7 +575,7 @@
       "urlPath": "/dead/tools/bookmark-manager/",
       "thumbnail": "/dead/images/link-thumbnails/dead-tools-bookmark-manager.jpg",
       "url": "/dead/tools/bookmark-manager/",
-      "bytes": 54077,
+      "bytes": 54067,
       "status": "captured"
     },
     {
@@ -593,7 +593,7 @@
       "urlPath": "/dead/tools/dead-tv/",
       "thumbnail": "/dead/images/link-thumbnails/dead-tools-dead-tv.jpg",
       "url": "/dead/tools/dead-tv/",
-      "bytes": 1027410,
+      "bytes": 1030315,
       "status": "captured"
     },
     {
@@ -629,7 +629,7 @@
       "urlPath": "/dead/tools/music-player/",
       "thumbnail": "/dead/images/link-thumbnails/dead-tools-music-player.jpg",
       "url": "/dead/tools/music-player/",
-      "bytes": 182778,
+      "bytes": 179613,
       "status": "captured"
     },
     {
@@ -656,7 +656,7 @@
       "urlPath": "/dead/tools/pdf-viewer/doodle-book.html",
       "thumbnail": "/dead/images/link-thumbnails/dead-tools-pdf-viewer-doodle-book.jpg",
       "url": "/dead/tools/pdf-viewer/doodle-book.html",
-      "bytes": 28363,
+      "bytes": 29011,
       "status": "captured"
     },
     {
@@ -665,7 +665,7 @@
       "urlPath": "/dead/videos/",
       "thumbnail": "/dead/images/link-thumbnails/dead-videos.jpg",
       "url": "/dead/videos/",
-      "bytes": 249491,
+      "bytes": 249728,
       "status": "captured"
     },
     {
@@ -674,7 +674,7 @@
       "urlPath": "/homepage.html",
       "thumbnail": "/dead/images/link-thumbnails/homepage.jpg",
       "url": "/homepage.html",
-      "bytes": 233274,
+      "bytes": 232722,
       "status": "captured"
     },
     {
@@ -683,7 +683,7 @@
       "urlPath": "/nav.html",
       "thumbnail": "/dead/images/link-thumbnails/nav.jpg",
       "url": "/nav.html",
-      "bytes": 249802,
+      "bytes": 249909,
       "status": "captured"
     },
     {
@@ -692,7 +692,7 @@
       "urlPath": "/other.html",
       "thumbnail": "/dead/images/link-thumbnails/other.jpg",
       "url": "/other.html",
-      "bytes": 258389,
+      "bytes": 258482,
       "status": "captured"
     },
     {
@@ -701,7 +701,7 @@
       "urlPath": "/privacy.html",
       "thumbnail": "/dead/images/link-thumbnails/privacy.jpg",
       "url": "/privacy.html",
-      "bytes": 192093,
+      "bytes": 192386,
       "status": "captured"
     }
   ]
