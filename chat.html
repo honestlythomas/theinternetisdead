@@ -248,6 +248,7 @@
     let publicChatRefreshInFlight = false;
     let publicChatPruneInFlight = false;
     let lastPublicChatPruneAttemptMs = 0;
+    let latestPublicMessageCreatedAt = '';
     let scrollFrameId = 0;
 
     function generateAnonymousNickname() {
@@ -434,12 +435,27 @@
       const key = publicMessageKey(message);
       if (!key || renderedPublicMessageKeys.has(key)) return;
       renderedPublicMessageKeys.add(key);
+      const createdAt = String(message.created_at || '');
+      if (createdAt && (!latestPublicMessageCreatedAt || createdAt > latestPublicMessageCreatedAt)) {
+        latestPublicMessageCreatedAt = createdAt;
+      }
       const timestamp = escapeHtml(formatPublicMessageTimestamp(message.created_at));
       const timestampHtml = timestamp ? `<span class="messageTimestamp">${timestamp}</span>` : '';
       const nickname = escapeHtml(message.nickname || 'Anonymous');
       const body = renderPublicChatBody(message.body || '');
       const line = addMessage('public', `${timestampHtml}<strong>${nickname}:</strong> ${body}`, { publicMessage: true });
       line.dataset.publicMessageKey = key;
+      trimRenderedPublicMessages();
+    }
+
+    function trimRenderedPublicMessages() {
+      const publicLines = Array.from(messages.querySelectorAll('[data-live-chat-message="true"]'));
+      while (publicLines.length > SUPABASE_CHAT_MAX_VISIBLE) {
+        const line = publicLines.shift();
+        if (!line) break;
+        renderedPublicMessageKeys.delete(line.dataset.publicMessageKey || '');
+        line.remove();
+      }
     }
 
     async function supabaseRequest(path, options = {}) {
@@ -457,24 +473,44 @@
       return response.json();
     }
 
-    async function loadRecentPublicMessages() {
+    function buildPublicMessagesPath(options = {}) {
+      const params = new URLSearchParams();
+      params.set('room', `eq.${SUPABASE_CHAT_ROOM}`);
+      params.set('select', 'id,room,nickname,body,created_at');
+      if (options.since) params.set('created_at', `gt.${options.since}`);
+      params.set('order', options.ascending ? 'created_at.asc' : 'created_at.desc');
+      params.set('limit', String(options.limit || PUBLIC_CHAT_FETCH_LIMIT));
+      return `/rest/v1/${SUPABASE_CHAT_TABLE}?${params.toString()}`;
+    }
+
+    async function loadRecentPublicMessages(options = {}) {
       if (publicChatRefreshInFlight) return false;
       publicChatRefreshInFlight = true;
       try {
-        const rows = await supabaseRequest(`/rest/v1/${SUPABASE_CHAT_TABLE}?room=eq.${encodeURIComponent(SUPABASE_CHAT_ROOM)}&select=id,room,nickname,body,created_at&order=created_at.desc&limit=${PUBLIC_CHAT_FETCH_LIMIT}`);
+        const incremental = options.incremental && latestPublicMessageCreatedAt;
+        const rows = await supabaseRequest(buildPublicMessagesPath({
+          since: incremental ? latestPublicMessageCreatedAt : '',
+          ascending: !!incremental,
+          limit: incremental ? SUPABASE_CHAT_MAX_VISIBLE : PUBLIC_CHAT_FETCH_LIMIT
+        }));
         if (Array.isArray(rows) && rows.length > SUPABASE_CHAT_MAX_VISIBLE) {
           prunePublicChatHistory();
         }
-        const orderedRows = Array.isArray(rows) ? rows.slice(0, SUPABASE_CHAT_MAX_VISIBLE).reverse() : [];
-        const nextKeys = new Set(orderedRows.map(publicMessageKey).filter(Boolean));
-        Array.from(messages.querySelectorAll('[data-live-chat-message="true"]')).forEach((line) => {
-          const key = line.dataset.publicMessageKey || '';
-          if (!nextKeys.has(key)) {
-            line.remove();
-            renderedPublicMessageKeys.delete(key);
-          }
-        });
+        const orderedRows = Array.isArray(rows)
+          ? (incremental ? rows : rows.slice(0, SUPABASE_CHAT_MAX_VISIBLE).reverse())
+          : [];
+        if (!incremental) {
+          const nextKeys = new Set(orderedRows.map(publicMessageKey).filter(Boolean));
+          Array.from(messages.querySelectorAll('[data-live-chat-message="true"]')).forEach((line) => {
+            const key = line.dataset.publicMessageKey || '';
+            if (!nextKeys.has(key)) {
+              line.remove();
+              renderedPublicMessageKeys.delete(key);
+            }
+          });
+        }
         orderedRows.forEach(addPublicChatMessage);
+        trimRenderedPublicMessages();
         return true;
       } catch (error) {
         console.warn('Unable to load public chat:', error);
@@ -523,7 +559,6 @@
       const [message] = Array.isArray(rows) ? rows : [];
       if (message) addPublicChatMessage(message);
       await prunePublicChatHistory({ force: true });
-      loadRecentPublicMessages();
       return true;
     }
 
@@ -542,7 +577,6 @@
       });
       if (result && result.message) addPublicChatMessage(result.message);
       await prunePublicChatHistory({ force: true });
-      loadRecentPublicMessages();
       return true;
     }
 
@@ -642,6 +676,7 @@
         });
         Array.from(messages.querySelectorAll('[data-live-chat-message="true"]')).forEach((line) => line.remove());
         renderedPublicMessageKeys.clear();
+        latestPublicMessageCreatedAt = '';
         addSystemMessage('Public chat history cleared.');
         loadRecentPublicMessages();
         return true;
@@ -876,10 +911,10 @@
     addSystemMessage('System: Welcome to chat. Type /help for commands.');
     loadRecentPublicMessages();
     window.setInterval(() => {
-      if (!document.hidden) loadRecentPublicMessages();
+      if (!document.hidden) loadRecentPublicMessages({ incremental: true });
     }, PUBLIC_CHAT_REFRESH_MS);
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) loadRecentPublicMessages();
+      if (!document.hidden) loadRecentPublicMessages({ incremental: true });
     });
     notifyState();
   </script>
