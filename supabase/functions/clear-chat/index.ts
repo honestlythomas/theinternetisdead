@@ -54,6 +54,36 @@ function normalizeMaxMessages(value: unknown): number {
   return Math.min(100, Math.max(1, Math.floor(parsed)));
 }
 
+function normalizeNickname(value: unknown): string {
+  const nickname = typeof value === "string" && value.trim() ? value.trim() : "anon";
+  return nickname.slice(0, 40);
+}
+
+function validateImageMessageBody(value: unknown): { ok: true; body: string } | { ok: false; error: string } {
+  if (typeof value !== "string") return { ok: false, error: "invalid_body" };
+  if (value.length > 700512) return { ok: false, error: "body_too_large" };
+
+  let parsed: { type?: unknown; src?: unknown };
+  try {
+    parsed = JSON.parse(value);
+  } catch (_error) {
+    return { ok: false, error: "invalid_image_payload" };
+  }
+
+  if (parsed.type !== "theinternetisdead.publicChatImage.v1") {
+    return { ok: false, error: "invalid_image_payload" };
+  }
+
+  if (
+    typeof parsed.src !== "string" ||
+    !/^data:image\/(?:png|jpe?g|webp|gif);base64,[a-z0-9+/=]+$/i.test(parsed.src)
+  ) {
+    return { ok: false, error: "invalid_image_source" };
+  }
+
+  return { ok: true, body: value };
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", {
@@ -65,7 +95,14 @@ Deno.serve(async (request) => {
     return jsonResponse(request, 405, { ok: false, error: "method_not_allowed" });
   }
 
-  let body: { action?: unknown; maxMessages?: unknown; password?: unknown; room?: unknown };
+  let body: {
+    action?: unknown;
+    imageBody?: unknown;
+    maxMessages?: unknown;
+    nickname?: unknown;
+    password?: unknown;
+    room?: unknown;
+  };
   try {
     body = await request.json();
   } catch (_error) {
@@ -119,6 +156,30 @@ Deno.serve(async (request) => {
     }
 
     return jsonResponse(request, 200, { ok: true, room, maxMessages, deleted: staleIds.length });
+  }
+
+  if (body.action === "insert_image") {
+    const imageBody = validateImageMessageBody(body.imageBody);
+    if (!imageBody.ok) {
+      return jsonResponse(request, 400, { ok: false, error: imageBody.error });
+    }
+
+    const { data, error } = await supabase
+      .schema("public")
+      .from("site_chat_messages")
+      .insert({
+        room,
+        nickname: normalizeNickname(body.nickname),
+        body: imageBody.body,
+      })
+      .select("id,room,nickname,body,created_at")
+      .single();
+
+    if (error) {
+      return jsonResponse(request, 500, { ok: false, error: "insert_failed" });
+    }
+
+    return jsonResponse(request, 200, { ok: true, room, message: data });
   }
 
   const expectedPassword = Deno.env.get("CHAT_ADMIN_PASSWORD") || "";

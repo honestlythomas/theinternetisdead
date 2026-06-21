@@ -21,3 +21,11 @@ curl -X POST "$SUPABASE_URL/functions/v1/clear-chat" \
   -H "Content-Type: application/json" \
   -d '{"action":"prune","room":"index","maxMessages":20}'
 ```
+
+Pasted public chat images are inserted through the function so the browser does not need a permissive row-level security policy for large JSON image payloads. The function only accepts validated public chat image payloads:
+
+```sh
+curl -X POST "$SUPABASE_URL/functions/v1/clear-chat" \
+  -H "Content-Type: application/json" \
+  -d '{"action":"insert_image","room":"index","nickname":"anon","imageBody":"{\"type\":\"theinternetisdead.publicChatImage.v1\",\"src\":\"data:image/jpeg;base64,...\"}"}'
+```

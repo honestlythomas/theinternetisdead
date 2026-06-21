@@ -527,6 +527,25 @@
       return true;
     }
 
+    async function insertPublicChatImageBody(imageBody) {
+      const nickname = normalizeNickname(currentNickname);
+      currentNickname = nickname;
+      const result = await supabaseRequest('/functions/v1/clear-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'insert_image',
+          room: SUPABASE_CHAT_ROOM,
+          nickname,
+          imageBody
+        })
+      });
+      if (result && result.message) addPublicChatMessage(result.message);
+      await prunePublicChatHistory({ force: true });
+      loadRecentPublicMessages();
+      return true;
+    }
+
     async function sendPublicMessage(rawBody) {
       const body = String(rawBody || '').trim();
       if (!body) return false;
@@ -602,7 +621,7 @@
         if (payload.length > PUBLIC_CHAT_IMAGE_MAX_BODY_CHARS + 512) {
           throw new Error('Image payload is too large.');
         }
-        await insertPublicChatBody(payload);
+        await insertPublicChatImageBody(payload);
       } catch (error) {
         console.error('Unable to send pasted image:', error);
         addSystemMessage(error && error.message ? error.message : 'Unable to send pasted image.', { error: true });
