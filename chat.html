@@ -1,0 +1,626 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      color: #00ff66;
+      font-family: "Courier New", Courier, monospace;
+      overflow: hidden;
+    }
+
+    body {
+      --chat-bg: rgba(0, 0, 0, 0.82);
+      --chat-border: rgba(0, 255, 102, 0.42);
+      --chat-text: #00ff66;
+      --chat-muted: rgba(0, 255, 102, 0.72);
+      --chat-danger: #ff5577;
+    }
+
+    #chatSurface {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: stretch;
+      pointer-events: none;
+    }
+
+    #chatPanel {
+      width: 100%;
+      max-height: min(52vh, 520px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      box-sizing: border-box;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 160ms ease, transform 160ms ease;
+      pointer-events: none;
+    }
+
+    body.chat-open #chatPanel,
+    body.chat-preview #chatPanel {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    body.chat-preview:not(.chat-open) #chatPanel {
+      opacity: var(--preview-opacity, 0.45);
+    }
+
+    #messages {
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 40vh;
+      padding-right: 4px;
+      scrollbar-color: var(--chat-text) transparent;
+    }
+
+    .message {
+      width: fit-content;
+      max-width: min(920px, calc(100vw - 32px));
+      padding: 7px 9px;
+      border: 1px solid var(--chat-border);
+      background: var(--chat-bg);
+      color: var(--chat-text);
+      text-shadow: 0 0 6px rgba(0, 255, 102, 0.28);
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      box-shadow: 0 0 18px rgba(0, 255, 102, 0.08);
+    }
+
+    .message[data-role="user"] {
+      align-self: flex-end;
+      border-color: rgba(123, 210, 255, 0.46);
+      color: #9be4ff;
+      text-shadow: 0 0 6px rgba(123, 210, 255, 0.25);
+    }
+
+    .message[data-role="system"] { color: var(--chat-muted); }
+
+    .message[data-error="true"] {
+      color: var(--chat-danger);
+      border-color: rgba(255, 85, 119, 0.5);
+      text-shadow: 0 0 6px rgba(255, 85, 119, 0.25);
+    }
+
+    .helpList { display: grid; gap: 4px; margin-top: 4px; }
+
+    .helpItem {
+      color: inherit;
+      text-decoration: none;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: baseline;
+    }
+
+    .helpItem:hover,
+    .helpItem:focus-visible { outline: none; color: #ffffff; }
+    .helpCommandName { color: #ffffff; font-weight: 700; }
+    .helpCommandDesc { color: var(--chat-muted); }
+
+    #inputWrap {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border: 1px solid var(--chat-border);
+      background: var(--chat-bg);
+      box-shadow: 0 0 22px rgba(0, 255, 102, 0.12);
+    }
+
+    #prompt { color: var(--chat-text); font-weight: 700; }
+
+    #chatInput {
+      min-width: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--chat-text);
+      font: inherit;
+    }
+
+    #chatInput::placeholder { color: rgba(0, 255, 102, 0.52); }
+
+    #suggestions {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(100% + 6px);
+      display: none;
+      gap: 4px;
+      padding: 6px;
+      border: 1px solid var(--chat-border);
+      background: var(--chat-bg);
+    }
+
+    #suggestions.visible { display: grid; }
+
+    .suggestion {
+      border: 0;
+      background: transparent;
+      color: var(--chat-text);
+      font: inherit;
+      text-align: left;
+      padding: 4px 6px;
+      cursor: pointer;
+    }
+
+    .suggestion:hover,
+    .suggestion.active,
+    .suggestion:focus-visible {
+      outline: 1px solid var(--chat-border);
+      background: rgba(0, 255, 102, 0.12);
+    }
+  </style>
+</head>
+<body>
+  <main id="chatSurface" aria-live="polite">
+    <section id="chatPanel">
+      <div id="messages"></div>
+      <form id="inputWrap" autocomplete="off">
+        <span id="prompt">&gt;</span>
+        <input id="chatInput" type="text" placeholder="Press here to chat or / for commands..." />
+        <div id="suggestions" aria-hidden="true"></div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const CHAT_NICKNAME_STORAGE_KEY = 'tektiteChatNickname';
+    const CHAT_NICKNAME_EXPLICIT_STORAGE_KEY = 'tektiteChatNicknameExplicit';
+    const SUPABASE_PROJECT_URL = 'https://fumidkcwrhzgfdmuakqj.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BcNJhaZkgo4r5VH1aJ_stQ_P-kEDY_r';
+    const SUPABASE_CHAT_ROOM = 'index';
+    const SUPABASE_CHAT_TABLE = 'site_chat_messages';
+    const SUPABASE_CHAT_MAX_VISIBLE = 75;
+    const PUBLIC_CHAT_REFRESH_MS = 2500;
+
+    const commands = [
+      { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
+      { name: '/clear_public', value: '/clear_public ', execute: false, desc: 'admin: clear public chat history through the server-side function', hidden: true },
+      { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User'] },
+      { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' }
+    ];
+
+    const visibleCommands = commands.filter((command) => command.hidden !== true);
+    const commandByName = new Map(commands.map((command) => [command.name, command]));
+    const messages = document.getElementById('messages');
+    const inputWrap = document.getElementById('inputWrap');
+    const chatInput = document.getElementById('chatInput');
+    const suggestions = document.getElementById('suggestions');
+    let currentNickname = loadNickname();
+    let renderedPublicMessageKeys = new Set();
+    let suggestionIndex = -1;
+    let publicChatRefreshInFlight = false;
+
+    function generateAnonymousNickname() {
+      return `Anonymous Ghost ${Math.floor(Math.random() * 900) + 100}`;
+    }
+
+    function normalizeNickname(value) {
+      const cleaned = String(value || '').replace(/[\r\n\t]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+      return cleaned || generateAnonymousNickname();
+    }
+
+    function loadNickname() {
+      try {
+        const saved = window.localStorage.getItem(CHAT_NICKNAME_STORAGE_KEY);
+        if (saved && saved.trim()) return normalizeNickname(saved);
+      } catch (error) {}
+      return generateAnonymousNickname();
+    }
+
+    function saveNickname(value) {
+      try {
+        if (value && value.trim()) {
+          window.localStorage.setItem(CHAT_NICKNAME_STORAGE_KEY, value.trim());
+          window.localStorage.setItem(CHAT_NICKNAME_EXPLICIT_STORAGE_KEY, 'true');
+        } else {
+          window.localStorage.removeItem(CHAT_NICKNAME_STORAGE_KEY);
+          window.localStorage.removeItem(CHAT_NICKNAME_EXPLICIT_STORAGE_KEY);
+        }
+      } catch (error) {}
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function scrollToBottom() {
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function addMessage(role, html, options = {}) {
+      const line = document.createElement('div');
+      line.className = 'message';
+      line.dataset.role = role;
+      if (options.publicMessage) line.dataset.liveChatMessage = 'true';
+      if (options.error) line.dataset.error = 'true';
+      line.innerHTML = html;
+      messages.appendChild(line);
+      while (messages.children.length > SUPABASE_CHAT_MAX_VISIBLE + 30) {
+        messages.firstElementChild?.remove();
+      }
+      requestAnimationFrame(scrollToBottom);
+      return line;
+    }
+
+    function addSystemMessage(text, options = {}) {
+      return addMessage('system', escapeHtml(text), options);
+    }
+
+    function addUserEcho(text) {
+      return addMessage('user', escapeHtml(text));
+    }
+
+    function formatCommandExecutionMessage(command, state = 'executed', nickname = currentNickname) {
+      return `${command} ${state} by ${nickname}`;
+    }
+
+    function createHelpHtml() {
+      const items = visibleCommands.map((command) => {
+        return `<a href="#" class="helpItem" data-command="${escapeHtml(command.name)}"><span class="helpCommandName">${escapeHtml(command.name)}</span><span class="helpCommandDesc">- ${escapeHtml(command.desc)}</span></a>`;
+      }).join('');
+      return `<strong>Help with commands...</strong><div class="helpList">${items}</div>`;
+    }
+
+    function clearLocalChatCommand() {
+      Array.from(messages.children).forEach((child) => {
+        if (child.dataset.liveChatMessage !== 'true') child.remove();
+      });
+      addSystemMessage('Local chat display cleared. Public chat history remains online.');
+      return true;
+    }
+
+    function publicMessageKey(message) {
+      if (!message) return '';
+      return String(message.id || `${message.created_at || ''}:${message.nickname || ''}:${message.body || ''}`);
+    }
+
+    function addPublicChatMessage(message) {
+      const key = publicMessageKey(message);
+      if (!key || renderedPublicMessageKeys.has(key)) return;
+      renderedPublicMessageKeys.add(key);
+      const nickname = escapeHtml(message.nickname || 'Anonymous');
+      const body = escapeHtml(message.body || '');
+      const line = addMessage('public', `<strong>${nickname}:</strong> ${body}`, { publicMessage: true });
+      line.dataset.publicMessageKey = key;
+    }
+
+    async function supabaseRequest(path, options = {}) {
+      const headers = {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        ...(options.headers || {})
+      };
+      const response = await fetch(`${SUPABASE_PROJECT_URL}${path}`, { ...options, headers });
+      if (!response.ok) {
+        const text = await response.text().catch(() => '');
+        throw new Error(text || `Request failed with ${response.status}`);
+      }
+      if (response.status === 204) return null;
+      return response.json();
+    }
+
+    async function loadRecentPublicMessages() {
+      if (publicChatRefreshInFlight) return false;
+      publicChatRefreshInFlight = true;
+      try {
+        const rows = await supabaseRequest(`/rest/v1/${SUPABASE_CHAT_TABLE}?room=eq.${encodeURIComponent(SUPABASE_CHAT_ROOM)}&select=id,room,nickname,body,created_at&order=created_at.desc&limit=${SUPABASE_CHAT_MAX_VISIBLE}`);
+        const orderedRows = Array.isArray(rows) ? rows.reverse() : [];
+        const nextKeys = new Set(orderedRows.map(publicMessageKey).filter(Boolean));
+        Array.from(messages.querySelectorAll('[data-live-chat-message="true"]')).forEach((line) => {
+          const key = line.dataset.publicMessageKey || '';
+          if (!nextKeys.has(key)) {
+            line.remove();
+            renderedPublicMessageKeys.delete(key);
+          }
+        });
+        orderedRows.forEach(addPublicChatMessage);
+        return true;
+      } catch (error) {
+        console.warn('Unable to load public chat:', error);
+        return false;
+      } finally {
+        publicChatRefreshInFlight = false;
+      }
+    }
+
+    async function sendPublicMessage(rawBody) {
+      const body = String(rawBody || '').trim();
+      if (!body) return false;
+      if (body.length > 500) {
+        addSystemMessage('Message is too long. Keep public chat messages to 500 characters.', { error: true });
+        return false;
+      }
+      const nickname = normalizeNickname(currentNickname);
+      currentNickname = nickname;
+      try {
+        const rows = await supabaseRequest(`/rest/v1/${SUPABASE_CHAT_TABLE}?select=id,room,nickname,body,created_at`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({ room: SUPABASE_CHAT_ROOM, nickname, body })
+        });
+        const [message] = Array.isArray(rows) ? rows : [];
+        if (message) addPublicChatMessage(message);
+        loadRecentPublicMessages();
+        return true;
+      } catch (error) {
+        console.error('Unable to send public chat message:', error);
+        addSystemMessage('Unable to send public chat message.', { error: true });
+        return false;
+      }
+    }
+
+    async function clearPublicChatHistory(password) {
+      const adminPassword = String(password || '');
+      if (!adminPassword) {
+        addSystemMessage('Usage: /clear_public [admin password]');
+        return true;
+      }
+      try {
+        await supabaseRequest('/functions/v1/clear-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: adminPassword, room: SUPABASE_CHAT_ROOM })
+        });
+        Array.from(messages.querySelectorAll('[data-live-chat-message="true"]')).forEach((line) => line.remove());
+        renderedPublicMessageKeys.clear();
+        addSystemMessage('Public chat history cleared.');
+        loadRecentPublicMessages();
+        return true;
+      } catch (error) {
+        console.error('Unable to clear public chat history:', error);
+        addSystemMessage('Unable to clear public chat history.', { error: true });
+        return false;
+      }
+    }
+
+    async function handleCommand(raw) {
+      const trimmed = String(raw || '').trim();
+      const [commandToken = ''] = trimmed.split(/\s+/);
+      const command = commandToken.toLowerCase();
+      const arg = trimmed.slice(commandToken.length).trim();
+
+      if (command === '/nickname') {
+        if (arg.toLowerCase() === 'reset') {
+          currentNickname = generateAnonymousNickname();
+          saveNickname('');
+          addSystemMessage(`/nickname reset: ${currentNickname}`);
+          return true;
+        }
+        if (!arg) {
+          addSystemMessage('Usage: /nickname [name]');
+          return true;
+        }
+        if (arg.length > 40) {
+          addSystemMessage('Nickname is too long. Keep it to 40 characters.', { error: true });
+          return true;
+        }
+        currentNickname = normalizeNickname(arg);
+        saveNickname(currentNickname);
+        addSystemMessage(formatCommandExecutionMessage('/nickname', 'executed', currentNickname));
+        return true;
+      }
+
+      if (command === '/help') {
+        addSystemMessage(formatCommandExecutionMessage('/help'));
+        addMessage('system', createHelpHtml());
+        return true;
+      }
+
+      if (command === '/clear') {
+        clearLocalChatCommand();
+        return true;
+      }
+
+      if (command === '/clear_public') {
+        await clearPublicChatHistory(arg);
+        return true;
+      }
+
+      return false;
+    }
+
+    function isSensitiveClearCommand(raw) {
+      const trimmed = String(raw || '').trim().toLowerCase();
+      return trimmed.startsWith('/clear_public') && !!trimmed.slice('/clear_public'.length).trim();
+    }
+
+    async function submitInput() {
+      const raw = chatInput.value;
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+      chatInput.value = '';
+      hideSuggestions();
+      if (!isSensitiveClearCommand(trimmed)) addUserEcho(trimmed);
+      if (trimmed.startsWith('/')) {
+        const handled = await handleCommand(trimmed);
+        if (!handled) addSystemMessage(`${trimmed.split(/\s+/)[0]} is not a known command`, { error: true });
+        return;
+      }
+      await sendPublicMessage(trimmed);
+    }
+
+    function matchingCommands() {
+      const value = chatInput.value;
+      if (!value.startsWith('/')) return [];
+      const token = value.split(/\s+/)[0].toLowerCase();
+      return visibleCommands.filter((command) => command.name.startsWith(token));
+    }
+
+    function hideSuggestions() {
+      suggestions.classList.remove('visible');
+      suggestions.setAttribute('aria-hidden', 'true');
+      suggestions.innerHTML = '';
+      suggestionIndex = -1;
+    }
+
+    function renderSuggestions() {
+      const matches = matchingCommands();
+      if (!matches.length) {
+        hideSuggestions();
+        return;
+      }
+      suggestions.innerHTML = '';
+      matches.forEach((command, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = index === suggestionIndex ? 'suggestion active' : 'suggestion';
+        button.textContent = command.name;
+        button.addEventListener('mousedown', (event) => {
+          event.preventDefault();
+          applyCommand(command);
+        });
+        suggestions.appendChild(button);
+      });
+      suggestions.classList.add('visible');
+      suggestions.setAttribute('aria-hidden', 'false');
+    }
+
+    function applyCommand(command) {
+      chatInput.value = command.value || command.name;
+      chatInput.focus();
+      chatInput.selectionStart = chatInput.selectionEnd = chatInput.value.length;
+      hideSuggestions();
+      if (command.execute) submitInput();
+    }
+
+    function cycleSuggestion(direction) {
+      const matches = matchingCommands();
+      if (!matches.length) return false;
+      suggestionIndex = (suggestionIndex + direction + matches.length) % matches.length;
+      const selected = matches[suggestionIndex];
+      chatInput.value = selected.value || selected.name;
+      chatInput.selectionStart = chatInput.selectionEnd = chatInput.value.length;
+      renderSuggestions();
+      return true;
+    }
+
+    function setOpen(open, focus = true) {
+      document.body.classList.toggle('chat-open', !!open);
+      notifyState();
+      if (open && focus) requestAnimationFrame(() => chatInput.focus());
+    }
+
+    function setPreview(visible, progress = 0) {
+      document.body.classList.toggle('chat-preview', !!visible);
+      document.body.style.setProperty('--preview-opacity', String(Math.max(0.25, Math.min(1, Number(progress) || 0.45))));
+    }
+
+    function notifyState() {
+      if (!window.parent || window.parent === window) return;
+      window.parent.postMessage({
+        type: 'chatSandboxState',
+        visible: document.body.classList.contains('chat-open'),
+        valuePickerActive: false,
+        valuePickerCommand: ''
+      }, '*');
+    }
+
+    inputWrap.addEventListener('submit', (event) => {
+      event.preventDefault();
+      submitInput();
+    });
+
+    chatInput.addEventListener('input', renderSuggestions);
+
+    chatInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Tab' && chatInput.value.startsWith('/')) {
+        event.preventDefault();
+        cycleSuggestion(event.shiftKey ? -1 : 1);
+        return;
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setOpen(false, false);
+      }
+    });
+
+    messages.addEventListener('click', (event) => {
+      const item = event.target && event.target.closest ? event.target.closest('.helpItem[data-command]') : null;
+      if (!item) return;
+      event.preventDefault();
+      const command = commandByName.get(item.dataset.command || '');
+      if (command) applyCommand(command);
+    });
+
+    window.addEventListener('message', (event) => {
+      const data = event.data || {};
+      if (data.type === 'chatSandboxOpen') {
+        setOpen(true, data.focus !== false);
+        if (data.seedSlash) {
+          chatInput.value = '/';
+          renderSuggestions();
+        }
+        return;
+      }
+      if (data.type === 'chatSandboxClose') {
+        setOpen(false, false);
+        return;
+      }
+      if (data.type === 'chatSandboxPreview') {
+        setPreview(!!data.visible, data.progress);
+        return;
+      }
+      if (data.type === 'chatSandboxExecuteCommand') {
+        const rawCommand = typeof data.command === 'string' ? data.command.trim() : '';
+        if (!rawCommand) return;
+        if (data.openChat) setOpen(true, data.focus !== false);
+        handleCommand(rawCommand).then((ok) => {
+          if (!ok && rawCommand.startsWith('/')) addSystemMessage(`${rawCommand.split(/\s+/)[0]} is not a known command`, { error: true });
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'chatSandboxCommandResult', ok: !!ok, command: rawCommand, commandId: data.commandId || '' }, '*');
+          }
+        });
+        return;
+      }
+      if (data.type === 'pageChatRegister') {
+        notifyState();
+      }
+    });
+
+    if (window.parent && window.parent !== window) {
+      document.documentElement.classList.add('embedded');
+      document.body.classList.add('embedded');
+    } else {
+      setOpen(true, false);
+    }
+
+    addSystemMessage('System: Welcome to chat. Type /help for commands.');
+    loadRecentPublicMessages();
+    window.setInterval(() => {
+      if (!document.hidden) loadRecentPublicMessages();
+    }, PUBLIC_CHAT_REFRESH_MS);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) loadRecentPublicMessages();
+    });
+    notifyState();
+  </script>
+</body>
+</html>
