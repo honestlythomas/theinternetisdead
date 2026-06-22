@@ -205,6 +205,13 @@
       text-shadow: 0 0 6px rgba(255, 85, 119, 0.25);
     }
 
+    .message[data-pinned-message="true"] {
+      border-color: rgba(255, 255, 255, 0.52);
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.66);
+      box-shadow: 0 0 22px rgba(255, 255, 255, 0.12);
+    }
+
     .helpList { display: grid; gap: 4px; margin-top: 4px; }
 
     .helpItem {
@@ -355,6 +362,7 @@
     const PUBLIC_CHAT_IMAGE_MAX_BODY_CHARS = 700000;
     const PUBLIC_CHAT_IMAGE_MAX_DIMENSION = 960;
     const PUBLIC_CHAT_IMAGE_PAYLOAD_TYPE = 'theinternetisdead.publicChatImage.v1';
+    const PUBLIC_CHAT_PIN_PAYLOAD_TYPE = 'theinternetisdead.publicChatPin.v1';
 
     const commands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
@@ -362,6 +370,7 @@
       { name: '/dvd', value: '/dvd', execute: true, desc: 'spawn another bouncing hue-shifting DVD logo, up to 10 total' },
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
       { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User', 'color #00ff66', 'reset'] },
+      { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a message below the welcome message', hidden: true },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' }
     ];
 
@@ -414,6 +423,8 @@
     let pendingClearPublicPromptLine = null;
     let pendingNicknameColor = false;
     let pendingNicknameColorPromptLine = null;
+    let welcomeMessageLine = null;
+    let pinnedMessageLine = null;
     let previousChatInputPlaceholder = chatInput.getAttribute('placeholder') || '';
 
     function generateAnonymousNickname() {
@@ -681,6 +692,46 @@
       return `${command} ${state} by ${nickname}`;
     }
 
+    function getNicknameHtml(nickname) {
+      const rawNickname = normalizeNickname(nickname);
+      const escapedNickname = escapeHtml(rawNickname);
+      if (isReservedNickname(rawNickname)) {
+        return `<strong class="reservedNickname">${escapedNickname}:</strong>`;
+      }
+      return `<strong>${escapedNickname}:</strong>`;
+    }
+
+    function upsertPinnedMessage(text, nickname = currentNickname) {
+      const pinnedText = String(text || '').trim();
+      if (!pinnedText) {
+        addSystemMessage('Usage: /pin [text]');
+        return false;
+      }
+
+      const html = `${getNicknameHtml(nickname)} ${renderMarkdownText(pinnedText)}`;
+      if (!pinnedMessageLine || !pinnedMessageLine.isConnected) {
+        pinnedMessageLine = document.createElement('div');
+        pinnedMessageLine.className = 'message';
+        pinnedMessageLine.dataset.role = 'public';
+        pinnedMessageLine.dataset.pinnedMessage = 'true';
+      }
+      pinnedMessageLine.innerHTML = html;
+
+      const anchor = welcomeMessageLine && welcomeMessageLine.isConnected ? welcomeMessageLine : messages.firstElementChild;
+      if (anchor && anchor.nextSibling !== pinnedMessageLine) {
+        messages.insertBefore(pinnedMessageLine, anchor.nextSibling);
+      } else if (!anchor && pinnedMessageLine.parentElement !== messages) {
+        messages.insertBefore(pinnedMessageLine, messages.firstChild);
+      }
+      scheduleScrollToBottom();
+      return true;
+    }
+
+    function removePinnedMessage() {
+      if (pinnedMessageLine && pinnedMessageLine.isConnected) pinnedMessageLine.remove();
+      pinnedMessageLine = null;
+    }
+
     function removeCommandExecutionMessage(commandKey) {
       const entry = commandExecutionMessages.get(commandKey);
       if (!entry) return;
@@ -792,6 +843,7 @@
         '/dvd': '/dvd',
         '/exit': '/exit',
         '/help': '/help',
+        '/pin': '/pin [text]',
         '/nickname': [
           '/nickname [name]',
           '/nickname reset',
@@ -817,7 +869,7 @@
 
     function clearLocalChatCommand() {
       Array.from(messages.children).forEach((child) => {
-        if (child.dataset.liveChatMessage !== 'true') child.remove();
+        if (child.dataset.liveChatMessage !== 'true' && child.dataset.pinnedMessage !== 'true') child.remove();
       });
       addSystemMessage('Local chat display cleared. Public chat history remains online.');
       return true;
@@ -983,6 +1035,13 @@
             nicknameColor: normalizeNicknameColor(parsed.nicknameColor || '')
           };
         }
+        if (parsed && parsed.type === PUBLIC_CHAT_PIN_PAYLOAD_TYPE) {
+          return {
+            type: 'pin',
+            text: typeof parsed.text === 'string' ? parsed.text : '',
+            nicknameColor: normalizeNicknameColor(parsed.nicknameColor || '')
+          };
+        }
         if (parsed && parsed.type === 'theinternetisdead.publicChatText.v1') {
           return {
             type: 'text',
@@ -1013,11 +1072,15 @@
       if (createdAt && (!latestPublicMessageCreatedAt || createdAt > latestPublicMessageCreatedAt)) {
         latestPublicMessageCreatedAt = createdAt;
       }
+      const payload = parsePublicChatPayload(message.body || '');
+      if (payload.type === 'pin') {
+        upsertPinnedMessage(payload.text, message.nickname || 'Anonymous');
+        return;
+      }
       const timestamp = escapeHtml(formatPublicMessageTimestamp(message.created_at));
       const timestampHtml = timestamp ? `<span class="messageTimestamp">${timestamp}</span>` : '';
       const rawNickname = message.nickname || 'Anonymous';
       const nickname = escapeHtml(rawNickname);
-      const payload = parsePublicChatPayload(message.body || '');
       const nicknameColor = normalizeNicknameColor(payload.nicknameColor || '');
       const reservedNickname = isReservedNickname(rawNickname);
       const nicknameClass = reservedNickname ? ' class="reservedNickname"' : '';
@@ -1081,6 +1144,8 @@
           : [];
         if (!incremental) {
           const nextKeys = new Set(orderedRows.map(publicMessageKey).filter(Boolean));
+          const hasPinnedRow = orderedRows.some((row) => parsePublicChatPayload(row && row.body || '').type === 'pin');
+          if (!hasPinnedRow) removePinnedMessage();
           Array.from(messages.querySelectorAll('[data-live-chat-message="true"]')).forEach((line) => {
             const key = line.dataset.publicMessageKey || '';
             if (!nextKeys.has(key)) {
@@ -1135,6 +1200,14 @@
       });
     }
 
+    function createPublicPinBody(text) {
+      return JSON.stringify({
+        type: PUBLIC_CHAT_PIN_PAYLOAD_TYPE,
+        text: String(text || ''),
+        nicknameColor: currentNicknameColor
+      });
+    }
+
     async function insertPublicChatBody(body) {
       const nickname = normalizeNickname(currentNickname);
       currentNickname = nickname;
@@ -1145,6 +1218,32 @@
           Prefer: 'return=representation'
         },
         body: JSON.stringify({ room: SUPABASE_CHAT_ROOM, nickname, body: createPublicTextBody(body) })
+      });
+      const [message] = Array.isArray(rows) ? rows : [];
+      if (message) addPublicChatMessage(message);
+      await prunePublicChatHistory({ force: true });
+      return true;
+    }
+
+    async function insertPublicPinnedMessage(text) {
+      const pinnedText = String(text || '').trim();
+      if (!pinnedText) {
+        addSystemMessage('Usage: /pin [text]');
+        return false;
+      }
+      if (pinnedText.length > 500) {
+        addSystemMessage('Pinned message is too long. Keep it to 500 characters.', { error: true });
+        return false;
+      }
+      const nickname = normalizeNickname(currentNickname);
+      currentNickname = nickname;
+      const rows = await supabaseRequest(`/rest/v1/${SUPABASE_CHAT_TABLE}?select=id,room,nickname,body,created_at`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation'
+        },
+        body: JSON.stringify({ room: SUPABASE_CHAT_ROOM, nickname, body: createPublicPinBody(pinnedText) })
       });
       const [message] = Array.isArray(rows) ? rows : [];
       if (message) addPublicChatMessage(message);
@@ -1266,6 +1365,7 @@
           body: JSON.stringify({ password: adminPassword, room: SUPABASE_CHAT_ROOM })
         });
         Array.from(messages.querySelectorAll('[data-live-chat-message="true"]')).forEach((line) => line.remove());
+        removePinnedMessage();
         renderedPublicMessageKeys.clear();
         latestPublicMessageCreatedAt = '';
         addSystemMessage('Public chat history cleared.');
@@ -1502,6 +1602,17 @@
         return true;
       }
 
+      if (command === '/pin') {
+        if (!isReservedNickname(currentNickname)) {
+          addSystemMessage('/pin is reserved.', { error: true });
+          return true;
+        }
+        if (await insertPublicPinnedMessage(arg)) {
+          addCommandExecutionMessage('/pin');
+        }
+        return true;
+      }
+
       if (command === '/dvd') {
         const nextAttempt = dvdCommandAttemptCount + 1;
         dvdCommandAttemptCount = nextAttempt;
@@ -1715,7 +1826,7 @@
       setOpen(true, false);
     }
 
-    addSystemMessage('System: Welcome to chat. Type /help for commands.');
+    welcomeMessageLine = addSystemMessage('System: Welcome to chat. Type /help for commands.');
     loadRecentPublicMessages();
     window.setInterval(() => {
       if (!document.hidden) loadRecentPublicMessages({ incremental: true });
