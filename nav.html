@@ -278,9 +278,26 @@ html, body {
 
 #overlay-root .nav-state-text {
   display: block;
+  flex: 1 1 auto;
+  min-width: 0;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+#overlay-root .nav-state-random {
+  flex: 0 0 auto;
+  margin-left: 8px;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  filter: saturate(1.15);
+}
+
+#overlay-root .nav-state-random:hover,
+#overlay-root .nav-state-random:focus-visible {
+  outline: none;
+  animation: overlay-ui-hueshift 1.8s linear infinite;
 }
 
 #overlay-root .sidebar-nav-state-panel {
@@ -1359,6 +1376,7 @@ html, body {
 
     <a class="nav-state-panel" id="nav-state-panel" href="/" aria-label="Open first visible video">
       <span class="nav-state-text">Watch My Most Viewed Videos</span>
+      <span class="nav-state-random" role="button" tabindex="0" title="Load a random page" aria-label="Load a random page">♻️</span>
     </a>
 
     <a class="sidebar-command-panel root-command-panel" id="root-command-panel" href="#" aria-label="Open chat">
@@ -1389,6 +1407,7 @@ html, body {
 
       <a class="nav-state-panel sidebar-nav-state-panel" id="sidebar-nav-state-panel" href="/" aria-label="Open first visible video">
         <span class="nav-state-text">Watch My Most Viewed Videos</span>
+        <span class="nav-state-random" role="button" tabindex="0" title="Load a random page" aria-label="Load a random page">♻️</span>
       </a>
 
       <a class="sidebar-command-panel" id="sidebar-command-panel" href="#" aria-label="Open chat">
@@ -1612,10 +1631,12 @@ html, body {
   function fitNavStateText() {
     const panel = overlayRoot.querySelector('#nav-state-panel');
     const text = panel && panel.querySelector('.nav-state-text');
+    const randomControl = panel && panel.querySelector('.nav-state-random');
     if (!panel || !text || window.getComputedStyle(panel).display === 'none') return;
     let size = 21;
     text.style.fontSize = `${size}px`;
-    const availableWidth = Math.max(1, panel.clientWidth - 24);
+    const randomWidth = randomControl ? Math.ceil(randomControl.getBoundingClientRect().width + 8) : 0;
+    const availableWidth = Math.max(1, panel.clientWidth - 24 - randomWidth);
     const availableHeight = Math.max(1, panel.clientHeight - 6);
     while (size > 9 && (text.scrollWidth > availableWidth || text.scrollHeight > availableHeight)) {
       size -= 1;
@@ -1643,6 +1664,80 @@ html, body {
   let currentIndexFramePath = window.indexFrameController && typeof window.indexFrameController.getCurrentSource === 'function'
     ? window.indexFrameController.getCurrentSource()
     : '';
+  let currentIndexFrameLinks = window.indexFrameController && typeof window.indexFrameController.getLinks === 'function'
+    ? window.indexFrameController.getLinks()
+    : [];
+
+  function normalizeRandomPagePath(path) {
+    try {
+      const url = new URL(String(path || ''), window.location.origin);
+      if (url.origin !== window.location.origin) return '';
+      url.pathname = url.pathname.replace(/\/{2,}/g, '/');
+      return `${url.pathname}${url.search}${url.hash}` || '';
+    } catch (error) {
+      const fallbackPath = String(path || '').trim();
+      if (!fallbackPath || !fallbackPath.startsWith('/')) return '';
+      return fallbackPath.replace(/\/{2,}/g, '/');
+    }
+  }
+
+  function isRandomPageCandidate(path) {
+    const normalized = normalizeRandomPagePath(path);
+    if (!normalized) return false;
+    let url;
+    try {
+      url = new URL(normalized, window.location.origin);
+    } catch (error) {
+      return false;
+    }
+
+    const pathname = url.pathname.replace(/\/{2,}/g, '/');
+    if (isDefaultFeedFramePath(pathname)) return false;
+    if (/^\/(?:index|nav|chat)\.html$/i.test(pathname)) return false;
+    if (/^\/dead\/(?:JSON|audio|images|messages|scripts)\//i.test(pathname)) return false;
+    if (/\.(?:css|js|mjs|json|map|png|jpe?g|gif|webp|svg|ico|mp3|wav|ogg|pdf|zip|md|txt)$/i.test(pathname)) return false;
+    return /\/$/i.test(pathname) || /\.html$/i.test(pathname);
+  }
+
+  function getRandomPageCandidates() {
+    const controllerLinks = window.indexFrameController && typeof window.indexFrameController.getLinks === 'function'
+      ? window.indexFrameController.getLinks()
+      : [];
+    const links = controllerLinks.length ? controllerLinks : currentIndexFrameLinks;
+    return Array.from(new Set((Array.isArray(links) ? links : [])
+      .map(normalizeRandomPagePath)
+      .filter(isRandomPageCandidate)));
+  }
+
+  async function loadRandomPageCandidatesFromRepoIndex() {
+    try {
+      const response = await fetch('/dead/JSON/repo-index.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('repo-index unavailable');
+      const repoIndex = await response.json();
+      const folders = Array.isArray(repoIndex.folders) ? repoIndex.folders : [];
+      const itemLinks = Array.isArray(repoIndex.items)
+        ? repoIndex.items.map((item) => item && (item.href || item.path || '')).filter(Boolean)
+        : [];
+      currentIndexFrameLinks = Array.from(new Set([...folders, ...itemLinks]));
+      return getRandomPageCandidates();
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async function loadRandomIndexPage() {
+    let candidates = getRandomPageCandidates();
+    if (!candidates.length) {
+      candidates = await loadRandomPageCandidatesFromRepoIndex();
+    }
+    if (!candidates.length) return false;
+    const currentPath = normalizeRandomPagePath(currentIndexFramePath);
+    const available = candidates.length > 1
+      ? candidates.filter((path) => path !== currentPath)
+      : candidates;
+    const nextPath = available[Math.floor(Math.random() * available.length)];
+    return requestIndexFrameSource(nextPath);
+  }
 
   function getNavFrameInfo(path) {
     try {
@@ -1790,7 +1885,14 @@ html, body {
   }
 
   window.updateNavGridHoverTitle = updateNavGridHoverTitle;
+  window.addEventListener('indexFrameLinksReady', (event) => {
+    const links = event.detail && event.detail.links;
+    currentIndexFrameLinks = Array.isArray(links) ? links.slice() : currentIndexFrameLinks;
+    updateNavFrameState(event.detail && event.detail.src);
+  });
   window.addEventListener('indexFrameChange', (event) => {
+    const links = event.detail && event.detail.links;
+    currentIndexFrameLinks = Array.isArray(links) ? links.slice() : currentIndexFrameLinks;
     updateNavFrameState(event.detail && event.detail.src);
   });
   updateNavFrameState();
@@ -2501,6 +2603,23 @@ html, body {
         return;
       }
       copyNavStateUrl();
+    });
+  });
+
+  overlayRoot.querySelectorAll('.nav-state-random').forEach((control) => {
+    control.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      loadRandomIndexPage();
+      closeSidebar();
+    });
+
+    control.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      event.stopPropagation();
+      loadRandomIndexPage();
+      closeSidebar();
     });
   });
 
