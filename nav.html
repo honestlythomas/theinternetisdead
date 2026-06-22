@@ -2630,7 +2630,7 @@ html, body {
     syncTopLinkVisibility();
   });
 
-  overlayRoot.querySelectorAll('#sidebar a').forEach((link) => {
+  overlayRoot.querySelectorAll('a[data-index-frame-src]').forEach((link) => {
     link.addEventListener('click', (event) => {
       const framePath = link.dataset.indexFrameSrc;
       if (framePath && requestIndexFrameSource(framePath)) {

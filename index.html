@@ -332,6 +332,10 @@
         return `${path}${window.location.search || ''}${window.location.hash || ''}`;
       }
 
+      if (/^\/buy\/index\.html$/i.test(path)) {
+        return `${path}${window.location.search || ''}${window.location.hash || ''}`;
+      }
+
       if (
         /^\/dead\/games\/(?:[^/]+\/?)?(?:index\.html)?$/i.test(path) ||
         /^\/dead\/experiments\/(?:[^/]+\/?)?(?:index\.html)?$/i.test(path) ||
@@ -586,8 +590,11 @@
         const response = await fetch(REPO_INDEX_PATH, { cache: 'no-store' });
         if (!response.ok) throw new Error(`Failed to load ${REPO_INDEX_PATH}`);
         const repoIndex = await response.json();
+        const itemLinks = Array.isArray(repoIndex.items)
+          ? repoIndex.items.map((item) => item && (item.href || item.path || '')).filter(Boolean)
+          : [];
         const folders = Array.isArray(repoIndex.folders) ? repoIndex.folders : [];
-        iframeLinks = Array.from(new Set([DEFAULT_IFRAME_PATH, ...folders]))
+        iframeLinks = Array.from(new Set([DEFAULT_IFRAME_PATH, ...folders, ...itemLinks]))
           .map(normalizeIframePath)
           .sort((a, b) => a.localeCompare(b));
 
@@ -812,7 +819,7 @@
         setFrameSource(frameSrc, { historyMode: 'push' });
       }, true);
 
-      frameDocument.addEventListener('keydown', handleShellSlashKeydown, true);
+      frameDocument.addEventListener('keydown', handleShellChatKeydown, true);
       frameDocument.addEventListener('keydown', handleShellFullscreenKeydown, true);
     }
 
@@ -853,15 +860,16 @@
       requestContentFrameFullscreen();
     }
 
-    function handleShellSlashKeydown(event) {
+    function handleShellChatKeydown(event) {
       const fromChatSandboxFrame = event.target && event.target.ownerDocument === chatSandboxFrame.contentDocument;
       const shouldRespectTextEntry = isTextEntryTarget(event.target) && (chatSandboxVisible || !fromChatSandboxFrame);
-      if (event.key !== '/' || event.altKey || event.ctrlKey || event.metaKey || shouldRespectTextEntry) {
+      const opensChat = event.key === '/' || event.key === 'Enter';
+      if (!opensChat || event.altKey || event.ctrlKey || event.metaKey || shouldRespectTextEntry) {
         return;
       }
 
       event.preventDefault();
-      window.__indexOpenChatOverlay({ focus: true, seedSlash: true });
+      window.__indexOpenChatOverlay({ focus: true, seedSlash: event.key === '/' });
     }
 
     function patchChatSandboxSlashKey() {
@@ -874,11 +882,11 @@
       if (!frameDocument || frameDocument.documentElement.dataset.indexShellSlashPatch === 'true') return;
 
       frameDocument.documentElement.dataset.indexShellSlashPatch = 'true';
-      frameDocument.addEventListener('keydown', handleShellSlashKeydown, true);
+      frameDocument.addEventListener('keydown', handleShellChatKeydown, true);
       frameDocument.addEventListener('keydown', handleShellFullscreenKeydown, true);
     }
 
-    window.addEventListener('keydown', handleShellSlashKeydown, true);
+    window.addEventListener('keydown', handleShellChatKeydown, true);
     window.addEventListener('keydown', handleShellFullscreenKeydown, true);
 
     overlayContainer.addEventListener('mouseenter', () => {
@@ -939,6 +947,12 @@
       }
 
       if (event.source !== contentFrame.contentWindow) return;
+
+      if (data.type === 'indexFrameNavigate') {
+        const href = String(data.href || '').trim();
+        if (href) setFrameSource(href, { historyMode: 'push' });
+        return;
+      }
 
       if (data.type === 'feedGridHoverTitle') {
         if (typeof window.updateNavGridHoverTitle === 'function') {

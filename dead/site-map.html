@@ -451,6 +451,23 @@
     typeFilter.addEventListener('change', applyFilter);
     expandAll.addEventListener('click', () => document.querySelectorAll('details.folder').forEach(details => { details.open = true; }));
     collapseAll.addEventListener('click', () => document.querySelectorAll('details.folder').forEach(details => { details.open = false; }));
+    document.addEventListener('click', event => {
+      const link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+      if (!link || !window.parent || window.parent === window) return;
+      const href = link.getAttribute('href') || '';
+      let url;
+      try {
+        url = new URL(href, window.location.origin);
+      } catch (error) {
+        return;
+      }
+      if (url.origin !== window.location.origin) return;
+      event.preventDefault();
+      window.parent.postMessage({
+        type: 'indexFrameNavigate',
+        href: url.pathname + url.search + url.hash
+      }, '*');
+    });
     loadRepoIndex();
   </script>
 </main>

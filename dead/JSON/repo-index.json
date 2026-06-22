@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T03:55:12.627Z",
+  "generatedAt": "2026-06-22T04:56:52.079Z",
   "folders": [
     "/",
     "/buy/",
@@ -88,5 +88,5032 @@
     "/workers/",
     "/workers/ghost-counter/",
     "/workers/ghost-counter/src/"
+  ],
+  "items": [
+    {
+      "type": "directory",
+      "path": "/",
+      "href": "/",
+      "name": "Root",
+      "parent": "."
+    },
+    {
+      "type": "file",
+      "path": "/404.html",
+      "href": "/404.html",
+      "name": "404.html",
+      "parent": ".",
+      "size": 9570
+    },
+    {
+      "type": "file",
+      "path": "/about.html",
+      "href": "/about.html",
+      "name": "about.html",
+      "parent": ".",
+      "size": 10173
+    },
+    {
+      "type": "directory",
+      "path": "/buy/",
+      "href": "/buy/",
+      "name": "buy",
+      "parent": "."
+    },
+    {
+      "type": "file",
+      "path": "/buy/index.html",
+      "href": "/buy/index.html",
+      "name": "index.html",
+      "parent": "/buy",
+      "size": 202519
+    },
+    {
+      "type": "file",
+      "path": "/chat.html",
+      "href": "/chat.html",
+      "name": "chat.html",
+      "parent": ".",
+      "size": 63255
+    },
+    {
+      "type": "file",
+      "path": "/CNAME",
+      "href": "/CNAME",
+      "name": "CNAME",
+      "parent": ".",
+      "size": 21
+    },
+    {
+      "type": "directory",
+      "path": "/dead/",
+      "href": "/dead/",
+      "name": "dead",
+      "parent": "."
+    },
+    {
+      "type": "directory",
+      "path": "/dead/audio/",
+      "href": "/dead/audio/",
+      "name": "audio",
+      "parent": "/dead"
+    },
+    {
+      "type": "file",
+      "path": "/dead/audio/anime-wow-sound-effect.mp3",
+      "href": "/dead/audio/anime-wow-sound-effect.mp3",
+      "name": "anime-wow-sound-effect.mp3",
+      "parent": "/dead/audio",
+      "size": 68055
+    },
+    {
+      "type": "file",
+      "path": "/dead/audio/bone-crack.mp3",
+      "href": "/dead/audio/bone-crack.mp3",
+      "name": "bone-crack.mp3",
+      "parent": "/dead/audio",
+      "size": 17900
+    },
+    {
+      "type": "file",
+      "path": "/dead/audio/do-that-there.mp3",
+      "href": "/dead/audio/do-that-there.mp3",
+      "name": "do-that-there.mp3",
+      "parent": "/dead/audio",
+      "size": 3320753
+    },
+    {
+      "type": "file",
+      "path": "/dead/audio/hitmarker.mp3",
+      "href": "/dead/audio/hitmarker.mp3",
+      "name": "hitmarker.mp3",
+      "parent": "/dead/audio",
+      "size": 1920
+    },
+    {
+      "type": "file",
+      "path": "/dead/audio/index.html",
+      "href": "/dead/audio/index.html",
+      "name": "index.html",
+      "parent": "/dead/audio",
+      "size": 4268
+    },
+    {
+      "type": "file",
+      "path": "/dead/audio/link-yell.mp3",
+      "href": "/dead/audio/link-yell.mp3",
+      "name": "link-yell.mp3",
+      "parent": "/dead/audio",
+      "size": 100366
+    },
+    {
+      "type": "file",
+      "path": "/dead/audio/oof.mp3",
+      "href": "/dead/audio/oof.mp3",
+      "name": "oof.mp3",
+      "parent": "/dead/audio",
+      "size": 16971
+    },
+    {
+      "type": "file",
+      "path": "/dead/audio/README.md",
+      "href": "/dead/audio/README.md",
+      "name": "README.md",
+      "parent": "/dead/audio",
+      "size": 394
+    },
+    {
+      "type": "file",
+      "path": "/dead/audio/spaceinvaders.mp3",
+      "href": "/dead/audio/spaceinvaders.mp3",
+      "name": "spaceinvaders.mp3",
+      "parent": "/dead/audio",
+      "size": 2854798
+    },
+    {
+      "type": "directory",
+      "path": "/dead/downloads/",
+      "href": "/dead/downloads/",
+      "name": "downloads",
+      "parent": "/dead"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/downloads/extensions/",
+      "href": "/dead/downloads/extensions/",
+      "name": "extensions",
+      "parent": "/dead/downloads"
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/README.md",
+      "href": "/dead/downloads/extensions/README.md",
+      "name": "README.md",
+      "parent": "/dead/downloads/extensions",
+      "size": 1
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite.zip",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite.zip",
+      "name": "theinternetisdead-extension-suite.zip",
+      "parent": "/dead/downloads/extensions",
+      "size": 22529509
+    },
+    {
+      "type": "directory",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/",
+      "name": "theinternetisdead-extension-suite",
+      "parent": "/dead/downloads/extensions"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/",
+      "name": "assets",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite"
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/black-and-white-grid.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/black-and-white-grid.png",
+      "name": "black-and-white-grid.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 1044118
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/cobblestone.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/cobblestone.png",
+      "name": "cobblestone.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 3535719
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/cracked-01.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/cracked-01.png",
+      "name": "cracked-01.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 46951
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/cracked-02.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/cracked-02.png",
+      "name": "cracked-02.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 296706
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/dirt.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/dirt.png",
+      "name": "dirt.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 3213781
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/grass.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/grass.png",
+      "name": "grass.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 3942035
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/lime-and-magenta-grid.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/lime-and-magenta-grid.png",
+      "name": "lime-and-magenta-grid.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 1234630
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/sand.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/sand.png",
+      "name": "sand.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 3436134
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/tv-wood.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/tv-wood.png",
+      "name": "tv-wood.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 3980069
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/water.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets/water.png",
+      "name": "water.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/assets",
+      "size": 1796365
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/background.js",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/background.js",
+      "name": "background.js",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
+      "size": 6616
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/content-customizer.js",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/content-customizer.js",
+      "name": "content-customizer.js",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
+      "size": 96016
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/content-reader.js",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/content-reader.js",
+      "name": "content-reader.js",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
+      "size": 19096
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/content-volume.js",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/content-volume.js",
+      "name": "content-volume.js",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
+      "size": 2583
+    },
+    {
+      "type": "directory",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/",
+      "name": "icons",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite"
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/customizer128.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/customizer128.png",
+      "name": "customizer128.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 1264
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/customizer16.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/customizer16.png",
+      "name": "customizer16.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 237
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/customizer48.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/customizer48.png",
+      "name": "customizer48.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 525
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/favorites128.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/favorites128.png",
+      "name": "favorites128.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 940
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/favorites16.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/favorites16.png",
+      "name": "favorites16.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 230
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/favorites48.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/favorites48.png",
+      "name": "favorites48.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 408
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/hover128.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/hover128.png",
+      "name": "hover128.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 868
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/hover16.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/hover16.png",
+      "name": "hover16.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 211
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/hover48.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/hover48.png",
+      "name": "hover48.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 382
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/icon128.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/icon128.png",
+      "name": "icon128.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 1347
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/icon16.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/icon16.png",
+      "name": "icon16.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 193
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/icon48.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/icon48.png",
+      "name": "icon48.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 543
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/reader128.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/reader128.png",
+      "name": "reader128.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 689
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/reader16.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/reader16.png",
+      "name": "reader16.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 190
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/reader48.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/reader48.png",
+      "name": "reader48.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 321
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/storage128.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/storage128.png",
+      "name": "storage128.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 919
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/storage16.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/storage16.png",
+      "name": "storage16.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 214
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/storage48.png",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons/storage48.png",
+      "name": "storage48.png",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/icons",
+      "size": 392
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/manifest.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/manifest.json",
+      "name": "manifest.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
+      "size": 1717
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/popup.css",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/popup.css",
+      "name": "popup.css",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
+      "size": 18712
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/popup.html",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/popup.html",
+      "name": "popup.html",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
+      "size": 17282
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/popup.js",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/popup.js",
+      "name": "popup.js",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
+      "size": 68512
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/README.md",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/README.md",
+      "name": "README.md",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
+      "size": 45293
+    },
+    {
+      "type": "directory",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/",
+      "name": "stored-themes",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/",
+      "name": "ChatGPT",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes"
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-blue-ocean_animated.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-blue-ocean_animated.json",
+      "name": "chatgpt-blue-ocean_animated.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT",
+      "size": 1385
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-blue-ocean.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-blue-ocean.json",
+      "name": "chatgpt-blue-ocean.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT",
+      "size": 1365
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-brown-dirt.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-brown-dirt.json",
+      "name": "chatgpt-brown-dirt.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT",
+      "size": 1340
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-crimson-crackle.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-crimson-crackle.json",
+      "name": "chatgpt-crimson-crackle.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT",
+      "size": 1366
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-green-grass.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-green-grass.json",
+      "name": "chatgpt-green-grass.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT",
+      "size": 1351
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-mossy-cobblestone_animated.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-mossy-cobblestone_animated.json",
+      "name": "chatgpt-mossy-cobblestone_animated.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT",
+      "size": 1413
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-mossy-cobblestone.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/chatgpt-mossy-cobblestone.json",
+      "name": "chatgpt-mossy-cobblestone.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT",
+      "size": 1381
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/index.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT/index.json",
+      "name": "index.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/ChatGPT",
+      "size": 430
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/index.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/index.json",
+      "name": "index.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes",
+      "size": 481
+    },
+    {
+      "type": "directory",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/YouTube/",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/YouTube/",
+      "name": "YouTube",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes"
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/YouTube/index.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/YouTube/index.json",
+      "name": "index.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/YouTube",
+      "size": 72
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/YouTube/youtube-hueshift.json",
+      "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/YouTube/youtube-hueshift.json",
+      "name": "youtube-hueshift.json",
+      "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite/stored-themes/YouTube",
+      "size": 1258
+    },
+    {
+      "type": "file",
+      "path": "/dead/downloads/index.html",
+      "href": "/dead/downloads/index.html",
+      "name": "index.html",
+      "parent": "/dead/downloads",
+      "size": 1
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/",
+      "href": "/dead/experiments/",
+      "name": "experiments",
+      "parent": "/dead"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/blotter-visualizer/",
+      "href": "/dead/experiments/blotter-visualizer/",
+      "name": "blotter-visualizer",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/blotter-visualizer/index.html",
+      "href": "/dead/experiments/blotter-visualizer/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/blotter-visualizer",
+      "size": 5613
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/bouncing-rainbow-camera/",
+      "href": "/dead/experiments/bouncing-rainbow-camera/",
+      "name": "bouncing-rainbow-camera",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/bouncing-rainbow-camera/bouncing_camera.html",
+      "href": "/dead/experiments/bouncing-rainbow-camera/bouncing_camera.html",
+      "name": "bouncing_camera.html",
+      "parent": "/dead/experiments/bouncing-rainbow-camera",
+      "size": 5743
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/camera-experiment/",
+      "href": "/dead/experiments/camera-experiment/",
+      "name": "camera-experiment",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/camera-experiment/dead-camera-simple-layer-previews-effects.zip",
+      "href": "/dead/experiments/camera-experiment/dead-camera-simple-layer-previews-effects.zip",
+      "name": "dead-camera-simple-layer-previews-effects.zip",
+      "parent": "/dead/experiments/camera-experiment",
+      "size": 57813
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/camera-experiment/index.html",
+      "href": "/dead/experiments/camera-experiment/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/camera-experiment",
+      "size": 61889
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/canvas-backgrounds/",
+      "href": "/dead/experiments/canvas-backgrounds/",
+      "name": "canvas-backgrounds",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/canvas-backgrounds/cursed-background.html",
+      "href": "/dead/experiments/canvas-backgrounds/cursed-background.html",
+      "name": "cursed-background.html",
+      "parent": "/dead/experiments/canvas-backgrounds",
+      "size": 1048
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/canvas-backgrounds/demon-ascii.html",
+      "href": "/dead/experiments/canvas-backgrounds/demon-ascii.html",
+      "name": "demon-ascii.html",
+      "parent": "/dead/experiments/canvas-backgrounds",
+      "size": 1810
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/canvas-backgrounds/dot-lavalamp.html",
+      "href": "/dead/experiments/canvas-backgrounds/dot-lavalamp.html",
+      "name": "dot-lavalamp.html",
+      "parent": "/dead/experiments/canvas-backgrounds",
+      "size": 1715
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/canvas-backgrounds/index.html",
+      "href": "/dead/experiments/canvas-backgrounds/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/canvas-backgrounds",
+      "size": 9957
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/canvas-backgrounds/rainbow-background.html",
+      "href": "/dead/experiments/canvas-backgrounds/rainbow-background.html",
+      "name": "rainbow-background.html",
+      "parent": "/dead/experiments/canvas-backgrounds",
+      "size": 1816
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/canvas-backgrounds/README.md",
+      "href": "/dead/experiments/canvas-backgrounds/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/canvas-backgrounds",
+      "size": 398
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/canvas-backgrounds/starfield-background_reactive.html",
+      "href": "/dead/experiments/canvas-backgrounds/starfield-background_reactive.html",
+      "name": "starfield-background_reactive.html",
+      "parent": "/dead/experiments/canvas-backgrounds",
+      "size": 27505
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/canvas-backgrounds/starfield-background_warp.html",
+      "href": "/dead/experiments/canvas-backgrounds/starfield-background_warp.html",
+      "name": "starfield-background_warp.html",
+      "parent": "/dead/experiments/canvas-backgrounds",
+      "size": 27661
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/canvas-backgrounds/starfield-background.html",
+      "href": "/dead/experiments/canvas-backgrounds/starfield-background.html",
+      "name": "starfield-background.html",
+      "parent": "/dead/experiments/canvas-backgrounds",
+      "size": 4956
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/cec-remote/",
+      "href": "/dead/experiments/cec-remote/",
+      "name": "cec-remote",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/cec-remote/cec_server.py",
+      "href": "/dead/experiments/cec-remote/cec_server.py",
+      "name": "cec_server.py",
+      "parent": "/dead/experiments/cec-remote",
+      "size": 5458
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/cec-remote/index.html",
+      "href": "/dead/experiments/cec-remote/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/cec-remote",
+      "size": 5120
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/chat-sandbox/",
+      "href": "/dead/experiments/chat-sandbox/",
+      "name": "chat-sandbox",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/chat-sandbox/index.html",
+      "href": "/dead/experiments/chat-sandbox/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/chat-sandbox",
+      "size": 289718
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/chat-sandbox/README.md",
+      "href": "/dead/experiments/chat-sandbox/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/chat-sandbox",
+      "size": 278
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/gods-eye/",
+      "href": "/dead/experiments/gods-eye/",
+      "name": "gods-eye",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/gods-eye/index.html",
+      "href": "/dead/experiments/gods-eye/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/gods-eye",
+      "size": 7157
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/gods-eye/README.md",
+      "href": "/dead/experiments/gods-eye/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/gods-eye",
+      "size": 273
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/index.html",
+      "href": "/dead/experiments/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments",
+      "size": 8043
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/mandala-visuals/",
+      "href": "/dead/experiments/mandala-visuals/",
+      "name": "mandala-visuals",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/01-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/01-mandala-visuals.html",
+      "name": "01-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 13123
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/02-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/02-mandala-visuals.html",
+      "name": "02-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 13634
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/03-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/03-mandala-visuals.html",
+      "name": "03-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 13712
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/04-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/04-mandala-visuals.html",
+      "name": "04-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 13703
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/05-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/05-mandala-visuals.html",
+      "name": "05-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 14955
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/06-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/06-mandala-visuals.html",
+      "name": "06-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 15451
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/07-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/07-mandala-visuals.html",
+      "name": "07-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 15290
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/08-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/08-mandala-visuals.html",
+      "name": "08-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 18308
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/09-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/09-mandala-visuals.html",
+      "name": "09-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 20964
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/10-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/10-mandala-visuals.html",
+      "name": "10-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 19920
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/11-mandala-visuals.html",
+      "href": "/dead/experiments/mandala-visuals/11-mandala-visuals.html",
+      "name": "11-mandala-visuals.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 12362
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/index.html",
+      "href": "/dead/experiments/mandala-visuals/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 6369
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/mandala-visuals/README.md",
+      "href": "/dead/experiments/mandala-visuals/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/mandala-visuals",
+      "size": 579
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/photosphere/",
+      "href": "/dead/experiments/photosphere/",
+      "name": "photosphere",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/photosphere/index.html",
+      "href": "/dead/experiments/photosphere/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/photosphere",
+      "size": 46060
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/photosphere/README.md",
+      "href": "/dead/experiments/photosphere/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/photosphere",
+      "size": 266
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/photosphere/themes/",
+      "href": "/dead/experiments/photosphere/themes/",
+      "name": "themes",
+      "parent": "/dead/experiments/photosphere"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/photosphere/themes/inner-space/",
+      "href": "/dead/experiments/photosphere/themes/inner-space/",
+      "name": "inner-space",
+      "parent": "/dead/experiments/photosphere/themes"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/photosphere/themes/inner-space/README.md",
+      "href": "/dead/experiments/photosphere/themes/inner-space/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/photosphere/themes/inner-space",
+      "size": 263
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/photosphere/themes/inner-space/skybox.png",
+      "href": "/dead/experiments/photosphere/themes/inner-space/skybox.png",
+      "name": "skybox.png",
+      "parent": "/dead/experiments/photosphere/themes/inner-space",
+      "size": 2316597
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/photosphere/themes/inner-space/sphere.png",
+      "href": "/dead/experiments/photosphere/themes/inner-space/sphere.png",
+      "name": "sphere.png",
+      "parent": "/dead/experiments/photosphere/themes/inner-space",
+      "size": 543427
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/photosphere/themes/README.md",
+      "href": "/dead/experiments/photosphere/themes/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/photosphere/themes",
+      "size": 243
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/photosphere/themes/zentangle/",
+      "href": "/dead/experiments/photosphere/themes/zentangle/",
+      "name": "zentangle",
+      "parent": "/dead/experiments/photosphere/themes"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/photosphere/themes/zentangle/README.md",
+      "href": "/dead/experiments/photosphere/themes/zentangle/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/photosphere/themes/zentangle",
+      "size": 259
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/photosphere/themes/zentangle/skybox.png",
+      "href": "/dead/experiments/photosphere/themes/zentangle/skybox.png",
+      "name": "skybox.png",
+      "parent": "/dead/experiments/photosphere/themes/zentangle",
+      "size": 10224595
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/photosphere/themes/zentangle/sphere.png",
+      "href": "/dead/experiments/photosphere/themes/zentangle/sphere.png",
+      "name": "sphere.png",
+      "parent": "/dead/experiments/photosphere/themes/zentangle",
+      "size": 4678693
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/README.md",
+      "href": "/dead/experiments/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments",
+      "size": 469
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/sound-machine/",
+      "href": "/dead/experiments/sound-machine/",
+      "name": "sound-machine",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/sound-machine/index.html",
+      "href": "/dead/experiments/sound-machine/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/sound-machine",
+      "size": 8262
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/sound-machine/README.md",
+      "href": "/dead/experiments/sound-machine/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/sound-machine",
+      "size": 281
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/stacks/",
+      "href": "/dead/experiments/stacks/",
+      "name": "stacks",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/stacks/index.html",
+      "href": "/dead/experiments/stacks/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/stacks",
+      "size": 10712
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/stacks/README.md",
+      "href": "/dead/experiments/stacks/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/stacks",
+      "size": 260
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/test/",
+      "href": "/dead/experiments/test/",
+      "name": "test",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/test/habisky-mofo/",
+      "href": "/dead/experiments/test/habisky-mofo/",
+      "name": "habisky-mofo",
+      "parent": "/dead/experiments/test"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/test/habisky-mofo/index.html",
+      "href": "/dead/experiments/test/habisky-mofo/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/test/habisky-mofo",
+      "size": 8270
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/test/habisky-mofo/README.md",
+      "href": "/dead/experiments/test/habisky-mofo/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/test/habisky-mofo",
+      "size": 235
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/test/README.md",
+      "href": "/dead/experiments/test/README.md",
+      "name": "README.md",
+      "parent": "/dead/experiments/test",
+      "size": 242
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/thumbnail-grid/",
+      "href": "/dead/experiments/thumbnail-grid/",
+      "name": "thumbnail-grid",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/thumbnail-grid/index.html",
+      "href": "/dead/experiments/thumbnail-grid/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/thumbnail-grid",
+      "size": 57120
+    },
+    {
+      "type": "directory",
+      "path": "/dead/experiments/weird-secret/",
+      "href": "/dead/experiments/weird-secret/",
+      "name": "weird-secret",
+      "parent": "/dead/experiments"
+    },
+    {
+      "type": "file",
+      "path": "/dead/experiments/weird-secret/index.html",
+      "href": "/dead/experiments/weird-secret/index.html",
+      "name": "index.html",
+      "parent": "/dead/experiments/weird-secret",
+      "size": 293160
+    },
+    {
+      "type": "directory",
+      "path": "/dead/gamers/",
+      "href": "/dead/gamers/",
+      "name": "gamers",
+      "parent": "/dead"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/gamers/shmelf/",
+      "href": "/dead/gamers/shmelf/",
+      "name": "shmelf",
+      "parent": "/dead/gamers"
+    },
+    {
+      "type": "file",
+      "path": "/dead/gamers/shmelf/shmelf.png",
+      "href": "/dead/gamers/shmelf/shmelf.png",
+      "name": "shmelf.png",
+      "parent": "/dead/gamers/shmelf",
+      "size": 3269378
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/",
+      "href": "/dead/games/",
+      "name": "games",
+      "parent": "/dead"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/index.html",
+      "href": "/dead/games/index.html",
+      "name": "index.html",
+      "parent": "/dead/games",
+      "size": 9034
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/README.md",
+      "href": "/dead/games/README.md",
+      "name": "README.md",
+      "parent": "/dead/games",
+      "size": 249
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/shooter-game/",
+      "href": "/dead/games/shooter-game/",
+      "name": "shooter-game",
+      "parent": "/dead/games"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/shooter-game/assets/",
+      "href": "/dead/games/shooter-game/assets/",
+      "name": "assets",
+      "parent": "/dead/games/shooter-game"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/shooter-game/assets/audio/",
+      "href": "/dead/games/shooter-game/assets/audio/",
+      "name": "audio",
+      "parent": "/dead/games/shooter-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/anime-wow-sound-effect.mp3",
+      "href": "/dead/games/shooter-game/assets/audio/anime-wow-sound-effect.mp3",
+      "name": "anime-wow-sound-effect.mp3",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 68055
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/arcade-clink.mp3",
+      "href": "/dead/games/shooter-game/assets/audio/arcade-clink.mp3",
+      "name": "arcade-clink.mp3",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 1479
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/bone-crack.mp3",
+      "href": "/dead/games/shooter-game/assets/audio/bone-crack.mp3",
+      "name": "bone-crack.mp3",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 17900
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/do-that-there.mp3",
+      "href": "/dead/games/shooter-game/assets/audio/do-that-there.mp3",
+      "name": "do-that-there.mp3",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 3320753
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/hitmarker.mp3",
+      "href": "/dead/games/shooter-game/assets/audio/hitmarker.mp3",
+      "name": "hitmarker.mp3",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 1920
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/link-yell.mp3",
+      "href": "/dead/games/shooter-game/assets/audio/link-yell.mp3",
+      "name": "link-yell.mp3",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 100366
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/oof.mp3",
+      "href": "/dead/games/shooter-game/assets/audio/oof.mp3",
+      "name": "oof.mp3",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 16971
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/README.md",
+      "href": "/dead/games/shooter-game/assets/audio/README.md",
+      "name": "README.md",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 386
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/spaceinvaders.mp3",
+      "href": "/dead/games/shooter-game/assets/audio/spaceinvaders.mp3",
+      "name": "spaceinvaders.mp3",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 2854798
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/audio/wii-shop-music.mp3",
+      "href": "/dead/games/shooter-game/assets/audio/wii-shop-music.mp3",
+      "name": "wii-shop-music.mp3",
+      "parent": "/dead/games/shooter-game/assets/audio",
+      "size": 1978028
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/bananarama.gif",
+      "href": "/dead/games/shooter-game/assets/bananarama.gif",
+      "name": "bananarama.gif",
+      "parent": "/dead/games/shooter-game/assets",
+      "size": 173638
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/bananarama.webp",
+      "href": "/dead/games/shooter-game/assets/bananarama.webp",
+      "name": "bananarama.webp",
+      "parent": "/dead/games/shooter-game/assets",
+      "size": 108632
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/",
+      "name": "controller-buttons",
+      "parent": "/dead/games/shooter-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/black-xbox-controller-source.jpg",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/black-xbox-controller-source.jpg",
+      "name": "black-xbox-controller-source.jpg",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1083399
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/button-a.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/button-a.webp",
+      "name": "button-a.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2022
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/button-b.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/button-b.webp",
+      "name": "button-b.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2100
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/button-x.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/button-x.webp",
+      "name": "button-x.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2208
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/button-y.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/button-y.webp",
+      "name": "button-y.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2118
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/controls.html",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/controls.html",
+      "name": "controls.html",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 13138
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/dpad-down.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/dpad-down.webp",
+      "name": "dpad-down.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1198
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/dpad-left.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/dpad-left.webp",
+      "name": "dpad-left.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1142
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/dpad-right.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/dpad-right.webp",
+      "name": "dpad-right.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1184
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/dpad-up.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/dpad-up.webp",
+      "name": "dpad-up.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1126
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/left-bumper.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/left-bumper.webp",
+      "name": "left-bumper.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1552
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/left-stick-click.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/left-stick-click.webp",
+      "name": "left-stick-click.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2610
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/left-stick-down.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/left-stick-down.webp",
+      "name": "left-stick-down.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1198
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/left-stick-left.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/left-stick-left.webp",
+      "name": "left-stick-left.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1142
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/left-stick-right.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/left-stick-right.webp",
+      "name": "left-stick-right.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1184
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/left-stick-up.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/left-stick-up.webp",
+      "name": "left-stick-up.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1126
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/left-stick.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/left-stick.webp",
+      "name": "left-stick.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2744
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/left-trigger.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/left-trigger.webp",
+      "name": "left-trigger.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1260
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/menu.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/menu.webp",
+      "name": "menu.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2402
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/README.md",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/README.md",
+      "name": "README.md",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 672
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/right-bumper.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/right-bumper.webp",
+      "name": "right-bumper.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1948
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/right-stick-click.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/right-stick-click.webp",
+      "name": "right-stick-click.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2746
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/right-stick-down.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/right-stick-down.webp",
+      "name": "right-stick-down.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1198
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/right-stick-left.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/right-stick-left.webp",
+      "name": "right-stick-left.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1142
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/right-stick-right.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/right-stick-right.webp",
+      "name": "right-stick-right.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1184
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/right-stick-up.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/right-stick-up.webp",
+      "name": "right-stick-up.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1126
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/right-stick.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/right-stick.webp",
+      "name": "right-stick.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2828
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/right-trigger.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/right-trigger.webp",
+      "name": "right-trigger.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 1638
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/view.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/view.webp",
+      "name": "view.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2302
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/xbox-controller-topdown.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/xbox-controller-topdown.webp",
+      "name": "xbox-controller-topdown.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 795294
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/controller-buttons/xbox.webp",
+      "href": "/dead/games/shooter-game/assets/controller-buttons/xbox.webp",
+      "name": "xbox.webp",
+      "parent": "/dead/games/shooter-game/assets/controller-buttons",
+      "size": 2790
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/",
+      "name": "enemy-gifs",
+      "parent": "/dead/games/shooter-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/180px-NO_U_cycle.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/180px-NO_U_cycle.gif",
+      "name": "180px-NO_U_cycle.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 799744
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/3d-pepe.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/3d-pepe.gif",
+      "name": "3d-pepe.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 879081
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/alfred-e-newman.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/alfred-e-newman.gif",
+      "name": "alfred-e-newman.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 68288
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/dancing-guy.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/dancing-guy.gif",
+      "name": "dancing-guy.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 389699
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/dancingzoidberg.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/dancingzoidberg.gif",
+      "name": "dancingzoidberg.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 46865
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/doom-guy.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/doom-guy.gif",
+      "name": "doom-guy.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 33746
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/dragon.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/dragon.gif",
+      "name": "dragon.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 94840
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/emoticon.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/emoticon.gif",
+      "name": "emoticon.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 1797180
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/eyes.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/eyes.gif",
+      "name": "eyes.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 116290
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/eyes2.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/eyes2.gif",
+      "name": "eyes2.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 46490
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/fallout-guy-shoots.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/fallout-guy-shoots.gif",
+      "name": "fallout-guy-shoots.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 92373
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/firework.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/firework.gif",
+      "name": "firework.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 1005391
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/frog.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/frog.gif",
+      "name": "frog.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 243395
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/keyboard_smash.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/keyboard_smash.gif",
+      "name": "keyboard_smash.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 830185
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/lips.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/lips.gif",
+      "name": "lips.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 642590
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/lips2.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/lips2.gif",
+      "name": "lips2.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 497849
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/lips3.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/lips3.gif",
+      "name": "lips3.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 291288
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/n64-logo.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/n64-logo.gif",
+      "name": "n64-logo.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 197754
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/norman.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/norman.gif",
+      "name": "norman.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 913077
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/pole-dance.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/pole-dance.gif",
+      "name": "pole-dance.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 926080
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/README.md",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/README.md",
+      "name": "README.md",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 560
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/skeleton.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/skeleton.gif",
+      "name": "skeleton.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 68193
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/skull.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/skull.gif",
+      "name": "skull.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 157280
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-gifs/spiral.gif",
+      "href": "/dead/games/shooter-game/assets/enemy-gifs/spiral.gif",
+      "name": "spiral.gif",
+      "parent": "/dead/games/shooter-game/assets/enemy-gifs",
+      "size": 66654
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/",
+      "name": "enemy-webps",
+      "parent": "/dead/games/shooter-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/180px-NO_U_cycle.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/180px-NO_U_cycle.webp",
+      "name": "180px-NO_U_cycle.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 676688
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/3d-pepe.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/3d-pepe.webp",
+      "name": "3d-pepe.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 721756
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/alfred-e-newman.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/alfred-e-newman.webp",
+      "name": "alfred-e-newman.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 54648
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/angry-sun.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/angry-sun.webp",
+      "name": "angry-sun.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 8098
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/carlton-dance.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/carlton-dance.webp",
+      "name": "carlton-dance.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 373552
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/dancing-guy.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/dancing-guy.webp",
+      "name": "dancing-guy.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 332500
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/dancingzoidberg.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/dancingzoidberg.webp",
+      "name": "dancingzoidberg.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 41386
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/doom-guy.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/doom-guy.webp",
+      "name": "doom-guy.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 18050
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/dragon.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/dragon.webp",
+      "name": "dragon.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 88922
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/emoticon.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/emoticon.webp",
+      "name": "emoticon.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 1264698
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/eyes.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/eyes.webp",
+      "name": "eyes.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 106828
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/eyes2.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/eyes2.webp",
+      "name": "eyes2.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 51602
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/fallout-guy-shoots.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/fallout-guy-shoots.webp",
+      "name": "fallout-guy-shoots.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 80610
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/firework.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/firework.webp",
+      "name": "firework.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 888742
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/frog.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/frog.webp",
+      "name": "frog.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 262638
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/keyboard_smash.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/keyboard_smash.webp",
+      "name": "keyboard_smash.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 742734
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/lips.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/lips.webp",
+      "name": "lips.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 483218
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/lips2.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/lips2.webp",
+      "name": "lips2.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 379000
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/lips3.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/lips3.webp",
+      "name": "lips3.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 213722
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/lisa.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/lisa.webp",
+      "name": "lisa.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 40474
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/loading.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/loading.webp",
+      "name": "loading.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 60240
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/moon.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/moon.webp",
+      "name": "moon.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 1478930
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/n64-logo.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/n64-logo.webp",
+      "name": "n64-logo.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 72994
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/norman.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/norman.webp",
+      "name": "norman.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 756858
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/pole-dance.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/pole-dance.webp",
+      "name": "pole-dance.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 747046
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/README.md",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/README.md",
+      "name": "README.md",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 581
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/skeleton.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/skeleton.webp",
+      "name": "skeleton.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 54672
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/skull.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/skull.webp",
+      "name": "skull.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 121776
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/spiral.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/spiral.webp",
+      "name": "spiral.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 60310
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/spongebob-dance.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/spongebob-dance.webp",
+      "name": "spongebob-dance.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 97204
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/squidward-dance.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/squidward-dance.webp",
+      "name": "squidward-dance.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 293732
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/enemy-webps/that-girl.webp",
+      "href": "/dead/games/shooter-game/assets/enemy-webps/that-girl.webp",
+      "name": "that-girl.webp",
+      "parent": "/dead/games/shooter-game/assets/enemy-webps",
+      "size": 21662
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/shooter-game/assets/JSON/",
+      "href": "/dead/games/shooter-game/assets/JSON/",
+      "name": "JSON",
+      "parent": "/dead/games/shooter-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/JSON/enemy-gifs.json",
+      "href": "/dead/games/shooter-game/assets/JSON/enemy-gifs.json",
+      "name": "enemy-gifs.json",
+      "parent": "/dead/games/shooter-game/assets/JSON",
+      "size": 429
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/JSON/enemy-webps.json",
+      "href": "/dead/games/shooter-game/assets/JSON/enemy-webps.json",
+      "name": "enemy-webps.json",
+      "parent": "/dead/games/shooter-game/assets/JSON",
+      "size": 616
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/JSON/README.md",
+      "href": "/dead/games/shooter-game/assets/JSON/README.md",
+      "name": "README.md",
+      "parent": "/dead/games/shooter-game/assets/JSON",
+      "size": 242
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/shooter-game/assets/levels/",
+      "href": "/dead/games/shooter-game/assets/levels/",
+      "name": "levels",
+      "parent": "/dead/games/shooter-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/levels/README.md",
+      "href": "/dead/games/shooter-game/assets/levels/README.md",
+      "name": "README.md",
+      "parent": "/dead/games/shooter-game/assets/levels",
+      "size": 257
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/levels/shooter-game-level1.html",
+      "href": "/dead/games/shooter-game/assets/levels/shooter-game-level1.html",
+      "name": "shooter-game-level1.html",
+      "parent": "/dead/games/shooter-game/assets/levels",
+      "size": 289454
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/levels/shooter-game-level2.html",
+      "href": "/dead/games/shooter-game/assets/levels/shooter-game-level2.html",
+      "name": "shooter-game-level2.html",
+      "parent": "/dead/games/shooter-game/assets/levels",
+      "size": 67688
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/README.md",
+      "href": "/dead/games/shooter-game/assets/README.md",
+      "name": "README.md",
+      "parent": "/dead/games/shooter-game/assets",
+      "size": 395
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/shooter-game/assets/scripts/",
+      "href": "/dead/games/shooter-game/assets/scripts/",
+      "name": "scripts",
+      "parent": "/dead/games/shooter-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/images-panel-viewer-host-patch.js",
+      "href": "/dead/games/shooter-game/assets/scripts/images-panel-viewer-host-patch.js",
+      "name": "images-panel-viewer-host-patch.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 13981
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-bg-suggest.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-bg-suggest.js",
+      "name": "level-bg-suggest.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 6092
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-controls-formatters.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-controls-formatters.js",
+      "name": "level-controls-formatters.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 1048
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-file-timestamp.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-file-timestamp.js",
+      "name": "level-file-timestamp.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 2337
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-frame-bridge.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-frame-bridge.js",
+      "name": "level-frame-bridge.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 2167
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-layout.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-layout.js",
+      "name": "level-layout.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 337
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-math.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-math.js",
+      "name": "level-math.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 1226
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-resource-hud.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-resource-hud.js",
+      "name": "level-resource-hud.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 5534
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-screenshot.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-screenshot.js",
+      "name": "level-screenshot.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 7719
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-shared-commands.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-shared-commands.js",
+      "name": "level-shared-commands.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 12845
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-stage.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-stage.js",
+      "name": "level-stage.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 225
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level-ufo.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level-ufo.js",
+      "name": "level-ufo.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 376
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level1-runtime.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level1-runtime.js",
+      "name": "level1-runtime.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 498902
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level1-win-fallbacks.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level1-win-fallbacks.js",
+      "name": "level1-win-fallbacks.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 1139
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/level2-runtime.js",
+      "href": "/dead/games/shooter-game/assets/scripts/level2-runtime.js",
+      "name": "level2-runtime.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 269470
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/README.md",
+      "href": "/dead/games/shooter-game/assets/scripts/README.md",
+      "name": "README.md",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 719
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/saved-images-storage.js",
+      "href": "/dead/games/shooter-game/assets/scripts/saved-images-storage.js",
+      "name": "saved-images-storage.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 13461
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/screenshot-shortcut.js",
+      "href": "/dead/games/shooter-game/assets/scripts/screenshot-shortcut.js",
+      "name": "screenshot-shortcut.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 2879
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/shooter-game-chat.js",
+      "href": "/dead/games/shooter-game/assets/scripts/shooter-game-chat.js",
+      "name": "shooter-game-chat.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 61748
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/assets/scripts/time-easter-egg.js",
+      "href": "/dead/games/shooter-game/assets/scripts/time-easter-egg.js",
+      "name": "time-easter-egg.js",
+      "parent": "/dead/games/shooter-game/assets/scripts",
+      "size": 11009
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/index.html",
+      "href": "/dead/games/shooter-game/index.html",
+      "name": "index.html",
+      "parent": "/dead/games/shooter-game",
+      "size": 8198
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/shooter-game/README.md",
+      "href": "/dead/games/shooter-game/README.md",
+      "name": "README.md",
+      "parent": "/dead/games/shooter-game",
+      "size": 242
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/tektite-3D-game/",
+      "href": "/dead/games/tektite-3D-game/",
+      "name": "tektite-3D-game",
+      "parent": "/dead/games"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/tektite-3D-game/assets/",
+      "href": "/dead/games/tektite-3D-game/assets/",
+      "name": "assets",
+      "parent": "/dead/games/tektite-3D-game"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/tektite-3D-game/assets/audio/",
+      "href": "/dead/games/tektite-3D-game/assets/audio/",
+      "name": "audio",
+      "parent": "/dead/games/tektite-3D-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/audio/anime-wow-sound-effect.mp3",
+      "href": "/dead/games/tektite-3D-game/assets/audio/anime-wow-sound-effect.mp3",
+      "name": "anime-wow-sound-effect.mp3",
+      "parent": "/dead/games/tektite-3D-game/assets/audio",
+      "size": 68055
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/audio/arcade-clink.mp3",
+      "href": "/dead/games/tektite-3D-game/assets/audio/arcade-clink.mp3",
+      "name": "arcade-clink.mp3",
+      "parent": "/dead/games/tektite-3D-game/assets/audio",
+      "size": 1479
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/audio/bone-crack.mp3",
+      "href": "/dead/games/tektite-3D-game/assets/audio/bone-crack.mp3",
+      "name": "bone-crack.mp3",
+      "parent": "/dead/games/tektite-3D-game/assets/audio",
+      "size": 17900
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/audio/hitmarker.mp3",
+      "href": "/dead/games/tektite-3D-game/assets/audio/hitmarker.mp3",
+      "name": "hitmarker.mp3",
+      "parent": "/dead/games/tektite-3D-game/assets/audio",
+      "size": 1920
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/audio/link-yell.mp3",
+      "href": "/dead/games/tektite-3D-game/assets/audio/link-yell.mp3",
+      "name": "link-yell.mp3",
+      "parent": "/dead/games/tektite-3D-game/assets/audio",
+      "size": 100366
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/audio/oof.mp3",
+      "href": "/dead/games/tektite-3D-game/assets/audio/oof.mp3",
+      "name": "oof.mp3",
+      "parent": "/dead/games/tektite-3D-game/assets/audio",
+      "size": 16971
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/audio/yoshis-island.mp3",
+      "href": "/dead/games/tektite-3D-game/assets/audio/yoshis-island.mp3",
+      "name": "yoshis-island.mp3",
+      "parent": "/dead/games/tektite-3D-game/assets/audio",
+      "size": 2038233
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/tektite-3D-game/assets/png/",
+      "href": "/dead/games/tektite-3D-game/assets/png/",
+      "name": "png",
+      "parent": "/dead/games/tektite-3D-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/cobblestone.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/cobblestone.png",
+      "name": "cobblestone.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 3535719
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/crack-overlay-01-state.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/crack-overlay-01-state.png",
+      "name": "crack-overlay-01-state.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 46951
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/crack-overlay-02-state.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/crack-overlay-02-state.png",
+      "name": "crack-overlay-02-state.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 296706
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/default_sphere.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/default_sphere.png",
+      "name": "default_sphere.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 1044118
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/dirt.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/dirt.png",
+      "name": "dirt.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 3213781
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/grass.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/grass.png",
+      "name": "grass.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 3942035
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/lime-magenta_sphere.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/lime-magenta_sphere.png",
+      "name": "lime-magenta_sphere.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 1234630
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/pine-tree01.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/pine-tree01.png",
+      "name": "pine-tree01.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 1599834
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/rubble-pile.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/rubble-pile.png",
+      "name": "rubble-pile.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 965770
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/sand.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/sand.png",
+      "name": "sand.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 3436134
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/topdown-pine-tree01.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/topdown-pine-tree01.png",
+      "name": "topdown-pine-tree01.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 1829946
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/png/water.png",
+      "href": "/dead/games/tektite-3D-game/assets/png/water.png",
+      "name": "water.png",
+      "parent": "/dead/games/tektite-3D-game/assets/png",
+      "size": 1796365
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/tektite-3D-game/assets/scripts/",
+      "href": "/dead/games/tektite-3D-game/assets/scripts/",
+      "name": "scripts",
+      "parent": "/dead/games/tektite-3D-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/scripts/audio-handler.js",
+      "href": "/dead/games/tektite-3D-game/assets/scripts/audio-handler.js",
+      "name": "audio-handler.js",
+      "parent": "/dead/games/tektite-3D-game/assets/scripts",
+      "size": 16998
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/scripts/base-generator.js",
+      "href": "/dead/games/tektite-3D-game/assets/scripts/base-generator.js",
+      "name": "base-generator.js",
+      "parent": "/dead/games/tektite-3D-game/assets/scripts",
+      "size": 78161
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/scripts/graphics-pipeline.js",
+      "href": "/dead/games/tektite-3D-game/assets/scripts/graphics-pipeline.js",
+      "name": "graphics-pipeline.js",
+      "parent": "/dead/games/tektite-3D-game/assets/scripts",
+      "size": 39179
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/scripts/runtime-bridge.js",
+      "href": "/dead/games/tektite-3D-game/assets/scripts/runtime-bridge.js",
+      "name": "runtime-bridge.js",
+      "parent": "/dead/games/tektite-3D-game/assets/scripts",
+      "size": 53942
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/scripts/storage-state.js",
+      "href": "/dead/games/tektite-3D-game/assets/scripts/storage-state.js",
+      "name": "storage-state.js",
+      "parent": "/dead/games/tektite-3D-game/assets/scripts",
+      "size": 14719
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/scripts/surface-entities.js",
+      "href": "/dead/games/tektite-3D-game/assets/scripts/surface-entities.js",
+      "name": "surface-entities.js",
+      "parent": "/dead/games/tektite-3D-game/assets/scripts",
+      "size": 82371
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/scripts/ui-panels.js",
+      "href": "/dead/games/tektite-3D-game/assets/scripts/ui-panels.js",
+      "name": "ui-panels.js",
+      "parent": "/dead/games/tektite-3D-game/assets/scripts",
+      "size": 2798
+    },
+    {
+      "type": "directory",
+      "path": "/dead/games/tektite-3D-game/assets/webp/",
+      "href": "/dead/games/tektite-3D-game/assets/webp/",
+      "name": "webp",
+      "parent": "/dead/games/tektite-3D-game/assets"
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/webp/loading.webp",
+      "href": "/dead/games/tektite-3D-game/assets/webp/loading.webp",
+      "name": "loading.webp",
+      "parent": "/dead/games/tektite-3D-game/assets/webp",
+      "size": 60240
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/webp/moon.webp",
+      "href": "/dead/games/tektite-3D-game/assets/webp/moon.webp",
+      "name": "moon.webp",
+      "parent": "/dead/games/tektite-3D-game/assets/webp",
+      "size": 1478930
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/assets/webp/sun.webp",
+      "href": "/dead/games/tektite-3D-game/assets/webp/sun.webp",
+      "name": "sun.webp",
+      "parent": "/dead/games/tektite-3D-game/assets/webp",
+      "size": 8098
+    },
+    {
+      "type": "file",
+      "path": "/dead/games/tektite-3D-game/index.html",
+      "href": "/dead/games/tektite-3D-game/index.html",
+      "name": "index.html",
+      "parent": "/dead/games/tektite-3D-game",
+      "size": 27056
+    },
+    {
+      "type": "directory",
+      "path": "/dead/images/",
+      "href": "/dead/images/",
+      "name": "images",
+      "parent": "/dead"
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/index.html",
+      "href": "/dead/images/index.html",
+      "name": "index.html",
+      "parent": "/dead/images",
+      "size": 3021
+    },
+    {
+      "type": "directory",
+      "path": "/dead/images/link-thumbnails/",
+      "href": "/dead/images/link-thumbnails/",
+      "name": "link-thumbnails",
+      "parent": "/dead/images"
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/404.jpg",
+      "href": "/dead/images/link-thumbnails/404.jpg",
+      "name": "404.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 102239
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/about.jpg",
+      "href": "/dead/images/link-thumbnails/about.jpg",
+      "name": "about.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 224440
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/buy.jpg",
+      "href": "/dead/images/link-thumbnails/buy.jpg",
+      "name": "buy.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 173952
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/chat.jpg",
+      "href": "/dead/images/link-thumbnails/chat.jpg",
+      "name": "chat.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 156216
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-audio.jpg",
+      "href": "/dead/images/link-thumbnails/dead-audio.jpg",
+      "name": "dead-audio.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 77534
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-downloads-extensions-theinternetisdead-extension-suite-popup.jpg",
+      "href": "/dead/images/link-thumbnails/dead-downloads-extensions-theinternetisdead-extension-suite-popup.jpg",
+      "name": "dead-downloads-extensions-theinternetisdead-extension-suite-popup.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 44827
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-downloads.jpg",
+      "href": "/dead/images/link-thumbnails/dead-downloads.jpg",
+      "name": "dead-downloads.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 12998
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-blotter-visualizer.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-blotter-visualizer.jpg",
+      "name": "dead-experiments-blotter-visualizer.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 56486
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-bouncing-rainbow-camera-bouncing-camera.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-bouncing-rainbow-camera-bouncing-camera.jpg",
+      "name": "dead-experiments-bouncing-rainbow-camera-bouncing-camera.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 29242
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-camera-experiment.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-camera-experiment.jpg",
+      "name": "dead-experiments-camera-experiment.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 70329
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-cursed-background.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-cursed-background.jpg",
+      "name": "dead-experiments-canvas-backgrounds-cursed-background.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 451364
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-demon-ascii.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-demon-ascii.jpg",
+      "name": "dead-experiments-canvas-backgrounds-demon-ascii.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 53480
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-dot-lavalamp.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-dot-lavalamp.jpg",
+      "name": "dead-experiments-canvas-backgrounds-dot-lavalamp.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 142977
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-rainbow-background.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-rainbow-background.jpg",
+      "name": "dead-experiments-canvas-backgrounds-rainbow-background.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 994505
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-starfield-background-reactive.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-starfield-background-reactive.jpg",
+      "name": "dead-experiments-canvas-backgrounds-starfield-background-reactive.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 118478
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-starfield-background-warp.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-starfield-background-warp.jpg",
+      "name": "dead-experiments-canvas-backgrounds-starfield-background-warp.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 169871
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-starfield-background.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds-starfield-background.jpg",
+      "name": "dead-experiments-canvas-backgrounds-starfield-background.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 26748
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-canvas-backgrounds.jpg",
+      "name": "dead-experiments-canvas-backgrounds.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 423773
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-cec-remote.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-cec-remote.jpg",
+      "name": "dead-experiments-cec-remote.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 67885
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-chat-sandbox.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-chat-sandbox.jpg",
+      "name": "dead-experiments-chat-sandbox.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 52752
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-gods-eye.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-gods-eye.jpg",
+      "name": "dead-experiments-gods-eye.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 123753
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-01-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-01-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-01-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 1238115
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-02-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-02-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-02-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 873202
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-03-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-03-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-03-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 75618
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-04-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-04-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-04-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 235720
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-05-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-05-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-05-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 207987
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-06-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-06-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-06-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 122267
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-07-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-07-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-07-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 59173
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-08-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-08-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-08-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 119919
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-09-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-09-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-09-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 406230
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-10-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-10-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-10-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 141191
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-11-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals-11-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals-11-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 132589
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-mandala-visuals.jpg",
+      "name": "dead-experiments-mandala-visuals.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 1168286
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-photosphere.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-photosphere.jpg",
+      "name": "dead-experiments-photosphere.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 253347
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-sound-machine.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-sound-machine.jpg",
+      "name": "dead-experiments-sound-machine.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 151833
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-stacks.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-stacks.jpg",
+      "name": "dead-experiments-stacks.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 132179
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-test-habisky-mofo.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-test-habisky-mofo.jpg",
+      "name": "dead-experiments-test-habisky-mofo.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 161829
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-thumbnail-grid.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-thumbnail-grid.jpg",
+      "name": "dead-experiments-thumbnail-grid.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 114058
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments-weird-secret.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments-weird-secret.jpg",
+      "name": "dead-experiments-weird-secret.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 526280
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-experiments.jpg",
+      "href": "/dead/images/link-thumbnails/dead-experiments.jpg",
+      "name": "dead-experiments.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 196352
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-games-shooter-game-assets-controller-buttons-controls.jpg",
+      "href": "/dead/images/link-thumbnails/dead-games-shooter-game-assets-controller-buttons-controls.jpg",
+      "name": "dead-games-shooter-game-assets-controller-buttons-controls.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 317276
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-games-shooter-game-assets-levels-shooter-game-level1.jpg",
+      "href": "/dead/images/link-thumbnails/dead-games-shooter-game-assets-levels-shooter-game-level1.jpg",
+      "name": "dead-games-shooter-game-assets-levels-shooter-game-level1.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 88332
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-games-shooter-game-assets-levels-shooter-game-level2.jpg",
+      "href": "/dead/images/link-thumbnails/dead-games-shooter-game-assets-levels-shooter-game-level2.jpg",
+      "name": "dead-games-shooter-game-assets-levels-shooter-game-level2.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 35954
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-games-shooter-game.jpg",
+      "href": "/dead/images/link-thumbnails/dead-games-shooter-game.jpg",
+      "name": "dead-games-shooter-game.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 116686
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-games-tektite-3d-game.jpg",
+      "href": "/dead/images/link-thumbnails/dead-games-tektite-3d-game.jpg",
+      "name": "dead-games-tektite-3d-game.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 529013
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-games.jpg",
+      "href": "/dead/images/link-thumbnails/dead-games.jpg",
+      "name": "dead-games.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 158258
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-images-pngs.jpg",
+      "href": "/dead/images/link-thumbnails/dead-images-pngs.jpg",
+      "name": "dead-images-pngs.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 58920
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-images-tektite-tv-oldschool-logos.jpg",
+      "href": "/dead/images/link-thumbnails/dead-images-tektite-tv-oldschool-logos.jpg",
+      "name": "dead-images-tektite-tv-oldschool-logos.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 178721
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-images.jpg",
+      "href": "/dead/images/link-thumbnails/dead-images.jpg",
+      "name": "dead-images.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 34686
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-messages-youtube-comments.jpg",
+      "href": "/dead/images/link-thumbnails/dead-messages-youtube-comments.jpg",
+      "name": "dead-messages-youtube-comments.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 203874
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-readmes.jpg",
+      "href": "/dead/images/link-thumbnails/dead-readmes.jpg",
+      "name": "dead-readmes.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 148448
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-site-map.jpg",
+      "href": "/dead/images/link-thumbnails/dead-site-map.jpg",
+      "name": "dead-site-map.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 94141
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds-bridge.jpg",
+      "href": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds-bridge.jpg",
+      "name": "dead-stuff-stuff-for-index-feeds-feeds-bridge.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 258556
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds-header.jpg",
+      "href": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds-header.jpg",
+      "name": "dead-stuff-stuff-for-index-feeds-feeds-header.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 33962
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds-host.jpg",
+      "href": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds-host.jpg",
+      "name": "dead-stuff-stuff-for-index-feeds-feeds-host.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 251869
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds.jpg",
+      "href": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-feeds.jpg",
+      "name": "dead-stuff-stuff-for-index-feeds-feeds.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 258839
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-gaming-grid-gaming-grid.jpg",
+      "href": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds-gaming-grid-gaming-grid.jpg",
+      "name": "dead-stuff-stuff-for-index-feeds-gaming-grid-gaming-grid.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 315135
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds.jpg",
+      "href": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-feeds.jpg",
+      "name": "dead-stuff-stuff-for-index-feeds.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 275180
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-thumbnail-grid.jpg",
+      "href": "/dead/images/link-thumbnails/dead-stuff-stuff-for-index-thumbnail-grid.jpg",
+      "name": "dead-stuff-stuff-for-index-thumbnail-grid.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 151118
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-stuff-wtf.jpg",
+      "href": "/dead/images/link-thumbnails/dead-stuff-wtf.jpg",
+      "name": "dead-stuff-wtf.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 143158
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-bookmark-manager.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-bookmark-manager.jpg",
+      "name": "dead-tools-bookmark-manager.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 54067
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-camera-studio.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-camera-studio.jpg",
+      "name": "dead-tools-camera-studio.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 30043
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-dead-tv.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-dead-tv.jpg",
+      "name": "dead-tools-dead-tv.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 1030315
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-karaoke-machine.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-karaoke-machine.jpg",
+      "name": "dead-tools-karaoke-machine.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 142131
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-multimedia-editor.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-multimedia-editor.jpg",
+      "name": "dead-tools-multimedia-editor.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 61213
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-music-crunchifier.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-music-crunchifier.jpg",
+      "name": "dead-tools-music-crunchifier.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 192485
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-music-player.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-music-player.jpg",
+      "name": "dead-tools-music-player.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 179613
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-pdf-viewer-creepy-susie.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-pdf-viewer-creepy-susie.jpg",
+      "name": "dead-tools-pdf-viewer-creepy-susie.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 29765
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-pdf-viewer-doodle-book.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-pdf-viewer-doodle-book.jpg",
+      "name": "dead-tools-pdf-viewer-doodle-book.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 29011
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools-pdf-viewer.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools-pdf-viewer.jpg",
+      "name": "dead-tools-pdf-viewer.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 53337
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-tools.jpg",
+      "href": "/dead/images/link-thumbnails/dead-tools.jpg",
+      "name": "dead-tools.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 12998
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/dead-videos.jpg",
+      "href": "/dead/images/link-thumbnails/dead-videos.jpg",
+      "name": "dead-videos.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 249728
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/home.jpg",
+      "href": "/dead/images/link-thumbnails/home.jpg",
+      "name": "home.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 249510
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/homepage.jpg",
+      "href": "/dead/images/link-thumbnails/homepage.jpg",
+      "name": "homepage.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 232722
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/nav.jpg",
+      "href": "/dead/images/link-thumbnails/nav.jpg",
+      "name": "nav.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 249909
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/other.jpg",
+      "href": "/dead/images/link-thumbnails/other.jpg",
+      "name": "other.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 258482
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/link-thumbnails/privacy.jpg",
+      "href": "/dead/images/link-thumbnails/privacy.jpg",
+      "name": "privacy.jpg",
+      "parent": "/dead/images/link-thumbnails",
+      "size": 192386
+    },
+    {
+      "type": "directory",
+      "path": "/dead/images/pngs/",
+      "href": "/dead/images/pngs/",
+      "name": "pngs",
+      "parent": "/dead/images"
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/cryptid-memes.png",
+      "href": "/dead/images/pngs/cryptid-memes.png",
+      "name": "cryptid-memes.png",
+      "parent": "/dead/images/pngs",
+      "size": 444194
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/dead-favicon.png",
+      "href": "/dead/images/pngs/dead-favicon.png",
+      "name": "dead-favicon.png",
+      "parent": "/dead/images/pngs",
+      "size": 209264
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/deadlogo-green.png",
+      "href": "/dead/images/pngs/deadlogo-green.png",
+      "name": "deadlogo-green.png",
+      "parent": "/dead/images/pngs",
+      "size": 184107
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/honestly-thomas.png",
+      "href": "/dead/images/pngs/honestly-thomas.png",
+      "name": "honestly-thomas.png",
+      "parent": "/dead/images/pngs",
+      "size": 3099090
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/index.html",
+      "href": "/dead/images/pngs/index.html",
+      "name": "index.html",
+      "parent": "/dead/images/pngs",
+      "size": 5359
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/oldtube-alt-1.png",
+      "href": "/dead/images/pngs/oldtube-alt-1.png",
+      "name": "oldtube-alt-1.png",
+      "parent": "/dead/images/pngs",
+      "size": 459553
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/oldtube-alt-2.png",
+      "href": "/dead/images/pngs/oldtube-alt-2.png",
+      "name": "oldtube-alt-2.png",
+      "parent": "/dead/images/pngs",
+      "size": 289996
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/oldtube.png",
+      "href": "/dead/images/pngs/oldtube.png",
+      "name": "oldtube.png",
+      "parent": "/dead/images/pngs",
+      "size": 132732
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/README.md",
+      "href": "/dead/images/pngs/README.md",
+      "name": "README.md",
+      "parent": "/dead/images/pngs",
+      "size": 404
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/static.gif",
+      "href": "/dead/images/pngs/static.gif",
+      "name": "static.gif",
+      "parent": "/dead/images/pngs",
+      "size": 2148850
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/pngs/subscribe.png",
+      "href": "/dead/images/pngs/subscribe.png",
+      "name": "subscribe.png",
+      "parent": "/dead/images/pngs",
+      "size": 15272
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/README.md",
+      "href": "/dead/images/README.md",
+      "name": "README.md",
+      "parent": "/dead/images",
+      "size": 228
+    },
+    {
+      "type": "directory",
+      "path": "/dead/images/tektite-tv-oldschool-logos/",
+      "href": "/dead/images/tektite-tv-oldschool-logos/",
+      "name": "tektite-tv-oldschool-logos",
+      "parent": "/dead/images"
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_1-X_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_1-X_1_1.png",
+      "name": "20221020_094524_1-X_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 508699
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_10_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_10_1_1.png",
+      "name": "20221020_094524_10_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 43609
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_11_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_11_1_1.png",
+      "name": "20221020_094524_11_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 45153
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_12_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_12_1_1.png",
+      "name": "20221020_094524_12_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 45776
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_13_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_13_1_1.png",
+      "name": "20221020_094524_13_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 53141
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_14_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_14_1_1.png",
+      "name": "20221020_094524_14_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 60576
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_15_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_15_1_1.png",
+      "name": "20221020_094524_15_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 82394
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_16_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_16_1_1.png",
+      "name": "20221020_094524_16_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 120359
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_17_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_17_1_1.png",
+      "name": "20221020_094524_17_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 82622
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_18_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_18_1_1.png",
+      "name": "20221020_094524_18_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 92665
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_19_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_19_1_1.png",
+      "name": "20221020_094524_19_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 125469
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_2-X_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_2-X_1_1.png",
+      "name": "20221020_094524_2-X_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 182683
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_20_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_20_1_1.png",
+      "name": "20221020_094524_20_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 101061
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_21_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_21_1_1.png",
+      "name": "20221020_094524_21_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 100734
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_22_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_22_1_1.png",
+      "name": "20221020_094524_22_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 127971
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_23_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_23_1_1.png",
+      "name": "20221020_094524_23_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 148236
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_24_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_24_1_1.png",
+      "name": "20221020_094524_24_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 149219
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_25_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_25_1_1.png",
+      "name": "20221020_094524_25_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 56481
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_26_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_26_1_1.png",
+      "name": "20221020_094524_26_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 12902
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_27_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_27_1_1.png",
+      "name": "20221020_094524_27_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 602664
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_28_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_28_1_1.png",
+      "name": "20221020_094524_28_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 1542482
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_29_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_29_1_1.png",
+      "name": "20221020_094524_29_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 18148
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_4_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_4_1_1.png",
+      "name": "20221020_094524_4_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 281895
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_5_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_5_1_1.png",
+      "name": "20221020_094524_5_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 109220
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_6_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_6_1_1.png",
+      "name": "20221020_094524_6_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 10504
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_7_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_7_1_1.png",
+      "name": "20221020_094524_7_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 47014
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_8_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_8_1_1.png",
+      "name": "20221020_094524_8_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 41147
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_9_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524_9_1_1.png",
+      "name": "20221020_094524_9_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 44327
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/20221020_094524-X_1_1.png",
+      "href": "/dead/images/tektite-tv-oldschool-logos/20221020_094524-X_1_1.png",
+      "name": "20221020_094524-X_1_1.png",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 168927
+    },
+    {
+      "type": "file",
+      "path": "/dead/images/tektite-tv-oldschool-logos/index.html",
+      "href": "/dead/images/tektite-tv-oldschool-logos/index.html",
+      "name": "index.html",
+      "parent": "/dead/images/tektite-tv-oldschool-logos",
+      "size": 10324
+    },
+    {
+      "type": "directory",
+      "path": "/dead/JSON/",
+      "href": "/dead/JSON/",
+      "name": "JSON",
+      "parent": "/dead"
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/canvas-backgrounds-index.json",
+      "href": "/dead/JSON/canvas-backgrounds-index.json",
+      "name": "canvas-backgrounds-index.json",
+      "parent": "/dead/JSON",
+      "size": 882
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/feed-videos.json",
+      "href": "/dead/JSON/feed-videos.json",
+      "name": "feed-videos.json",
+      "parent": "/dead/JSON",
+      "size": 3121866
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/feeds-channels.json",
+      "href": "/dead/JSON/feeds-channels.json",
+      "name": "feeds-channels.json",
+      "parent": "/dead/JSON",
+      "size": 144
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/inner-space-theme.json",
+      "href": "/dead/JSON/inner-space-theme.json",
+      "name": "inner-space-theme.json",
+      "parent": "/dead/JSON",
+      "size": 79
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/link-thumbnails.json",
+      "href": "/dead/JSON/link-thumbnails.json",
+      "name": "link-thumbnails.json",
+      "parent": "/dead/JSON",
+      "size": 29959
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/mandala-visuals-index.json",
+      "href": "/dead/JSON/mandala-visuals-index.json",
+      "name": "mandala-visuals-index.json",
+      "parent": "/dead/JSON",
+      "size": 1356
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/message-list.json",
+      "href": "/dead/JSON/message-list.json",
+      "name": "message-list.json",
+      "parent": "/dead/JSON",
+      "size": 2832
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/README.md",
+      "href": "/dead/JSON/README.md",
+      "name": "README.md",
+      "parent": "/dead/JSON",
+      "size": 474
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/readmes.json",
+      "href": "/dead/JSON/readmes.json",
+      "name": "readmes.json",
+      "parent": "/dead/JSON",
+      "size": 1826
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/repo-index.json",
+      "href": "/dead/JSON/repo-index.json",
+      "name": "repo-index.json",
+      "parent": "/dead/JSON",
+      "size": 182048
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/videos.json",
+      "href": "/dead/JSON/videos.json",
+      "name": "videos.json",
+      "parent": "/dead/JSON",
+      "size": 350072
+    },
+    {
+      "type": "file",
+      "path": "/dead/JSON/zentangle-theme.json",
+      "href": "/dead/JSON/zentangle-theme.json",
+      "name": "zentangle-theme.json",
+      "parent": "/dead/JSON",
+      "size": 77
+    },
+    {
+      "type": "directory",
+      "path": "/dead/messages/",
+      "href": "/dead/messages/",
+      "name": "messages",
+      "parent": "/dead"
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/default_message.md",
+      "href": "/dead/messages/default_message.md",
+      "name": "default_message.md",
+      "parent": "/dead/messages",
+      "size": 14
+    },
+    {
+      "type": "directory",
+      "path": "/dead/messages/random_messages/",
+      "href": "/dead/messages/random_messages/",
+      "name": "random_messages",
+      "parent": "/dead/messages"
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/random_messages/random_message_01.md",
+      "href": "/dead/messages/random_messages/random_message_01.md",
+      "name": "random_message_01.md",
+      "parent": "/dead/messages/random_messages",
+      "size": 21
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/random_messages/random_message_02.md",
+      "href": "/dead/messages/random_messages/random_message_02.md",
+      "name": "random_message_02.md",
+      "parent": "/dead/messages/random_messages",
+      "size": 26
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/random_messages/random_message_03.md",
+      "href": "/dead/messages/random_messages/random_message_03.md",
+      "name": "random_message_03.md",
+      "parent": "/dead/messages/random_messages",
+      "size": 16
+    },
+    {
+      "type": "directory",
+      "path": "/dead/messages/standard_messages/",
+      "href": "/dead/messages/standard_messages/",
+      "name": "standard_messages",
+      "parent": "/dead/messages"
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/standard_messages/standard_message_01.md",
+      "href": "/dead/messages/standard_messages/standard_message_01.md",
+      "name": "standard_message_01.md",
+      "parent": "/dead/messages/standard_messages",
+      "size": 24
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/standard_messages/standard_message_02.md",
+      "href": "/dead/messages/standard_messages/standard_message_02.md",
+      "name": "standard_message_02.md",
+      "parent": "/dead/messages/standard_messages",
+      "size": 23
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/standard_messages/standard_message_03.md",
+      "href": "/dead/messages/standard_messages/standard_message_03.md",
+      "name": "standard_message_03.md",
+      "parent": "/dead/messages/standard_messages",
+      "size": 21
+    },
+    {
+      "type": "directory",
+      "path": "/dead/messages/timed_messages/",
+      "href": "/dead/messages/timed_messages/",
+      "name": "timed_messages",
+      "parent": "/dead/messages"
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/timed_messages/timed-dated-message_042000_05022026.md",
+      "href": "/dead/messages/timed_messages/timed-dated-message_042000_05022026.md",
+      "name": "timed-dated-message_042000_05022026.md",
+      "parent": "/dead/messages/timed_messages",
+      "size": 39
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/timed_messages/timed-message_012345.md",
+      "href": "/dead/messages/timed_messages/timed-message_012345.md",
+      "name": "timed-message_012345.md",
+      "parent": "/dead/messages/timed_messages",
+      "size": 19
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/timed_messages/timed-message_123456.md",
+      "href": "/dead/messages/timed_messages/timed-message_123456.md",
+      "name": "timed-message_123456.md",
+      "parent": "/dead/messages/timed_messages",
+      "size": 20
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/timed_messages/timed-message_134559.md",
+      "href": "/dead/messages/timed_messages/timed-message_134559.md",
+      "name": "timed-message_134559.md",
+      "parent": "/dead/messages/timed_messages",
+      "size": 19
+    },
+    {
+      "type": "directory",
+      "path": "/dead/messages/youtube-comments/",
+      "href": "/dead/messages/youtube-comments/",
+      "name": "youtube-comments",
+      "parent": "/dead/messages"
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/build-youtube-comments-archive.js",
+      "href": "/dead/messages/youtube-comments/build-youtube-comments-archive.js",
+      "name": "build-youtube-comments-archive.js",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 27014
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments.csv",
+      "href": "/dead/messages/youtube-comments/comments.csv",
+      "name": "comments.csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 64629
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(1).csv",
+      "href": "/dead/messages/youtube-comments/comments(1).csv",
+      "name": "comments(1).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 52868
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(10).csv",
+      "href": "/dead/messages/youtube-comments/comments(10).csv",
+      "name": "comments(10).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 44079
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(11).csv",
+      "href": "/dead/messages/youtube-comments/comments(11).csv",
+      "name": "comments(11).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 41539
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(12).csv",
+      "href": "/dead/messages/youtube-comments/comments(12).csv",
+      "name": "comments(12).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 46808
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(13).csv",
+      "href": "/dead/messages/youtube-comments/comments(13).csv",
+      "name": "comments(13).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 52797
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(14).csv",
+      "href": "/dead/messages/youtube-comments/comments(14).csv",
+      "name": "comments(14).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 47160
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(15).csv",
+      "href": "/dead/messages/youtube-comments/comments(15).csv",
+      "name": "comments(15).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 44027
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(16).csv",
+      "href": "/dead/messages/youtube-comments/comments(16).csv",
+      "name": "comments(16).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 33832
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(17).csv",
+      "href": "/dead/messages/youtube-comments/comments(17).csv",
+      "name": "comments(17).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 34894
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(18).csv",
+      "href": "/dead/messages/youtube-comments/comments(18).csv",
+      "name": "comments(18).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 36832
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(19).csv",
+      "href": "/dead/messages/youtube-comments/comments(19).csv",
+      "name": "comments(19).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 34731
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(2).csv",
+      "href": "/dead/messages/youtube-comments/comments(2).csv",
+      "name": "comments(2).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 40322
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(20).csv",
+      "href": "/dead/messages/youtube-comments/comments(20).csv",
+      "name": "comments(20).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 36014
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(21).csv",
+      "href": "/dead/messages/youtube-comments/comments(21).csv",
+      "name": "comments(21).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 5519
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(3).csv",
+      "href": "/dead/messages/youtube-comments/comments(3).csv",
+      "name": "comments(3).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 45424
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(4).csv",
+      "href": "/dead/messages/youtube-comments/comments(4).csv",
+      "name": "comments(4).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 40161
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(5).csv",
+      "href": "/dead/messages/youtube-comments/comments(5).csv",
+      "name": "comments(5).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 40420
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(6).csv",
+      "href": "/dead/messages/youtube-comments/comments(6).csv",
+      "name": "comments(6).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 51115
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(7).csv",
+      "href": "/dead/messages/youtube-comments/comments(7).csv",
+      "name": "comments(7).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 50936
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(8).csv",
+      "href": "/dead/messages/youtube-comments/comments(8).csv",
+      "name": "comments(8).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 49474
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/comments(9).csv",
+      "href": "/dead/messages/youtube-comments/comments(9).csv",
+      "name": "comments(9).csv",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 48233
+    },
+    {
+      "type": "file",
+      "path": "/dead/messages/youtube-comments/index.html",
+      "href": "/dead/messages/youtube-comments/index.html",
+      "name": "index.html",
+      "parent": "/dead/messages/youtube-comments",
+      "size": 10430127
+    },
+    {
+      "type": "file",
+      "path": "/dead/README.md",
+      "href": "/dead/README.md",
+      "name": "README.md",
+      "parent": "/dead",
+      "size": 425
+    },
+    {
+      "type": "directory",
+      "path": "/dead/readmes/",
+      "href": "/dead/readmes/",
+      "name": "readmes",
+      "parent": "/dead"
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-audio-README.md",
+      "href": "/dead/readmes/dead-audio-README.md",
+      "name": "dead-audio-README.md",
+      "parent": "/dead/readmes",
+      "size": 394
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-downloads-extensions-README.md",
+      "href": "/dead/readmes/dead-downloads-extensions-README.md",
+      "name": "dead-downloads-extensions-README.md",
+      "parent": "/dead/readmes",
+      "size": 1
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-downloads-extensions-theinternetisdead-extension-suite-README.md",
+      "href": "/dead/readmes/dead-downloads-extensions-theinternetisdead-extension-suite-README.md",
+      "name": "dead-downloads-extensions-theinternetisdead-extension-suite-README.md",
+      "parent": "/dead/readmes",
+      "size": 45293
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-canvas-backgrounds-README.md",
+      "href": "/dead/readmes/dead-experiments-canvas-backgrounds-README.md",
+      "name": "dead-experiments-canvas-backgrounds-README.md",
+      "parent": "/dead/readmes",
+      "size": 398
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-chat-sandbox-README.md",
+      "href": "/dead/readmes/dead-experiments-chat-sandbox-README.md",
+      "name": "dead-experiments-chat-sandbox-README.md",
+      "parent": "/dead/readmes",
+      "size": 278
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-gods-eye-README.md",
+      "href": "/dead/readmes/dead-experiments-gods-eye-README.md",
+      "name": "dead-experiments-gods-eye-README.md",
+      "parent": "/dead/readmes",
+      "size": 273
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-mandala-visuals-README.md",
+      "href": "/dead/readmes/dead-experiments-mandala-visuals-README.md",
+      "name": "dead-experiments-mandala-visuals-README.md",
+      "parent": "/dead/readmes",
+      "size": 579
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-photosphere-README.md",
+      "href": "/dead/readmes/dead-experiments-photosphere-README.md",
+      "name": "dead-experiments-photosphere-README.md",
+      "parent": "/dead/readmes",
+      "size": 266
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-photosphere-themes-inner-space-README.md",
+      "href": "/dead/readmes/dead-experiments-photosphere-themes-inner-space-README.md",
+      "name": "dead-experiments-photosphere-themes-inner-space-README.md",
+      "parent": "/dead/readmes",
+      "size": 263
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-photosphere-themes-README.md",
+      "href": "/dead/readmes/dead-experiments-photosphere-themes-README.md",
+      "name": "dead-experiments-photosphere-themes-README.md",
+      "parent": "/dead/readmes",
+      "size": 243
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-photosphere-themes-zentangle-README.md",
+      "href": "/dead/readmes/dead-experiments-photosphere-themes-zentangle-README.md",
+      "name": "dead-experiments-photosphere-themes-zentangle-README.md",
+      "parent": "/dead/readmes",
+      "size": 259
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-README.md",
+      "href": "/dead/readmes/dead-experiments-README.md",
+      "name": "dead-experiments-README.md",
+      "parent": "/dead/readmes",
+      "size": 469
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-sound-machine-README.md",
+      "href": "/dead/readmes/dead-experiments-sound-machine-README.md",
+      "name": "dead-experiments-sound-machine-README.md",
+      "parent": "/dead/readmes",
+      "size": 281
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-stacks-README.md",
+      "href": "/dead/readmes/dead-experiments-stacks-README.md",
+      "name": "dead-experiments-stacks-README.md",
+      "parent": "/dead/readmes",
+      "size": 260
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-test-habisky-mofo-README.md",
+      "href": "/dead/readmes/dead-experiments-test-habisky-mofo-README.md",
+      "name": "dead-experiments-test-habisky-mofo-README.md",
+      "parent": "/dead/readmes",
+      "size": 235
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-experiments-test-README.md",
+      "href": "/dead/readmes/dead-experiments-test-README.md",
+      "name": "dead-experiments-test-README.md",
+      "parent": "/dead/readmes",
+      "size": 242
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-README.md",
+      "href": "/dead/readmes/dead-games-README.md",
+      "name": "dead-games-README.md",
+      "parent": "/dead/readmes",
+      "size": 249
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-shooter-game-assets-audio-README.md",
+      "href": "/dead/readmes/dead-games-shooter-game-assets-audio-README.md",
+      "name": "dead-games-shooter-game-assets-audio-README.md",
+      "parent": "/dead/readmes",
+      "size": 386
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-shooter-game-assets-controller-buttons-README.md",
+      "href": "/dead/readmes/dead-games-shooter-game-assets-controller-buttons-README.md",
+      "name": "dead-games-shooter-game-assets-controller-buttons-README.md",
+      "parent": "/dead/readmes",
+      "size": 672
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-shooter-game-assets-enemy-gifs-README.md",
+      "href": "/dead/readmes/dead-games-shooter-game-assets-enemy-gifs-README.md",
+      "name": "dead-games-shooter-game-assets-enemy-gifs-README.md",
+      "parent": "/dead/readmes",
+      "size": 560
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-shooter-game-assets-enemy-webps-README.md",
+      "href": "/dead/readmes/dead-games-shooter-game-assets-enemy-webps-README.md",
+      "name": "dead-games-shooter-game-assets-enemy-webps-README.md",
+      "parent": "/dead/readmes",
+      "size": 581
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-shooter-game-assets-json-README.md",
+      "href": "/dead/readmes/dead-games-shooter-game-assets-json-README.md",
+      "name": "dead-games-shooter-game-assets-json-README.md",
+      "parent": "/dead/readmes",
+      "size": 242
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-shooter-game-assets-levels-README.md",
+      "href": "/dead/readmes/dead-games-shooter-game-assets-levels-README.md",
+      "name": "dead-games-shooter-game-assets-levels-README.md",
+      "parent": "/dead/readmes",
+      "size": 257
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-shooter-game-assets-README.md",
+      "href": "/dead/readmes/dead-games-shooter-game-assets-README.md",
+      "name": "dead-games-shooter-game-assets-README.md",
+      "parent": "/dead/readmes",
+      "size": 395
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-shooter-game-assets-scripts-README.md",
+      "href": "/dead/readmes/dead-games-shooter-game-assets-scripts-README.md",
+      "name": "dead-games-shooter-game-assets-scripts-README.md",
+      "parent": "/dead/readmes",
+      "size": 719
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-games-shooter-game-README.md",
+      "href": "/dead/readmes/dead-games-shooter-game-README.md",
+      "name": "dead-games-shooter-game-README.md",
+      "parent": "/dead/readmes",
+      "size": 242
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-images-pngs-README.md",
+      "href": "/dead/readmes/dead-images-pngs-README.md",
+      "name": "dead-images-pngs-README.md",
+      "parent": "/dead/readmes",
+      "size": 404
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-images-README.md",
+      "href": "/dead/readmes/dead-images-README.md",
+      "name": "dead-images-README.md",
+      "parent": "/dead/readmes",
+      "size": 228
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-json-README.md",
+      "href": "/dead/readmes/dead-json-README.md",
+      "name": "dead-json-README.md",
+      "parent": "/dead/readmes",
+      "size": 474
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-README.md",
+      "href": "/dead/readmes/dead-README.md",
+      "name": "dead-README.md",
+      "parent": "/dead/readmes",
+      "size": 425
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-readmes-README.md",
+      "href": "/dead/readmes/dead-readmes-README.md",
+      "name": "dead-readmes-README.md",
+      "parent": "/dead/readmes",
+      "size": 1096
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-scripts-README.md",
+      "href": "/dead/readmes/dead-scripts-README.md",
+      "name": "dead-scripts-README.md",
+      "parent": "/dead/readmes",
+      "size": 774
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-stuff-README.md",
+      "href": "/dead/readmes/dead-stuff-README.md",
+      "name": "dead-stuff-README.md",
+      "parent": "/dead/readmes",
+      "size": 270
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-stuff-stuff-for-index-feeds-README.md",
+      "href": "/dead/readmes/dead-stuff-stuff-for-index-feeds-README.md",
+      "name": "dead-stuff-stuff-for-index-feeds-README.md",
+      "parent": "/dead/readmes",
+      "size": 249
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-tools-bookmark-manager-README.md",
+      "href": "/dead/readmes/dead-tools-bookmark-manager-README.md",
+      "name": "dead-tools-bookmark-manager-README.md",
+      "parent": "/dead/readmes",
+      "size": 151
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-tools-multimedia-editor-README.md",
+      "href": "/dead/readmes/dead-tools-multimedia-editor-README.md",
+      "name": "dead-tools-multimedia-editor-README.md",
+      "parent": "/dead/readmes",
+      "size": 293
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-tools-music-player-README.md",
+      "href": "/dead/readmes/dead-tools-music-player-README.md",
+      "name": "dead-tools-music-player-README.md",
+      "parent": "/dead/readmes",
+      "size": 278
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-tools-pdf-viewer-pdfs-README.md",
+      "href": "/dead/readmes/dead-tools-pdf-viewer-pdfs-README.md",
+      "name": "dead-tools-pdf-viewer-pdfs-README.md",
+      "parent": "/dead/readmes",
+      "size": 274
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/dead-tools-pdf-viewer-README.md",
+      "href": "/dead/readmes/dead-tools-pdf-viewer-README.md",
+      "name": "dead-tools-pdf-viewer-README.md",
+      "parent": "/dead/readmes",
+      "size": 293
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/github-workflows-README.md",
+      "href": "/dead/readmes/github-workflows-README.md",
+      "name": "github-workflows-README.md",
+      "parent": "/dead/readmes",
+      "size": 652
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/index.html",
+      "href": "/dead/readmes/index.html",
+      "name": "index.html",
+      "parent": "/dead/readmes",
+      "size": 4185
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/README.md",
+      "href": "/dead/readmes/README.md",
+      "name": "README.md",
+      "parent": "/dead/readmes",
+      "size": 1096
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/root-README.md",
+      "href": "/dead/readmes/root-README.md",
+      "name": "root-README.md",
+      "parent": "/dead/readmes",
+      "size": 702
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/supabase-functions-clear-chat-README.md",
+      "href": "/dead/readmes/supabase-functions-clear-chat-README.md",
+      "name": "supabase-functions-clear-chat-README.md",
+      "parent": "/dead/readmes",
+      "size": 1278
+    },
+    {
+      "type": "file",
+      "path": "/dead/readmes/workers-ghost-counter-README.md",
+      "href": "/dead/readmes/workers-ghost-counter-README.md",
+      "name": "workers-ghost-counter-README.md",
+      "parent": "/dead/readmes",
+      "size": 849
+    },
+    {
+      "type": "directory",
+      "path": "/dead/scripts/",
+      "href": "/dead/scripts/",
+      "name": "scripts",
+      "parent": "/dead"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/scripts/build/",
+      "href": "/dead/scripts/build/",
+      "name": "build",
+      "parent": "/dead/scripts"
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/build/build-feed-videos.py",
+      "href": "/dead/scripts/build/build-feed-videos.py",
+      "name": "build-feed-videos.py",
+      "parent": "/dead/scripts/build",
+      "size": 23987
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/build/build-message-list.js",
+      "href": "/dead/scripts/build/build-message-list.js",
+      "name": "build-message-list.js",
+      "parent": "/dead/scripts/build",
+      "size": 4137
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/build/build-repo-index.js",
+      "href": "/dead/scripts/build/build-repo-index.js",
+      "name": "build-repo-index.js",
+      "parent": "/dead/scripts/build",
+      "size": 3506
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/build/generate-link-thumbnails.js",
+      "href": "/dead/scripts/build/generate-link-thumbnails.js",
+      "name": "generate-link-thumbnails.js",
+      "parent": "/dead/scripts/build",
+      "size": 8490
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/build/update-nav-carousels.js",
+      "href": "/dead/scripts/build/update-nav-carousels.js",
+      "name": "update-nav-carousels.js",
+      "parent": "/dead/scripts/build",
+      "size": 3803
+    },
+    {
+      "type": "directory",
+      "path": "/dead/scripts/chat/",
+      "href": "/dead/scripts/chat/",
+      "name": "chat",
+      "parent": "/dead/scripts"
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/chat/index-chat.js",
+      "href": "/dead/scripts/chat/index-chat.js",
+      "name": "index-chat.js",
+      "parent": "/dead/scripts/chat",
+      "size": 9149
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/chat/main-chat-sandbox.js",
+      "href": "/dead/scripts/chat/main-chat-sandbox.js",
+      "name": "main-chat-sandbox.js",
+      "parent": "/dead/scripts/chat",
+      "size": 15395
+    },
+    {
+      "type": "directory",
+      "path": "/dead/scripts/page-helpers/",
+      "href": "/dead/scripts/page-helpers/",
+      "name": "page-helpers",
+      "parent": "/dead/scripts"
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/page-helpers/hide-overlay.js",
+      "href": "/dead/scripts/page-helpers/hide-overlay.js",
+      "name": "hide-overlay.js",
+      "parent": "/dead/scripts/page-helpers",
+      "size": 2734
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/page-helpers/screenshot-shortcut.js",
+      "href": "/dead/scripts/page-helpers/screenshot-shortcut.js",
+      "name": "screenshot-shortcut.js",
+      "parent": "/dead/scripts/page-helpers",
+      "size": 2626
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/page-helpers/time-easter-egg.js",
+      "href": "/dead/scripts/page-helpers/time-easter-egg.js",
+      "name": "time-easter-egg.js",
+      "parent": "/dead/scripts/page-helpers",
+      "size": 8103
+    },
+    {
+      "type": "file",
+      "path": "/dead/scripts/README.md",
+      "href": "/dead/scripts/README.md",
+      "name": "README.md",
+      "parent": "/dead/scripts",
+      "size": 774
+    },
+    {
+      "type": "file",
+      "path": "/dead/site-map.html",
+      "href": "/dead/site-map.html",
+      "name": "site-map.html",
+      "parent": "/dead",
+      "size": 16714
+    },
+    {
+      "type": "directory",
+      "path": "/dead/stuff/",
+      "href": "/dead/stuff/",
+      "name": "stuff",
+      "parent": "/dead"
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/README.md",
+      "href": "/dead/stuff/README.md",
+      "name": "README.md",
+      "parent": "/dead/stuff",
+      "size": 270
+    },
+    {
+      "type": "directory",
+      "path": "/dead/stuff/stuff-for-index/",
+      "href": "/dead/stuff/stuff-for-index/",
+      "name": "stuff-for-index",
+      "parent": "/dead/stuff"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/stuff/stuff-for-index/feeds/",
+      "href": "/dead/stuff/stuff-for-index/feeds/",
+      "name": "feeds",
+      "parent": "/dead/stuff/stuff-for-index"
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/stuff-for-index/feeds/feeds-bridge.html",
+      "href": "/dead/stuff/stuff-for-index/feeds/feeds-bridge.html",
+      "name": "feeds-bridge.html",
+      "parent": "/dead/stuff/stuff-for-index/feeds",
+      "size": 12740
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/stuff-for-index/feeds/feeds-header.html",
+      "href": "/dead/stuff/stuff-for-index/feeds/feeds-header.html",
+      "name": "feeds-header.html",
+      "parent": "/dead/stuff/stuff-for-index/feeds",
+      "size": 29995
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/stuff-for-index/feeds/feeds-host.html",
+      "href": "/dead/stuff/stuff-for-index/feeds/feeds-host.html",
+      "name": "feeds-host.html",
+      "parent": "/dead/stuff/stuff-for-index/feeds",
+      "size": 14263
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/stuff-for-index/feeds/feeds.html",
+      "href": "/dead/stuff/stuff-for-index/feeds/feeds.html",
+      "name": "feeds.html",
+      "parent": "/dead/stuff/stuff-for-index/feeds",
+      "size": 69492
+    },
+    {
+      "type": "directory",
+      "path": "/dead/stuff/stuff-for-index/feeds/gaming-grid/",
+      "href": "/dead/stuff/stuff-for-index/feeds/gaming-grid/",
+      "name": "gaming-grid",
+      "parent": "/dead/stuff/stuff-for-index/feeds"
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/stuff-for-index/feeds/gaming-grid/gaming-grid.html",
+      "href": "/dead/stuff/stuff-for-index/feeds/gaming-grid/gaming-grid.html",
+      "name": "gaming-grid.html",
+      "parent": "/dead/stuff/stuff-for-index/feeds/gaming-grid",
+      "size": 39860
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/stuff-for-index/feeds/gaming-grid/gaming-grid.json",
+      "href": "/dead/stuff/stuff-for-index/feeds/gaming-grid/gaming-grid.json",
+      "name": "gaming-grid.json",
+      "parent": "/dead/stuff/stuff-for-index/feeds/gaming-grid",
+      "size": 2131
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/stuff-for-index/feeds/index.html",
+      "href": "/dead/stuff/stuff-for-index/feeds/index.html",
+      "name": "index.html",
+      "parent": "/dead/stuff/stuff-for-index/feeds",
+      "size": 5221
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/stuff-for-index/feeds/README.md",
+      "href": "/dead/stuff/stuff-for-index/feeds/README.md",
+      "name": "README.md",
+      "parent": "/dead/stuff/stuff-for-index/feeds",
+      "size": 249
+    },
+    {
+      "type": "directory",
+      "path": "/dead/stuff/stuff-for-index/thumbnail-grid/",
+      "href": "/dead/stuff/stuff-for-index/thumbnail-grid/",
+      "name": "thumbnail-grid",
+      "parent": "/dead/stuff/stuff-for-index"
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/stuff-for-index/thumbnail-grid/index.html",
+      "href": "/dead/stuff/stuff-for-index/thumbnail-grid/index.html",
+      "name": "index.html",
+      "parent": "/dead/stuff/stuff-for-index/thumbnail-grid",
+      "size": 85379
+    },
+    {
+      "type": "directory",
+      "path": "/dead/stuff/wtf/",
+      "href": "/dead/stuff/wtf/",
+      "name": "wtf",
+      "parent": "/dead/stuff"
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/wtf/index.html",
+      "href": "/dead/stuff/wtf/index.html",
+      "name": "index.html",
+      "parent": "/dead/stuff/wtf",
+      "size": 12344
+    },
+    {
+      "type": "file",
+      "path": "/dead/stuff/wtf/lone-coding-gnome_patch.zip",
+      "href": "/dead/stuff/wtf/lone-coding-gnome_patch.zip",
+      "name": "lone-coding-gnome_patch.zip",
+      "parent": "/dead/stuff/wtf",
+      "size": 4148
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/",
+      "href": "/dead/tools/",
+      "name": "tools",
+      "parent": "/dead"
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/bookmark-manager/",
+      "href": "/dead/tools/bookmark-manager/",
+      "name": "bookmark-manager",
+      "parent": "/dead/tools"
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/bookmark-manager/index.html",
+      "href": "/dead/tools/bookmark-manager/index.html",
+      "name": "index.html",
+      "parent": "/dead/tools/bookmark-manager",
+      "size": 36677
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/bookmark-manager/README.md",
+      "href": "/dead/tools/bookmark-manager/README.md",
+      "name": "README.md",
+      "parent": "/dead/tools/bookmark-manager",
+      "size": 151
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/camera-studio/",
+      "href": "/dead/tools/camera-studio/",
+      "name": "camera-studio",
+      "parent": "/dead/tools"
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/camera-studio/index.html",
+      "href": "/dead/tools/camera-studio/index.html",
+      "name": "index.html",
+      "parent": "/dead/tools/camera-studio",
+      "size": 8429
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/dead-tv/",
+      "href": "/dead/tools/dead-tv/",
+      "name": "dead-tv",
+      "parent": "/dead/tools"
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/dead-tv/index.html",
+      "href": "/dead/tools/dead-tv/index.html",
+      "name": "index.html",
+      "parent": "/dead/tools/dead-tv",
+      "size": 20071
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/index.html",
+      "href": "/dead/tools/index.html",
+      "name": "index.html",
+      "parent": "/dead/tools",
+      "size": 1
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/karaoke-machine/",
+      "href": "/dead/tools/karaoke-machine/",
+      "name": "karaoke-machine",
+      "parent": "/dead/tools"
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/karaoke-machine/index.html",
+      "href": "/dead/tools/karaoke-machine/index.html",
+      "name": "index.html",
+      "parent": "/dead/tools/karaoke-machine",
+      "size": 39915
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/multimedia-editor/",
+      "href": "/dead/tools/multimedia-editor/",
+      "name": "multimedia-editor",
+      "parent": "/dead/tools"
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/multimedia-editor/index.html",
+      "href": "/dead/tools/multimedia-editor/index.html",
+      "name": "index.html",
+      "parent": "/dead/tools/multimedia-editor",
+      "size": 17056
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/multimedia-editor/README.md",
+      "href": "/dead/tools/multimedia-editor/README.md",
+      "name": "README.md",
+      "parent": "/dead/tools/multimedia-editor",
+      "size": 293
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/music-crunchifier/",
+      "href": "/dead/tools/music-crunchifier/",
+      "name": "music-crunchifier",
+      "parent": "/dead/tools"
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/music-crunchifier/index.html",
+      "href": "/dead/tools/music-crunchifier/index.html",
+      "name": "index.html",
+      "parent": "/dead/tools/music-crunchifier",
+      "size": 18768
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/music-player/",
+      "href": "/dead/tools/music-player/",
+      "name": "music-player",
+      "parent": "/dead/tools"
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/music-player/index.html",
+      "href": "/dead/tools/music-player/index.html",
+      "name": "index.html",
+      "parent": "/dead/tools/music-player",
+      "size": 113205
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/music-player/README.md",
+      "href": "/dead/tools/music-player/README.md",
+      "name": "README.md",
+      "parent": "/dead/tools/music-player",
+      "size": 278
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/pdf-viewer/",
+      "href": "/dead/tools/pdf-viewer/",
+      "name": "pdf-viewer",
+      "parent": "/dead/tools"
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/pdf-viewer/creepy-susie.html",
+      "href": "/dead/tools/pdf-viewer/creepy-susie.html",
+      "name": "creepy-susie.html",
+      "parent": "/dead/tools/pdf-viewer",
+      "size": 29217
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/pdf-viewer/doodle-book.html",
+      "href": "/dead/tools/pdf-viewer/doodle-book.html",
+      "name": "doodle-book.html",
+      "parent": "/dead/tools/pdf-viewer",
+      "size": 21077
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/pdf-viewer/index.html",
+      "href": "/dead/tools/pdf-viewer/index.html",
+      "name": "index.html",
+      "parent": "/dead/tools/pdf-viewer",
+      "size": 22129
+    },
+    {
+      "type": "directory",
+      "path": "/dead/tools/pdf-viewer/pdfs/",
+      "href": "/dead/tools/pdf-viewer/pdfs/",
+      "name": "pdfs",
+      "parent": "/dead/tools/pdf-viewer"
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/pdf-viewer/pdfs/creepy-susie.pdf",
+      "href": "/dead/tools/pdf-viewer/pdfs/creepy-susie.pdf",
+      "name": "creepy-susie.pdf",
+      "parent": "/dead/tools/pdf-viewer/pdfs",
+      "size": 25620993
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/pdf-viewer/pdfs/doodle-book.pdf",
+      "href": "/dead/tools/pdf-viewer/pdfs/doodle-book.pdf",
+      "name": "doodle-book.pdf",
+      "parent": "/dead/tools/pdf-viewer/pdfs",
+      "size": 13449708
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/pdf-viewer/pdfs/README.md",
+      "href": "/dead/tools/pdf-viewer/pdfs/README.md",
+      "name": "README.md",
+      "parent": "/dead/tools/pdf-viewer/pdfs",
+      "size": 274
+    },
+    {
+      "type": "file",
+      "path": "/dead/tools/pdf-viewer/README.md",
+      "href": "/dead/tools/pdf-viewer/README.md",
+      "name": "README.md",
+      "parent": "/dead/tools/pdf-viewer",
+      "size": 293
+    },
+    {
+      "type": "directory",
+      "path": "/dead/videos/",
+      "href": "/dead/videos/",
+      "name": "videos",
+      "parent": "/dead"
+    },
+    {
+      "type": "file",
+      "path": "/dead/videos/index.html",
+      "href": "/dead/videos/index.html",
+      "name": "index.html",
+      "parent": "/dead/videos",
+      "size": 1414
+    },
+    {
+      "type": "file",
+      "path": "/dead/videos/theinternetisdead.mp4",
+      "href": "/dead/videos/theinternetisdead.mp4",
+      "name": "theinternetisdead.mp4",
+      "parent": "/dead/videos",
+      "size": 10524318
+    },
+    {
+      "type": "file",
+      "path": "/homepage.html",
+      "href": "/homepage.html",
+      "name": "homepage.html",
+      "parent": ".",
+      "size": 39784
+    },
+    {
+      "type": "file",
+      "path": "/index.html",
+      "href": "/index.html",
+      "name": "index.html",
+      "parent": ".",
+      "size": 40572
+    },
+    {
+      "type": "file",
+      "path": "/nav.html",
+      "href": "/nav.html",
+      "name": "nav.html",
+      "parent": ".",
+      "size": 90000
+    },
+    {
+      "type": "file",
+      "path": "/other.html",
+      "href": "/other.html",
+      "name": "other.html",
+      "parent": ".",
+      "size": 22625
+    },
+    {
+      "type": "file",
+      "path": "/package-lock.json",
+      "href": "/package-lock.json",
+      "name": "package-lock.json",
+      "parent": ".",
+      "size": 1706
+    },
+    {
+      "type": "file",
+      "path": "/package.json",
+      "href": "/package.json",
+      "name": "package.json",
+      "parent": ".",
+      "size": 301
+    },
+    {
+      "type": "file",
+      "path": "/privacy.html",
+      "href": "/privacy.html",
+      "name": "privacy.html",
+      "parent": ".",
+      "size": 11962
+    },
+    {
+      "type": "file",
+      "path": "/README.md",
+      "href": "/README.md",
+      "name": "README.md",
+      "parent": ".",
+      "size": 702
+    },
+    {
+      "type": "file",
+      "path": "/service-worker.js",
+      "href": "/service-worker.js",
+      "name": "service-worker.js",
+      "parent": ".",
+      "size": 2414
+    },
+    {
+      "type": "file",
+      "path": "/sitemap.xml",
+      "href": "/sitemap.xml",
+      "name": "sitemap.xml",
+      "parent": ".",
+      "size": 21471
+    },
+    {
+      "type": "directory",
+      "path": "/supabase/",
+      "href": "/supabase/",
+      "name": "supabase",
+      "parent": "."
+    },
+    {
+      "type": "directory",
+      "path": "/supabase/functions/",
+      "href": "/supabase/functions/",
+      "name": "functions",
+      "parent": "/supabase"
+    },
+    {
+      "type": "directory",
+      "path": "/supabase/functions/clear-chat/",
+      "href": "/supabase/functions/clear-chat/",
+      "name": "clear-chat",
+      "parent": "/supabase/functions"
+    },
+    {
+      "type": "file",
+      "path": "/supabase/functions/clear-chat/index.ts",
+      "href": "/supabase/functions/clear-chat/index.ts",
+      "name": "index.ts",
+      "parent": "/supabase/functions/clear-chat",
+      "size": 6680
+    },
+    {
+      "type": "file",
+      "path": "/supabase/functions/clear-chat/README.md",
+      "href": "/supabase/functions/clear-chat/README.md",
+      "name": "README.md",
+      "parent": "/supabase/functions/clear-chat",
+      "size": 1278
+    },
+    {
+      "type": "directory",
+      "path": "/workers/",
+      "href": "/workers/",
+      "name": "workers",
+      "parent": "."
+    },
+    {
+      "type": "directory",
+      "path": "/workers/ghost-counter/",
+      "href": "/workers/ghost-counter/",
+      "name": "ghost-counter",
+      "parent": "/workers"
+    },
+    {
+      "type": "file",
+      "path": "/workers/ghost-counter/package-lock.json",
+      "href": "/workers/ghost-counter/package-lock.json",
+      "name": "package-lock.json",
+      "parent": "/workers/ghost-counter",
+      "size": 50656
+    },
+    {
+      "type": "file",
+      "path": "/workers/ghost-counter/package.json",
+      "href": "/workers/ghost-counter/package.json",
+      "name": "package.json",
+      "parent": "/workers/ghost-counter",
+      "size": 228
+    },
+    {
+      "type": "file",
+      "path": "/workers/ghost-counter/README.md",
+      "href": "/workers/ghost-counter/README.md",
+      "name": "README.md",
+      "parent": "/workers/ghost-counter",
+      "size": 849
+    },
+    {
+      "type": "directory",
+      "path": "/workers/ghost-counter/src/",
+      "href": "/workers/ghost-counter/src/",
+      "name": "src",
+      "parent": "/workers/ghost-counter"
+    },
+    {
+      "type": "file",
+      "path": "/workers/ghost-counter/src/worker.js",
+      "href": "/workers/ghost-counter/src/worker.js",
+      "name": "worker.js",
+      "parent": "/workers/ghost-counter/src",
+      "size": 2405
+    },
+    {
+      "type": "file",
+      "path": "/workers/ghost-counter/wrangler.toml",
+      "href": "/workers/ghost-counter/wrangler.toml",
+      "name": "wrangler.toml",
+      "parent": "/workers/ghost-counter",
+      "size": 250
+    }
   ]
 }
