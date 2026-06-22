@@ -188,6 +188,10 @@ Deno.serve(async (request) => {
     return jsonResponse(request, 401, { ok: false, error: "unauthorized" });
   }
 
+  if (body.action === "verify_admin_password") {
+    return jsonResponse(request, 200, { ok: true, room });
+  }
+
   const { error } = await supabase
     .schema("public")
     .from("site_chat_messages")

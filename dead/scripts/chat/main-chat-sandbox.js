@@ -208,6 +208,66 @@ function registerPageCommands(){
     });
 }
 
+function renderFatalExitScreen(){
+    const escaped = [
+        '            .ed"""" """$$$$be.',
+        '          -"           ^""**$$$e.',
+        '        ."                   \'$$$c',
+        '       /                      "4$$b',
+        '      d  3                      $$$$',
+        '      $  *                   .$$$$$$',
+        '     .$  ^c           $$$$$e$$$$$$$$.',
+        '     d$L  4.         4$$$$$$$$$$$$$$b',
+        '     $$$$b ^ceeeee.  4$$ECL.F*$$$$$$$',
+        '     $$$$P d$$$$F $ $$$$$$$$$- $$$$$$',
+        '     3$$$F "$$$$b   $"$$$$$$$  $$$$*"',
+        '      $$P"  "$$b   .$ $$$$$...e$$',
+        '       *c    ..    $$ 3$$$$$$$$$$eF',
+        '         %ce"    $$$  $$$$$$$$$$*',
+        '          *$e.    "$  $$$$$$$$$P',
+        '           $$$      4J$$$$$$$"',
+        '          $"$   $"*$$$$$$$$$B',
+        '          $  "F"   ^*$$$$$$$*',
+        '           $"     .d$$$$$$$',
+        '           ^%ceeed$$$$$$$$$*',
+        '              """*$$$$$$$$$*',
+        '                   ^""""',
+        '',
+        'BOOT STATUS: PAGE FATALITY',
+        'CAUSE: USER EXECUTED /exit',
+        'RESULT: you killed the page',
+        '',
+        'Manual reboot required.',
+        'Refresh the page like a peasant.'
+    ].join('\n');
+
+    document.documentElement.innerHTML = `
+        <head>
+            <meta charset="UTF-8" />
+            <title>/exit</title>
+            <style>
+                html, body { margin: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+                body { display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; color: #00ff66; font-family: "Courier New", Courier, monospace; background:
+                    radial-gradient(circle at 20% 20%, rgba(255, 0, 80, 0.28), transparent 28%),
+                    radial-gradient(circle at 80% 25%, rgba(0, 255, 120, 0.24), transparent 26%),
+                    radial-gradient(circle at 50% 80%, rgba(0, 140, 255, 0.24), transparent 30%),
+                    #000; }
+                pre { margin: 0; white-space: pre; font-size: clamp(10px, 1.35vw, 16px); line-height: 1.1; color: #00ff66; text-shadow: 0 0 8px rgba(0, 255, 102, 0.35); background: rgba(0, 0, 0, 0.38); padding: 18px 20px 30px 20px; box-shadow: 0 0 0 1px rgba(0, 255, 102, 0.18), inset 0 0 24px rgba(0, 0, 0, 0.45); transform-origin: 0 0; animation: fatal-skull-glitch 1.15s steps(2, end) infinite; }
+                @keyframes fatal-skull-glitch {
+                    0%, 100% { opacity: 1; transform: translate(0, 0) skewX(0deg); text-shadow: 0 0 8px rgba(0, 255, 102, 0.35); }
+                    12% { opacity: 0.82; transform: translate(2px, -1px) skewX(-1deg); text-shadow: -2px 0 rgba(255, 0, 80, 0.65), 2px 0 rgba(0, 140, 255, 0.55), 0 0 10px rgba(0, 255, 102, 0.5); }
+                    14% { opacity: 1; transform: translate(-1px, 1px) skewX(1deg); }
+                    42% { opacity: 0.9; transform: translate(1px, 0) skewX(0deg); }
+                    44% { opacity: 1; transform: translate(-2px, 0) skewX(1deg); text-shadow: 2px 0 rgba(255, 0, 80, 0.55), -2px 0 rgba(0, 140, 255, 0.5), 0 0 12px rgba(0, 255, 102, 0.55); }
+                    68% { opacity: 0.78; transform: translate(0, 1px) skewX(-1deg); }
+                    70% { opacity: 1; transform: translate(0, 0) skewX(0deg); }
+                }
+            </style>
+        </head>
+        <body><pre>${escaped}</pre></body>
+    `;
+}
+
 function syncLayout(){
     const overlayContainer = document.getElementById("overlay-container");
     const overlayHeight = overlayContainer ? overlayContainer.offsetHeight : 0;
@@ -222,6 +282,10 @@ window.addEventListener('message', (event) => {
     if (!event.data) return;
     if (event.source === (frame ? frame.contentWindow : null)) {
         if (event.data.type === 'chatSandboxState' || event.data.type === 'chatSandboxDvdState') {
+            return;
+        }
+        if (event.data.type === 'pageExit') {
+            renderFatalExitScreen();
             return;
         }
         if (event.data.type === 'pageChatExecute') {

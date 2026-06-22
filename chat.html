@@ -31,6 +31,21 @@
       align-items: stretch;
       justify-content: stretch;
       pointer-events: none;
+      z-index: 3;
+    }
+
+    #chatDimLayer {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.46);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease;
+      z-index: 1;
+    }
+
+    body.chat-open #chatDimLayer {
+      opacity: 1;
     }
 
     #chatPanel {
@@ -66,6 +81,7 @@
       overflow: auto;
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;
       gap: 6px;
       max-height: none;
       padding-right: 4px;
@@ -75,6 +91,7 @@
     .message {
       width: fit-content;
       max-width: min(920px, calc(100vw - 32px));
+      flex-shrink: 0;
       padding: 7px 9px;
       border: 1px solid var(--chat-border);
       background: var(--chat-bg);
@@ -101,6 +118,51 @@
       text-underline-offset: 2px;
     }
 
+    .message p {
+      margin: 0;
+    }
+
+    .message p + p,
+    .message ul + p,
+    .message pre + p {
+      margin-top: 7px;
+    }
+
+    .message ul {
+      margin: 4px 0 0 18px;
+      padding: 0;
+    }
+
+    .message li {
+      margin: 2px 0;
+    }
+
+    .message code {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-shadow: none;
+    }
+
+    .message pre {
+      margin: 4px 0 0;
+      max-width: min(720px, calc(100vw - 70px));
+      overflow: auto;
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.48);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 8px;
+      text-shadow: none;
+      white-space: pre;
+    }
+
+    .message pre code {
+      display: block;
+      padding: 0;
+      background: transparent;
+    }
+
     .publicChatImage {
       display: block;
       max-width: min(420px, calc(100vw - 70px));
@@ -120,6 +182,21 @@
       margin-right: 6px;
       text-shadow: none;
       white-space: nowrap;
+    }
+
+    .reservedNickname {
+      background: linear-gradient(90deg, #ff5577, #ff9f43, #ffe66d, #00ff66, #7bd2ff, #c792ea, #ff7ac8, #ff5577);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: reserved-nickname-rainbow 2.2s linear infinite;
+      text-shadow: none;
+    }
+
+    @keyframes reserved-nickname-rainbow {
+      from { background-position: 0% 50%; }
+      to { background-position: 220% 50%; }
     }
 
     .message[data-error="true"] {
@@ -147,7 +224,7 @@
     #inputWrap {
       position: relative;
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
       gap: 8px;
       padding: 9px 10px;
@@ -168,6 +245,23 @@
     }
 
     #chatInput::placeholder { color: rgba(0, 255, 102, 0.52); }
+
+    #chatCloseButton {
+      border: 0;
+      background: transparent;
+      color: #ff5577;
+      font: inherit;
+      line-height: 1;
+      padding: 0 2px;
+      cursor: pointer;
+      text-shadow: 0 0 8px rgba(255, 85, 119, 0.38);
+    }
+
+    #chatCloseButton:hover,
+    #chatCloseButton:focus-visible {
+      outline: none;
+      color: #ffffff;
+    }
 
     #suggestions {
       position: absolute;
@@ -199,15 +293,47 @@
       outline: 1px solid var(--chat-border);
       background: rgba(0, 255, 102, 0.12);
     }
+
+    #dvdOverlay {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      display: none;
+      z-index: 2;
+    }
+
+    #dvdOverlay.active {
+      display: block;
+    }
+
+    .dvdLogo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: min(22vw, 180px);
+      height: auto;
+      opacity: 0.96;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: auto;
+      cursor: default;
+      filter: hue-rotate(0deg) drop-shadow(0 0 10px rgba(255, 255, 255, 0.28));
+      transform: translate3d(0, 0, 0);
+      will-change: transform, filter;
+    }
   </style>
 </head>
 <body>
+  <div id="chatDimLayer" aria-hidden="true"></div>
+  <div id="dvdOverlay" aria-hidden="true"></div>
   <main id="chatSurface" aria-live="polite">
     <section id="chatPanel">
       <div id="messages"></div>
       <form id="inputWrap" autocomplete="off">
         <span id="prompt">&gt;</span>
         <input id="chatInput" type="text" placeholder="Press here to chat or / for commands..." />
+        <button id="chatCloseButton" type="button" aria-label="Close chat" title="Close chat">❌</button>
         <div id="suggestions" aria-hidden="true"></div>
       </form>
     </section>
@@ -216,6 +342,7 @@
   <script>
     const CHAT_NICKNAME_STORAGE_KEY = 'tektiteChatNickname';
     const CHAT_NICKNAME_EXPLICIT_STORAGE_KEY = 'tektiteChatNicknameExplicit';
+    const CHAT_NICKNAME_COLOR_STORAGE_KEY = 'tektiteChatNicknameColor';
     const SUPABASE_PROJECT_URL = 'https://fumidkcwrhzgfdmuakqj.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BcNJhaZkgo4r5VH1aJ_stQ_P-kEDY_r';
     const SUPABASE_CHAT_ROOM = 'index';
@@ -232,7 +359,9 @@
     const commands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
       { name: '/clear_public', value: '/clear_public ', execute: false, desc: 'admin: clear public chat history through the server-side function', hidden: true },
-      { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User'] },
+      { name: '/dvd', value: '/dvd', execute: true, desc: 'spawn another bouncing hue-shifting DVD logo, up to 10 total' },
+      { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
+      { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User', 'color #00ff66', 'reset'] },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' }
     ];
 
@@ -241,8 +370,11 @@
     const messages = document.getElementById('messages');
     const inputWrap = document.getElementById('inputWrap');
     const chatInput = document.getElementById('chatInput');
+    const chatCloseButton = document.getElementById('chatCloseButton');
     const suggestions = document.getElementById('suggestions');
+    const dvdOverlay = document.getElementById('dvdOverlay');
     let currentNickname = loadNickname();
+    let currentNicknameColor = loadNicknameColor();
     let renderedPublicMessageKeys = new Set();
     let suggestionIndex = -1;
     let publicChatRefreshInFlight = false;
@@ -250,6 +382,39 @@
     let lastPublicChatPruneAttemptMs = 0;
     let latestPublicMessageCreatedAt = '';
     let scrollFrameId = 0;
+    let dvdAnimationFrameId = null;
+    let dvdEnabled = false;
+    let dvdLastTime = 0;
+    let dvdLogoCounter = 0;
+    let dvdCommandAttemptCount = 0;
+    const dvdInstances = [];
+    const dvdDefaultSource = 'https://upload.wikimedia.org/wikipedia/commons/8/85/Dvd_logo.svg';
+    const dvdNormalMaxInstances = 10;
+    const dvdHueShiftSpeedDegPerSecond = 45;
+    const COMMAND_EXECUTION_MESSAGE_TTL_MS = 15000;
+    const RESERVED_NICKNAMES = new Set([
+      'honestly thomas',
+      'tektite',
+      'theinternetisdead',
+      'jinclops',
+      'jin',
+      'evil jin',
+      'webmaster',
+      'admin',
+      'administrator',
+      'mod',
+      'moderator',
+      'dev',
+      'developer'
+    ]);
+    const commandExecutionMessages = new Map();
+    let pendingReservedNickname = '';
+    let pendingReservedNicknamePromptLine = null;
+    let pendingClearPublicPassword = false;
+    let pendingClearPublicPromptLine = null;
+    let pendingNicknameColor = false;
+    let pendingNicknameColorPromptLine = null;
+    let previousChatInputPlaceholder = chatInput.getAttribute('placeholder') || '';
 
     function generateAnonymousNickname() {
       return `Anonymous Ghost ${Math.floor(Math.random() * 900) + 100}`;
@@ -258,6 +423,10 @@
     function normalizeNickname(value) {
       const cleaned = String(value || '').replace(/[\r\n\t]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
       return cleaned || generateAnonymousNickname();
+    }
+
+    function isReservedNickname(value) {
+      return RESERVED_NICKNAMES.has(normalizeNickname(value).toLowerCase());
     }
 
     function loadNickname() {
@@ -278,6 +447,67 @@
           window.localStorage.removeItem(CHAT_NICKNAME_EXPLICIT_STORAGE_KEY);
         }
       } catch (error) {}
+    }
+
+    function normalizeNicknameColor(value) {
+      const raw = String(value || '').trim();
+      if (!raw) return '';
+      const cssColor = raw.replace(/\s+/g, ' ');
+      const hex = raw.match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);
+      if (hex) {
+        const value = hex[1];
+        if (value.length === 3) {
+          return `#${value.split('').map((char) => char + char).join('').toLowerCase()}`;
+        }
+        return `#${value.toLowerCase()}`;
+      }
+      const rgba = raw.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*(0|1|0?\.\d+))?\s*\)$/i);
+      if (rgba) {
+        const red = Math.max(0, Math.min(255, Number(rgba[1])));
+        const green = Math.max(0, Math.min(255, Number(rgba[2])));
+        const blue = Math.max(0, Math.min(255, Number(rgba[3])));
+        const alpha = rgba[4] === undefined ? null : Math.max(0, Math.min(1, Number(rgba[4])));
+        return alpha === null
+          ? `rgb(${red}, ${green}, ${blue})`
+          : `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+      }
+      const namedColors = {
+        red: '#ff5577',
+        orange: '#ff9f43',
+        yellow: '#ffe66d',
+        green: '#00ff66',
+        blue: '#7bd2ff',
+        indigo: 'indigo',
+        purple: '#c792ea',
+        pink: '#ff7ac8',
+        white: '#ffffff'
+      };
+      if (namedColors[raw.toLowerCase()]) return namedColors[raw.toLowerCase()];
+
+      if (typeof CSS !== 'undefined' && CSS.supports && CSS.supports('color', cssColor)) {
+        return cssColor;
+      }
+
+      return '';
+    }
+
+    function loadNicknameColor() {
+      try {
+        return normalizeNicknameColor(window.localStorage.getItem(CHAT_NICKNAME_COLOR_STORAGE_KEY) || '');
+      } catch (error) {}
+      return '';
+    }
+
+    function saveNicknameColor(value) {
+      const color = normalizeNicknameColor(value);
+      try {
+        if (color) {
+          window.localStorage.setItem(CHAT_NICKNAME_COLOR_STORAGE_KEY, color);
+        } else {
+          window.localStorage.removeItem(CHAT_NICKNAME_COLOR_STORAGE_KEY);
+        }
+      } catch (error) {}
+      return color;
     }
 
     function escapeHtml(value) {
@@ -314,23 +544,106 @@
       }
     }
 
-    function linkifyText(value) {
-      const text = String(value || '');
-      const pattern = /https?:\/\/[^\s<>"']+/gi;
-      let result = '';
-      let cursor = 0;
-      text.replace(pattern, (match, offset) => {
-        result += escapeHtml(text.slice(cursor, offset));
+    function renderInlineMarkdown(value) {
+      const tokens = [];
+      const addToken = (html) => {
+        const token = `@@MDTOKEN${tokens.length}@@`;
+        tokens.push(html);
+        return token;
+      };
+
+      let text = String(value || '');
+      text = text.replace(/`([^`\n]+)`/g, (_match, code) => {
+        return addToken(`<code>${escapeHtml(code)}</code>`);
+      });
+      text = text.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/gi, (_match, label, href) => {
+        const safeUrl = getSafeHttpUrl(href);
+        if (!safeUrl) return escapeHtml(label);
+        return addToken(`<a href="${escapeAttribute(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`);
+      });
+
+      let html = escapeHtml(text);
+      html = html.replace(/\*\*([^*\n][\s\S]*?[^*\n])\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/(^|[^\*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+      html = html.replace(/(https?:\/\/[^\s<]+)/gi, (match) => {
         const { url, trailing } = splitUrlTrailingPunctuation(match);
         const safeUrl = getSafeHttpUrl(url);
-        result += safeUrl
+        return safeUrl
           ? `<a href="${escapeAttribute(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>${escapeHtml(trailing)}`
           : escapeHtml(match);
-        cursor = offset + match.length;
-        return match;
       });
-      result += escapeHtml(text.slice(cursor));
-      return result;
+      tokens.forEach((tokenHtml, index) => {
+        html = html.replaceAll(`@@MDTOKEN${index}@@`, tokenHtml);
+      });
+      return html;
+    }
+
+    function renderMarkdownText(value) {
+      const raw = String(value || '').replace(/\r\n?/g, '\n');
+      if (!raw.includes('\n') && !/^\s*[-*]\s+/.test(raw) && !/```/.test(raw)) {
+        return renderInlineMarkdown(raw);
+      }
+      const lines = raw.split('\n');
+      const blocks = [];
+      let paragraph = [];
+      let listItems = [];
+      let codeLines = [];
+      let inCodeBlock = false;
+
+      const flushParagraph = () => {
+        if (!paragraph.length) return;
+        blocks.push(`<p>${paragraph.map(renderInlineMarkdown).join('<br>')}</p>`);
+        paragraph = [];
+      };
+      const flushList = () => {
+        if (!listItems.length) return;
+        blocks.push(`<ul>${listItems.map((item) => `<li>${renderInlineMarkdown(item)}</li>`).join('')}</ul>`);
+        listItems = [];
+      };
+      const flushCode = () => {
+        blocks.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+        codeLines = [];
+      };
+
+      lines.forEach((line) => {
+        if (/^\s*```/.test(line)) {
+          if (inCodeBlock) {
+            flushCode();
+            inCodeBlock = false;
+          } else {
+            flushParagraph();
+            flushList();
+            inCodeBlock = true;
+          }
+          return;
+        }
+
+        if (inCodeBlock) {
+          codeLines.push(line);
+          return;
+        }
+
+        const listMatch = line.match(/^\s*[-*]\s+(.+)$/);
+        if (listMatch) {
+          flushParagraph();
+          listItems.push(listMatch[1]);
+          return;
+        }
+
+        if (!line.trim()) {
+          flushParagraph();
+          flushList();
+          return;
+        }
+
+        flushList();
+        paragraph.push(line);
+      });
+
+      if (inCodeBlock) flushCode();
+      flushParagraph();
+      flushList();
+      return blocks.join('');
     }
 
     function scrollToBottom() {
@@ -364,12 +677,103 @@
       return addMessage('system', escapeHtml(text), options);
     }
 
-    function addUserEcho(text) {
-      return addMessage('user', escapeHtml(text));
-    }
-
     function formatCommandExecutionMessage(command, state = 'executed', nickname = currentNickname) {
       return `${command} ${state} by ${nickname}`;
+    }
+
+    function removeCommandExecutionMessage(commandKey) {
+      const entry = commandExecutionMessages.get(commandKey);
+      if (!entry) return;
+      window.clearTimeout(entry.timerId);
+      if (entry.line && entry.line.isConnected) entry.line.remove();
+      commandExecutionMessages.delete(commandKey);
+    }
+
+    function addCommandExecutionMessage(command, options = {}) {
+      const commandKey = String(command || '').trim().toLowerCase();
+      if (!commandKey) return null;
+
+      const baseText = options.message || formatCommandExecutionMessage(commandKey, options.state || 'executed');
+      const detail = options.detail ? ` ${options.detail}` : '';
+      const existing = commandExecutionMessages.get(commandKey);
+      const count = existing && existing.line && existing.line.isConnected ? existing.count + 1 : 1;
+      const text = `${baseText}${detail}${count > 1 ? ` x${count}` : ''}`;
+      const line = existing && existing.line && existing.line.isConnected
+        ? existing.line
+        : addMessage('system', escapeHtml(text), { commandExecution: true });
+
+      line.textContent = text;
+      line.dataset.commandExecution = commandKey;
+      line.dataset.commandExecutionCount = String(count);
+      window.clearTimeout(existing && existing.timerId);
+
+      const timerId = window.setTimeout(() => {
+        removeCommandExecutionMessage(commandKey);
+      }, COMMAND_EXECUTION_MESSAGE_TTL_MS);
+
+      commandExecutionMessages.set(commandKey, { line, count, timerId });
+      scheduleScrollToBottom();
+      return line;
+    }
+
+    function renderFatalExitScreen() {
+      const escaped = [
+        '            .ed"""" """$$$$be.',
+        '          -"           ^""**$$$e.',
+        '        ."                   \'$$$c',
+        '       /                      "4$$b',
+        '      d  3                      $$$$',
+        '      $  *                   .$$$$$$',
+        '     .$  ^c           $$$$$e$$$$$$$$.',
+        '     d$L  4.         4$$$$$$$$$$$$$$b',
+        '     $$$$b ^ceeeee.  4$$ECL.F*$$$$$$$',
+        '     $$$$P d$$$$F $ $$$$$$$$$- $$$$$$',
+        '     3$$$F "$$$$b   $"$$$$$$$  $$$$*"',
+        '      $$P"  "$$b   .$ $$$$$...e$$',
+        '       *c    ..    $$ 3$$$$$$$$$$eF',
+        '         %ce"    $$$  $$$$$$$$$$*',
+        '          *$e.    "$  $$$$$$$$$P',
+        '           $$$      4J$$$$$$$"',
+        '          $"$   $"*$$$$$$$$$B',
+        '          $  "F"   ^*$$$$$$$*',
+        '           $"     .d$$$$$$$',
+        '           ^%ceeed$$$$$$$$$*',
+        '              """*$$$$$$$$$*',
+        '                   ^""""',
+        '',
+        'BOOT STATUS: PAGE FATALITY',
+        'CAUSE: USER EXECUTED /exit',
+        'RESULT: you killed the page',
+        '',
+        'Manual reboot required.',
+        'Refresh the page like a peasant.'
+      ].join('\n');
+
+      document.documentElement.innerHTML = `
+        <head>
+          <meta charset="UTF-8" />
+          <title>/exit</title>
+          <style>
+            html, body { margin: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+            body { display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; color: #00ff66; font-family: "Courier New", Courier, monospace; background:
+              radial-gradient(circle at 20% 20%, rgba(255, 0, 80, 0.28), transparent 28%),
+              radial-gradient(circle at 80% 25%, rgba(0, 255, 120, 0.24), transparent 26%),
+              radial-gradient(circle at 50% 80%, rgba(0, 140, 255, 0.24), transparent 30%),
+              #000; }
+            pre { margin: 0; white-space: pre; font-size: clamp(10px, 1.35vw, 16px); line-height: 1.1; color: #00ff66; text-shadow: 0 0 8px rgba(0, 255, 102, 0.35); background: rgba(0, 0, 0, 0.38); padding: 18px 20px 30px 20px; box-shadow: 0 0 0 1px rgba(0, 255, 102, 0.18), inset 0 0 24px rgba(0, 0, 0, 0.45); transform-origin: 0 0; animation: fatal-skull-glitch 1.15s steps(2, end) infinite; }
+            @keyframes fatal-skull-glitch {
+              0%, 100% { opacity: 1; transform: translate(0, 0) skewX(0deg); text-shadow: 0 0 8px rgba(0, 255, 102, 0.35); }
+              12% { opacity: 0.82; transform: translate(2px, -1px) skewX(-1deg); text-shadow: -2px 0 rgba(255, 0, 80, 0.65), 2px 0 rgba(0, 140, 255, 0.55), 0 0 10px rgba(0, 255, 102, 0.5); }
+              14% { opacity: 1; transform: translate(-1px, 1px) skewX(1deg); }
+              42% { opacity: 0.9; transform: translate(1px, 0) skewX(0deg); }
+              44% { opacity: 1; transform: translate(-2px, 0) skewX(1deg); text-shadow: 2px 0 rgba(255, 0, 80, 0.55), -2px 0 rgba(0, 140, 255, 0.5), 0 0 12px rgba(0, 255, 102, 0.55); }
+              68% { opacity: 0.78; transform: translate(0, 1px) skewX(-1deg); }
+              70% { opacity: 1; transform: translate(0, 0) skewX(0deg); }
+            }
+          </style>
+        </head>
+        <body><pre>${escaped}</pre></body>
+      `;
     }
 
     function createHelpHtml() {
@@ -379,11 +783,173 @@
       return `<strong>Help with commands...</strong><div class="helpList">${items}</div>`;
     }
 
+    function getCommandUsage(commandName) {
+      const command = commandByName.get(commandName);
+      if (!command) return '';
+      const usageByCommand = {
+        '/clear': '/clear',
+        '/clear_public': '/clear_public',
+        '/dvd': '/dvd',
+        '/exit': '/exit',
+        '/help': '/help',
+        '/nickname': [
+          '/nickname [name]',
+          '/nickname reset',
+          '/nickname color',
+          '/nickname color [color name, hex code, rgb(), or rgba()]',
+          '/nickname color reset'
+        ].join('\n')
+      };
+      return usageByCommand[commandName] || command.usage || command.value || command.name;
+    }
+
+    function showCommandUsage(commandName) {
+      const command = commandByName.get(commandName);
+      if (!command) {
+        addSystemMessage(`${commandName} is not a known command`, { error: true });
+        return true;
+      }
+      const usage = getCommandUsage(commandName);
+      const desc = command.desc ? `\n${command.desc}` : '';
+      addMessage('system', `<strong>${escapeHtml(commandName)} usage</strong><br><pre>${escapeHtml(usage)}</pre>${escapeHtml(desc).replace(/\n/g, '<br>')}`);
+      return true;
+    }
+
     function clearLocalChatCommand() {
       Array.from(messages.children).forEach((child) => {
         if (child.dataset.liveChatMessage !== 'true') child.remove();
       });
       addSystemMessage('Local chat display cleared. Public chat history remains online.');
+      return true;
+    }
+
+    function notifyParentDvdState() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'chatSandboxDvdState',
+          active: !!dvdEnabled
+        }, '*');
+      }
+    }
+
+    function positionDvdInstance(instance, force = false) {
+      if (!instance || !instance.el || !dvdOverlay) return;
+      const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0, 1);
+      const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, 1);
+      const logoRect = instance.el.getBoundingClientRect();
+      const logoWidth = Math.max(logoRect.width || instance.el.offsetWidth || 180, 1);
+      const logoHeight = Math.max(logoRect.height || instance.el.offsetHeight || Math.round(logoWidth * 0.45), 1);
+      const maxX = Math.max(0, viewportWidth - logoWidth);
+      const maxY = Math.max(0, viewportHeight - logoHeight);
+
+      instance.x = Math.min(Math.max(instance.x, 0), maxX);
+      instance.y = Math.min(Math.max(instance.y, 0), maxY);
+      if (force) instance.initialized = true;
+
+      instance.el.style.transform = `translate3d(${instance.x}px, ${instance.y}px, 0)`;
+      instance.el.style.filter = `hue-rotate(${instance.hue}deg) drop-shadow(0 0 10px rgba(255, 255, 255, 0.28))`;
+    }
+
+    function positionAllDvdInstances(force = false) {
+      dvdInstances.forEach((instance) => positionDvdInstance(instance, force));
+    }
+
+    function stepDvdAnimation(now) {
+      if (!dvdEnabled || !dvdOverlay || !dvdInstances.length) {
+        dvdAnimationFrameId = null;
+        return;
+      }
+
+      if (!dvdLastTime) dvdLastTime = now;
+      const deltaMs = Math.min(32, Math.max(0, now - dvdLastTime));
+      dvdLastTime = now;
+
+      const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0, 1);
+      const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, 1);
+
+      dvdInstances.forEach((instance) => {
+        const logoRect = instance.el.getBoundingClientRect();
+        const logoWidth = Math.max(logoRect.width || instance.el.offsetWidth || 180, 1);
+        const logoHeight = Math.max(logoRect.height || instance.el.offsetHeight || Math.round(logoWidth * 0.45), 1);
+        const maxX = Math.max(0, viewportWidth - logoWidth);
+        const maxY = Math.max(0, viewportHeight - logoHeight);
+
+        instance.x += instance.vx * deltaMs;
+        instance.y += instance.vy * deltaMs;
+
+        if (instance.x <= 0) {
+          instance.x = 0;
+          instance.vx = Math.abs(instance.vx);
+        } else if (instance.x >= maxX) {
+          instance.x = maxX;
+          instance.vx = -Math.abs(instance.vx);
+        }
+
+        if (instance.y <= 0) {
+          instance.y = 0;
+          instance.vy = Math.abs(instance.vy);
+        } else if (instance.y >= maxY) {
+          instance.y = maxY;
+          instance.vy = -Math.abs(instance.vy);
+        }
+
+        instance.hue = (instance.hue + ((dvdHueShiftSpeedDegPerSecond * deltaMs) / 1000)) % 360;
+        positionDvdInstance(instance);
+      });
+
+      dvdAnimationFrameId = requestAnimationFrame(stepDvdAnimation);
+    }
+
+    function startDvdAnimation() {
+      if (!dvdOverlay || !dvdInstances.length) return false;
+      dvdEnabled = true;
+      dvdOverlay.classList.add('active');
+      dvdLastTime = 0;
+      positionAllDvdInstances(true);
+      if (dvdAnimationFrameId === null) {
+        dvdAnimationFrameId = requestAnimationFrame(stepDvdAnimation);
+      }
+      notifyParentDvdState();
+      return true;
+    }
+
+    function createDvdInstance() {
+      if (!dvdOverlay || dvdInstances.length >= dvdNormalMaxInstances) return null;
+
+      const index = dvdInstances.length;
+      const img = document.createElement('img');
+      img.className = 'dvdLogo';
+      img.alt = 'DVD logo';
+      img.referrerPolicy = 'no-referrer';
+      img.crossOrigin = 'anonymous';
+      img.dataset.dvdId = `dvd-${++dvdLogoCounter}`;
+
+      const instance = {
+        id: img.dataset.dvdId,
+        el: img,
+        x: 24 + ((index * 37) % 320),
+        y: 24 + ((index * 29) % 220),
+        vx: (index % 2 === 0 ? 1 : -1) * (0.065 + (index * 0.009)),
+        vy: (index % 3 === 0 ? -1 : 1) * (0.055 + (index * 0.008)),
+        hue: (index * 36) % 360
+      };
+
+      img.src = dvdDefaultSource;
+      img.onload = () => positionDvdInstance(instance, true);
+      dvdInstances.push(instance);
+      dvdOverlay.appendChild(img);
+      positionDvdInstance(instance, true);
+      return instance;
+    }
+
+    function spawnDvdInstance() {
+      if (dvdInstances.length >= dvdNormalMaxInstances) {
+        if (!dvdEnabled && dvdInstances.length) startDvdAnimation();
+        return false;
+      }
+      const instance = createDvdInstance();
+      if (!instance) return false;
+      startDvdAnimation();
       return true;
     }
 
@@ -405,7 +971,7 @@
 
     function parsePublicChatPayload(body) {
       const raw = String(body || '');
-      if (!raw.startsWith('{')) return { type: 'text', text: raw };
+      if (!raw.startsWith('{')) return { type: 'text', text: raw, nicknameColor: '' };
       try {
         const parsed = JSON.parse(raw);
         if (parsed && parsed.type === PUBLIC_CHAT_IMAGE_PAYLOAD_TYPE && typeof parsed.src === 'string') {
@@ -413,21 +979,29 @@
             type: 'image',
             src: parsed.src,
             alt: typeof parsed.name === 'string' ? parsed.name : 'pasted image',
-            caption: typeof parsed.caption === 'string' ? parsed.caption : ''
+            caption: typeof parsed.caption === 'string' ? parsed.caption : '',
+            nicknameColor: normalizeNicknameColor(parsed.nicknameColor || '')
+          };
+        }
+        if (parsed && parsed.type === 'theinternetisdead.publicChatText.v1') {
+          return {
+            type: 'text',
+            text: typeof parsed.text === 'string' ? parsed.text : raw,
+            nicknameColor: normalizeNicknameColor(parsed.nicknameColor || '')
           };
         }
       } catch (error) {
       }
-      return { type: 'text', text: raw };
+      return { type: 'text', text: raw, nicknameColor: '' };
     }
 
     function renderPublicChatBody(body) {
       const payload = parsePublicChatPayload(body);
-      if (payload.type !== 'image') return linkifyText(payload.text);
+      if (payload.type !== 'image') return renderMarkdownText(payload.text);
       if (!/^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(payload.src)) {
         return escapeHtml('[unsupported image]');
       }
-      const captionHtml = payload.caption ? `<div>${linkifyText(payload.caption)}</div>` : '';
+      const captionHtml = payload.caption ? `<div>${renderMarkdownText(payload.caption)}</div>` : '';
       return `${captionHtml}<img class="publicChatImage" src="${escapeAttribute(payload.src)}" alt="${escapeAttribute(payload.alt)}" loading="lazy" decoding="async" />`;
     }
 
@@ -441,9 +1015,15 @@
       }
       const timestamp = escapeHtml(formatPublicMessageTimestamp(message.created_at));
       const timestampHtml = timestamp ? `<span class="messageTimestamp">${timestamp}</span>` : '';
-      const nickname = escapeHtml(message.nickname || 'Anonymous');
+      const rawNickname = message.nickname || 'Anonymous';
+      const nickname = escapeHtml(rawNickname);
+      const payload = parsePublicChatPayload(message.body || '');
+      const nicknameColor = normalizeNicknameColor(payload.nicknameColor || '');
+      const reservedNickname = isReservedNickname(rawNickname);
+      const nicknameClass = reservedNickname ? ' class="reservedNickname"' : '';
+      const nicknameStyle = !reservedNickname && nicknameColor ? ` style="color:${escapeAttribute(nicknameColor)}"` : '';
       const body = renderPublicChatBody(message.body || '');
-      const line = addMessage('public', `${timestampHtml}<strong>${nickname}:</strong> ${body}`, { publicMessage: true });
+      const line = addMessage('public', `${timestampHtml}<strong${nicknameClass}${nicknameStyle}>${nickname}:</strong> ${body}`, { publicMessage: true });
       line.dataset.publicMessageKey = key;
       trimRenderedPublicMessages();
     }
@@ -545,6 +1125,16 @@
       }
     }
 
+    function createPublicTextBody(text) {
+      const body = String(text || '');
+      if (!currentNicknameColor) return body;
+      return JSON.stringify({
+        type: 'theinternetisdead.publicChatText.v1',
+        text: body,
+        nicknameColor: currentNicknameColor
+      });
+    }
+
     async function insertPublicChatBody(body) {
       const nickname = normalizeNickname(currentNickname);
       currentNickname = nickname;
@@ -554,7 +1144,7 @@
           'Content-Type': 'application/json',
           Prefer: 'return=representation'
         },
-        body: JSON.stringify({ room: SUPABASE_CHAT_ROOM, nickname, body })
+        body: JSON.stringify({ room: SUPABASE_CHAT_ROOM, nickname, body: createPublicTextBody(body) })
       });
       const [message] = Array.isArray(rows) ? rows : [];
       if (message) addPublicChatMessage(message);
@@ -650,7 +1240,8 @@
           type: PUBLIC_CHAT_IMAGE_PAYLOAD_TYPE,
           name: file.name || 'pasted image',
           mime: 'image/jpeg',
-          src
+          src,
+          nicknameColor: currentNicknameColor
         });
         if (payload.length > PUBLIC_CHAT_IMAGE_MAX_BODY_CHARS + 512) {
           throw new Error('Image payload is too large.');
@@ -687,17 +1278,188 @@
       }
     }
 
+    async function verifyAdminPassword(password) {
+      try {
+        await supabaseRequest('/functions/v1/clear-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'verify_admin_password',
+            password: String(password || ''),
+            room: SUPABASE_CHAT_ROOM
+          })
+        });
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function setReservedNicknamePasswordMode(nickname) {
+      pendingReservedNickname = normalizeNickname(nickname);
+      previousChatInputPlaceholder = chatInput.getAttribute('placeholder') || previousChatInputPlaceholder;
+      chatInput.value = '';
+      chatInput.type = 'password';
+      chatInput.placeholder = 'Enter password:';
+      hideSuggestions();
+      if (pendingReservedNicknamePromptLine && pendingReservedNicknamePromptLine.isConnected) {
+        pendingReservedNicknamePromptLine.textContent = 'Reserved nickname. Enter password:';
+      } else {
+        pendingReservedNicknamePromptLine = addSystemMessage('Reserved nickname. Enter password:');
+      }
+      chatInput.focus();
+    }
+
+    function clearReservedNicknamePasswordMode() {
+      pendingReservedNickname = '';
+      chatInput.type = 'text';
+      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat or / for commands...';
+      chatInput.value = '';
+    }
+
+    function removeReservedNicknamePromptLine() {
+      if (pendingReservedNicknamePromptLine && pendingReservedNicknamePromptLine.isConnected) {
+        pendingReservedNicknamePromptLine.remove();
+      }
+      pendingReservedNicknamePromptLine = null;
+    }
+
+    async function handleReservedNicknamePassword(password) {
+      const nickname = pendingReservedNickname;
+      if (!nickname) return false;
+      const ok = await verifyAdminPassword(password);
+      if (!ok) {
+        clearReservedNicknamePasswordMode();
+        addSystemMessage('Incorrect password. Nickname unchanged.', { error: true });
+        return true;
+      }
+      currentNickname = normalizeNickname(nickname);
+      saveNickname(currentNickname);
+      clearReservedNicknamePasswordMode();
+      removeReservedNicknamePromptLine();
+      addCommandExecutionMessage('/nickname', {
+        message: formatCommandExecutionMessage('/nickname', 'executed', currentNickname)
+      });
+      return true;
+    }
+
+    function setClearPublicPasswordMode() {
+      pendingClearPublicPassword = true;
+      previousChatInputPlaceholder = chatInput.getAttribute('placeholder') || previousChatInputPlaceholder;
+      chatInput.value = '';
+      chatInput.type = 'password';
+      chatInput.placeholder = 'Enter password:';
+      hideSuggestions();
+      if (pendingClearPublicPromptLine && pendingClearPublicPromptLine.isConnected) {
+        pendingClearPublicPromptLine.textContent = 'Enter password:';
+      } else {
+        pendingClearPublicPromptLine = addSystemMessage('Enter password:');
+      }
+      chatInput.focus();
+    }
+
+    function clearClearPublicPasswordMode() {
+      pendingClearPublicPassword = false;
+      chatInput.type = 'text';
+      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat or / for commands...';
+      chatInput.value = '';
+    }
+
+    function removeClearPublicPromptLine() {
+      if (pendingClearPublicPromptLine && pendingClearPublicPromptLine.isConnected) {
+        pendingClearPublicPromptLine.remove();
+      }
+      pendingClearPublicPromptLine = null;
+    }
+
+    async function handleClearPublicPassword(password) {
+      const ok = await clearPublicChatHistory(password);
+      clearClearPublicPasswordMode();
+      if (ok) removeClearPublicPromptLine();
+      return true;
+    }
+
+    function setNicknameColorPromptMode() {
+      pendingNicknameColor = true;
+      previousChatInputPlaceholder = chatInput.getAttribute('placeholder') || previousChatInputPlaceholder;
+      chatInput.value = '';
+      chatInput.type = 'text';
+      chatInput.placeholder = 'Enter color:';
+      hideSuggestions();
+      const promptText = 'Type a color name, hex code, or rgba value.';
+      if (pendingNicknameColorPromptLine && pendingNicknameColorPromptLine.isConnected) {
+        pendingNicknameColorPromptLine.textContent = promptText;
+      } else {
+        pendingNicknameColorPromptLine = addSystemMessage(promptText);
+      }
+      chatInput.focus();
+    }
+
+    function clearNicknameColorPromptMode() {
+      pendingNicknameColor = false;
+      chatInput.type = 'text';
+      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat or / for commands...';
+      chatInput.value = '';
+    }
+
+    function removeNicknameColorPromptLine() {
+      if (pendingNicknameColorPromptLine && pendingNicknameColorPromptLine.isConnected) {
+        pendingNicknameColorPromptLine.remove();
+      }
+      pendingNicknameColorPromptLine = null;
+    }
+
+    function applyNicknameColor(value) {
+      const nextColor = normalizeNicknameColor(value);
+      if (!value || !nextColor) {
+        addSystemMessage('Usage: /nickname color [color name, hex code, or rgba value]');
+        return false;
+      }
+      currentNicknameColor = saveNicknameColor(nextColor);
+      addCommandExecutionMessage('/nickname', {
+        message: `/nickname color executed: ${currentNicknameColor}`
+      });
+      return true;
+    }
+
+    function handleNicknameColorInput(value) {
+      const applied = applyNicknameColor(value);
+      clearNicknameColorPromptMode();
+      if (applied) removeNicknameColorPromptLine();
+      return true;
+    }
+
     async function handleCommand(raw) {
       const trimmed = String(raw || '').trim();
       const [commandToken = ''] = trimmed.split(/\s+/);
       const command = commandToken.toLowerCase();
       const arg = trimmed.slice(commandToken.length).trim();
+      if (arg.toLowerCase() === '-help') {
+        return showCommandUsage(command);
+      }
 
       if (command === '/nickname') {
-        if (arg.toLowerCase() === 'reset') {
+        const lowerArg = arg.toLowerCase();
+        if (lowerArg === 'reset') {
           currentNickname = generateAnonymousNickname();
           saveNickname('');
-          addSystemMessage(`/nickname reset: ${currentNickname}`);
+          addCommandExecutionMessage('/nickname', {
+            message: `/nickname reset: ${currentNickname}`
+          });
+          return true;
+        }
+        if (lowerArg === 'color reset' || lowerArg === 'color clear') {
+          currentNicknameColor = saveNicknameColor('');
+          addCommandExecutionMessage('/nickname', { message: '/nickname color reset' });
+          return true;
+        }
+        if (lowerArg.startsWith('color')) {
+          const colorValue = arg.slice('color'.length).trim();
+          if (!colorValue) {
+            setNicknameColorPromptMode();
+            return true;
+          }
+          applyNicknameColor(colorValue);
           return true;
         }
         if (!arg) {
@@ -708,14 +1470,20 @@
           addSystemMessage('Nickname is too long. Keep it to 40 characters.', { error: true });
           return true;
         }
+        if (isReservedNickname(arg)) {
+          setReservedNicknamePasswordMode(arg);
+          return true;
+        }
         currentNickname = normalizeNickname(arg);
         saveNickname(currentNickname);
-        addSystemMessage(formatCommandExecutionMessage('/nickname', 'executed', currentNickname));
+        addCommandExecutionMessage('/nickname', {
+          message: formatCommandExecutionMessage('/nickname', 'executed', currentNickname)
+        });
         return true;
       }
 
       if (command === '/help') {
-        addSystemMessage(formatCommandExecutionMessage('/help'));
+        addCommandExecutionMessage('/help');
         addMessage('system', createHelpHtml());
         return true;
       }
@@ -726,16 +1494,34 @@
       }
 
       if (command === '/clear_public') {
+        if (!arg) {
+          setClearPublicPasswordMode();
+          return true;
+        }
         await clearPublicChatHistory(arg);
         return true;
       }
 
-      return false;
-    }
+      if (command === '/dvd') {
+        const nextAttempt = dvdCommandAttemptCount + 1;
+        dvdCommandAttemptCount = nextAttempt;
+        const spawned = spawnDvdInstance();
+        const countLabel = `(${Math.min(dvdInstances.length, dvdNormalMaxInstances)}/${dvdNormalMaxInstances}${spawned ? '' : ' MAX'})`;
+        addCommandExecutionMessage('/dvd', { detail: countLabel });
+        return true;
+      }
 
-    function isSensitiveClearCommand(raw) {
-      const trimmed = String(raw || '').trim().toLowerCase();
-      return trimmed.startsWith('/clear_public') && !!trimmed.slice('/clear_public'.length).trim();
+      if (command === '/exit') {
+        addCommandExecutionMessage('/exit');
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'pageExit' }, '*');
+        } else {
+          renderFatalExitScreen();
+        }
+        return true;
+      }
+
+      return false;
     }
 
     async function submitInput() {
@@ -744,8 +1530,19 @@
       if (!trimmed) return;
       chatInput.value = '';
       hideSuggestions();
+      if (pendingReservedNickname) {
+        await handleReservedNicknamePassword(trimmed);
+        return;
+      }
+      if (pendingClearPublicPassword) {
+        await handleClearPublicPassword(trimmed);
+        return;
+      }
+      if (pendingNicknameColor) {
+        handleNicknameColorInput(trimmed);
+        return;
+      }
       if (trimmed.startsWith('/')) {
-        if (!isSensitiveClearCommand(trimmed)) addUserEcho(trimmed);
         const handled = await handleCommand(trimmed);
         if (!handled) addSystemMessage(`${trimmed.split(/\s+/)[0]} is not a known command`, { error: true });
         return;
@@ -810,6 +1607,9 @@
 
     function setOpen(open, focus = true) {
       document.body.classList.toggle('chat-open', !!open);
+      if (!open && pendingReservedNickname) clearReservedNicknamePasswordMode();
+      if (!open && pendingClearPublicPassword) clearClearPublicPasswordMode();
+      if (!open && pendingNicknameColor) clearNicknameColorPromptMode();
       notifyState();
       if (open && focus) requestAnimationFrame(() => chatInput.focus());
     }
@@ -836,6 +1636,10 @@
 
     chatInput.addEventListener('input', renderSuggestions);
 
+    chatCloseButton.addEventListener('click', () => {
+      setOpen(false, false);
+    });
+
     chatInput.addEventListener('paste', (event) => {
       const items = Array.from(event.clipboardData && event.clipboardData.items ? event.clipboardData.items : []);
       const imageItem = items.find((item) => item && item.kind === 'file' && String(item.type || '').startsWith('image/'));
@@ -854,6 +1658,9 @@
       }
       if (event.key === 'Escape') {
         event.preventDefault();
+        if (pendingReservedNickname) clearReservedNicknamePasswordMode();
+        if (pendingClearPublicPassword) clearClearPublicPasswordMode();
+        if (pendingNicknameColor) clearNicknameColorPromptMode();
         setOpen(false, false);
       }
     });
@@ -916,6 +1723,7 @@
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) loadRecentPublicMessages({ incremental: true });
     });
+    window.addEventListener('resize', () => positionAllDvdInstances(true));
     notifyState();
   </script>
 </body>
