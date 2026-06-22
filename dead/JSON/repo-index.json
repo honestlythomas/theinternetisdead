@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-22T06:07:31.208Z",
+  "generatedAt": "2026-06-22T06:08:13.197Z",
   "folders": [
     "/",
     "/buy/",
@@ -103,7 +103,7 @@
       "href": "/404.html",
       "name": "404.html",
       "parent": ".",
-      "size": 9570
+      "size": 9236
     },
     {
       "type": "file",
@@ -111,7 +111,7 @@
       "href": "/about.html",
       "name": "about.html",
       "parent": ".",
-      "size": 10173
+      "size": 9863
     },
     {
       "type": "directory",
@@ -126,7 +126,7 @@
       "href": "/buy/index.html",
       "name": "index.html",
       "parent": "/buy",
-      "size": 202519
+      "size": 201996
     },
     {
       "type": "file",
@@ -134,7 +134,7 @@
       "href": "/chat.html",
       "name": "chat.html",
       "parent": ".",
-      "size": 67763
+      "size": 65922
     },
     {
       "type": "file",
@@ -368,7 +368,7 @@
       "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/content-customizer.js",
       "name": "content-customizer.js",
       "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
-      "size": 96016
+      "size": 93593
     },
     {
       "type": "file",
@@ -376,7 +376,7 @@
       "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/content-reader.js",
       "name": "content-reader.js",
       "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
-      "size": 19096
+      "size": 18512
     },
     {
       "type": "file",
@@ -543,7 +543,7 @@
       "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/manifest.json",
       "name": "manifest.json",
       "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
-      "size": 1717
+      "size": 1650
     },
     {
       "type": "file",
@@ -551,7 +551,7 @@
       "href": "/dead/downloads/extensions/theinternetisdead-extension-suite/popup.css",
       "name": "popup.css",
       "parent": "/dead/downloads/extensions/theinternetisdead-extension-suite",
-      "size": 18712
+      "size": 17700
     },
     {
       "type": "file",
@@ -752,7 +752,7 @@
       "href": "/dead/experiments/camera-experiment/index.html",
       "name": "index.html",
       "parent": "/dead/experiments/camera-experiment",
-      "size": 61889
+      "size": 59913
     },
     {
       "type": "directory",
@@ -869,7 +869,7 @@
       "href": "/dead/experiments/chat-sandbox/index.html",
       "name": "index.html",
       "parent": "/dead/experiments/chat-sandbox",
-      "size": 289718
+      "size": 281671
     },
     {
       "type": "file",
@@ -908,7 +908,7 @@
       "href": "/dead/experiments/index.html",
       "name": "index.html",
       "parent": "/dead/experiments",
-      "size": 8043
+      "size": 7709
     },
     {
       "type": "directory",
@@ -1226,7 +1226,7 @@
       "href": "/dead/experiments/thumbnail-grid/index.html",
       "name": "index.html",
       "parent": "/dead/experiments/thumbnail-grid",
-      "size": 57120
+      "size": 55346
     },
     {
       "type": "directory",
@@ -1278,7 +1278,7 @@
       "href": "/dead/games/index.html",
       "name": "index.html",
       "parent": "/dead/games",
-      "size": 9034
+      "size": 8646
     },
     {
       "type": "file",
@@ -2174,7 +2174,7 @@
       "href": "/dead/games/shooter-game/assets/levels/shooter-game-level1.html",
       "name": "shooter-game-level1.html",
       "parent": "/dead/games/shooter-game/assets/levels",
-      "size": 289454
+      "size": 281683
     },
     {
       "type": "file",
@@ -2182,7 +2182,7 @@
       "href": "/dead/games/shooter-game/assets/levels/shooter-game-level2.html",
       "name": "shooter-game-level2.html",
       "parent": "/dead/games/shooter-game/assets/levels",
-      "size": 67688
+      "size": 65721
     },
     {
       "type": "file",
@@ -2349,7 +2349,7 @@
       "href": "/dead/games/shooter-game/assets/scripts/shooter-game-chat.js",
       "name": "shooter-game-chat.js",
       "parent": "/dead/games/shooter-game/assets/scripts",
-      "size": 61748
+      "size": 60346
     },
     {
       "type": "file",
@@ -2365,7 +2365,7 @@
       "href": "/dead/games/shooter-game/index.html",
       "name": "index.html",
       "parent": "/dead/games/shooter-game",
-      "size": 8198
+      "size": 7948
     },
     {
       "type": "file",
@@ -2670,7 +2670,7 @@
       "href": "/dead/images/index.html",
       "name": "index.html",
       "parent": "/dead/images",
-      "size": 3021
+      "size": 2904
     },
     {
       "type": "directory",
@@ -3643,7 +3643,7 @@
       "href": "/dead/images/tektite-tv-oldschool-logos/index.html",
       "name": "index.html",
       "parent": "/dead/images/tektite-tv-oldschool-logos",
-      "size": 10324
+      "size": 10139
     },
     {
       "type": "directory",
@@ -3666,7 +3666,7 @@
       "href": "/dead/JSON/feed-videos.json",
       "name": "feed-videos.json",
       "parent": "/dead/JSON",
-      "size": 3128544
+      "size": 3029217
     },
     {
       "type": "file",
@@ -3690,7 +3690,7 @@
       "href": "/dead/JSON/link-thumbnails.json",
       "name": "link-thumbnails.json",
       "parent": "/dead/JSON",
-      "size": 29958
+      "size": 29250
     },
     {
       "type": "file",
@@ -3706,7 +3706,7 @@
       "href": "/dead/JSON/message-list.json",
       "name": "message-list.json",
       "parent": "/dead/JSON",
-      "size": 2832
+      "size": 2747
     },
     {
       "type": "file",
@@ -3722,7 +3722,7 @@
       "href": "/dead/JSON/readmes.json",
       "name": "readmes.json",
       "parent": "/dead/JSON",
-      "size": 1826
+      "size": 1782
     },
     {
       "type": "file",
@@ -3730,7 +3730,7 @@
       "href": "/dead/JSON/repo-index.json",
       "name": "repo-index.json",
       "parent": "/dead/JSON",
-      "size": 187167
+      "size": 182049
     },
     {
       "type": "file",
@@ -3877,7 +3877,7 @@
       "href": "/dead/messages/youtube-comments/build-youtube-comments-archive.js",
       "name": "build-youtube-comments-archive.js",
       "parent": "/dead/messages/youtube-comments",
-      "size": 27014
+      "size": 25987
     },
     {
       "type": "file",
@@ -3885,7 +3885,7 @@
       "href": "/dead/messages/youtube-comments/comments.csv",
       "name": "comments.csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 64629
+      "size": 64423
     },
     {
       "type": "file",
@@ -3893,7 +3893,7 @@
       "href": "/dead/messages/youtube-comments/comments(1).csv",
       "name": "comments(1).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 52868
+      "size": 52662
     },
     {
       "type": "file",
@@ -3901,7 +3901,7 @@
       "href": "/dead/messages/youtube-comments/comments(10).csv",
       "name": "comments(10).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 44079
+      "size": 43873
     },
     {
       "type": "file",
@@ -3909,7 +3909,7 @@
       "href": "/dead/messages/youtube-comments/comments(11).csv",
       "name": "comments(11).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 41539
+      "size": 41333
     },
     {
       "type": "file",
@@ -3917,7 +3917,7 @@
       "href": "/dead/messages/youtube-comments/comments(12).csv",
       "name": "comments(12).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 46808
+      "size": 46602
     },
     {
       "type": "file",
@@ -3925,7 +3925,7 @@
       "href": "/dead/messages/youtube-comments/comments(13).csv",
       "name": "comments(13).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 52797
+      "size": 52591
     },
     {
       "type": "file",
@@ -3933,7 +3933,7 @@
       "href": "/dead/messages/youtube-comments/comments(14).csv",
       "name": "comments(14).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 47160
+      "size": 46954
     },
     {
       "type": "file",
@@ -3941,7 +3941,7 @@
       "href": "/dead/messages/youtube-comments/comments(15).csv",
       "name": "comments(15).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 44027
+      "size": 43821
     },
     {
       "type": "file",
@@ -3949,7 +3949,7 @@
       "href": "/dead/messages/youtube-comments/comments(16).csv",
       "name": "comments(16).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 33832
+      "size": 33626
     },
     {
       "type": "file",
@@ -3957,7 +3957,7 @@
       "href": "/dead/messages/youtube-comments/comments(17).csv",
       "name": "comments(17).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 34894
+      "size": 34688
     },
     {
       "type": "file",
@@ -3965,7 +3965,7 @@
       "href": "/dead/messages/youtube-comments/comments(18).csv",
       "name": "comments(18).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 36832
+      "size": 36626
     },
     {
       "type": "file",
@@ -3973,7 +3973,7 @@
       "href": "/dead/messages/youtube-comments/comments(19).csv",
       "name": "comments(19).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 34731
+      "size": 34525
     },
     {
       "type": "file",
@@ -3981,7 +3981,7 @@
       "href": "/dead/messages/youtube-comments/comments(2).csv",
       "name": "comments(2).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 40322
+      "size": 40116
     },
     {
       "type": "file",
@@ -3989,7 +3989,7 @@
       "href": "/dead/messages/youtube-comments/comments(20).csv",
       "name": "comments(20).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 36014
+      "size": 35808
     },
     {
       "type": "file",
@@ -3997,7 +3997,7 @@
       "href": "/dead/messages/youtube-comments/comments(21).csv",
       "name": "comments(21).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 5519
+      "size": 5481
     },
     {
       "type": "file",
@@ -4005,7 +4005,7 @@
       "href": "/dead/messages/youtube-comments/comments(3).csv",
       "name": "comments(3).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 45424
+      "size": 45218
     },
     {
       "type": "file",
@@ -4013,7 +4013,7 @@
       "href": "/dead/messages/youtube-comments/comments(4).csv",
       "name": "comments(4).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 40161
+      "size": 39955
     },
     {
       "type": "file",
@@ -4021,7 +4021,7 @@
       "href": "/dead/messages/youtube-comments/comments(5).csv",
       "name": "comments(5).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 40420
+      "size": 40214
     },
     {
       "type": "file",
@@ -4029,7 +4029,7 @@
       "href": "/dead/messages/youtube-comments/comments(6).csv",
       "name": "comments(6).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 51115
+      "size": 50909
     },
     {
       "type": "file",
@@ -4037,7 +4037,7 @@
       "href": "/dead/messages/youtube-comments/comments(7).csv",
       "name": "comments(7).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 50936
+      "size": 50730
     },
     {
       "type": "file",
@@ -4045,7 +4045,7 @@
       "href": "/dead/messages/youtube-comments/comments(8).csv",
       "name": "comments(8).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 49474
+      "size": 49268
     },
     {
       "type": "file",
@@ -4053,7 +4053,7 @@
       "href": "/dead/messages/youtube-comments/comments(9).csv",
       "name": "comments(9).csv",
       "parent": "/dead/messages/youtube-comments",
-      "size": 48233
+      "size": 48027
     },
     {
       "type": "file",
@@ -4061,7 +4061,7 @@
       "href": "/dead/messages/youtube-comments/index.html",
       "name": "index.html",
       "parent": "/dead/messages/youtube-comments",
-      "size": 10430127
+      "size": 10262917
     },
     {
       "type": "file",
@@ -4340,7 +4340,7 @@
       "href": "/dead/readmes/dead-stuff-README.md",
       "name": "dead-stuff-README.md",
       "parent": "/dead/readmes",
-      "size": 270
+      "size": 256
     },
     {
       "type": "file",
@@ -4396,7 +4396,7 @@
       "href": "/dead/readmes/github-workflows-README.md",
       "name": "github-workflows-README.md",
       "parent": "/dead/readmes",
-      "size": 652
+      "size": 627
     },
     {
       "type": "file",
@@ -4428,7 +4428,7 @@
       "href": "/dead/readmes/supabase-functions-clear-chat-README.md",
       "name": "supabase-functions-clear-chat-README.md",
       "parent": "/dead/readmes",
-      "size": 1278
+      "size": 1247
     },
     {
       "type": "file",
@@ -4436,7 +4436,7 @@
       "href": "/dead/readmes/workers-ghost-counter-README.md",
       "name": "workers-ghost-counter-README.md",
       "parent": "/dead/readmes",
-      "size": 849
+      "size": 822
     },
     {
       "type": "directory",
@@ -4474,7 +4474,7 @@
       "href": "/dead/scripts/build/build-repo-index.js",
       "name": "build-repo-index.js",
       "parent": "/dead/scripts/build",
-      "size": 3644
+      "size": 3506
     },
     {
       "type": "file",
@@ -4513,7 +4513,7 @@
       "href": "/dead/scripts/chat/main-chat-sandbox.js",
       "name": "main-chat-sandbox.js",
       "parent": "/dead/scripts/chat",
-      "size": 15395
+      "size": 15051
     },
     {
       "type": "directory",
@@ -4560,7 +4560,7 @@
       "href": "/dead/site-map.html",
       "name": "site-map.html",
       "parent": "/dead",
-      "size": 16753
+      "size": 16278
     },
     {
       "type": "directory",
@@ -4575,7 +4575,7 @@
       "href": "/dead/stuff/README.md",
       "name": "README.md",
       "parent": "/dead/stuff",
-      "size": 270
+      "size": 256
     },
     {
       "type": "directory",
@@ -4636,7 +4636,7 @@
       "href": "/dead/stuff/stuff-for-index/feeds/gaming-grid/gaming-grid.html",
       "name": "gaming-grid.html",
       "parent": "/dead/stuff/stuff-for-index/feeds/gaming-grid",
-      "size": 39860
+      "size": 38586
     },
     {
       "type": "file",
@@ -4652,7 +4652,7 @@
       "href": "/dead/stuff/stuff-for-index/feeds/index.html",
       "name": "index.html",
       "parent": "/dead/stuff/stuff-for-index/feeds",
-      "size": 5221
+      "size": 5037
     },
     {
       "type": "file",
@@ -4675,7 +4675,7 @@
       "href": "/dead/stuff/stuff-for-index/thumbnail-grid/index.html",
       "name": "index.html",
       "parent": "/dead/stuff/stuff-for-index/thumbnail-grid",
-      "size": 85379
+      "size": 83408
     },
     {
       "type": "directory",
@@ -4781,7 +4781,7 @@
       "href": "/dead/tools/karaoke-machine/index.html",
       "name": "index.html",
       "parent": "/dead/tools/karaoke-machine",
-      "size": 39915
+      "size": 38642
     },
     {
       "type": "directory",
@@ -4796,7 +4796,7 @@
       "href": "/dead/tools/multimedia-editor/index.html",
       "name": "index.html",
       "parent": "/dead/tools/multimedia-editor",
-      "size": 17056
+      "size": 16284
     },
     {
       "type": "file",
@@ -4819,7 +4819,7 @@
       "href": "/dead/tools/music-crunchifier/index.html",
       "name": "index.html",
       "parent": "/dead/tools/music-crunchifier",
-      "size": 18768
+      "size": 18149
     },
     {
       "type": "directory",
@@ -4927,7 +4927,7 @@
       "href": "/dead/videos/index.html",
       "name": "index.html",
       "parent": "/dead/videos",
-      "size": 1414
+      "size": 1363
     },
     {
       "type": "file",
@@ -4943,7 +4943,7 @@
       "href": "/homepage.html",
       "name": "homepage.html",
       "parent": ".",
-      "size": 39784
+      "size": 39098
     },
     {
       "type": "file",
@@ -4951,7 +4951,7 @@
       "href": "/index.html",
       "name": "index.html",
       "parent": ".",
-      "size": 40831
+      "size": 39762
     },
     {
       "type": "file",
@@ -4959,7 +4959,7 @@
       "href": "/nav.html",
       "name": "nav.html",
       "parent": ".",
-      "size": 90148
+      "size": 87287
     },
     {
       "type": "file",
@@ -4967,7 +4967,7 @@
       "href": "/other.html",
       "name": "other.html",
       "parent": ".",
-      "size": 22625
+      "size": 22099
     },
     {
       "type": "file",
@@ -4991,7 +4991,7 @@
       "href": "/privacy.html",
       "name": "privacy.html",
       "parent": ".",
-      "size": 11962
+      "size": 11672
     },
     {
       "type": "file",
@@ -5015,7 +5015,7 @@
       "href": "/sitemap.xml",
       "name": "sitemap.xml",
       "parent": ".",
-      "size": 21471
+      "size": 20844
     },
     {
       "type": "directory",
@@ -5044,7 +5044,7 @@
       "href": "/supabase/functions/clear-chat/index.ts",
       "name": "index.ts",
       "parent": "/supabase/functions/clear-chat",
-      "size": 6680
+      "size": 6474
     },
     {
       "type": "file",
@@ -5052,7 +5052,7 @@
       "href": "/supabase/functions/clear-chat/README.md",
       "name": "README.md",
       "parent": "/supabase/functions/clear-chat",
-      "size": 1278
+      "size": 1247
     },
     {
       "type": "directory",
@@ -5074,7 +5074,7 @@
       "href": "/workers/ghost-counter/package-lock.json",
       "name": "package-lock.json",
       "parent": "/workers/ghost-counter",
-      "size": 50656
+      "size": 49105
     },
     {
       "type": "file",
@@ -5082,7 +5082,7 @@
       "href": "/workers/ghost-counter/package.json",
       "name": "package.json",
       "parent": "/workers/ghost-counter",
-      "size": 228
+      "size": 216
     },
     {
       "type": "file",
@@ -5090,7 +5090,7 @@
       "href": "/workers/ghost-counter/README.md",
       "name": "README.md",
       "parent": "/workers/ghost-counter",
-      "size": 849
+      "size": 822
     },
     {
       "type": "directory",
@@ -5105,7 +5105,7 @@
       "href": "/workers/ghost-counter/src/worker.js",
       "name": "worker.js",
       "parent": "/workers/ghost-counter/src",
-      "size": 2405
+      "size": 2301
     },
     {
       "type": "file",
@@ -5113,7 +5113,7 @@
       "href": "/workers/ghost-counter/wrangler.toml",
       "name": "wrangler.toml",
       "parent": "/workers/ghost-counter",
-      "size": 250
+      "size": 239
     }
   ]
 }
