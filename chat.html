@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -173,6 +173,67 @@
       border: 1px solid rgba(255, 255, 255, 0.34);
       background: rgba(0, 0, 0, 0.35);
       object-fit: contain;
+      cursor: zoom-in;
+    }
+
+    .publicChatImage:hover,
+    .publicChatImage:focus-visible {
+      outline: 1px solid rgba(255, 255, 255, 0.62);
+      filter: brightness(1.08);
+    }
+
+    #chatLightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      box-sizing: border-box;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(81, 42, 103, 0.38), transparent 58%),
+        rgba(0, 0, 0, 0.84);
+      pointer-events: none;
+    }
+
+    #chatLightbox.active {
+      display: flex;
+      pointer-events: auto;
+    }
+
+    #chatLightboxImage {
+      display: block;
+      max-width: min(96vw, 1400px);
+      max-height: 90vh;
+      width: auto;
+      height: auto;
+      border: 1px solid rgba(0, 255, 102, 0.54);
+      background: rgba(0, 0, 0, 0.72);
+      box-shadow: 0 0 32px rgba(0, 255, 102, 0.18), 0 0 90px rgba(81, 42, 103, 0.34);
+      object-fit: contain;
+      cursor: zoom-out;
+    }
+
+    #chatLightboxClose {
+      position: fixed;
+      top: 14px;
+      right: 16px;
+      border: 1px solid rgba(255, 85, 119, 0.5);
+      background: rgba(0, 0, 0, 0.76);
+      color: #ff5577;
+      font: inherit;
+      line-height: 1;
+      padding: 7px 9px;
+      cursor: pointer;
+      text-shadow: 0 0 8px rgba(255, 85, 119, 0.38);
+    }
+
+    #chatLightboxClose:hover,
+    #chatLightboxClose:focus-visible {
+      outline: none;
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.62);
     }
 
     .messageTimestamp {
@@ -334,6 +395,10 @@
 <body>
   <div id="chatDimLayer" aria-hidden="true"></div>
   <div id="dvdOverlay" aria-hidden="true"></div>
+  <div id="chatLightbox" aria-hidden="true" role="dialog" aria-label="Expanded chat image">
+    <button id="chatLightboxClose" type="button" aria-label="Close expanded image" title="Close expanded image">❌</button>
+    <img id="chatLightboxImage" src="" alt="" />
+  </div>
   <main id="chatSurface" aria-live="polite">
     <section id="chatPanel">
       <div id="messages"></div>
@@ -386,6 +451,9 @@
     const chatCloseButton = document.getElementById('chatCloseButton');
     const suggestions = document.getElementById('suggestions');
     const dvdOverlay = document.getElementById('dvdOverlay');
+    const chatLightbox = document.getElementById('chatLightbox');
+    const chatLightboxImage = document.getElementById('chatLightboxImage');
+    const chatLightboxClose = document.getElementById('chatLightboxClose');
     let currentNickname = loadNickname();
     let currentNicknameColor = loadNicknameColor();
     let renderedPublicMessageKeys = new Set();
@@ -697,6 +765,55 @@
     function addSystemMessage(text, options = {}) {
       return addMessage('system', escapeHtml(text), options);
     }
+
+    function openChatImageLightbox(image) {
+      if (!image || !chatLightbox || !chatLightboxImage) return;
+      const src = image.currentSrc || image.src || '';
+      if (!src) return;
+      chatLightboxImage.src = src;
+      chatLightboxImage.alt = image.alt || 'Expanded chat image';
+      chatLightbox.classList.add('active');
+      chatLightbox.setAttribute('aria-hidden', 'false');
+      chatLightboxClose?.focus({ preventScroll: true });
+    }
+
+    function closeChatImageLightbox() {
+      if (!chatLightbox || !chatLightboxImage) return;
+      chatLightbox.classList.remove('active');
+      chatLightbox.setAttribute('aria-hidden', 'true');
+      chatLightboxImage.removeAttribute('src');
+      chatLightboxImage.alt = '';
+    }
+
+    messages.addEventListener('click', (event) => {
+      const image = event.target.closest?.('.publicChatImage');
+      if (!image) return;
+      event.preventDefault();
+      openChatImageLightbox(image);
+    });
+
+    messages.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      const image = event.target.closest?.('.publicChatImage');
+      if (!image) return;
+      event.preventDefault();
+      openChatImageLightbox(image);
+    });
+
+    chatLightbox?.addEventListener('click', (event) => {
+      if (event.target === chatLightbox || event.target === chatLightboxImage) {
+        closeChatImageLightbox();
+      }
+    });
+
+    chatLightboxClose?.addEventListener('click', closeChatImageLightbox);
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && chatLightbox?.classList.contains('active')) {
+        event.preventDefault();
+        closeChatImageLightbox();
+      }
+    });
 
     function formatCommandExecutionMessage(command, state = 'executed', nickname = currentNickname) {
       return `${command} ${state} by ${nickname}`;
@@ -1381,7 +1498,7 @@
         return escapeHtml('[unsupported image]');
       }
       const captionHtml = payload.caption ? `<div>${renderMarkdownText(payload.caption)}</div>` : '';
-      return `${captionHtml}<img class="publicChatImage" src="${escapeAttribute(payload.src)}" alt="${escapeAttribute(payload.alt)}" loading="lazy" decoding="async" />`;
+      return `${captionHtml}<img class="publicChatImage" src="${escapeAttribute(payload.src)}" alt="${escapeAttribute(payload.alt)}" loading="lazy" decoding="async" tabindex="0" title="Open larger image" />`;
     }
 
     function addPublicChatMessage(message) {

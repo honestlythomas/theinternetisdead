@@ -595,42 +595,67 @@
       text-align: center;
     }
 
-    .white-screen .column-title {
-      width: calc((100% - var(--homepage-column-gap)) / 2 - 27px);
-      min-width: min-content;
-      margin-inline: auto;
-      border-color: #00ff00;
-      color: #00ff00;
-    }
-
     .white-screen {
       position: relative;
-      display: flow-root;
+      display: block;
       min-width: 0;
       min-height: 0;
       height: 100%;
-      background: rgba(81, 42, 103, 0.5);
+      overflow: hidden;
+      background: #000;
     }
 
-    .daily-spiral-copy {
-      width: calc(100% - 32px);
-      margin: 12px 16px 16px;
-      padding: 12px 14px;
-      background: rgba(0, 0, 0, 0.82);
-      border: 2px solid #00ff00;
+    .recursive-window-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      border: 0;
+      background: #000;
+    }
+
+    .recursive-window-stopped {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 24px;
+      background: #000;
       color: #00ff00;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.45;
-      text-align: left;
+      font-size: clamp(16px, 2vw, 26px);
+      font-weight: 900;
+      line-height: 1.35;
+      text-align: center;
+      text-shadow: 0 0 10px #00ff00;
     }
 
-    .daily-spiral-copy p {
-      margin: 0 0 14px;
+    .mobile-home-tabs {
+      display: none;
     }
 
-    .daily-spiral-copy p:last-child {
-      margin-bottom: 0;
+    .mobile-home-tab {
+      appearance: none;
+      border: 2px solid #00ff00;
+      background: rgba(0, 0, 0, 0.88);
+      color: #00ff00;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 12px;
+      cursor: pointer;
+      text-shadow: 0 0 8px #00ff00;
+    }
+
+    .mobile-home-tab[aria-selected="true"] {
+      background: #00ff00;
+      color: #000;
+      box-shadow: 0 0 14px rgba(0, 255, 0, 0.55);
+      text-shadow: none;
     }
 
     @keyframes column-outline-rainbow {
@@ -643,39 +668,41 @@
         overflow: hidden;
       }
 
+      .mobile-home-tabs {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        width: 100%;
+        padding: 10px 12px 0;
+        background: transparent;
+      }
+
       .homepage-grid {
         display: block;
         grid-template-columns: none;
-        height: 100vh;
-        height: 100dvh;
+        height: calc(100vh - 54px);
+        height: calc(100dvh - 54px);
         width: 100vw;
         min-height: 0;
+        padding: 12px;
         overflow: hidden;
-        touch-action: pan-y;
       }
 
       .column-wrap {
-        display: none !important;
         width: 100%;
-        height: calc(100vh - (var(--homepage-column-gap) * 2));
-        height: calc(100dvh - (var(--homepage-column-gap) * 2));
-      }
-
-      .column-wrap.is-mobile-active {
-        display: block !important;
+        height: 100%;
       }
 
       .column-wrap[hidden] {
         display: none !important;
       }
 
-      .posts-column {
-        min-height: 0;
-      }
-
+      .posts-column,
       .white-screen {
         min-height: 0;
-        overflow: auto;
+        height: 100%;
       }
 
       .broadcast-carousel {
@@ -710,6 +737,11 @@
     aria-hidden="true"
   ></iframe>
 
+  <nav class="mobile-home-tabs" aria-label="Mobile homepage sections">
+    <button class="mobile-home-tab" type="button" data-home-column="0" aria-selected="true">Videos</button>
+    <button class="mobile-home-tab" type="button" data-home-column="1" aria-selected="false">Blog</button>
+  </nav>
+
   <main class="homepage-grid" aria-label="Homepage layout">
     <div class="column-wrap is-mobile-active">
       <section class="posts-column" aria-label="Homepage listings">
@@ -731,14 +763,7 @@
     </div>
 
     <div class="column-wrap">
-      <section class="white-screen" aria-label="The Daily Spiral">
-        <h1 class="column-title">The Daily Spiral🌀</h1>
-        <div class="daily-spiral-copy">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Voluptate ex velit nostrud ab dolor. Obcaecati tempor nemo incididunt beatae in aspernatur ducimus quaerat anim tempora ad praesentium. Incididunt sunt lorem excepturi veritatis nulla tempor ullamco at quas.</p>
-          <p>Dignissimos amet quia irure mollit ullamco. Aute minim cillum atque adipiscing fugit irure exercitation fugit duis enim nulla ab ipsam explicabo. Ex deleniti vitae sequi eius minim duis non atque architecto magnam dolorem incididunt cillum qui. Porro ea labore qui inventore sequi ratione qui lorem ut non odit accusamus tempora corrupti.</p>
-          <p>Obcaecati in numquam eius voluptas minim amet anim deleniti ullamco sed voluptatum provident cupidatat et. Odio occaecat illo ratione tempora fugit tempora explicabo ipsam id neque cillum reprehenderit. Sequi adipiscing esse fugit illo tempora laboris aliqua molestias nostrud dignissimos duis dicta.</p>
-        </div>
-      </section>
+      <section class="white-screen" id="recursive-window" aria-label="Recursive homepage preview"></section>
     </div>
   </main>
 
@@ -774,21 +799,59 @@
     let isThumbnailGridOpen = false;
     let openVideoId = '';
     let activeHomepageColumn = 0;
-    let homepageSwipeStartX = 0;
-    let homepageSwipeStartY = 0;
+    const homepageTabs = Array.from(document.querySelectorAll('.mobile-home-tab'));
+    const recursiveWindow = document.getElementById('recursive-window');
+    const recursivePreviewFlag = 'tiid-recursive-preview';
+
+    function isRecursivePreview() {
+      return new URLSearchParams(window.location.search).has(recursivePreviewFlag);
+    }
+
+    function setupRecursiveWindow() {
+      if (!recursiveWindow) return;
+
+      if (isRecursivePreview()) {
+        const stoppedMessage = document.createElement('p');
+        stoppedMessage.className = 'recursive-window-stopped';
+        stoppedMessage.textContent = 'Recursive preview stopped here. The mirror looked back, then politely stopped multiplying.';
+        recursiveWindow.replaceChildren(stoppedMessage);
+        return;
+      }
+
+      const frame = document.createElement('iframe');
+      frame.className = 'recursive-window-frame';
+      frame.src = 'https://theinternetisdead.org/?tiid-recursive-preview=1';
+      frame.title = 'Recursive preview of theinternetisdead.org';
+      frame.loading = 'lazy';
+      frame.referrerPolicy = 'no-referrer-when-downgrade';
+      recursiveWindow.replaceChildren(frame);
+    }
+
+    setupRecursiveWindow();
 
     function isMobileHomepageLayout() {
       return mobileLayoutQuery.matches || homepageGrid.getBoundingClientRect().width <= 760;
     }
 
+    function getWrappedHomepageColumnIndex(index) {
+      if (!homepageColumns.length) return 0;
+      return ((index % homepageColumns.length) + homepageColumns.length) % homepageColumns.length;
+    }
+
     function setActiveHomepageColumn(index) {
-      activeHomepageColumn = Math.max(0, Math.min(homepageColumns.length - 1, index));
+      activeHomepageColumn = getWrappedHomepageColumnIndex(index);
       const isMobile = isMobileHomepageLayout();
+
       homepageColumns.forEach((column, columnIndex) => {
         const isActive = columnIndex === activeHomepageColumn;
-        column.classList.toggle('is-mobile-active', isActive);
+        column.classList.toggle('is-mobile-active', isMobile && isActive);
         column.hidden = isMobile && !isActive;
         column.setAttribute('aria-hidden', isMobile && !isActive ? 'true' : 'false');
+      });
+
+      homepageTabs.forEach((tab, tabIndex) => {
+        const isActive = tabIndex === activeHomepageColumn;
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
       });
     }
 
@@ -802,32 +865,19 @@
         column.classList.remove('is-mobile-active');
         column.hidden = false;
         column.removeAttribute('aria-hidden');
+        column.style.removeProperty('--homepage-panel-x');
       });
     }
 
-    function handleHomepageSwipeEnd(endX, endY) {
-      if (!isMobileHomepageLayout()) return;
-      const deltaX = endX - homepageSwipeStartX;
-      const deltaY = endY - homepageSwipeStartY;
-      if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
-      setActiveHomepageColumn(activeHomepageColumn + (deltaX < 0 ? 1 : -1));
-    }
+    homepageTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        setActiveHomepageColumn(Number(tab.dataset.homeColumn || 0));
+      });
+    });
 
     syncHomepageColumnsForViewport();
 
     mobileLayoutQuery.addEventListener('change', syncHomepageColumnsForViewport);
-
-    homepageGrid.addEventListener('touchstart', (event) => {
-      if (!isMobileHomepageLayout() || event.touches.length !== 1) return;
-      homepageSwipeStartX = event.touches[0].clientX;
-      homepageSwipeStartY = event.touches[0].clientY;
-    }, { passive: true });
-
-    homepageGrid.addEventListener('touchend', (event) => {
-      if (!isMobileHomepageLayout() || event.changedTouches.length !== 1) return;
-      handleHomepageSwipeEnd(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
-    }, { passive: true });
-
     window.addEventListener('resize', syncHomepageColumnsForViewport);
 
     function formatUploadDate(value) {
