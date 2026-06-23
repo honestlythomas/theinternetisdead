@@ -192,15 +192,6 @@
       "status": "captured"
     },
     {
-      "slug": "dead-experiments-cec-remote",
-      "sourcePath": "dead/experiments/cec-remote/index.html",
-      "urlPath": "/dead/experiments/cec-remote/",
-      "thumbnail": "/dead/images/link-thumbnails/dead-experiments-cec-remote.jpg",
-      "url": "/dead/experiments/cec-remote/",
-      "bytes": 67885,
-      "status": "captured"
-    },
-    {
       "slug": "dead-experiments-chat-sandbox",
       "sourcePath": "dead/experiments/chat-sandbox/index.html",
       "urlPath": "/dead/experiments/chat-sandbox/",

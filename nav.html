@@ -1696,7 +1696,7 @@ html, body {
     if (/^\/(?:index|nav|chat)\.html$/i.test(pathname)) return false;
     if (/^\/dead\/(?:JSON|audio|images|messages|scripts)\//i.test(pathname)) return false;
     if (/\.(?:css|js|mjs|json|map|png|jpe?g|gif|webp|svg|ico|mp3|wav|ogg|pdf|zip|md|txt)$/i.test(pathname)) return false;
-    return /\/$/i.test(pathname) || /\.html$/i.test(pathname);
+    return /\.html$/i.test(pathname);
   }
 
   function getRandomPageCandidates() {
