@@ -595,9 +595,10 @@
       text-align: center;
     }
 
-    .white-screen {
+    .social-column {
       position: relative;
-      display: block;
+      display: grid;
+      place-items: stretch;
       min-width: 0;
       min-height: 0;
       height: 100%;
@@ -605,31 +606,43 @@
       background: #000;
     }
 
-    .recursive-window-frame {
-      display: block;
-      width: 100%;
-      height: 100%;
-      min-height: 100%;
-      border: 0;
-      background: #000;
+    .social-column .twitter-timeline {
+      display: grid !important;
+      place-items: center;
+      width: 100% !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      height: 100% !important;
+      min-height: 100% !important;
+      padding: 16px;
+      border: 0 !important;
+      background:
+        radial-gradient(circle at center, rgba(81, 42, 103, 0.35), transparent 62%),
+        #000;
+      color: #00ff00 !important;
+      font-size: 16px;
+      font-weight: 900;
+      text-align: center;
+      text-decoration: none;
     }
 
-    .recursive-window-stopped {
-      display: grid;
-      place-items: center;
-      width: 100%;
-      height: 100%;
-      min-height: 100vh;
-      min-height: 100dvh;
-      margin: 0;
-      padding: 24px;
-      background: #000;
-      color: #00ff00;
-      font-size: clamp(16px, 2vw, 26px);
-      font-weight: 900;
-      line-height: 1.35;
-      text-align: center;
-      text-shadow: 0 0 10px #00ff00;
+    .social-column .twitter-timeline:hover,
+    .social-column .twitter-timeline:focus-visible {
+      color: #ff00ff !important;
+      outline: 2px solid #00ff00;
+      outline-offset: -6px;
+    }
+
+    .social-column iframe[id^="twitter-widget-"],
+    .social-column iframe.twitter-timeline {
+      display: block !important;
+      width: 100% !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      height: 100% !important;
+      min-height: 100% !important;
+      border: 0 !important;
+      background: transparent !important;
     }
 
     .mobile-home-tabs {
@@ -700,7 +713,7 @@
       }
 
       .posts-column,
-      .white-screen {
+      .social-column {
         min-height: 0;
         height: 100%;
       }
@@ -739,7 +752,7 @@
 
   <nav class="mobile-home-tabs" aria-label="Mobile homepage sections">
     <button class="mobile-home-tab" type="button" data-home-column="0" aria-selected="true">Videos</button>
-    <button class="mobile-home-tab" type="button" data-home-column="1" aria-selected="false">Blog</button>
+    <button class="mobile-home-tab" type="button" data-home-column="1" aria-selected="false">Twitter</button>
   </nav>
 
   <main class="homepage-grid" aria-label="Homepage layout">
@@ -763,7 +776,10 @@
     </div>
 
     <div class="column-wrap">
-      <section class="white-screen" id="recursive-window" aria-label="Recursive homepage preview"></section>
+      <section class="social-column" aria-label="Posts by HONESTLYTHOMAS">
+        <a class="twitter-timeline" data-width="1080" data-height="1080" data-theme="dark" href="https://twitter.com/HONESTLYTHOMAS?ref_src=twsrc%5Etfw">Posts by HONESTLYTHOMAS</a>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+      </section>
     </div>
   </main>
 
@@ -800,35 +816,6 @@
     let openVideoId = '';
     let activeHomepageColumn = 0;
     const homepageTabs = Array.from(document.querySelectorAll('.mobile-home-tab'));
-    const recursiveWindow = document.getElementById('recursive-window');
-    const recursivePreviewFlag = 'tiid-recursive-preview';
-
-    function isRecursivePreview() {
-      return new URLSearchParams(window.location.search).has(recursivePreviewFlag);
-    }
-
-    function setupRecursiveWindow() {
-      if (!recursiveWindow) return;
-
-      if (isRecursivePreview()) {
-        const stoppedMessage = document.createElement('p');
-        stoppedMessage.className = 'recursive-window-stopped';
-        stoppedMessage.textContent = 'Recursive preview stopped here. The mirror looked back, then politely stopped multiplying.';
-        recursiveWindow.replaceChildren(stoppedMessage);
-        return;
-      }
-
-      const frame = document.createElement('iframe');
-      frame.className = 'recursive-window-frame';
-      frame.src = 'https://theinternetisdead.org/?tiid-recursive-preview=1';
-      frame.title = 'Recursive preview of theinternetisdead.org';
-      frame.loading = 'lazy';
-      frame.referrerPolicy = 'no-referrer-when-downgrade';
-      recursiveWindow.replaceChildren(frame);
-    }
-
-    setupRecursiveWindow();
-
     function isMobileHomepageLayout() {
       return mobileLayoutQuery.matches || homepageGrid.getBoundingClientRect().width <= 760;
     }
@@ -879,6 +866,16 @@
 
     mobileLayoutQuery.addEventListener('change', syncHomepageColumnsForViewport);
     window.addEventListener('resize', syncHomepageColumnsForViewport);
+
+    function hydrateTwitterTimeline() {
+      if (window.twttr && window.twttr.widgets && typeof window.twttr.widgets.load === 'function') {
+        window.twttr.widgets.load(document.querySelector('.social-column'));
+      }
+    }
+
+    window.addEventListener('load', hydrateTwitterTimeline);
+    window.addEventListener('pageshow', hydrateTwitterTimeline);
+    setTimeout(hydrateTwitterTimeline, 1200);
 
     function formatUploadDate(value) {
       const raw = String(value || '').trim();
