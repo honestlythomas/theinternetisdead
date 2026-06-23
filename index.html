@@ -696,6 +696,20 @@
       });
     };
 
+    window.__indexExecuteChatCommand = function executeIndexChatCommand(command, options = {}) {
+      const rawCommand = String(command || '').trim();
+      if (!rawCommand) return false;
+      chatSandboxVisible = true;
+      syncChatSandboxOverlayState();
+      postToChatSandbox({
+        type: 'chatSandboxExecuteCommand',
+        command: rawCommand,
+        openChat: options.openChat !== false,
+        focus: options.focus !== false
+      });
+      return true;
+    };
+
     function registerIndexChatCommands() {
       postToChatSandbox({
         type: 'pageChatRegister',

@@ -373,6 +373,8 @@
       { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a message below the welcome message', hidden: true },
       { name: '/random', value: '/random', execute: true, desc: 'load a random site page in the root iframe' },
       { name: '/rainbow', value: '/rainbow', execute: true, desc: 'toggle a hue-shifting color filter over the root page' },
+      { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the entire page' },
+      { name: '/search', value: '/search ', execute: false, desc: 'search visible text across indexed site HTML files' },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' }
     ];
 
@@ -403,6 +405,8 @@
     const dvdNormalMaxInstances = 10;
     const dvdHueShiftSpeedDegPerSecond = 45;
     const COMMAND_EXECUTION_MESSAGE_TTL_MS = 15000;
+    const SITE_SEARCH_MAX_RESULTS = 8;
+    const SITE_SEARCH_FETCH_CONCURRENCY = 8;
     const RESERVED_NICKNAMES = new Set([
       'honestly thomas',
       'tektite',
@@ -425,6 +429,10 @@
     let pendingClearPublicPromptLine = null;
     let pendingNicknameColor = false;
     let pendingNicknameColorPromptLine = null;
+    let pendingSiteSearch = false;
+    let pendingSiteSearchPromptLine = null;
+    let siteSearchIndexPromise = null;
+    let siteSearchDocuments = null;
     let welcomeMessageLine = null;
     let pinnedMessageLine = null;
     let previousChatInputPlaceholder = chatInput.getAttribute('placeholder') || '';
@@ -851,6 +859,11 @@
           '/rainbow',
           '/rainbow speed [number]',
         ].join('\n'),
+        '/refresh': '/refresh',
+        '/search': [
+          '/search',
+          '/search [search text]'
+        ].join('\n'),
         '/nickname': [
           '/nickname [name]',
           '/nickname reset',
@@ -969,6 +982,180 @@
 
       window.parent.postMessage({ type: 'pageRainbow', active, speed, toggle }, '*');
       return true;
+    }
+
+    function refreshEntirePage() {
+      addCommandExecutionMessage('/refresh');
+      window.setTimeout(() => {
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.location.reload();
+            return;
+          }
+        } catch (error) {
+        }
+        window.location.reload();
+      }, 80);
+      return true;
+    }
+
+    function normalizeSiteSearchText(value) {
+      return String(value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function isSearchableHtmlPath(path) {
+      const normalized = normalizeRandomPagePath(path);
+      if (!normalized) return false;
+      try {
+        const url = new URL(normalized, window.location.origin);
+        if (url.origin !== window.location.origin) return false;
+        if (!/\.html$/i.test(url.pathname)) return false;
+        if (/^\/(?:index|nav|chat)\.html$/i.test(url.pathname)) return false;
+        return !/^\/dead\/(?:JSON|audio|images|messages|scripts)\//i.test(url.pathname);
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function getSiteSearchTitle(path, doc) {
+      const title = doc && doc.querySelector ? normalizeSiteSearchText(doc.querySelector('title')?.textContent || '') : '';
+      if (title) return title;
+      const parts = String(path || '').split('/').filter(Boolean);
+      return parts.at(-1) || path || 'Untitled page';
+    }
+
+    function extractVisiblePageText(html) {
+      const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+      doc.querySelectorAll('script, style, noscript, template, svg, canvas, iframe, audio, video, source, track').forEach((node) => node.remove());
+      doc.querySelectorAll('[hidden], [aria-hidden="true"]').forEach((node) => node.remove());
+      doc.querySelectorAll('[style]').forEach((node) => {
+        const style = String(node.getAttribute('style') || '').toLowerCase();
+        if (/(?:display\s*:\s*none|visibility\s*:\s*hidden)/.test(style)) node.remove();
+      });
+      const bodyText = normalizeSiteSearchText(doc.body ? doc.body.textContent : doc.documentElement.textContent);
+      return { doc, text: bodyText };
+    }
+
+    async function fetchSiteSearchDocument(path) {
+      try {
+        const response = await fetch(path, { cache: 'no-store' });
+        if (!response.ok) return null;
+        const html = await response.text();
+        const extracted = extractVisiblePageText(html);
+        if (!extracted.text) return null;
+        return {
+          path,
+          title: getSiteSearchTitle(path, extracted.doc),
+          text: extracted.text,
+          lowerText: extracted.text.toLowerCase()
+        };
+      } catch (error) {
+        return null;
+      }
+    }
+
+    async function loadSiteSearchDocuments() {
+      if (siteSearchDocuments) return siteSearchDocuments;
+      if (siteSearchIndexPromise) return siteSearchIndexPromise;
+
+      siteSearchIndexPromise = (async () => {
+        const response = await fetch('/dead/JSON/repo-index.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Unable to load repo-index.json');
+        const repoIndex = await response.json();
+        const itemLinks = Array.isArray(repoIndex.items)
+          ? repoIndex.items.map((item) => item && (item.href || item.path || '')).filter(Boolean)
+          : [];
+        const paths = Array.from(new Set(itemLinks.map(normalizeRandomPagePath).filter(isSearchableHtmlPath)));
+        const docs = [];
+        for (let index = 0; index < paths.length; index += SITE_SEARCH_FETCH_CONCURRENCY) {
+          const batch = paths.slice(index, index + SITE_SEARCH_FETCH_CONCURRENCY);
+          const results = await Promise.all(batch.map(fetchSiteSearchDocument));
+          results.forEach((result) => {
+            if (result) docs.push(result);
+          });
+        }
+        siteSearchDocuments = docs;
+        return docs;
+      })();
+
+      try {
+        return await siteSearchIndexPromise;
+      } finally {
+        siteSearchIndexPromise = null;
+      }
+    }
+
+    function countSiteSearchMatches(text, query) {
+      let count = 0;
+      let index = text.indexOf(query);
+      while (index !== -1) {
+        count += 1;
+        index = text.indexOf(query, index + query.length);
+      }
+      return count;
+    }
+
+    function getSiteSearchSnippet(text, lowerText, query) {
+      const index = lowerText.indexOf(query);
+      if (index === -1) return '';
+      const start = Math.max(0, index - 72);
+      const end = Math.min(text.length, index + query.length + 112);
+      const prefix = start > 0 ? '...' : '';
+      const suffix = end < text.length ? '...' : '';
+      return normalizeSiteSearchText(`${prefix}${text.slice(start, end)}${suffix}`);
+    }
+
+    function renderSiteSearchResults(query, results, totalDocs) {
+      if (!results.length) {
+        addSystemMessage(`No site file matches for "${query}".`);
+        return;
+      }
+
+      const items = results.map((result) => {
+        const href = escapeAttribute(result.path);
+        const title = escapeHtml(result.title);
+        const path = escapeHtml(result.path);
+        const snippet = escapeHtml(result.snippet);
+        const count = result.count === 1 ? '1 match' : `${result.count} matches`;
+        return `<li><a href="${href}" data-index-frame-src="${href}">${title}</a><br><code>${path}</code><br><span>${escapeHtml(count)} - ${snippet}</span></li>`;
+      }).join('');
+      addMessage('system', `<strong>Search Site Files: ${escapeHtml(query)}</strong><br><span>${results.length} result${results.length === 1 ? '' : 's'} from ${totalDocs} pages</span><ul>${items}</ul>`);
+    }
+
+    async function runSiteSearch(query) {
+      const searchText = normalizeSiteSearchText(query);
+      if (!searchText) {
+        addSystemMessage('Usage: /search [search text]');
+        return false;
+      }
+
+      const loadingLine = addSystemMessage('Searching site files...');
+      try {
+        const docs = await loadSiteSearchDocuments();
+        const lowerQuery = searchText.toLowerCase();
+        const results = docs.map((doc) => {
+          const count = countSiteSearchMatches(doc.lowerText, lowerQuery);
+          if (!count) return null;
+          return {
+            path: doc.path,
+            title: doc.title,
+            count,
+            snippet: getSiteSearchSnippet(doc.text, doc.lowerText, lowerQuery)
+          };
+        }).filter(Boolean)
+          .sort((a, b) => b.count - a.count || a.path.localeCompare(b.path))
+          .slice(0, SITE_SEARCH_MAX_RESULTS);
+
+        if (loadingLine && loadingLine.isConnected) loadingLine.remove();
+        renderSiteSearchResults(searchText, results, docs.length);
+        addCommandExecutionMessage('/search', { message: `/search executed: ${searchText}` });
+        return true;
+      } catch (error) {
+        if (loadingLine && loadingLine.isConnected) loadingLine.remove();
+        console.error('Unable to search site files:', error);
+        addSystemMessage('Unable to search site files.', { error: true });
+        return false;
+      }
     }
 
     async function loadRandomPageCandidatesFromRepoIndex() {
@@ -1642,6 +1829,42 @@
       pendingNicknameColorPromptLine = null;
     }
 
+    function setSiteSearchPromptMode() {
+      pendingSiteSearch = true;
+      previousChatInputPlaceholder = chatInput.getAttribute('placeholder') || previousChatInputPlaceholder;
+      chatInput.value = '';
+      chatInput.type = 'text';
+      chatInput.placeholder = 'Search Site Files:';
+      hideSuggestions();
+      if (pendingSiteSearchPromptLine && pendingSiteSearchPromptLine.isConnected) {
+        pendingSiteSearchPromptLine.textContent = 'Search Site Files:';
+      } else {
+        pendingSiteSearchPromptLine = addSystemMessage('Search Site Files:');
+      }
+      chatInput.focus();
+    }
+
+    function clearSiteSearchPromptMode() {
+      pendingSiteSearch = false;
+      chatInput.type = 'text';
+      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat or / for commands...';
+      chatInput.value = '';
+    }
+
+    function removeSiteSearchPromptLine() {
+      if (pendingSiteSearchPromptLine && pendingSiteSearchPromptLine.isConnected) {
+        pendingSiteSearchPromptLine.remove();
+      }
+      pendingSiteSearchPromptLine = null;
+    }
+
+    async function handleSiteSearchInput(value) {
+      clearSiteSearchPromptMode();
+      removeSiteSearchPromptLine();
+      await runSiteSearch(value);
+      return true;
+    }
+
     function applyNicknameColor(value) {
       const nextColor = normalizeNicknameColor(value);
       if (!value || !nextColor) {
@@ -1756,6 +1979,20 @@
         return true;
       }
 
+      if (command === '/refresh') {
+        refreshEntirePage();
+        return true;
+      }
+
+      if (command === '/search') {
+        if (!arg) {
+          setSiteSearchPromptMode();
+          return true;
+        }
+        await runSiteSearch(arg);
+        return true;
+      }
+
       if (command === '/dvd') {
         const nextAttempt = dvdCommandAttemptCount + 1;
         dvdCommandAttemptCount = nextAttempt;
@@ -1794,6 +2031,10 @@
       }
       if (pendingNicknameColor) {
         handleNicknameColorInput(trimmed);
+        return;
+      }
+      if (pendingSiteSearch) {
+        await handleSiteSearchInput(trimmed);
         return;
       }
       if (trimmed.startsWith('/')) {
@@ -1864,6 +2105,7 @@
       if (!open && pendingReservedNickname) clearReservedNicknamePasswordMode();
       if (!open && pendingClearPublicPassword) clearClearPublicPasswordMode();
       if (!open && pendingNicknameColor) clearNicknameColorPromptMode();
+      if (!open && pendingSiteSearch) clearSiteSearchPromptMode();
       notifyState();
       if (open && focus) requestAnimationFrame(() => chatInput.focus());
     }
@@ -1915,11 +2157,24 @@
         if (pendingReservedNickname) clearReservedNicknamePasswordMode();
         if (pendingClearPublicPassword) clearClearPublicPasswordMode();
         if (pendingNicknameColor) clearNicknameColorPromptMode();
+        if (pendingSiteSearch) clearSiteSearchPromptMode();
         setOpen(false, false);
       }
     });
 
     messages.addEventListener('click', (event) => {
+      const frameLink = event.target && event.target.closest ? event.target.closest('a[data-index-frame-src]') : null;
+      if (frameLink) {
+        const framePath = String(frameLink.dataset.indexFrameSrc || '').trim();
+        const controller = getParentIndexFrameController();
+        if (framePath && controller) {
+          event.preventDefault();
+          controller.setSource(framePath, { historyMode: 'push' });
+          setOpen(false, false);
+          return;
+        }
+      }
+
       const item = event.target && event.target.closest ? event.target.closest('.helpItem[data-command]') : null;
       if (!item) return;
       event.preventDefault();

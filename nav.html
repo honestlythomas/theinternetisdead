@@ -285,19 +285,61 @@ html, body {
   text-overflow: ellipsis;
 }
 
+#overlay-root .nav-state-search,
 #overlay-root .nav-state-random {
   flex: 0 0 auto;
-  margin-left: 8px;
   line-height: 1;
   cursor: pointer;
   text-decoration: none;
   filter: saturate(1.15);
 }
 
+#overlay-root .nav-state-search {
+  margin-right: 8px;
+}
+
+#overlay-root .nav-state-random {
+  margin-left: 8px;
+}
+
+#overlay-root .nav-state-search:hover,
+#overlay-root .nav-state-search:focus-visible,
 #overlay-root .nav-state-random:hover,
 #overlay-root .nav-state-random:focus-visible {
   outline: none;
   animation: overlay-ui-hueshift 1.8s linear infinite;
+}
+
+#overlay-root .nav-state-search-input {
+  display: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--overlay-text);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+#overlay-root .nav-state-search-input::placeholder {
+  color: currentColor;
+  opacity: .72;
+}
+
+#overlay-root .nav-state-panel.is-searching {
+  cursor: text;
+}
+
+#overlay-root .nav-state-panel.is-searching .nav-state-text {
+  display: none;
+}
+
+#overlay-root .nav-state-panel.is-searching .nav-state-search-input {
+  display: block;
 }
 
 #overlay-root .sidebar-nav-state-panel {
@@ -1375,7 +1417,9 @@ html, body {
     </div>
 
     <a class="nav-state-panel" id="nav-state-panel" href="/" aria-label="Open first visible video">
+      <span class="nav-state-search" role="button" tabindex="0" title="Search site files" aria-label="Search site files">&#128269;</span>
       <span class="nav-state-text">Watch My Most Viewed Videos</span>
+      <input class="nav-state-search-input" type="search" placeholder="Search Site Files:" autocomplete="off" aria-label="Search site files">
       <span class="nav-state-random" role="button" tabindex="0" title="Load a random page" aria-label="Load a random page">♻️</span>
     </a>
 
@@ -1406,7 +1450,9 @@ html, body {
       </div>
 
       <a class="nav-state-panel sidebar-nav-state-panel" id="sidebar-nav-state-panel" href="/" aria-label="Open first visible video">
+        <span class="nav-state-search" role="button" tabindex="0" title="Search site files" aria-label="Search site files">&#128269;</span>
         <span class="nav-state-text">Watch My Most Viewed Videos</span>
+        <input class="nav-state-search-input" type="search" placeholder="Search Site Files:" autocomplete="off" aria-label="Search site files">
         <span class="nav-state-random" role="button" tabindex="0" title="Load a random page" aria-label="Load a random page">♻️</span>
       </a>
 
@@ -1631,12 +1677,17 @@ html, body {
   function fitNavStateText() {
     const panel = overlayRoot.querySelector('#nav-state-panel');
     const text = panel && panel.querySelector('.nav-state-text');
-    const randomControl = panel && panel.querySelector('.nav-state-random');
     if (!panel || !text || window.getComputedStyle(panel).display === 'none') return;
-    let size = 21;
+    const searchControl = panel.querySelector('.nav-state-search');
+    const randomControl = panel.querySelector('.nav-state-random');
+    text.style.removeProperty('font-size');
+    if (panel.classList.contains('is-searching')) return;
+
+    let size = Math.max(28, parseFloat(window.getComputedStyle(panel).fontSize) || 21);
     text.style.fontSize = `${size}px`;
+    const searchWidth = searchControl ? Math.ceil(searchControl.getBoundingClientRect().width + 8) : 0;
     const randomWidth = randomControl ? Math.ceil(randomControl.getBoundingClientRect().width + 8) : 0;
-    const availableWidth = Math.max(1, panel.clientWidth - 24 - randomWidth);
+    const availableWidth = Math.max(1, panel.clientWidth - 24 - searchWidth - randomWidth);
     const availableHeight = Math.max(1, panel.clientHeight - 6);
     while (size > 9 && (text.scrollWidth > availableWidth || text.scrollHeight > availableHeight)) {
       size -= 1;
@@ -2580,6 +2631,15 @@ html, body {
 
   overlayRoot.querySelectorAll('#nav-state-panel, #sidebar-nav-state-panel').forEach((panel) => {
     panel.addEventListener('click', (event) => {
+      if (panel.classList.contains('is-searching')) {
+        const input = panel.querySelector('.nav-state-search-input');
+        if (input) {
+          event.preventDefault();
+          input.focus();
+          return;
+        }
+      }
+
       if (event.shiftKey) {
         if (navStatePanel.dataset.stateMode === 'video') {
           const videoId = getNavStateVideoId();
@@ -2606,10 +2666,108 @@ html, body {
     });
   });
 
+  function setNavStateSearchMode(active, sourcePanel = null) {
+    overlayRoot.querySelectorAll('#nav-state-panel, #sidebar-nav-state-panel').forEach((panel) => {
+      panel.classList.toggle('is-searching', !!active);
+      const input = panel.querySelector('.nav-state-search-input');
+      if (input && !active) input.value = '';
+      const closeControl = panel.querySelector('.nav-state-random');
+      if (closeControl) {
+        closeControl.textContent = active ? 'X' : '♻️';
+        closeControl.title = active ? 'Close search' : 'Load a random page';
+        closeControl.setAttribute('aria-label', active ? 'Close search' : 'Load a random page');
+      }
+    });
+
+    if (active) {
+      const panel = sourcePanel || navStatePanel;
+      const input = panel && panel.querySelector('.nav-state-search-input');
+      if (input) {
+        input.value = '';
+        window.requestAnimationFrame(() => input.focus());
+      }
+    }
+  }
+
+  function submitNavStateSearch(panel) {
+    const input = panel && panel.querySelector('.nav-state-search-input');
+    const query = input ? String(input.value || '').trim() : '';
+    if (!query) {
+      if (input) input.focus();
+      return false;
+    }
+
+    const command = `/search ${query}`;
+    if (typeof window.__indexExecuteChatCommand === 'function' && window.__indexExecuteChatCommand(command, { openChat: true, focus: false })) {
+      setNavStateSearchMode(false);
+      closeSidebar();
+      return true;
+    }
+
+    if (requestParentChatOpen(true)) {
+      setNavStateSearchMode(false);
+      closeSidebar();
+      return true;
+    }
+
+    return false;
+  }
+
+  overlayRoot.querySelectorAll('.nav-state-search').forEach((control) => {
+    control.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const panel = control.closest('.nav-state-panel');
+      setNavStateSearchMode(true, panel);
+    });
+
+    control.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      event.stopPropagation();
+      const panel = control.closest('.nav-state-panel');
+      setNavStateSearchMode(true, panel);
+    });
+  });
+
+  overlayRoot.querySelectorAll('.nav-state-search-input').forEach((input) => {
+    input.addEventListener('pointerdown', (event) => {
+      event.stopPropagation();
+    });
+
+    input.addEventListener('mousedown', (event) => {
+      event.stopPropagation();
+    });
+
+    input.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      input.focus();
+    });
+
+    input.addEventListener('keydown', (event) => {
+      const panel = input.closest('.nav-state-panel');
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        event.stopPropagation();
+        setNavStateSearchMode(false);
+        return;
+      }
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      event.stopPropagation();
+      submitNavStateSearch(panel);
+    });
+  });
+
   overlayRoot.querySelectorAll('.nav-state-random').forEach((control) => {
     control.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
+      if (control.closest('.nav-state-panel')?.classList.contains('is-searching')) {
+        setNavStateSearchMode(false);
+        return;
+      }
       loadRandomIndexPage();
       closeSidebar();
     });
@@ -2618,6 +2776,10 @@ html, body {
       if (event.key !== 'Enter' && event.key !== ' ') return;
       event.preventDefault();
       event.stopPropagation();
+      if (control.closest('.nav-state-panel')?.classList.contains('is-searching')) {
+        setNavStateSearchMode(false);
+        return;
+      }
       loadRandomIndexPage();
       closeSidebar();
     });
