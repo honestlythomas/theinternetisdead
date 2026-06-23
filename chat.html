@@ -371,6 +371,8 @@
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
       { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User', 'color #00ff66', 'reset'] },
       { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a message below the welcome message', hidden: true },
+      { name: '/random', value: '/random', execute: true, desc: 'load a random site page in the root iframe' },
+      { name: '/rainbow', value: '/rainbow', execute: true, desc: 'toggle a hue-shifting color filter over the root page' },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' }
     ];
 
@@ -844,6 +846,11 @@
         '/exit': '/exit',
         '/help': '/help',
         '/pin': '/pin [text]',
+        '/random': '/random',
+        '/rainbow': [
+          '/rainbow',
+          '/rainbow speed [number]',
+        ].join('\n'),
         '/nickname': [
           '/nickname [name]',
           '/nickname reset',
@@ -882,6 +889,132 @@
           active: !!dvdEnabled
         }, '*');
       }
+    }
+
+    function normalizeRandomPagePath(path) {
+      try {
+        const url = new URL(String(path || ''), window.location.origin);
+        if (url.origin !== window.location.origin) return '';
+        url.pathname = url.pathname.replace(/\/{2,}/g, '/');
+        return `${url.pathname}${url.search}${url.hash}` || '';
+      } catch (error) {
+        const fallbackPath = String(path || '').trim();
+        if (!fallbackPath || !fallbackPath.startsWith('/')) return '';
+        return fallbackPath.replace(/\/{2,}/g, '/');
+      }
+    }
+
+    function isRandomPageCandidate(path) {
+      const normalized = normalizeRandomPagePath(path);
+      if (!normalized) return false;
+
+      let url;
+      try {
+        url = new URL(normalized, window.location.origin);
+      } catch (error) {
+        return false;
+      }
+
+      const pathname = url.pathname.replace(/\/{2,}/g, '/');
+      if (pathname === '/' ||
+        pathname === '/index.html' ||
+        pathname === '/homepage.html' ||
+        pathname === '/dead/stuff/stuff-for-index/thumbnail-grid/index.html' ||
+        pathname === '/dead/stuff/stuff-for-index/feeds/feeds-bridge.html') {
+        return false;
+      }
+      if (/^\/(?:nav|chat)\.html$/i.test(pathname)) return false;
+      if (/^\/dead\/(?:JSON|audio|images|messages|scripts)\//i.test(pathname)) return false;
+      if (/\.(?:css|js|mjs|json|map|png|jpe?g|gif|webp|svg|ico|mp3|wav|ogg|pdf|zip|md|txt)$/i.test(pathname)) return false;
+      return /\/$/i.test(pathname) || /\.html$/i.test(pathname);
+    }
+
+    function getParentIndexFrameController() {
+      try {
+        if (!window.parent || window.parent === window) return null;
+        const controller = window.parent.indexFrameController;
+        if (!controller || typeof controller.setSource !== 'function') return null;
+        return controller;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function normalizeRainbowSpeed(value) {
+      const numeric = Number.parseFloat(String(value || '').trim());
+      if (!Number.isFinite(numeric) || numeric <= 0) return 1;
+      return Math.min(20, Math.max(0.05, numeric));
+    }
+
+    function requestRootRainbowFilter(arg = '') {
+      const rawArg = String(arg || '').trim();
+      const lowerArg = rawArg.toLowerCase();
+      let active = true;
+      let speed = 1;
+      let toggle = false;
+
+      if (!lowerArg) {
+        toggle = true;
+      } else if (lowerArg.startsWith('speed')) {
+        speed = normalizeRainbowSpeed(rawArg.slice('speed'.length).trim() || '1');
+      } else if (rawArg) {
+        addSystemMessage('Usage: /rainbow | /rainbow speed [number]');
+        return false;
+      }
+
+      if (!window.parent || window.parent === window) {
+        addSystemMessage('/rainbow only works from the root page chat overlay.', { error: true });
+        return false;
+      }
+
+      window.parent.postMessage({ type: 'pageRainbow', active, speed, toggle }, '*');
+      return true;
+    }
+
+    async function loadRandomPageCandidatesFromRepoIndex() {
+      try {
+        const response = await fetch('/dead/JSON/repo-index.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error('repo-index unavailable');
+        const repoIndex = await response.json();
+        const folders = Array.isArray(repoIndex.folders) ? repoIndex.folders : [];
+        const itemLinks = Array.isArray(repoIndex.items)
+          ? repoIndex.items.map((item) => item && (item.href || item.path || '')).filter(Boolean)
+          : [];
+        return Array.from(new Set([...folders, ...itemLinks].map(normalizeRandomPagePath).filter(isRandomPageCandidate)));
+      } catch (error) {
+        return [];
+      }
+    }
+
+    async function loadRandomIndexPageFromChat() {
+      const controller = getParentIndexFrameController();
+      if (!controller) {
+        addSystemMessage('/random only works from the root page chat overlay.', { error: true });
+        return false;
+      }
+
+      const controllerLinks = typeof controller.getLinks === 'function' ? controller.getLinks() : [];
+      let candidates = Array.from(new Set((Array.isArray(controllerLinks) ? controllerLinks : [])
+        .map(normalizeRandomPagePath)
+        .filter(isRandomPageCandidate)));
+      if (!candidates.length) {
+        candidates = await loadRandomPageCandidatesFromRepoIndex();
+      }
+      if (!candidates.length) {
+        addSystemMessage('No random pages are available.', { error: true });
+        return false;
+      }
+
+      const currentPath = typeof controller.getCurrentSource === 'function'
+        ? normalizeRandomPagePath(controller.getCurrentSource())
+        : '';
+      const available = candidates.length > 1
+        ? candidates.filter((path) => path !== currentPath)
+        : candidates;
+      const nextPath = available[Math.floor(Math.random() * available.length)];
+      controller.setSource(nextPath, { historyMode: 'push' });
+      addCommandExecutionMessage('/random', { message: `/random executed: ${nextPath}` });
+      return true;
     }
 
     function positionDvdInstance(instance, force = false) {
@@ -1613,6 +1746,16 @@
         return true;
       }
 
+      if (command === '/random') {
+        await loadRandomIndexPageFromChat();
+        return true;
+      }
+
+      if (command === '/rainbow') {
+        requestRootRainbowFilter(arg);
+        return true;
+      }
+
       if (command === '/dvd') {
         const nextAttempt = dvdCommandAttemptCount + 1;
         dvdCommandAttemptCount = nextAttempt;
@@ -1812,6 +1955,14 @@
             window.parent.postMessage({ type: 'chatSandboxCommandResult', ok: !!ok, command: rawCommand, commandId: data.commandId || '' }, '*');
           }
         });
+        return;
+      }
+      if (data.type === 'pageChatResult') {
+        if (data.announce) {
+          const commandName = String(data.command || '').trim() || '/command';
+          const message = String(data.message || '').trim();
+          addCommandExecutionMessage(commandName, { message: message || `${commandName} executed` });
+        }
         return;
       }
       if (data.type === 'pageChatRegister') {

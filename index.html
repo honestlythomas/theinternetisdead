@@ -35,6 +35,35 @@
 
     body {
       --overlay-height: 76px;
+      --root-rainbow-duration: 6s;
+    }
+
+    body.root-rainbow-filter::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, #ff004c, #ff8c00, #ffe600, #00d26a, #00d9ff, #3b5bff, #8f00ff, #ff00c8, #ff004c);
+      mix-blend-mode: hue;
+      -webkit-backdrop-filter: hue-rotate(0deg) saturate(1.45);
+      backdrop-filter: hue-rotate(0deg) saturate(1.45);
+      opacity: 0.82;
+      animation: root-rainbow-hueshift var(--root-rainbow-duration) linear infinite;
+    }
+
+    @keyframes root-rainbow-hueshift {
+      from {
+        filter: hue-rotate(0deg);
+        -webkit-backdrop-filter: hue-rotate(0deg) saturate(1.45);
+        backdrop-filter: hue-rotate(0deg) saturate(1.45);
+      }
+      to {
+        filter: hue-rotate(360deg);
+        -webkit-backdrop-filter: hue-rotate(360deg) saturate(1.45);
+        backdrop-filter: hue-rotate(360deg) saturate(1.45);
+      }
     }
 
     #overlay-container {
@@ -176,6 +205,8 @@
     let shellBackgroundLastFrame = performance.now();
     let shellBackgroundTime = 0;
     let shellBackgroundVx = 0;
+    let rootRainbowActive = false;
+    let rootRainbowSpeed = 1;
 
     const shellBackgroundLayers = [
       { count: 180, baseSpeedY: 40, parallaxX: 0.35, sizeMin: 1, sizeMax: 2 },
@@ -633,6 +664,28 @@
       chatSandboxFrame.setAttribute('aria-hidden', isActive ? 'false' : 'true');
     }
 
+    function normalizeRainbowSpeed(value) {
+      const numeric = Number.parseFloat(String(value || '').trim());
+      if (!Number.isFinite(numeric) || numeric <= 0) return 1;
+      return Math.min(20, Math.max(0.05, numeric));
+    }
+
+    function setRootRainbowFilter(options = {}) {
+      const active = options.active !== false;
+      if (!active) {
+        rootRainbowActive = false;
+        document.body.classList.remove('root-rainbow-filter');
+        return { active: false, speed: rootRainbowSpeed };
+      }
+
+      rootRainbowActive = true;
+      rootRainbowSpeed = normalizeRainbowSpeed(options.speed || rootRainbowSpeed || 1);
+      const durationSeconds = Math.max(0.12, 6 / rootRainbowSpeed);
+      document.body.style.setProperty('--root-rainbow-duration', `${durationSeconds}s`);
+      document.body.classList.add('root-rainbow-filter');
+      return { active: true, speed: rootRainbowSpeed };
+    }
+
     window.__indexOpenChatOverlay = function openIndexChatOverlay(options = {}) {
       chatSandboxVisible = true;
       syncChatSandboxOverlayState();
@@ -940,6 +993,23 @@
 
         if (data.type === 'pageExit') {
           renderFatalExitScreen();
+          return;
+        }
+
+        if (data.type === 'pageRainbow') {
+          const nextActive = data.toggle ? !rootRainbowActive : data.active !== false;
+          const result = setRootRainbowFilter({
+            active: nextActive,
+            speed: data.speed
+          });
+          postToChatSandbox({
+            type: 'pageChatResult',
+            command: '/rainbow',
+            message: data.toggle
+              ? `/rainbow ${result.active ? 'enabled' : 'disabled'}`
+              : (result.active ? `/rainbow speed ${result.speed}` : '/rainbow disabled'),
+            announce: true
+          });
           return;
         }
 
