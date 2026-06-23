@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T02:41:27.373Z",
+  "generatedAt": "2026-06-23T03:24:55.348Z",
   "folders": [
     "/",
     "/buy/",
@@ -134,7 +134,7 @@
       "href": "/chat.html",
       "name": "chat.html",
       "parent": ".",
-      "size": 81739
+      "size": 85514
     },
     {
       "type": "file",
@@ -3714,7 +3714,7 @@
       "href": "/dead/JSON/repo-index.json",
       "name": "repo-index.json",
       "parent": "/dead/JSON",
-      "size": 181481
+      "size": 181479
     },
     {
       "type": "file",
@@ -4927,7 +4927,7 @@
       "href": "/homepage.html",
       "name": "homepage.html",
       "parent": ".",
-      "size": 39098
+      "size": 39778
     },
     {
       "type": "file",
