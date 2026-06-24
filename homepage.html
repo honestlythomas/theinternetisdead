@@ -598,51 +598,54 @@
     .social-column {
       position: relative;
       display: grid;
-      place-items: stretch;
+      place-items: center;
       min-width: 0;
       min-height: 0;
       height: 100%;
       overflow: hidden;
+      padding: 16px;
       background: #000;
     }
 
-    .social-column .twitter-timeline {
-      display: grid !important;
-      place-items: center;
-      width: 100% !important;
-      max-width: none !important;
-      min-width: 0 !important;
-      height: 100% !important;
-      min-height: 100% !important;
-      padding: 16px;
-      border: 0 !important;
-      background:
-        radial-gradient(circle at center, rgba(81, 42, 103, 0.35), transparent 62%),
-        #000;
-      color: #00ff00 !important;
-      font-size: 16px;
+    .discord-widget-stack {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 10px;
+      width: min(100%, 420px);
+      height: min(100%, 620px);
+      min-height: 0;
+    }
+
+    .discord-widget-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      border: 2px solid #00ff00;
+      background: #000;
+    }
+
+    .discord-permalink {
+      display: block;
+      width: 100%;
+      padding: 9px 10px;
+      border: 2px solid #512A67;
+      background: #000;
+      color: #00ff00;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 14px;
       font-weight: 900;
+      line-height: 1.25;
       text-align: center;
       text-decoration: none;
+      word-break: break-word;
     }
 
-    .social-column .twitter-timeline:hover,
-    .social-column .twitter-timeline:focus-visible {
-      color: #ff00ff !important;
-      outline: 2px solid #00ff00;
-      outline-offset: -6px;
-    }
-
-    .social-column iframe[id^="twitter-widget-"],
-    .social-column iframe.twitter-timeline {
-      display: block !important;
-      width: 100% !important;
-      max-width: none !important;
-      min-width: 0 !important;
-      height: 100% !important;
-      min-height: 100% !important;
-      border: 0 !important;
-      background: transparent !important;
+    .discord-permalink:hover,
+    .discord-permalink:focus-visible {
+      border-color: #00ff00;
+      color: #ff00ff;
+      outline: 0;
     }
 
     .mobile-home-tabs {
@@ -752,7 +755,7 @@
 
   <nav class="mobile-home-tabs" aria-label="Mobile homepage sections">
     <button class="mobile-home-tab" type="button" data-home-column="0" aria-selected="true">Videos</button>
-    <button class="mobile-home-tab" type="button" data-home-column="1" aria-selected="false">Twitter</button>
+    <button class="mobile-home-tab" type="button" data-home-column="1" aria-selected="false">Discord</button>
   </nav>
 
   <main class="homepage-grid" aria-label="Homepage layout">
@@ -776,9 +779,21 @@
     </div>
 
     <div class="column-wrap">
-      <section class="social-column" aria-label="Posts by HONESTLYTHOMAS">
-        <a class="twitter-timeline" data-width="1080" data-height="1080" data-theme="dark" href="https://twitter.com/HONESTLYTHOMAS?ref_src=twsrc%5Etfw">Posts by HONESTLYTHOMAS</a>
-        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+      <section class="social-column" aria-label="Discord server channels">
+        <div class="discord-widget-stack">
+          <iframe
+            class="discord-widget-frame"
+            src="https://discord.com/widget?id=717962725908676688&theme=dark"
+            width="350"
+            height="500"
+            allowtransparency="true"
+            frameborder="0"
+            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+            title="Discord server channels"
+            loading="lazy"
+          ></iframe>
+          <a class="discord-permalink" href="https://discord.gg/jxVHFfw4rZ" target="_blank" rel="noopener noreferrer">discord.gg/jxVHFfw4rZ</a>
+        </div>
       </section>
     </div>
   </main>
@@ -866,16 +881,6 @@
 
     mobileLayoutQuery.addEventListener('change', syncHomepageColumnsForViewport);
     window.addEventListener('resize', syncHomepageColumnsForViewport);
-
-    function hydrateTwitterTimeline() {
-      if (window.twttr && window.twttr.widgets && typeof window.twttr.widgets.load === 'function') {
-        window.twttr.widgets.load(document.querySelector('.social-column'));
-      }
-    }
-
-    window.addEventListener('load', hydrateTwitterTimeline);
-    window.addEventListener('pageshow', hydrateTwitterTimeline);
-    setTimeout(hydrateTwitterTimeline, 1200);
 
     function formatUploadDate(value) {
       const raw = String(value || '').trim();
