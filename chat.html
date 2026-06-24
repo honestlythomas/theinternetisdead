@@ -182,6 +182,68 @@
       filter: brightness(1.08);
     }
 
+    .publicChatYoutube {
+      display: block;
+      width: min(420px, calc(100vw - 70px));
+      max-width: 100%;
+      margin-top: 6px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      background: rgba(0, 0, 0, 0.52);
+      color: #ffffff;
+      font: inherit;
+      text-align: left;
+      cursor: zoom-in;
+      box-shadow: 0 0 18px rgba(255, 0, 120, 0.12), 0 0 20px rgba(0, 255, 102, 0.08);
+      overflow: hidden;
+    }
+
+    .publicChatYoutube:hover,
+    .publicChatYoutube:focus-visible {
+      outline: 1px solid rgba(255, 255, 255, 0.62);
+      filter: brightness(1.08);
+    }
+
+    .publicChatYoutubeThumbWrap {
+      position: relative;
+      display: block;
+      aspect-ratio: 16 / 9;
+      background: rgba(0, 0, 0, 0.72);
+    }
+
+    .publicChatYoutubeThumb {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .publicChatYoutubePlay {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.66);
+      border-radius: 10px;
+      background: rgba(255, 0, 80, 0.72);
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.45);
+      box-shadow: 0 0 26px rgba(255, 0, 80, 0.35);
+    }
+
+    .publicChatYoutubeLabel {
+      display: block;
+      padding: 7px 9px;
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.64);
+      overflow-wrap: anywhere;
+      text-shadow: 0 0 6px rgba(0, 255, 102, 0.22);
+    }
+
     #chatLightbox {
       position: fixed;
       inset: 0;
@@ -213,6 +275,29 @@
       box-shadow: 0 0 32px rgba(0, 255, 102, 0.18), 0 0 90px rgba(81, 42, 103, 0.34);
       object-fit: contain;
       cursor: zoom-out;
+    }
+
+    #chatLightboxFrame {
+      display: none;
+      width: min(96vw, 1400px);
+      height: min(54vw, 78vh);
+      max-height: 78vh;
+      aspect-ratio: 16 / 9;
+      border: 1px solid rgba(0, 255, 102, 0.54);
+      background: rgba(0, 0, 0, 0.9);
+      box-shadow: 0 0 32px rgba(0, 255, 102, 0.18), 0 0 90px rgba(81, 42, 103, 0.34);
+    }
+
+    #chatLightbox[data-lightbox-kind="video"] #chatLightboxImage {
+      display: none;
+    }
+
+    #chatLightbox[data-lightbox-kind="video"] #chatLightboxFrame {
+      display: block;
+    }
+
+    #chatLightbox[data-lightbox-kind="image"] #chatLightboxFrame {
+      display: none;
     }
 
     #chatLightboxClose {
@@ -395,9 +480,10 @@
 <body>
   <div id="chatDimLayer" aria-hidden="true"></div>
   <div id="dvdOverlay" aria-hidden="true"></div>
-  <div id="chatLightbox" aria-hidden="true" role="dialog" aria-label="Expanded chat image">
-    <button id="chatLightboxClose" type="button" aria-label="Close expanded image" title="Close expanded image">❌</button>
+  <div id="chatLightbox" aria-hidden="true" role="dialog" aria-label="Expanded chat media">
+    <button id="chatLightboxClose" type="button" aria-label="Close expanded media" title="Close expanded media">❌</button>
     <img id="chatLightboxImage" src="" alt="" />
+    <iframe id="chatLightboxFrame" title="YouTube video player" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
   </div>
   <main id="chatSurface" aria-live="polite">
     <section id="chatPanel">
@@ -453,6 +539,7 @@
     const dvdOverlay = document.getElementById('dvdOverlay');
     const chatLightbox = document.getElementById('chatLightbox');
     const chatLightboxImage = document.getElementById('chatLightboxImage');
+    const chatLightboxFrame = document.getElementById('chatLightboxFrame');
     const chatLightboxClose = document.getElementById('chatLightboxClose');
     let currentNickname = loadNickname();
     let currentNicknameColor = loadNicknameColor();
@@ -633,6 +720,84 @@
       }
     }
 
+    function parseYouTubeTimestamp(value) {
+      const raw = String(value || '').trim();
+      if (!raw) return 0;
+      if (/^\d+$/.test(raw)) return Math.max(0, Number(raw));
+      const match = raw.match(/(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/i);
+      if (!match || !match[0]) return 0;
+      return ((Number(match[1]) || 0) * 3600) + ((Number(match[2]) || 0) * 60) + (Number(match[3]) || 0);
+    }
+
+    function getYouTubeEmbedInfo(value) {
+      const safeUrl = getSafeHttpUrl(value);
+      if (!safeUrl) return null;
+      let url;
+      try {
+        url = new URL(safeUrl);
+      } catch (error) {
+        return null;
+      }
+
+      const host = url.hostname.replace(/^www\./i, '').toLowerCase();
+      let videoId = '';
+      if (host === 'youtu.be') {
+        videoId = url.pathname.split('/').filter(Boolean)[0] || '';
+      } else if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'music.youtube.com' || host === 'youtube-nocookie.com') {
+        const parts = url.pathname.split('/').filter(Boolean);
+        if (url.pathname === '/watch') {
+          videoId = url.searchParams.get('v') || '';
+        } else if (['shorts', 'embed', 'live', 'v'].includes(parts[0])) {
+          videoId = parts[1] || '';
+        }
+      }
+
+      videoId = String(videoId || '').match(/^[a-zA-Z0-9_-]{11}$/)?.[0] || '';
+      if (!videoId) return null;
+
+      const start = parseYouTubeTimestamp(url.searchParams.get('t') || url.searchParams.get('start') || '');
+      const embedUrl = new URL(`https://www.youtube-nocookie.com/embed/${videoId}`);
+      embedUrl.searchParams.set('autoplay', '1');
+      embedUrl.searchParams.set('rel', '0');
+      if (start) embedUrl.searchParams.set('start', String(start));
+
+      return {
+        videoId,
+        url: safeUrl,
+        embedUrl: embedUrl.href,
+        thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+      };
+    }
+
+    function getYouTubeEmbedsFromText(value) {
+      const found = [];
+      const seen = new Set();
+      String(value || '').replace(/https?:\/\/[^\s<]+/gi, (match) => {
+        const { url } = splitUrlTrailingPunctuation(match);
+        const info = getYouTubeEmbedInfo(url);
+        if (info && !seen.has(info.videoId)) {
+          seen.add(info.videoId);
+          found.push(info);
+        }
+        return match;
+      });
+      return found;
+    }
+
+    function renderYouTubeEmbeds(value) {
+      const embeds = getYouTubeEmbedsFromText(value);
+      if (!embeds.length) return '';
+      return embeds.map((embed) => `
+        <button class="publicChatYoutube" type="button" data-youtube-embed-url="${escapeAttribute(embed.embedUrl)}" data-youtube-watch-url="${escapeAttribute(embed.url)}" aria-label="Open YouTube video in chat lightbox" title="Open YouTube video">
+          <span class="publicChatYoutubeThumbWrap">
+            <img class="publicChatYoutubeThumb" src="${escapeAttribute(embed.thumbnailUrl)}" alt="YouTube video thumbnail" loading="lazy" decoding="async" />
+            <span class="publicChatYoutubePlay" aria-hidden="true">▶</span>
+          </span>
+          <span class="publicChatYoutubeLabel">YouTube video detected. Click to open inside the haunted glass coffin.</span>
+        </button>
+      `).join('');
+    }
+
     function renderInlineMarkdown(value) {
       const tokens = [];
       const addToken = (html) => {
@@ -732,7 +897,7 @@
       if (inCodeBlock) flushCode();
       flushParagraph();
       flushList();
-      return blocks.join('');
+      return `${blocks.join('')}${renderYouTubeEmbeds(raw)}`;
     }
 
     function scrollToBottom() {
@@ -770,8 +935,23 @@
       if (!image || !chatLightbox || !chatLightboxImage) return;
       const src = image.currentSrc || image.src || '';
       if (!src) return;
+      if (chatLightboxFrame) chatLightboxFrame.src = '';
+      chatLightbox.dataset.lightboxKind = 'image';
       chatLightboxImage.src = src;
       chatLightboxImage.alt = image.alt || 'Expanded chat image';
+      chatLightbox.classList.add('active');
+      chatLightbox.setAttribute('aria-hidden', 'false');
+      chatLightboxClose?.focus({ preventScroll: true });
+    }
+
+    function openChatVideoLightbox(trigger) {
+      if (!trigger || !chatLightbox || !chatLightboxFrame) return;
+      const embedUrl = trigger.dataset.youtubeEmbedUrl || '';
+      if (!getSafeHttpUrl(embedUrl)) return;
+      chatLightboxImage.removeAttribute('src');
+      chatLightboxImage.alt = '';
+      chatLightbox.dataset.lightboxKind = 'video';
+      chatLightboxFrame.src = embedUrl;
       chatLightbox.classList.add('active');
       chatLightbox.setAttribute('aria-hidden', 'false');
       chatLightboxClose?.focus({ preventScroll: true });
@@ -781,11 +961,20 @@
       if (!chatLightbox || !chatLightboxImage) return;
       chatLightbox.classList.remove('active');
       chatLightbox.setAttribute('aria-hidden', 'true');
+      chatLightbox.removeAttribute('data-lightbox-kind');
       chatLightboxImage.removeAttribute('src');
       chatLightboxImage.alt = '';
+      if (chatLightboxFrame) chatLightboxFrame.src = '';
     }
 
     messages.addEventListener('click', (event) => {
+      const youtubeEmbed = event.target.closest?.('.publicChatYoutube');
+      if (youtubeEmbed) {
+        event.preventDefault();
+        openChatVideoLightbox(youtubeEmbed);
+        return;
+      }
+
       const image = event.target.closest?.('.publicChatImage');
       if (!image) return;
       event.preventDefault();
@@ -794,6 +983,13 @@
 
     messages.addEventListener('keydown', (event) => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
+      const youtubeEmbed = event.target.closest?.('.publicChatYoutube');
+      if (youtubeEmbed) {
+        event.preventDefault();
+        openChatVideoLightbox(youtubeEmbed);
+        return;
+      }
+
       const image = event.target.closest?.('.publicChatImage');
       if (!image) return;
       event.preventDefault();
