@@ -532,6 +532,7 @@
     const CHAT_NICKNAME_EXPLICIT_STORAGE_KEY = 'tektiteChatNicknameExplicit';
     const CHAT_NICKNAME_COLOR_STORAGE_KEY = 'tektiteChatNicknameColor';
     const CHAT_SYSTEM_PROMPT_STORAGE_KEY = 'tektiteChatSystemPrompt';
+    const CHAT_MODE_STORAGE_KEY = 'tektiteChatMode';
     const SUPABASE_PROJECT_URL = 'https://fumidkcwrhzgfdmuakqj.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BcNJhaZkgo4r5VH1aJ_stQ_P-kEDY_r';
     const SUPABASE_CHAT_ROOM = 'index';
@@ -552,6 +553,11 @@
     const commands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
       { name: '/clear_public', value: '/clear_public ', execute: false, desc: 'admin: clear public chat history through the server-side function', hidden: true },
+      { name: '/chat_all', value: '/chat_all', execute: true, desc: 'show all chat messages and send normal messages publicly' },
+      { name: '/chat_public', value: '/chat_public', execute: true, desc: 'show only public chat messages' },
+      { name: '/chat_ai', value: '/chat_ai', execute: true, desc: 'show only /prompt messages and API responses' },
+      { name: '/chat_local', value: '/chat_local', execute: true, desc: 'show only local-only messages and keep normal messages local' },
+      { name: '/chat_system', value: '/chat_system', execute: true, desc: 'show only system messages' },
       { name: '/dvd', value: '/dvd', execute: true, desc: 'spawn another bouncing hue-shifting DVD logo, up to 10 total' },
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
       { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User', 'color #00ff66', 'reset'] },
@@ -580,6 +586,7 @@
     let currentNickname = loadNickname();
     let currentNicknameColor = loadNicknameColor();
     let currentSystemPrompt = loadSystemPrompt();
+    let currentChatMode = loadChatMode();
     let renderedPublicMessageKeys = new Set();
     let suggestionIndex = -1;
     let publicChatRefreshInFlight = false;
@@ -597,6 +604,7 @@
     const dvdNormalMaxInstances = 10;
     const dvdHueShiftSpeedDegPerSecond = 45;
     const COMMAND_EXECUTION_MESSAGE_TTL_MS = 15000;
+    const CHAT_MODES = new Set(['all', 'public', 'ai', 'local', 'system']);
     const SITE_SEARCH_MAX_RESULTS = 8;
     const SITE_SEARCH_FETCH_CONCURRENCY = 8;
     const RESERVED_NICKNAMES = new Set([
@@ -746,6 +754,59 @@
         }
       } catch (error) {}
       return systemPrompt;
+    }
+
+    function normalizeChatMode(value) {
+      const mode = String(value || '').trim().toLowerCase();
+      return CHAT_MODES.has(mode) ? mode : 'all';
+    }
+
+    function loadChatMode() {
+      try {
+        return normalizeChatMode(window.localStorage.getItem(CHAT_MODE_STORAGE_KEY) || 'all');
+      } catch (error) {}
+      return 'all';
+    }
+
+    function saveChatMode(value) {
+      const mode = normalizeChatMode(value);
+      try {
+        if (mode === 'all') {
+          window.localStorage.removeItem(CHAT_MODE_STORAGE_KEY);
+        } else {
+          window.localStorage.setItem(CHAT_MODE_STORAGE_KEY, mode);
+        }
+      } catch (error) {}
+      return mode;
+    }
+
+    function getMessageKind(line) {
+      if (!line || !line.dataset) return 'system';
+      return normalizeChatMode(line.dataset.chatKind || line.dataset.role || 'system');
+    }
+
+    function messageMatchesChatMode(line) {
+      if (!line) return false;
+      if (currentChatMode === 'all') return true;
+      const kind = getMessageKind(line);
+      if (currentChatMode === 'public') {
+        return kind === 'public' || line.dataset.liveChatMessage === 'true' || line.dataset.pinnedMessage === 'true';
+      }
+      return kind === currentChatMode;
+    }
+
+    function applyChatModeFilter() {
+      Array.from(messages.children).forEach((line) => {
+        line.hidden = !messageMatchesChatMode(line);
+      });
+      scheduleScrollToBottom();
+    }
+
+    function setChatMode(mode) {
+      currentChatMode = saveChatMode(mode);
+      addSystemMessage(`Chat mode: ${currentChatMode}`);
+      applyChatModeFilter();
+      return true;
     }
 
     function escapeHtml(value) {
@@ -973,6 +1034,7 @@
       const line = document.createElement('div');
       line.className = 'message';
       line.dataset.role = role;
+      line.dataset.chatKind = options.kind || (options.publicMessage ? 'public' : role);
       if (options.publicMessage) line.dataset.liveChatMessage = 'true';
       if (options.error) line.dataset.error = 'true';
       line.innerHTML = html;
@@ -980,12 +1042,13 @@
       while (messages.children.length > SUPABASE_CHAT_MAX_VISIBLE + 30) {
         messages.firstElementChild?.remove();
       }
+      line.hidden = !messageMatchesChatMode(line);
       scheduleScrollToBottom();
       return line;
     }
 
     function addSystemMessage(text, options = {}) {
-      return addMessage('system', escapeHtml(text), options);
+      return addMessage('system', escapeHtml(text), { ...options, kind: options.kind || 'system' });
     }
 
     function openChatImageLightbox(image) {
@@ -1100,6 +1163,7 @@
         pinnedMessageLine = document.createElement('div');
         pinnedMessageLine.className = 'message';
         pinnedMessageLine.dataset.role = 'public';
+        pinnedMessageLine.dataset.chatKind = 'public';
         pinnedMessageLine.dataset.pinnedMessage = 'true';
       }
       pinnedMessageLine.innerHTML = html;
@@ -1110,6 +1174,8 @@
       } else if (!anchor && pinnedMessageLine.parentElement !== messages) {
         messages.insertBefore(pinnedMessageLine, messages.firstChild);
       }
+      pinnedMessageLine.hidden = !messageMatchesChatMode(pinnedMessageLine);
+      applyChatModeFilter();
       scheduleScrollToBottom();
       return true;
     }
@@ -1227,6 +1293,11 @@
       const usageByCommand = {
         '/clear': '/clear',
         '/clear_public': '/clear_public',
+        '/chat_all': '/chat_all',
+        '/chat_public': '/chat_public',
+        '/chat_ai': '/chat_ai',
+        '/chat_local': '/chat_local',
+        '/chat_system': '/chat_system',
         '/dvd': '/dvd',
         '/exit': '/exit',
         '/help': '/help',
@@ -1289,7 +1360,7 @@
     function addLocalUserPromptMessage(promptText) {
       const nickname = normalizeNickname(currentNickname);
       const nicknameColor = currentNicknameColor ? ` style="color:${escapeAttribute(currentNicknameColor)}"` : '';
-      return addMessage('user', `<strong${nicknameColor}>${escapeHtml(nickname)}:</strong> ${renderMarkdownText(promptText)}`);
+      return addMessage('user', `<strong${nicknameColor}>${escapeHtml(nickname)}:</strong> ${renderMarkdownText(promptText)}`, { kind: 'ai' });
     }
 
     function addApiResponseMessage(promptText, responseText) {
@@ -1307,7 +1378,7 @@
         '</div>'
       ].join('');
 
-      const line = addMessage('system', html);
+      const line = addMessage('system', html, { kind: 'ai' });
       line.dataset.apiResponseId = responseId;
       return line;
     }
@@ -1337,6 +1408,15 @@
       }
     }
 
+    function addLocalChatMessage(text) {
+      const body = String(text || '').trim();
+      if (!body) return false;
+      const nickname = normalizeNickname(currentNickname);
+      const nicknameColor = currentNicknameColor ? ` style="color:${escapeAttribute(currentNicknameColor)}"` : '';
+      addMessage('user', `<strong${nicknameColor}>${escapeHtml(nickname)}:</strong> ${renderMarkdownText(body)}`, { kind: 'local' });
+      return true;
+    }
+
     async function runPromptCommand(promptText) {
       const message = String(promptText || '').trim();
       if (!message) {
@@ -1345,7 +1425,7 @@
       }
 
       addLocalUserPromptMessage(message);
-      const loadingLine = addSystemMessage('API thinking...');
+      const loadingLine = addSystemMessage('API thinking...', { kind: 'ai' });
       try {
         const payload = {
           message,
@@ -1932,7 +2012,7 @@
       const nicknameClass = reservedNickname ? ' class="reservedNickname"' : '';
       const nicknameStyle = !reservedNickname && nicknameColor ? ` style="color:${escapeAttribute(nicknameColor)}"` : '';
       const body = renderPublicChatBody(message.body || '');
-      const line = addMessage('public', `${timestampHtml}<strong${nicknameClass}${nicknameStyle}>${nickname}:</strong> ${body}`, { publicMessage: true });
+      const line = addMessage('public', `${timestampHtml}<strong${nicknameClass}${nicknameStyle}>${nickname}:</strong> ${body}`, { publicMessage: true, kind: 'public' });
       line.dataset.publicMessageKey = key;
       trimRenderedPublicMessages();
     }
@@ -2002,6 +2082,7 @@
         }
         orderedRows.forEach(addPublicChatMessage);
         trimRenderedPublicMessages();
+        applyChatModeFilter();
         return true;
       } catch (error) {
         console.warn('Unable to load public chat:', error);
@@ -2420,6 +2501,12 @@
         return showCommandUsage(command);
       }
 
+      if (command === '/chat_all') return setChatMode('all');
+      if (command === '/chat_public') return setChatMode('public');
+      if (command === '/chat_ai') return setChatMode('ai');
+      if (command === '/chat_local') return setChatMode('local');
+      if (command === '/chat_system') return setChatMode('system');
+
       if (command === '/nickname') {
         const lowerArg = arg.toLowerCase();
         if (lowerArg === 'reset') {
@@ -2576,6 +2663,10 @@
       if (trimmed.startsWith('/')) {
         const handled = await handleCommand(trimmed);
         if (!handled) addSystemMessage(`${trimmed.split(/\s+/)[0]} is not a known command`, { error: true });
+        return;
+      }
+      if (currentChatMode === 'local') {
+        addLocalChatMessage(trimmed);
         return;
       }
       await sendPublicMessage(trimmed);
@@ -2769,6 +2860,7 @@
     }
 
     welcomeMessageLine = addSystemMessage('System: Welcome to chat. Type /help for commands.');
+    applyChatModeFilter();
     loadRecentPublicMessages();
     window.setInterval(() => {
       if (!document.hidden) loadRecentPublicMessages({ incremental: true });
