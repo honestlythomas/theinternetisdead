@@ -358,6 +358,36 @@
       box-shadow: 0 0 22px rgba(255, 255, 255, 0.12);
     }
 
+    .apiResponseTools {
+      display: flex;
+      gap: 6px;
+      margin-top: 7px;
+      flex-wrap: wrap;
+    }
+
+    .apiShareButton {
+      border: 1px solid rgba(0, 255, 102, 0.42);
+      background: rgba(0, 0, 0, 0.58);
+      color: var(--chat-text);
+      font: inherit;
+      font-size: 12px;
+      padding: 4px 7px;
+      cursor: pointer;
+      text-shadow: 0 0 6px rgba(0, 255, 102, 0.28);
+    }
+
+    .apiShareButton:hover,
+    .apiShareButton:focus-visible {
+      outline: none;
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.62);
+    }
+
+    .apiShareButton:disabled {
+      cursor: default;
+      opacity: 0.62;
+    }
+
     .helpList { display: grid; gap: 4px; margin-top: 4px; }
 
     .helpItem {
@@ -514,6 +544,8 @@
     const PUBLIC_CHAT_IMAGE_MAX_DIMENSION = 960;
     const PUBLIC_CHAT_IMAGE_PAYLOAD_TYPE = 'theinternetisdead.publicChatImage.v1';
     const PUBLIC_CHAT_PIN_PAYLOAD_TYPE = 'theinternetisdead.publicChatPin.v1';
+    const CHAT_API_URL = 'https://theinternetisdead.onrender.com/api/chat';
+    const API_SHARE_MAX_CHARS = 8000;
 
     const commands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
@@ -522,6 +554,7 @@
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
       { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User', 'color #00ff66', 'reset'] },
       { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a message below the welcome message', hidden: true },
+      { name: '/prompt', value: '/prompt ', execute: false, desc: 'send a local-only prompt to the site API' },
       { name: '/random', value: '/random', execute: true, desc: 'load a random site page in the root iframe' },
       { name: '/rainbow', value: '/rainbow', execute: true, desc: 'toggle a hue-shifting color filter over the root page' },
       { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the entire page' },
@@ -578,6 +611,8 @@
       'developer'
     ]);
     const commandExecutionMessages = new Map();
+    const localApiResponses = new Map();
+    let localApiResponseCounter = 0;
     let pendingReservedNickname = '';
     let pendingReservedNicknamePromptLine = null;
     let pendingClearPublicPassword = false;
@@ -963,6 +998,13 @@
     }
 
     messages.addEventListener('click', (event) => {
+      const apiShareButton = event.target.closest?.('.apiShareButton');
+      if (apiShareButton) {
+        event.preventDefault();
+        shareApiResponseToPublic(apiShareButton);
+        return;
+      }
+
       const youtubeEmbed = event.target.closest?.('.publicChatYoutube');
       if (youtubeEmbed) {
         event.preventDefault();
@@ -1162,6 +1204,7 @@
         '/exit': '/exit',
         '/help': '/help',
         '/pin': '/pin [text]',
+        '/prompt': '/prompt [message]',
         '/random': '/random',
         '/rainbow': [
           '/rainbow',
@@ -1193,6 +1236,118 @@
       const desc = command.desc ? `\n${command.desc}` : '';
       addMessage('system', `<strong>${escapeHtml(commandName)} usage</strong><br><pre>${escapeHtml(usage)}</pre>${escapeHtml(desc).replace(/\n/g, '<br>')}`);
       return true;
+    }
+
+    function clampApiShareText(value) {
+      const text = String(value || '');
+      if (text.length <= API_SHARE_MAX_CHARS) return text;
+      return `${text.slice(0, API_SHARE_MAX_CHARS - 34)}\n\n[truncated for public chat]`;
+    }
+
+    function createSharedApiMessage(promptText, responseText) {
+      return [
+        '🤖 API prompt:',
+        clampApiShareText(promptText),
+        '',
+        '🧠 API response:',
+        clampApiShareText(responseText)
+      ].join('\n');
+    }
+
+    function addLocalUserPromptMessage(promptText) {
+      const nickname = normalizeNickname(currentNickname);
+      const nicknameColor = currentNicknameColor ? ` style="color:${escapeAttribute(currentNicknameColor)}"` : '';
+      return addMessage('user', `<strong${nicknameColor}>${escapeHtml(nickname)}:</strong> ${renderMarkdownText(promptText)}`);
+    }
+
+    function addApiResponseMessage(promptText, responseText) {
+      const responseId = `api-${++localApiResponseCounter}`;
+      localApiResponses.set(responseId, {
+        prompt: String(promptText || ''),
+        response: String(responseText || '')
+      });
+
+      const html = [
+        '<strong>API:</strong> ',
+        renderMarkdownText(responseText),
+        '<div class="apiResponseTools">',
+        `<button type="button" class="apiShareButton" data-api-response-id="${escapeAttribute(responseId)}" title="Share this prompt and response to public chat">share to public chat</button>`,
+        '</div>'
+      ].join('');
+
+      const line = addMessage('system', html);
+      line.dataset.apiResponseId = responseId;
+      return line;
+    }
+
+    async function shareApiResponseToPublic(button) {
+      const responseId = button && button.dataset ? button.dataset.apiResponseId : '';
+      const record = responseId ? localApiResponses.get(responseId) : null;
+      if (!record) {
+        addSystemMessage('Unable to find API response to share.', { error: true });
+        return false;
+      }
+
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = 'sharing...';
+      try {
+        await insertPublicChatBody(createSharedApiMessage(record.prompt, record.response));
+        button.textContent = 'shared';
+        addCommandExecutionMessage('/prompt', { message: '/prompt response shared to public chat' });
+        return true;
+      } catch (error) {
+        console.error('Unable to share API response:', error);
+        button.disabled = false;
+        button.textContent = originalText || 'share to public chat';
+        addSystemMessage('Unable to share API response to public chat.', { error: true });
+        return false;
+      }
+    }
+
+    async function runPromptCommand(promptText) {
+      const message = String(promptText || '').trim();
+      if (!message) {
+        addSystemMessage('Usage: /prompt [message]');
+        return true;
+      }
+
+      addLocalUserPromptMessage(message);
+      const loadingLine = addSystemMessage('API thinking...');
+      try {
+        const response = await fetch(CHAT_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message })
+        });
+
+        let data = null;
+        try {
+          data = await response.json();
+        } catch (error) {
+          data = null;
+        }
+
+        if (!response.ok) {
+          const detail = data && (data.error || data.detail) ? ` ${data.error || data.detail}` : '';
+          throw new Error(`API request failed with ${response.status}.${detail}`);
+        }
+
+        const reply = data && typeof data.reply === 'string' ? data.reply.trim() : '';
+        if (!reply) throw new Error('API returned an empty reply.');
+
+        if (loadingLine && loadingLine.isConnected) loadingLine.remove();
+        addApiResponseMessage(message, reply);
+        addCommandExecutionMessage('/prompt', { message: '/prompt executed locally' });
+        return true;
+      } catch (error) {
+        if (loadingLine && loadingLine.isConnected) loadingLine.remove();
+        console.error('Unable to run API prompt:', error);
+        addSystemMessage(error && error.message ? error.message : 'Unable to run API prompt.', { error: true });
+        return true;
+      }
     }
 
     function clearLocalChatCommand() {
@@ -2274,6 +2429,11 @@
         if (await insertPublicPinnedMessage(arg)) {
           addCommandExecutionMessage('/pin');
         }
+        return true;
+      }
+
+      if (command === '/prompt') {
+        await runPromptCommand(arg);
         return true;
       }
 
