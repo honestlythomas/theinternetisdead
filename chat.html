@@ -191,17 +191,17 @@
       border: 1px solid rgba(255, 255, 255, 0.34);
       background: rgba(0, 0, 0, 0.52);
       color: #ffffff;
-      font: inherit;
-      text-align: left;
-      cursor: zoom-in;
       box-shadow: 0 0 18px rgba(255, 0, 120, 0.12), 0 0 20px rgba(0, 255, 102, 0.08);
       overflow: hidden;
     }
 
-    .publicChatYoutube:hover,
-    .publicChatYoutube:focus-visible {
-      outline: 1px solid rgba(255, 255, 255, 0.62);
-      filter: brightness(1.08);
+    .publicChatYoutubeFrame {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      border: 0;
+      background: rgba(0, 0, 0, 0.72);
     }
 
     .publicChatYoutubeThumbWrap {
@@ -757,7 +757,6 @@
 
       const start = parseYouTubeTimestamp(url.searchParams.get('t') || url.searchParams.get('start') || '');
       const embedUrl = new URL(`https://www.youtube-nocookie.com/embed/${videoId}`);
-      embedUrl.searchParams.set('autoplay', '1');
       embedUrl.searchParams.set('rel', '0');
       if (start) embedUrl.searchParams.set('start', String(start));
 
@@ -788,13 +787,9 @@
       const embeds = getYouTubeEmbedsFromText(value);
       if (!embeds.length) return '';
       return embeds.map((embed) => `
-        <button class="publicChatYoutube" type="button" data-youtube-embed-url="${escapeAttribute(embed.embedUrl)}" data-youtube-watch-url="${escapeAttribute(embed.url)}" aria-label="Open YouTube video in chat lightbox" title="Open YouTube video">
-          <span class="publicChatYoutubeThumbWrap">
-            <img class="publicChatYoutubeThumb" src="${escapeAttribute(embed.thumbnailUrl)}" alt="YouTube video thumbnail" loading="lazy" decoding="async" />
-            <span class="publicChatYoutubePlay" aria-hidden="true">▶</span>
-          </span>
-          <span class="publicChatYoutubeLabel">YouTube video detected. Click to open inside the haunted glass coffin.</span>
-        </button>
+        <div class="publicChatYoutube" data-youtube-video-id="${escapeAttribute(embed.videoId)}">
+          <iframe class="publicChatYoutubeFrame" title="YouTube video ${escapeAttribute(embed.videoId)}" src="${escapeAttribute(embed.embedUrl)}" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
       `).join('');
     }
 
@@ -835,7 +830,7 @@
     function renderMarkdownText(value) {
       const raw = String(value || '').replace(/\r\n?/g, '\n');
       if (!raw.includes('\n') && !/^\s*[-*]\s+/.test(raw) && !/```/.test(raw)) {
-        return renderInlineMarkdown(raw);
+        return `${renderInlineMarkdown(raw)}${renderYouTubeEmbeds(raw)}`;
       }
       const lines = raw.split('\n');
       const blocks = [];
