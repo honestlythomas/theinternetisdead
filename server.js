@@ -28,8 +28,15 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-const DEFAULT_OPENAI_MODEL = 'gpt-5.5';
+const DEFAULT_OPENAI_MODEL = "gpt-5.5";
 const CLIENT_ALLOWED_MODELS = new Set([DEFAULT_OPENAI_MODEL]);
+
+function normalizeAllowedModel(value) {
+  const model = typeof value === "string" ? value.trim() : "";
+  return CLIENT_ALLOWED_MODELS.has(model) ? model : "";
+}
+
+const SERVER_OPENAI_MODEL = normalizeAllowedModel(process.env.OPENAI_MODEL) || DEFAULT_OPENAI_MODEL;
 
 app.get("/", (req, res) => {
   res.type("text/plain").send("theinternetisdead API online. The machine is regrettably breathing.");
@@ -38,7 +45,8 @@ app.get("/", (req, res) => {
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    hasOpenAIKey: Boolean(process.env.OPENAI_API_KEY)
+    hasOpenAIKey: Boolean(process.env.OPENAI_API_KEY),
+    model: SERVER_OPENAI_MODEL
   });
 });
 
@@ -58,11 +66,14 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
-    const requestedModel = typeof model === 'string' ? model.trim() : '';
-    const selectedModel = process.env.OPENAI_MODEL ||
-      (CLIENT_ALLOWED_MODELS.has(requestedModel) ? requestedModel : DEFAULT_OPENAI_MODEL);
+    const selectedModel = normalizeAllowedModel(model) || SERVER_OPENAI_MODEL;
 
-    const input = [];
+    const input = [
+      {
+        role: "system",
+        content: `The active API model requested for this chat is ${selectedModel}. If asked what model you are, answer based on that active model value. Do not describe yourself as GPT-4 or GPT-4 architecture.`
+      }
+    ];
 
     if (systemPrompt && typeof systemPrompt === "string") {
       input.push({
