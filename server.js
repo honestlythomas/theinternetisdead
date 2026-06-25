@@ -28,6 +28,9 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
+const DEFAULT_OPENAI_MODEL = 'gpt-5.5-thinking';
+const CLIENT_ALLOWED_MODELS = new Set([DEFAULT_OPENAI_MODEL]);
+
 app.get("/", (req, res) => {
   res.type("text/plain").send("theinternetisdead API online. The machine is regrettably breathing.");
 });
@@ -41,7 +44,7 @@ app.get("/health", (req, res) => {
 
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message, systemPrompt } = req.body ?? {};
+    const { message, systemPrompt, model } = req.body ?? {};
 
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({
@@ -54,6 +57,10 @@ app.post("/api/chat", async (req, res) => {
         error: "Missing message. Send JSON like: { \"message\": \"hello\" }"
       });
     }
+
+    const requestedModel = typeof model === 'string' ? model.trim() : '';
+    const selectedModel = process.env.OPENAI_MODEL ||
+      (CLIENT_ALLOWED_MODELS.has(requestedModel) ? requestedModel : DEFAULT_OPENAI_MODEL);
 
     const input = [];
 
@@ -70,12 +77,13 @@ app.post("/api/chat", async (req, res) => {
     });
 
     const response = await openai.responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
+      model: selectedModel,
       input
     });
 
     res.json({
-      reply: response.output_text ?? ""
+      reply: response.output_text ?? "",
+      model: selectedModel
     });
   } catch (err) {
     console.error("OpenAI request failed:", err);

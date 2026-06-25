@@ -531,6 +531,7 @@
     const CHAT_NICKNAME_STORAGE_KEY = 'tektiteChatNickname';
     const CHAT_NICKNAME_EXPLICIT_STORAGE_KEY = 'tektiteChatNicknameExplicit';
     const CHAT_NICKNAME_COLOR_STORAGE_KEY = 'tektiteChatNicknameColor';
+    const CHAT_SYSTEM_PROMPT_STORAGE_KEY = 'tektiteChatSystemPrompt';
     const SUPABASE_PROJECT_URL = 'https://fumidkcwrhzgfdmuakqj.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BcNJhaZkgo4r5VH1aJ_stQ_P-kEDY_r';
     const SUPABASE_CHAT_ROOM = 'index';
@@ -545,6 +546,7 @@
     const PUBLIC_CHAT_IMAGE_PAYLOAD_TYPE = 'theinternetisdead.publicChatImage.v1';
     const PUBLIC_CHAT_PIN_PAYLOAD_TYPE = 'theinternetisdead.publicChatPin.v1';
     const CHAT_API_URL = 'https://theinternetisdead.onrender.com/api/chat';
+    const CHAT_API_MODEL = 'gpt-5.5-thinking';
     const API_SHARE_MAX_CHARS = 8000;
 
     const commands = [
@@ -555,6 +557,7 @@
       { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User', 'color #00ff66', 'reset'] },
       { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a message below the welcome message', hidden: true },
       { name: '/prompt', value: '/prompt ', execute: false, desc: 'send a local-only prompt to the site API' },
+      { name: '/system_prompt', value: '/system_prompt ', execute: false, desc: 'set/show/clear the local system prompt sent with /prompt' },
       { name: '/random', value: '/random', execute: true, desc: 'load a random site page in the root iframe' },
       { name: '/rainbow', value: '/rainbow', execute: true, desc: 'toggle a hue-shifting color filter over the root page' },
       { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the entire page' },
@@ -576,6 +579,7 @@
     const chatLightboxClose = document.getElementById('chatLightboxClose');
     let currentNickname = loadNickname();
     let currentNicknameColor = loadNicknameColor();
+    let currentSystemPrompt = loadSystemPrompt();
     let renderedPublicMessageKeys = new Set();
     let suggestionIndex = -1;
     let publicChatRefreshInFlight = false;
@@ -719,6 +723,29 @@
         }
       } catch (error) {}
       return color;
+    }
+
+    function normalizeSystemPrompt(value) {
+      return String(value || '').replace(/\r\n?/g, '\n').trim().slice(0, 4000);
+    }
+
+    function loadSystemPrompt() {
+      try {
+        return normalizeSystemPrompt(window.localStorage.getItem(CHAT_SYSTEM_PROMPT_STORAGE_KEY) || '');
+      } catch (error) {}
+      return '';
+    }
+
+    function saveSystemPrompt(value) {
+      const systemPrompt = normalizeSystemPrompt(value);
+      try {
+        if (systemPrompt) {
+          window.localStorage.setItem(CHAT_SYSTEM_PROMPT_STORAGE_KEY, systemPrompt);
+        } else {
+          window.localStorage.removeItem(CHAT_SYSTEM_PROMPT_STORAGE_KEY);
+        }
+      } catch (error) {}
+      return systemPrompt;
     }
 
     function escapeHtml(value) {
@@ -1205,6 +1232,11 @@
         '/help': '/help',
         '/pin': '/pin [text]',
         '/prompt': '/prompt [message]',
+        '/system_prompt': [
+          '/system_prompt',
+          '/system_prompt [system prompt text]',
+          '/system_prompt clear'
+        ].join('\n'),
         '/random': '/random',
         '/rainbow': [
           '/rainbow',
@@ -1315,12 +1347,18 @@
       addLocalUserPromptMessage(message);
       const loadingLine = addSystemMessage('API thinking...');
       try {
+        const payload = {
+          message,
+          model: CHAT_API_MODEL
+        };
+        if (currentSystemPrompt) payload.systemPrompt = currentSystemPrompt;
+
         const response = await fetch(CHAT_API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ message })
+          body: JSON.stringify(payload)
         });
 
         let data = null;
@@ -1348,6 +1386,31 @@
         addSystemMessage(error && error.message ? error.message : 'Unable to run API prompt.', { error: true });
         return true;
       }
+    }
+
+    function showSystemPromptStatus() {
+      if (!currentSystemPrompt) {
+        addSystemMessage('No local system prompt is set. Use /system_prompt [text] to set one.');
+        return true;
+      }
+      addMessage('system', `<strong>Current local system prompt:</strong><br><pre>${escapeHtml(currentSystemPrompt)}</pre>`);
+      return true;
+    }
+
+    function runSystemPromptCommand(value) {
+      const nextPrompt = String(value || '').trim();
+      const lowerPrompt = nextPrompt.toLowerCase();
+      if (!nextPrompt) return showSystemPromptStatus();
+      if (lowerPrompt === 'clear' || lowerPrompt === 'reset' || lowerPrompt === 'off') {
+        currentSystemPrompt = saveSystemPrompt('');
+        addCommandExecutionMessage('/system_prompt', { message: '/system_prompt cleared' });
+        return true;
+      }
+      currentSystemPrompt = saveSystemPrompt(nextPrompt);
+      addCommandExecutionMessage('/system_prompt', {
+        message: `/system_prompt set (${currentSystemPrompt.length}/4000 chars)`
+      });
+      return true;
     }
 
     function clearLocalChatCommand() {
@@ -2434,6 +2497,11 @@
 
       if (command === '/prompt') {
         await runPromptCommand(arg);
+        return true;
+      }
+
+      if (command === '/system_prompt') {
+        runSystemPromptCommand(arg);
         return true;
       }
 
