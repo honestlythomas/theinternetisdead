@@ -28,7 +28,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-const DEFAULT_OPENAI_MODEL = 'gpt-5.5-thinking';
+const DEFAULT_OPENAI_MODEL = 'gpt-5.5';
 const CLIENT_ALLOWED_MODELS = new Set([DEFAULT_OPENAI_MODEL]);
 
 app.get("/", (req, res) => {
