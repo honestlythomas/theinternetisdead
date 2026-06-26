@@ -405,27 +405,139 @@
 
     #prompt { color: var(--chat-text); font-weight: 700; }
 
-    #chatModeSelect {
+    #chatModePicker {
+      position: relative;
+    }
+
+    #chatModeButton {
       min-width: 86px;
       border: 1px solid rgba(var(--chat-primary-rgb), 0.34);
       background: rgba(0, 0, 0, 0.58);
       color: var(--chat-text);
       font: inherit;
-      padding: 2px 22px 2px 6px;
+      padding: 2px 8px;
       outline: none;
       cursor: pointer;
       text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.22);
     }
 
-    #chatModeSelect:hover,
-    #chatModeSelect:focus-visible {
+    #chatModeButton:hover,
+    #chatModeButton:focus-visible {
       color: #ffffff;
       border-color: rgba(255, 255, 255, 0.62);
     }
 
-    #chatModeSelect option {
+    #chatModeMenu {
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + 6px);
+      z-index: 4;
+      display: none;
+      min-width: 150px;
+      gap: 2px;
+      padding: 6px;
+      border: 1px solid var(--chat-border);
+      background: var(--chat-bg);
+      box-shadow: 0 0 22px rgba(var(--chat-primary-rgb), 0.12);
+    }
+
+    #chatModeMenu.open {
+      display: grid;
+    }
+
+    .chatModeOption {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 8px;
+      color: var(--chat-text);
+      padding: 4px 6px;
+      cursor: pointer;
+      user-select: none;
+      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.22);
+    }
+
+    .chatModeOption:hover,
+    .chatModeOption:focus-within {
+      outline: 1px solid var(--chat-border);
+      background: rgba(var(--chat-primary-rgb), 0.12);
+    }
+
+    .chatModeOption input {
+      margin: 0;
+      accent-color: var(--chat-primary);
+    }
+
+    .chatModeOption:has(input:disabled) {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .chatModeOption.hidden {
+      display: none;
+    }
+
+    #chatBaseSelect {
+      width: 100%;
+      border: 1px solid rgba(var(--chat-primary-rgb), 0.34);
+      background: rgba(0, 0, 0, 0.58);
+      color: var(--chat-text);
+      font: inherit;
+      padding: 3px 6px;
+      outline: none;
+      cursor: pointer;
+      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.22);
+    }
+
+    #chatBaseSelect:hover,
+    #chatBaseSelect:focus-visible {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.62);
+    }
+
+    #chatBaseSelect option {
       background: #000000;
       color: var(--chat-primary);
+    }
+
+    #publicChatSettings {
+      display: none;
+      gap: 6px;
+    }
+
+    #publicChatSettings.visible {
+      display: grid;
+    }
+
+    #publicNicknameInput,
+    #publicNicknameColor {
+      min-width: 0;
+      border: 1px solid rgba(var(--chat-primary-rgb), 0.34);
+      background: rgba(0, 0, 0, 0.58);
+      color: var(--chat-text);
+      font: inherit;
+      padding: 3px 6px;
+      outline: none;
+      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.22);
+    }
+
+    #publicNicknameInput::placeholder {
+      color: rgba(var(--chat-primary-rgb), 0.52);
+    }
+
+    #publicNicknameInput:hover,
+    #publicNicknameInput:focus-visible,
+    #publicNicknameColor:hover,
+    #publicNicknameColor:focus-visible {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.62);
+    }
+
+    #publicNicknameColor {
+      width: 100%;
+      min-height: 28px;
+      padding: 2px 4px;
+      cursor: pointer;
     }
 
     #chatInput {
@@ -530,14 +642,23 @@
       <div id="messages"></div>
       <form id="inputWrap" autocomplete="off">
         <span id="prompt">&gt;</span>
-        <select id="chatModeSelect" aria-label="Chat mode" title="Chat mode">
-          <option value="all">All</option>
-          <option value="public">Public</option>
-          <option value="ai">AI</option>
-          <option value="local">Local</option>
-          <option value="system">System</option>
-        </select>
-        <input id="chatInput" type="text" placeholder="Press here to chat or / for commands..." />
+        <div id="chatModePicker">
+          <button id="chatModeButton" type="button" aria-haspopup="true" aria-expanded="false" title="Chat filters">All Chats</button>
+          <div id="chatModeMenu" aria-label="Chat filters">
+            <select id="chatBaseSelect" aria-label="Chat base">
+              <option value="public">Public Chat</option>
+              <option value="local">Local Chat</option>
+              <option value="ai">AI Chat</option>
+            </select>
+            <div id="publicChatSettings">
+              <input id="publicNicknameInput" type="text" maxlength="40" placeholder="Nickname" aria-label="Public nickname" />
+              <input id="publicNicknameColor" type="color" aria-label="Nickname color" />
+            </div>
+            <label class="chatModeOption"><input type="checkbox" value="commands" /> Commands</label>
+            <label class="chatModeOption"><input type="checkbox" value="system" /> System Chat</label>
+          </div>
+        </div>
+        <input id="chatInput" type="text" placeholder="Press here to chat..." />
         <button id="chatCloseButton" type="button" aria-label="Close chat" title="Close chat">❌</button>
         <div id="suggestions" aria-hidden="true"></div>
       </form>
@@ -584,13 +705,12 @@
           { name: 'reset', value: '/nickname reset', execute: true, desc: 'reset to an anonymous nickname' }
         ]
       },
-      { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a message below the welcome message', hidden: true },
-      { name: '/prompt', value: '/prompt ', execute: false, desc: 'send a local-only prompt to the site API' },
+      { name: '/pin', value: '/pin ', execute: false, desc: 'pin a message below the selected chat welcome message' },
       {
         name: '/system_prompt',
         value: '/system_prompt ',
         execute: false,
-        desc: 'set/show/clear the local system prompt sent with /prompt',
+        desc: 'set/show/clear the local system prompt sent with AI chat',
         subcommands: [
           { name: 'clear', value: '/system_prompt clear', execute: true, desc: 'clear the local system prompt' },
           { name: 'reset', value: '/system_prompt reset', execute: true, desc: 'clear the local system prompt' },
@@ -617,7 +737,14 @@
     const messages = document.getElementById('messages');
     const inputWrap = document.getElementById('inputWrap');
     const chatInput = document.getElementById('chatInput');
-    const chatModeSelect = document.getElementById('chatModeSelect');
+    const chatModePicker = document.getElementById('chatModePicker');
+    const chatModeButton = document.getElementById('chatModeButton');
+    const chatModeMenu = document.getElementById('chatModeMenu');
+    const chatBaseSelect = document.getElementById('chatBaseSelect');
+    const publicChatSettings = document.getElementById('publicChatSettings');
+    const publicNicknameInput = document.getElementById('publicNicknameInput');
+    const publicNicknameColor = document.getElementById('publicNicknameColor');
+    const chatModeCheckboxes = Array.from(document.querySelectorAll('#chatModeMenu input[type="checkbox"]'));
     const chatCloseButton = document.getElementById('chatCloseButton');
     const suggestions = document.getElementById('suggestions');
     const dvdOverlay = document.getElementById('dvdOverlay');
@@ -625,10 +752,13 @@
     const chatLightboxImage = document.getElementById('chatLightboxImage');
     const chatLightboxFrame = document.getElementById('chatLightboxFrame');
     const chatLightboxClose = document.getElementById('chatLightboxClose');
+    const CHAT_KINDS = ['ai', 'commands', 'local', 'public', 'system'];
+    const DEFAULT_CHAT_KINDS = ['local'];
+    const CHAT_KIND_SET = new Set(CHAT_KINDS);
     let currentNickname = loadNickname();
     let currentNicknameColor = loadNicknameColor();
     let currentSystemPrompt = loadSystemPrompt();
-    let currentChatMode = loadChatMode();
+    let currentChatKinds = loadChatKinds();
     let apiChatHistory = loadApiChatHistory();
     let renderedPublicMessageKeys = new Set();
     let suggestionIndex = -1;
@@ -647,7 +777,6 @@
     const dvdNormalMaxInstances = 10;
     const dvdHueShiftSpeedDegPerSecond = 45;
     const COMMAND_EXECUTION_MESSAGE_TTL_MS = 15000;
-    const CHAT_MODES = new Set(['all', 'public', 'ai', 'local', 'system']);
     const SITE_SEARCH_MAX_RESULTS = 8;
     const SITE_SEARCH_FETCH_CONCURRENCY = 8;
     const RESERVED_NICKNAMES = new Set([
@@ -666,6 +795,7 @@
       'developer'
     ]);
     const commandExecutionMessages = new Map();
+    let commandOutputDepth = 0;
     let pendingReservedNickname = '';
     let pendingReservedNicknamePromptLine = null;
     let pendingClearPublicPassword = false;
@@ -677,7 +807,8 @@
     let siteSearchIndexPromise = null;
     let siteSearchDocuments = null;
     let welcomeMessageLine = null;
-    let pinnedMessageLine = null;
+    const welcomeMessageLines = new Map();
+    const pinnedMessageLines = new Map();
     let previousChatInputPlaceholder = chatInput.getAttribute('placeholder') || '';
 
     function generateAnonymousNickname() {
@@ -774,6 +905,16 @@
       return color;
     }
 
+    function getColorPickerValue(value) {
+      const color = normalizeNicknameColor(value);
+      return /^#[0-9a-f]{6}$/i.test(color) ? color : '#00ff66';
+    }
+
+    function syncPublicChatSettings() {
+      if (publicNicknameInput) publicNicknameInput.value = normalizeNickname(currentNickname);
+      if (publicNicknameColor) publicNicknameColor.value = getColorPickerValue(currentNicknameColor);
+    }
+
     function normalizeSystemPrompt(value) {
       return String(value || '').replace(/\r\n?/g, '\n').trim().slice(0, 4000);
     }
@@ -797,28 +938,49 @@
       return systemPrompt;
     }
 
-    function normalizeChatMode(value) {
-      const mode = String(value || '').trim().toLowerCase();
-      return CHAT_MODES.has(mode) ? mode : 'all';
+    function normalizeChatKind(value) {
+      const kind = String(value || '').trim().toLowerCase();
+      return CHAT_KIND_SET.has(kind) ? kind : 'system';
     }
 
-    function loadChatMode() {
+    function normalizeChatKindSelection(value) {
+      let selected = [];
+      if (Array.isArray(value)) {
+        selected = value;
+      } else {
+        const mode = String(value || '').trim().toLowerCase();
+        if (mode === 'all') return new Set(DEFAULT_CHAT_KINDS);
+        if (!mode) return new Set(DEFAULT_CHAT_KINDS);
+        selected = [mode];
+      }
+
+      const normalized = selected.map(normalizeChatKind).filter((kind, index, kinds) => kinds.indexOf(kind) === index);
+      if (normalized.includes('public')) return new Set(['public']);
+      if (normalized.includes('ai')) return new Set(['ai']);
+      if (normalized.length) return new Set(['local', ...normalized.filter((kind) => kind === 'commands' || kind === 'system')]);
+      return new Set(DEFAULT_CHAT_KINDS);
+    }
+
+    function loadChatKinds() {
       try {
-        return normalizeChatMode(window.localStorage.getItem(CHAT_MODE_STORAGE_KEY) || 'all');
+        const saved = window.localStorage.getItem(CHAT_MODE_STORAGE_KEY);
+        if (!saved) return new Set(DEFAULT_CHAT_KINDS);
+        if (saved.trim().startsWith('[')) return normalizeChatKindSelection(JSON.parse(saved));
+        return normalizeChatKindSelection(saved);
       } catch (error) {}
-      return 'all';
+      return new Set(DEFAULT_CHAT_KINDS);
     }
 
-    function saveChatMode(value) {
-      const mode = normalizeChatMode(value);
+    function saveChatKinds(value) {
+      const selected = normalizeChatKindSelection(Array.from(value || []));
       try {
-        if (mode === 'all') {
+        if (selected.size === CHAT_KINDS.length) {
           window.localStorage.removeItem(CHAT_MODE_STORAGE_KEY);
         } else {
-          window.localStorage.setItem(CHAT_MODE_STORAGE_KEY, mode);
+          window.localStorage.setItem(CHAT_MODE_STORAGE_KEY, JSON.stringify(Array.from(selected)));
         }
       } catch (error) {}
-      return mode;
+      return selected;
     }
 
     function normalizeApiHistoryRole(value) {
@@ -895,17 +1057,13 @@
 
     function getMessageKind(line) {
       if (!line || !line.dataset) return 'system';
-      return normalizeChatMode(line.dataset.chatKind || line.dataset.role || 'system');
+      return normalizeChatKind(line.dataset.chatKind || line.dataset.role || 'system');
     }
 
     function messageMatchesChatMode(line) {
       if (!line) return false;
-      if (currentChatMode === 'all') return true;
       const kind = getMessageKind(line);
-      if (currentChatMode === 'public') {
-        return kind === 'public' || line.dataset.liveChatMessage === 'true' || line.dataset.pinnedMessage === 'true';
-      }
-      return kind === currentChatMode;
+      return currentChatKinds.has(kind);
     }
 
     function applyChatModeFilter() {
@@ -916,18 +1074,55 @@
     }
 
     function applyChatModeTheme() {
-      document.body.dataset.chatMode = currentChatMode;
+      const selected = Array.from(currentChatKinds);
+      document.body.dataset.chatMode = selected.length === 1 ? selected[0] : 'all';
     }
 
-    function setChatMode(mode, options = {}) {
-      currentChatMode = saveChatMode(mode);
-      if (chatModeSelect && chatModeSelect.value !== currentChatMode) {
-        chatModeSelect.value = currentChatMode;
+    function updateChatModeControls() {
+      const isPublic = currentChatKinds.has('public');
+      const isAi = currentChatKinds.has('ai');
+      const isLocal = currentChatKinds.has('local');
+      if (chatBaseSelect) chatBaseSelect.value = isPublic ? 'public' : (isAi ? 'ai' : 'local');
+      publicChatSettings?.classList.toggle('visible', isPublic);
+      chatModeCheckboxes.forEach((checkbox) => {
+        const option = checkbox.closest?.('.chatModeOption');
+        if (option) option.classList.toggle('hidden', isPublic);
+        checkbox.checked = currentChatKinds.has(normalizeChatKind(checkbox.value));
+        checkbox.disabled = !isLocal && (checkbox.value === 'commands' || checkbox.value === 'system');
+      });
+      if (!chatModeButton) return;
+      if (currentChatKinds.has('public')) {
+        chatModeButton.textContent = 'Public Chat';
+      } else if (currentChatKinds.has('ai')) {
+        chatModeButton.textContent = 'AI Chat';
+      } else {
+        chatModeButton.textContent = 'Local Chat';
       }
+    }
+
+    function setChatKinds(kinds, options = {}) {
+      currentChatKinds = saveChatKinds(kinds);
+      updateChatModeControls();
       applyChatModeTheme();
-      if (!options.silent) addSystemMessage(`Chat mode: ${currentChatMode}`);
+      if (!commandsEnabled()) hideSuggestions();
       applyChatModeFilter();
       return true;
+    }
+
+    function getActiveInputChatKind() {
+      if (currentChatKinds.has('public')) return 'public';
+      if (currentChatKinds.has('ai')) return 'ai';
+      return 'local';
+    }
+
+    function commandsEnabled() {
+      return currentChatKinds.has('commands');
+    }
+
+    function setChatModeMenuOpen(open) {
+      if (!chatModeMenu || !chatModeButton) return;
+      chatModeMenu.classList.toggle('open', !!open);
+      chatModeButton.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
 
     function escapeHtml(value) {
@@ -1155,7 +1350,7 @@
       const line = document.createElement('div');
       line.className = 'message';
       line.dataset.role = role;
-      line.dataset.chatKind = options.kind || (options.publicMessage ? 'public' : role);
+      line.dataset.chatKind = options.kind || (options.publicMessage ? 'public' : (role === 'system' && commandOutputDepth > 0 ? 'commands' : role));
       if (options.publicMessage) line.dataset.liveChatMessage = 'true';
       if (options.error) line.dataset.error = 'true';
       line.innerHTML = html;
@@ -1169,7 +1364,23 @@
     }
 
     function addSystemMessage(text, options = {}) {
-      return addMessage('system', escapeHtml(text), { ...options, kind: options.kind || 'system' });
+      return addMessage('system', escapeHtml(text), options);
+    }
+
+    function addWelcomeMessages() {
+      const welcomeMessages = [
+        { kind: 'ai', text: 'AI chat ready. Ask with plain text when AI Chat is checked. 🤖' },
+        { kind: 'local', text: 'Local chat ready. Notes stay in this browser session. 📝' },
+        { kind: 'public', text: 'Public chat ready. Messages are shared with everyone. 🌐' },
+        { kind: 'system', text: 'System chat ready. Commands and status messages land here. ⚙️' }
+      ];
+      let publicWelcomeLine = null;
+      welcomeMessages.forEach((welcome) => {
+        const line = addSystemMessage(welcome.text, { kind: welcome.kind });
+        welcomeMessageLines.set(welcome.kind, line);
+        if (welcome.kind === 'public') publicWelcomeLine = line;
+      });
+      return publicWelcomeLine;
     }
 
     function openChatImageLightbox(image) {
@@ -1265,24 +1476,34 @@
       return `<strong>${escapedNickname}:</strong>`;
     }
 
-    function upsertPinnedMessage(text, nickname = currentNickname) {
+    function getPinnedMessageAnchor(kind) {
+      const welcomeLine = welcomeMessageLines.get(kind);
+      if (welcomeLine && welcomeLine.isConnected) return welcomeLine;
+      return welcomeMessageLine && welcomeMessageLine.isConnected ? welcomeMessageLine : messages.firstElementChild;
+    }
+
+    function upsertPinnedMessage(text, nickname = currentNickname, options = {}) {
       const pinnedText = String(text || '').trim();
       if (!pinnedText) {
-        addSystemMessage('Usage: /pin [text]');
+        addSystemMessage('Usage: /pin [text]', { kind: options.kind || 'system' });
         return false;
       }
 
+      const kind = normalizeChatKind(options.kind || 'public');
       const html = `${getNicknameHtml(nickname)} ${renderMarkdownText(pinnedText)}`;
+      let pinnedMessageLine = pinnedMessageLines.get(kind);
       if (!pinnedMessageLine || !pinnedMessageLine.isConnected) {
         pinnedMessageLine = document.createElement('div');
         pinnedMessageLine.className = 'message';
         pinnedMessageLine.dataset.role = 'public';
-        pinnedMessageLine.dataset.chatKind = 'public';
+        pinnedMessageLine.dataset.chatKind = kind;
         pinnedMessageLine.dataset.pinnedMessage = 'true';
+        pinnedMessageLines.set(kind, pinnedMessageLine);
       }
       pinnedMessageLine.innerHTML = html;
+      pinnedMessageLine.dataset.chatKind = kind;
 
-      const anchor = welcomeMessageLine && welcomeMessageLine.isConnected ? welcomeMessageLine : messages.firstElementChild;
+      const anchor = getPinnedMessageAnchor(kind);
       if (anchor && anchor.nextSibling !== pinnedMessageLine) {
         messages.insertBefore(pinnedMessageLine, anchor.nextSibling);
       } else if (!anchor && pinnedMessageLine.parentElement !== messages) {
@@ -1294,9 +1515,39 @@
       return true;
     }
 
-    function removePinnedMessage() {
+    function removePinnedMessage(kind = 'public') {
+      const normalizedKind = normalizeChatKind(kind);
+      const pinnedMessageLine = pinnedMessageLines.get(normalizedKind);
       if (pinnedMessageLine && pinnedMessageLine.isConnected) pinnedMessageLine.remove();
-      pinnedMessageLine = null;
+      pinnedMessageLines.delete(normalizedKind);
+    }
+
+    function getPinTargetKinds() {
+      return currentChatKinds.size ? Array.from(currentChatKinds) : CHAT_KINDS;
+    }
+
+    async function pinMessageToSelectedChats(text) {
+      const pinnedText = String(text || '').trim();
+      if (!pinnedText) {
+        addSystemMessage('Usage: /pin [text]', { kind: 'commands' });
+        return false;
+      }
+      if (pinnedText.length > 500) {
+        addSystemMessage('Pinned message is too long. Keep it to 500 characters.', { error: true, kind: 'commands' });
+        return false;
+      }
+
+      const nickname = normalizeNickname(currentNickname);
+      currentNickname = nickname;
+      saveNickname(currentNickname);
+      const targetKinds = getPinTargetKinds();
+      targetKinds
+        .filter((kind) => kind !== 'public')
+        .forEach((kind) => upsertPinnedMessage(pinnedText, nickname, { kind }));
+      if (targetKinds.includes('public') && !(await insertPublicPinnedMessage(pinnedText))) {
+        return false;
+      }
+      return true;
     }
 
     function removeCommandExecutionMessage(commandKey) {
@@ -1320,11 +1571,11 @@
         ? existing.line
         : addMessage('system', escapeHtml(text), {
             commandExecution: true,
-            kind: options.kind || 'system'
+            kind: options.kind || 'commands'
           });
 
       line.textContent = text;
-      line.dataset.chatKind = options.kind || line.dataset.chatKind || 'system';
+      line.dataset.chatKind = options.kind || line.dataset.chatKind || 'commands';
       line.dataset.commandExecution = commandKey;
       line.dataset.commandExecutionCount = String(count);
       window.clearTimeout(existing && existing.timerId);
@@ -1418,7 +1669,6 @@
         '/exit': '/exit',
         '/help': '/help',
         '/pin': '/pin [text]',
-        '/prompt': '/prompt [message]',
         '/system_prompt': [
           '/system_prompt',
           '/system_prompt [system prompt text]',
@@ -1448,12 +1698,12 @@
     function showCommandUsage(commandName) {
       const command = commandByName.get(commandName);
       if (!command) {
-        addSystemMessage(`${commandName} is not a known command`, { error: true });
+        addSystemMessage(`${commandName} is not a known command`, { error: true, kind: 'commands' });
         return true;
       }
       const usage = getCommandUsage(commandName);
       const desc = command.desc ? `\n${command.desc}` : '';
-      addMessage('system', `<strong>${escapeHtml(commandName)} usage</strong><br><pre>${escapeHtml(usage)}</pre>${escapeHtml(desc).replace(/\n/g, '<br>')}`);
+      addMessage('system', `<strong>${escapeHtml(commandName)} usage</strong><br><pre>${escapeHtml(usage)}</pre>${escapeHtml(desc).replace(/\n/g, '<br>')}`, { kind: 'commands' });
       return true;
     }
 
@@ -1490,10 +1740,10 @@
       return true;
     }
 
-    async function runPromptCommand(promptText) {
+    async function runAiChatPrompt(promptText) {
       const message = String(promptText || '').trim();
       if (!message) {
-        addSystemMessage('Usage: /prompt [message]', { kind: 'ai' });
+        addSystemMessage('Type a message while AI Chat is checked.', { kind: 'ai' });
         return true;
       }
 
@@ -1538,7 +1788,6 @@
         if (loadingLine && loadingLine.isConnected) loadingLine.remove();
         appendApiChatHistory('assistant', reply);
         addApiResponseMessage(reply);
-        addCommandExecutionMessage('/prompt', { message: '/prompt executed locally', kind: 'ai' });
         return true;
       } catch (error) {
         if (loadingLine && loadingLine.isConnected) loadingLine.remove();
@@ -1574,11 +1823,16 @@
     }
 
     function clearLocalChatCommand() {
+      const clearKinds = new Set(Array.from(currentChatKinds).filter((kind) => kind !== 'public'));
       Array.from(messages.children).forEach((child) => {
-        if (child.dataset.liveChatMessage !== 'true' && child.dataset.pinnedMessage !== 'true') child.remove();
+        if (child.dataset.liveChatMessage === 'true' || child.dataset.pinnedMessage === 'true') return;
+        if (!clearKinds.has(getMessageKind(child))) return;
+        if (child.dataset.commandExecution) removeCommandExecutionMessage(child.dataset.commandExecution);
+        child.remove();
       });
-      saveApiChatHistory([]);
-      addSystemMessage('Local chat display cleared. Public chat history remains online.');
+      if (clearKinds.has('ai')) saveApiChatHistory([]);
+      const cleared = Array.from(clearKinds).map((kind) => kind.toUpperCase()).join(', ') || 'none';
+      addSystemMessage(`Cleared local chat messages for: ${cleared}. Public chat history remains online.`);
       return true;
     }
 
@@ -2421,7 +2675,7 @@
     function clearReservedNicknamePasswordMode() {
       pendingReservedNickname = '';
       chatInput.type = 'text';
-      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat or / for commands...';
+      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat...';
       chatInput.value = '';
     }
 
@@ -2469,7 +2723,7 @@
     function clearClearPublicPasswordMode() {
       pendingClearPublicPassword = false;
       chatInput.type = 'text';
-      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat or / for commands...';
+      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat...';
       chatInput.value = '';
     }
 
@@ -2506,7 +2760,7 @@
     function clearNicknameColorPromptMode() {
       pendingNicknameColor = false;
       chatInput.type = 'text';
-      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat or / for commands...';
+      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat...';
       chatInput.value = '';
     }
 
@@ -2535,7 +2789,7 @@
     function clearSiteSearchPromptMode() {
       pendingSiteSearch = false;
       chatInput.type = 'text';
-      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat or / for commands...';
+      chatInput.placeholder = previousChatInputPlaceholder || 'Press here to chat...';
       chatInput.value = '';
     }
 
@@ -2628,7 +2882,7 @@
 
       if (command === '/help') {
         addCommandExecutionMessage('/help');
-        addMessage('system', createHelpHtml());
+        addMessage('system', createHelpHtml(), { kind: 'commands' });
         return true;
       }
 
@@ -2647,18 +2901,9 @@
       }
 
       if (command === '/pin') {
-        if (!isReservedNickname(currentNickname)) {
-          addSystemMessage('/pin is reserved.', { error: true });
-          return true;
-        }
-        if (await insertPublicPinnedMessage(arg)) {
+        if (await pinMessageToSelectedChats(arg)) {
           addCommandExecutionMessage('/pin');
         }
-        return true;
-      }
-
-      if (command === '/prompt') {
-        await runPromptCommand(arg);
         return true;
       }
 
@@ -2713,6 +2958,15 @@
       return false;
     }
 
+    async function runCommandWithTaggedOutput(raw) {
+      commandOutputDepth += 1;
+      try {
+        return await handleCommand(raw);
+      } finally {
+        commandOutputDepth = Math.max(0, commandOutputDepth - 1);
+      }
+    }
+
     async function submitInput() {
       const raw = chatInput.value;
       const trimmed = raw.trim();
@@ -2735,16 +2989,17 @@
         await handleSiteSearchInput(trimmed);
         return;
       }
-      if (trimmed.startsWith('/')) {
-        const handled = await handleCommand(trimmed);
-        if (!handled) addSystemMessage(`${trimmed.split(/\s+/)[0]} is not a known command`, { error: true });
+      if (trimmed.startsWith('/') && commandsEnabled()) {
+        const handled = await runCommandWithTaggedOutput(trimmed);
+        if (!handled) addSystemMessage(`${trimmed.split(/\s+/)[0]} is not a known command`, { error: true, kind: 'commands' });
         return;
       }
-      if (currentChatMode === 'ai') {
-        await runPromptCommand(trimmed);
+      if (currentChatKinds.has('ai')) {
+        await runAiChatPrompt(trimmed);
         return;
       }
-      if (currentChatMode === 'local') {
+      const activeInputChatKind = getActiveInputChatKind();
+      if (activeInputChatKind === 'local') {
         addLocalChatMessage(trimmed);
         return;
       }
@@ -2752,6 +3007,7 @@
     }
 
     function getSuggestionQuery() {
+      if (!commandsEnabled()) return null;
       const value = chatInput.value;
       if (!value.startsWith('/')) return null;
       const commandToken = value.split(/\s+/)[0].toLowerCase();
@@ -2855,12 +3111,56 @@
     }
 
     applyChatModeTheme();
+    syncPublicChatSettings();
+    updateChatModeControls();
 
-    if (chatModeSelect) {
-      chatModeSelect.value = currentChatMode;
-      chatModeSelect.addEventListener('change', () => {
-        setChatMode(chatModeSelect.value);
+    if (chatModeButton && chatModeMenu) {
+      chatModeButton.addEventListener('click', () => {
+        setChatModeMenuOpen(!chatModeMenu.classList.contains('open'));
+      });
+
+      publicNicknameInput?.addEventListener('change', () => {
+        const nickname = normalizeNickname(publicNicknameInput.value);
+        currentNickname = nickname;
+        saveNickname(currentNickname);
+        publicNicknameInput.value = currentNickname;
+      });
+
+      publicNicknameColor?.addEventListener('input', () => {
+        currentNicknameColor = saveNicknameColor(publicNicknameColor.value);
+      });
+
+      chatBaseSelect?.addEventListener('change', () => {
+        if (chatBaseSelect.value === 'public') {
+          setChatKinds(['public']);
+        } else if (chatBaseSelect.value === 'ai') {
+          setChatKinds(['ai']);
+        } else {
+          const selected = ['local', ...chatModeCheckboxes
+            .filter((item) => item.checked)
+            .map((item) => item.value)];
+          setChatKinds(selected);
+        }
         chatInput.focus();
+      });
+
+      chatModeCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          const selected = ['local', ...chatModeCheckboxes
+            .filter((item) => item.checked)
+            .map((item) => item.value)];
+          setChatKinds(selected);
+          chatInput.focus();
+        });
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!chatModePicker || chatModePicker.contains(event.target)) return;
+        setChatModeMenuOpen(false);
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') setChatModeMenuOpen(false);
       });
     }
 
@@ -2886,7 +3186,7 @@
     });
 
     chatInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Tab' && chatInput.value.startsWith('/')) {
+      if (event.key === 'Tab' && commandsEnabled() && chatInput.value.startsWith('/')) {
         event.preventDefault();
         cycleSuggestion(event.shiftKey ? -1 : 1);
         return;
@@ -2943,8 +3243,14 @@
         const rawCommand = typeof data.command === 'string' ? data.command.trim() : '';
         if (!rawCommand) return;
         if (data.openChat) setOpen(true, data.focus !== false);
-        handleCommand(rawCommand).then((ok) => {
-          if (!ok && rawCommand.startsWith('/')) addSystemMessage(`${rawCommand.split(/\s+/)[0]} is not a known command`, { error: true });
+        if (!commandsEnabled()) {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'chatSandboxCommandResult', ok: false, command: rawCommand, commandId: data.commandId || '' }, '*');
+          }
+          return;
+        }
+        runCommandWithTaggedOutput(rawCommand).then((ok) => {
+          if (!ok && rawCommand.startsWith('/')) addSystemMessage(`${rawCommand.split(/\s+/)[0]} is not a known command`, { error: true, kind: 'commands' });
           if (window.parent && window.parent !== window) {
             window.parent.postMessage({ type: 'chatSandboxCommandResult', ok: !!ok, command: rawCommand, commandId: data.commandId || '' }, '*');
           }
@@ -2971,7 +3277,7 @@
       setOpen(true, false);
     }
 
-    welcomeMessageLine = addSystemMessage('System: Welcome to chat. Type /help for commands.');
+    welcomeMessageLine = addWelcomeMessages();
     renderStoredApiChatHistory();
     applyChatModeFilter();
     loadRecentPublicMessages();
