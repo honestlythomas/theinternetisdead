@@ -886,6 +886,13 @@
       return apiChatHistory;
     }
 
+    function getApiChatHistoryForRequest() {
+      return apiChatHistory.map((entry) => ({
+        role: entry.role,
+        content: entry.content
+      }));
+    }
+
     function getMessageKind(line) {
       if (!line || !line.dataset) return 'system';
       return normalizeChatMode(line.dataset.chatKind || line.dataset.role || 'system');
@@ -1311,9 +1318,13 @@
       const text = `${baseText}${detail}${count > 1 ? ` x${count}` : ''}`;
       const line = existing && existing.line && existing.line.isConnected
         ? existing.line
-        : addMessage('system', escapeHtml(text), { commandExecution: true });
+        : addMessage('system', escapeHtml(text), {
+            commandExecution: true,
+            kind: options.kind || 'system'
+          });
 
       line.textContent = text;
+      line.dataset.chatKind = options.kind || line.dataset.chatKind || 'system';
       line.dataset.commandExecution = commandKey;
       line.dataset.commandExecutionCount = String(count);
       window.clearTimeout(existing && existing.timerId);
@@ -1482,20 +1493,22 @@
     async function runPromptCommand(promptText) {
       const message = String(promptText || '').trim();
       if (!message) {
-        addSystemMessage('Usage: /prompt [message]');
+        addSystemMessage('Usage: /prompt [message]', { kind: 'ai' });
         return true;
       }
 
       const nickname = normalizeNickname(currentNickname);
       const nicknameColor = currentNicknameColor;
       addLocalUserPromptMessage(message, { nickname, nicknameColor });
-      const conversationHistory = appendApiChatHistory('user', message, { nickname, nicknameColor });
+      appendApiChatHistory('user', message, { nickname, nicknameColor });
+      const conversationHistory = getApiChatHistoryForRequest();
       const loadingLine = addSystemMessage('API thinking...', { kind: 'ai' });
       try {
         const payload = {
           message,
           model: CHAT_API_MODEL,
-          history: conversationHistory
+          history: conversationHistory,
+          messages: conversationHistory
         };
         if (currentSystemPrompt) payload.systemPrompt = currentSystemPrompt;
 
@@ -1525,12 +1538,12 @@
         if (loadingLine && loadingLine.isConnected) loadingLine.remove();
         appendApiChatHistory('assistant', reply);
         addApiResponseMessage(reply);
-        addCommandExecutionMessage('/prompt', { message: '/prompt executed locally' });
+        addCommandExecutionMessage('/prompt', { message: '/prompt executed locally', kind: 'ai' });
         return true;
       } catch (error) {
         if (loadingLine && loadingLine.isConnected) loadingLine.remove();
         console.error('Unable to run API prompt:', error);
-        addSystemMessage(error && error.message ? error.message : 'Unable to run API prompt.', { error: true });
+        addSystemMessage(error && error.message ? error.message : 'Unable to run API prompt.', { error: true, kind: 'ai' });
         return true;
       }
     }

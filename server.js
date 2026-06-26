@@ -72,8 +72,10 @@ app.get("/health", (req, res) => {
 
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message, systemPrompt, model, history } = req.body ?? {};
-    const normalizedHistory = normalizeChatHistory(history);
+    const { message, systemPrompt, model, history, messages } = req.body ?? {};
+    const normalizedHistory = normalizeChatHistory(
+      Array.isArray(messages) && messages.length ? messages : history
+    );
 
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({
