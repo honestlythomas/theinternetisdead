@@ -728,6 +728,7 @@
         ]
       },
       { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the entire page' },
+      { name: '/reset', value: '/reset', execute: true, desc: 'clear local browser storage and reload', hidden: true },
       { name: '/search', value: '/search ', execute: false, desc: 'search visible text across indexed site HTML files' },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' }
     ];
@@ -2924,6 +2925,14 @@
 
       if (command === '/refresh') {
         refreshEntirePage();
+        return true;
+      }
+
+      if (command === '/reset') {
+        try {
+          window.localStorage.clear();
+        } catch (error) {}
+        window.location.reload();
         return true;
       }
 
