@@ -957,7 +957,7 @@
 
       const normalized = selected.map(normalizeChatKind).filter((kind, index, kinds) => kinds.indexOf(kind) === index);
       if (normalized.includes('public')) return new Set(['public']);
-      if (normalized.includes('ai')) return new Set(['ai']);
+      if (normalized.includes('ai')) return new Set(['ai', ...normalized.filter((kind) => kind === 'commands' || kind === 'system')]);
       if (normalized.length) return new Set(['local', ...normalized.filter((kind) => kind === 'commands' || kind === 'system')]);
       return new Set(DEFAULT_CHAT_KINDS);
     }
@@ -1089,7 +1089,7 @@
         const option = checkbox.closest?.('.chatModeOption');
         if (option) option.classList.toggle('hidden', isPublic);
         checkbox.checked = currentChatKinds.has(normalizeChatKind(checkbox.value));
-        checkbox.disabled = !isLocal && (checkbox.value === 'commands' || checkbox.value === 'system');
+        checkbox.disabled = isPublic && (checkbox.value === 'commands' || checkbox.value === 'system');
       });
       if (!chatModeButton) return;
       if (currentChatKinds.has('public')) {
@@ -3155,7 +3155,8 @@
 
       chatModeCheckboxes.forEach((checkbox) => {
         checkbox.addEventListener('change', () => {
-          const selected = ['local', ...chatModeCheckboxes
+          const baseKind = chatBaseSelect && chatBaseSelect.value === 'ai' ? 'ai' : 'local';
+          const selected = [baseKind, ...chatModeCheckboxes
             .filter((item) => item.checked)
             .map((item) => item.value)];
           setChatKinds(selected);
