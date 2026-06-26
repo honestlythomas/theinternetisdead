@@ -11,18 +11,26 @@
       width: 100%;
       height: 100%;
       background: transparent;
-      color: #00ff66;
+      color: var(--chat-primary);
       font-family: "Courier New", Courier, monospace;
       overflow: hidden;
     }
 
     body {
+      --chat-primary-rgb: 0, 255, 102;
+      --chat-primary: rgb(var(--chat-primary-rgb));
       --chat-bg: rgba(0, 0, 0, 0.82);
-      --chat-border: rgba(0, 255, 102, 0.42);
-      --chat-text: #00ff66;
-      --chat-muted: rgba(0, 255, 102, 0.72);
+      --chat-border: rgba(var(--chat-primary-rgb), 0.42);
+      --chat-text: var(--chat-primary);
+      --chat-muted: rgba(var(--chat-primary-rgb), 0.72);
       --chat-danger: #ff5577;
     }
+
+    body[data-chat-mode="all"] { --chat-primary-rgb: 0, 255, 102; }
+    body[data-chat-mode="public"] { --chat-primary-rgb: 0, 102, 255; }
+    body[data-chat-mode="ai"] { --chat-primary-rgb: 255, 0, 0; }
+    body[data-chat-mode="local"] { --chat-primary-rgb: 255, 255, 0; }
+    body[data-chat-mode="system"] { --chat-primary-rgb: 255, 0, 255; }
 
     #chatSurface {
       position: fixed;
@@ -96,17 +104,17 @@
       border: 1px solid var(--chat-border);
       background: var(--chat-bg);
       color: var(--chat-text);
-      text-shadow: 0 0 6px rgba(0, 255, 102, 0.28);
+      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.28);
       line-height: 1.35;
       overflow-wrap: anywhere;
-      box-shadow: 0 0 18px rgba(0, 255, 102, 0.08);
+      box-shadow: 0 0 18px rgba(var(--chat-primary-rgb), 0.08);
     }
 
     .message[data-role="user"] {
       align-self: flex-end;
-      border-color: rgba(123, 210, 255, 0.46);
-      color: #9be4ff;
-      text-shadow: 0 0 6px rgba(123, 210, 255, 0.25);
+      border-color: rgba(var(--chat-primary-rgb), 0.58);
+      color: var(--chat-text);
+      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.25);
     }
 
     .message[data-role="system"] { color: var(--chat-muted); }
@@ -191,7 +199,7 @@
       border: 1px solid rgba(255, 255, 255, 0.34);
       background: rgba(0, 0, 0, 0.52);
       color: #ffffff;
-      box-shadow: 0 0 18px rgba(255, 0, 120, 0.12), 0 0 20px rgba(0, 255, 102, 0.08);
+      box-shadow: 0 0 18px rgba(255, 0, 120, 0.12), 0 0 20px rgba(var(--chat-primary-rgb), 0.08);
       overflow: hidden;
     }
 
@@ -241,7 +249,7 @@
       color: #ffffff;
       background: rgba(0, 0, 0, 0.64);
       overflow-wrap: anywhere;
-      text-shadow: 0 0 6px rgba(0, 255, 102, 0.22);
+      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.22);
     }
 
     #chatLightbox {
@@ -270,9 +278,9 @@
       max-height: 90vh;
       width: auto;
       height: auto;
-      border: 1px solid rgba(0, 255, 102, 0.54);
+      border: 1px solid rgba(var(--chat-primary-rgb), 0.54);
       background: rgba(0, 0, 0, 0.72);
-      box-shadow: 0 0 32px rgba(0, 255, 102, 0.18), 0 0 90px rgba(81, 42, 103, 0.34);
+      box-shadow: 0 0 32px rgba(var(--chat-primary-rgb), 0.18), 0 0 90px rgba(81, 42, 103, 0.34);
       object-fit: contain;
       cursor: zoom-out;
     }
@@ -283,9 +291,9 @@
       height: min(54vw, 78vh);
       max-height: 78vh;
       aspect-ratio: 16 / 9;
-      border: 1px solid rgba(0, 255, 102, 0.54);
+      border: 1px solid rgba(var(--chat-primary-rgb), 0.54);
       background: rgba(0, 0, 0, 0.9);
-      box-shadow: 0 0 32px rgba(0, 255, 102, 0.18), 0 0 90px rgba(81, 42, 103, 0.34);
+      box-shadow: 0 0 32px rgba(var(--chat-primary-rgb), 0.18), 0 0 90px rgba(81, 42, 103, 0.34);
     }
 
     #chatLightbox[data-lightbox-kind="video"] #chatLightboxImage {
@@ -331,7 +339,7 @@
     }
 
     .reservedNickname {
-      background: linear-gradient(90deg, #ff5577, #ff9f43, #ffe66d, #00ff66, #7bd2ff, #c792ea, #ff7ac8, #ff5577);
+      background: linear-gradient(90deg, #ff5577, #ff9f43, #ffe66d, var(--chat-primary), #7bd2ff, #c792ea, #ff7ac8, #ff5577);
       background-size: 220% 100%;
       -webkit-background-clip: text;
       background-clip: text;
@@ -366,14 +374,14 @@
     }
 
     .apiShareButton {
-      border: 1px solid rgba(0, 255, 102, 0.42);
+      border: 1px solid rgba(var(--chat-primary-rgb), 0.42);
       background: rgba(0, 0, 0, 0.58);
       color: var(--chat-text);
       font: inherit;
       font-size: 12px;
       padding: 4px 7px;
       cursor: pointer;
-      text-shadow: 0 0 6px rgba(0, 255, 102, 0.28);
+      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.28);
     }
 
     .apiShareButton:hover,
@@ -407,16 +415,39 @@
     #inputWrap {
       position: relative;
       display: grid;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns: auto auto 1fr auto;
       align-items: center;
       gap: 8px;
       padding: 9px 10px;
       border: 1px solid var(--chat-border);
       background: var(--chat-bg);
-      box-shadow: 0 0 22px rgba(0, 255, 102, 0.12);
+      box-shadow: 0 0 22px rgba(var(--chat-primary-rgb), 0.12);
     }
 
     #prompt { color: var(--chat-text); font-weight: 700; }
+
+    #chatModeSelect {
+      min-width: 86px;
+      border: 1px solid rgba(var(--chat-primary-rgb), 0.34);
+      background: rgba(0, 0, 0, 0.58);
+      color: var(--chat-text);
+      font: inherit;
+      padding: 2px 22px 2px 6px;
+      outline: none;
+      cursor: pointer;
+      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.22);
+    }
+
+    #chatModeSelect:hover,
+    #chatModeSelect:focus-visible {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.62);
+    }
+
+    #chatModeSelect option {
+      background: #000000;
+      color: var(--chat-primary);
+    }
 
     #chatInput {
       min-width: 0;
@@ -427,7 +458,7 @@
       font: inherit;
     }
 
-    #chatInput::placeholder { color: rgba(0, 255, 102, 0.52); }
+    #chatInput::placeholder { color: rgba(var(--chat-primary-rgb), 0.52); }
 
     #chatCloseButton {
       border: 0;
@@ -474,7 +505,7 @@
     .suggestion.active,
     .suggestion:focus-visible {
       outline: 1px solid var(--chat-border);
-      background: rgba(0, 255, 102, 0.12);
+      background: rgba(var(--chat-primary-rgb), 0.12);
     }
 
     #dvdOverlay {
@@ -520,6 +551,13 @@
       <div id="messages"></div>
       <form id="inputWrap" autocomplete="off">
         <span id="prompt">&gt;</span>
+        <select id="chatModeSelect" aria-label="Chat mode" title="Chat mode">
+          <option value="all">All</option>
+          <option value="public">Public</option>
+          <option value="ai">AI</option>
+          <option value="local">Local</option>
+          <option value="system">System</option>
+        </select>
         <input id="chatInput" type="text" placeholder="Press here to chat or / for commands..." />
         <button id="chatCloseButton" type="button" aria-label="Close chat" title="Close chat">❌</button>
         <div id="suggestions" aria-hidden="true"></div>
@@ -532,7 +570,7 @@
     const CHAT_NICKNAME_EXPLICIT_STORAGE_KEY = 'tektiteChatNicknameExplicit';
     const CHAT_NICKNAME_COLOR_STORAGE_KEY = 'tektiteChatNicknameColor';
     const CHAT_SYSTEM_PROMPT_STORAGE_KEY = 'tektiteChatSystemPrompt';
-    const CHAT_MODE_STORAGE_KEY = 'tektiteChatMode';
+    const CHAT_MODE_STORAGE_KEY = 'tektiteChatModeDropdown';
     const SUPABASE_PROJECT_URL = 'https://fumidkcwrhzgfdmuakqj.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BcNJhaZkgo4r5VH1aJ_stQ_P-kEDY_r';
     const SUPABASE_CHAT_ROOM = 'index';
@@ -553,19 +591,6 @@
     const commands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
       { name: '/clear_public', value: '/clear_public ', execute: false, desc: 'admin: clear public chat history through the server-side function', hidden: true },
-      {
-        name: '/chat',
-        value: '/chat ',
-        execute: false,
-        desc: 'set the chat display/send mode',
-        subcommands: [
-          { name: 'all', value: '/chat all', execute: true, desc: 'show all chat messages and send normal messages publicly' },
-          { name: 'public', value: '/chat public', execute: true, desc: 'show only public chat messages' },
-          { name: 'ai', value: '/chat ai', execute: true, desc: 'show only /prompt messages and API responses' },
-          { name: 'local', value: '/chat local', execute: true, desc: 'show only local-only messages and keep normal messages local' },
-          { name: 'system', value: '/chat system', execute: true, desc: 'show only system messages' }
-        ]
-      },
       { name: '/dvd', value: '/dvd', execute: true, desc: 'spawn another bouncing hue-shifting DVD logo, up to 10 total' },
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
       {
@@ -613,6 +638,7 @@
     const messages = document.getElementById('messages');
     const inputWrap = document.getElementById('inputWrap');
     const chatInput = document.getElementById('chatInput');
+    const chatModeSelect = document.getElementById('chatModeSelect');
     const chatCloseButton = document.getElementById('chatCloseButton');
     const suggestions = document.getElementById('suggestions');
     const dvdOverlay = document.getElementById('dvdOverlay');
@@ -839,9 +865,17 @@
       scheduleScrollToBottom();
     }
 
-    function setChatMode(mode) {
+    function applyChatModeTheme() {
+      document.body.dataset.chatMode = currentChatMode;
+    }
+
+    function setChatMode(mode, options = {}) {
       currentChatMode = saveChatMode(mode);
-      addSystemMessage(`Chat mode: ${currentChatMode}`);
+      if (chatModeSelect && chatModeSelect.value !== currentChatMode) {
+        chatModeSelect.value = currentChatMode;
+      }
+      applyChatModeTheme();
+      if (!options.silent) addSystemMessage(`Chat mode: ${currentChatMode}`);
       applyChatModeFilter();
       return true;
     }
@@ -1333,14 +1367,6 @@
       const usageByCommand = {
         '/clear': '/clear',
         '/clear_public': '/clear_public',
-        '/chat': [
-          '/chat',
-          '/chat all',
-          '/chat public',
-          '/chat ai',
-          '/chat local',
-          '/chat system'
-        ].join('\n'),
         '/dvd': '/dvd',
         '/exit': '/exit',
         '/help': '/help',
@@ -2544,28 +2570,6 @@
         return showCommandUsage(command);
       }
 
-      if (command === '/chat') {
-        const mode = normalizeChatMode(arg);
-        if (!arg) {
-          showCommandUsage('/chat');
-          return true;
-        }
-        if (!CHAT_MODES.has(String(arg || '').trim().toLowerCase())) {
-          addSystemMessage(`Unknown /chat mode: ${arg}. Use /chat all, public, ai, local, or system.`, { error: true });
-          return true;
-        }
-        return setChatMode(mode);
-      }
-
-      const legacyChatModes = {
-        '/chat_all': 'all',
-        '/chat_public': 'public',
-        '/chat_ai': 'ai',
-        '/chat_local': 'local',
-        '/chat_system': 'system'
-      };
-      if (legacyChatModes[command]) return setChatMode(legacyChatModes[command]);
-
       if (command === '/nickname') {
         const lowerArg = arg.toLowerCase();
         if (lowerArg === 'reset') {
@@ -2724,6 +2728,10 @@
         if (!handled) addSystemMessage(`${trimmed.split(/\s+/)[0]} is not a known command`, { error: true });
         return;
       }
+      if (currentChatMode === 'ai') {
+        await runPromptCommand(trimmed);
+        return;
+      }
       if (currentChatMode === 'local') {
         addLocalChatMessage(trimmed);
         return;
@@ -2832,6 +2840,16 @@
         valuePickerActive: false,
         valuePickerCommand: ''
       }, '*');
+    }
+
+    applyChatModeTheme();
+
+    if (chatModeSelect) {
+      chatModeSelect.value = currentChatMode;
+      chatModeSelect.addEventListener('change', () => {
+        setChatMode(chatModeSelect.value);
+        chatInput.focus();
+      });
     }
 
     inputWrap.addEventListener('submit', (event) => {
