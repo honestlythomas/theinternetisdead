@@ -26,10 +26,11 @@
       --chat-danger: #ff5577;
     }
 
-    body[data-chat-mode="all"] { --chat-primary-rgb: 0, 255, 102; }
+    body[data-chat-mode="all"] { --chat-primary-rgb: 255, 255, 255; }
     body[data-chat-mode="public"] { --chat-primary-rgb: 0, 102, 255; }
     body[data-chat-mode="ai"] { --chat-primary-rgb: 255, 0, 0; }
     body[data-chat-mode="local"] { --chat-primary-rgb: 255, 255, 0; }
+    body[data-chat-mode="commands"] { --chat-primary-rgb: 0, 255, 102; }
     body[data-chat-mode="system"] { --chat-primary-rgb: 255, 0, 255; }
 
     #chatSurface {
@@ -127,6 +128,18 @@
     }
 
     .message[data-role="system"] { color: var(--chat-muted); }
+
+    .message[data-chat-kind] {
+      --chat-text: rgb(var(--chat-primary-rgb));
+      --chat-muted: rgba(var(--chat-primary-rgb), 0.72);
+      --chat-border: rgba(var(--chat-primary-rgb), 0.42);
+    }
+
+    .message[data-chat-kind="public"] { --chat-primary-rgb: 0, 102, 255; }
+    .message[data-chat-kind="ai"] { --chat-primary-rgb: 255, 0, 0; }
+    .message[data-chat-kind="local"] { --chat-primary-rgb: 255, 255, 0; }
+    .message[data-chat-kind="commands"] { --chat-primary-rgb: 0, 255, 102; }
+    .message[data-chat-kind="system"] { --chat-primary-rgb: 255, 0, 255; }
 
     .message a,
     .message a:visited {
@@ -370,7 +383,7 @@
 
     .message[data-pinned-message="true"] {
       border-color: rgba(255, 255, 255, 0.52);
-      color: #ffffff;
+      color: var(--chat-text);
       background: rgba(0, 0, 0, 0.66);
       box-shadow: 0 0 22px rgba(255, 255, 255, 0.12);
     }
@@ -652,6 +665,7 @@
           <button id="chatModeButton" type="button" aria-haspopup="true" aria-expanded="false" title="Chat filters">All Chats</button>
           <div id="chatModeMenu" aria-label="Chat filters">
             <select id="chatBaseSelect" aria-label="Chat base">
+              <option value="all">All Chats</option>
               <option value="public">Public Chat</option>
               <option value="local">Local Chat</option>
               <option value="ai">AI Chat</option>
@@ -699,6 +713,22 @@
     const CHAT_API_MODEL = 'gpt-5.5';
 
     const commands = [
+      {
+        name: '/chat',
+        value: '/chat ',
+        execute: false,
+        desc: 'switch chat mode',
+        allChatsOnly: true,
+        suggestions: ['all', 'public', 'local', 'ai', 'commands', 'system'],
+        subcommands: [
+          { name: 'all', value: '/chat all', execute: true, desc: 'switch to All Chats' },
+          { name: 'public', value: '/chat public', execute: true, desc: 'switch to Public Chat' },
+          { name: 'local', value: '/chat local', execute: true, desc: 'switch to Local Chat' },
+          { name: 'ai', value: '/chat ai', execute: true, desc: 'switch to AI Chat' },
+          { name: 'commands', value: '/chat commands', execute: true, desc: 'switch to Commands' },
+          { name: 'system', value: '/chat system', execute: true, desc: 'switch to System Chat' }
+        ]
+      },
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
       { name: '/clear_public', value: '/clear_public ', execute: false, desc: 'admin: clear public chat history through the server-side function', hidden: true },
       { name: '/dvd', value: '/dvd', execute: true, desc: 'spawn another bouncing hue-shifting DVD logo, up to 10 total' },
@@ -715,7 +745,7 @@
           { name: 'reset', value: '/nickname reset', execute: true, desc: 'reset to an anonymous nickname' }
         ]
       },
-      { name: '/pin', value: '/pin ', execute: false, desc: 'pin a message below the selected chat welcome message' },
+      { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a public chat message', hidden: true },
       {
         name: '/system_prompt',
         value: '/system_prompt ',
@@ -743,7 +773,6 @@
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' }
     ];
 
-    const visibleCommands = commands.filter((command) => command.hidden !== true);
     const commandByName = new Map(commands.map((command) => [command.name, command]));
     const messages = document.getElementById('messages');
     const inputWrap = document.getElementById('inputWrap');
@@ -768,6 +797,7 @@
     const CHAT_KINDS = ['ai', 'commands', 'local', 'public', 'system'];
     const DEFAULT_CHAT_KINDS = ['local'];
     const CHAT_KIND_SET = new Set(CHAT_KINDS);
+    const ALL_CHAT_KINDS = new Set(CHAT_KINDS);
     let currentNickname = loadNickname();
     let currentNicknameColor = loadNicknameColor();
     let currentSystemPrompt = loadSystemPrompt();
@@ -986,14 +1016,19 @@
         selected = value;
       } else {
         const mode = String(value || '').trim().toLowerCase();
-        if (mode === 'all') return new Set(DEFAULT_CHAT_KINDS);
+        if (mode === 'all') return new Set(ALL_CHAT_KINDS);
         if (!mode) return new Set(DEFAULT_CHAT_KINDS);
         selected = [mode];
       }
 
+      if (selected.some((kind) => String(kind || '').trim().toLowerCase() === 'all')) {
+        return new Set(ALL_CHAT_KINDS);
+      }
       const normalized = selected.map(normalizeChatKind).filter((kind, index, kinds) => kinds.indexOf(kind) === index);
+      if (normalized.length === CHAT_KINDS.length) return new Set(ALL_CHAT_KINDS);
       if (normalized.includes('public')) return new Set(['public']);
       if (normalized.includes('ai')) return new Set(['ai', ...normalized.filter((kind) => kind === 'commands' || kind === 'system')]);
+      if (normalized.length && normalized.every((kind) => kind === 'commands' || kind === 'system')) return new Set(normalized);
       if (normalized.length) return new Set(['local', ...normalized.filter((kind) => kind === 'commands' || kind === 'system')]);
       return new Set(DEFAULT_CHAT_KINDS);
     }
@@ -1103,11 +1138,20 @@
       return currentChatKinds.has(kind);
     }
 
+    function isAllChatsMode() {
+      return currentChatKinds.size === CHAT_KINDS.length;
+    }
+
+    function getVisibleCommands() {
+      return commands.filter((command) => command.hidden !== true && (!command.allChatsOnly || isAllChatsMode()));
+    }
+
     function applyChatModeFilter() {
+      const shouldStickToBottom = isScrolledNearBottom();
       Array.from(messages.children).forEach((line) => {
         line.hidden = !messageMatchesChatMode(line);
       });
-      scheduleScrollToBottom();
+      scheduleScrollToBottom({ force: shouldStickToBottom });
     }
 
     function applyChatModeTheme() {
@@ -1116,26 +1160,23 @@
     }
 
     function updateChatModeControls() {
+      const isAll = currentChatKinds.size === CHAT_KINDS.length;
       const isPublic = currentChatKinds.has('public');
       const isAi = currentChatKinds.has('ai');
       const isLocal = currentChatKinds.has('local');
-      if (chatBaseSelect) chatBaseSelect.value = isPublic ? 'public' : (isAi ? 'ai' : 'local');
-      publicChatSettings?.classList.toggle('visible', isPublic);
-      aiChatSettings?.classList.toggle('visible', isAi);
+      if (chatBaseSelect) chatBaseSelect.value = isAll ? 'all' : (isPublic ? 'public' : (isAi ? 'ai' : 'local'));
+      publicChatSettings?.classList.toggle('visible', !isAll && isPublic);
+      aiChatSettings?.classList.toggle('visible', !isAll && isAi);
       chatModeCheckboxes.forEach((checkbox) => {
         const option = checkbox.closest?.('.chatModeOption');
-        if (option) option.classList.toggle('hidden', !isLocal);
+        const kind = checkbox.value && normalizeChatKind(checkbox.value);
+        if (option) option.classList.toggle('hidden', isAll || !isLocal);
+        if (!kind) return;
         checkbox.checked = currentChatKinds.has(normalizeChatKind(checkbox.value));
         checkbox.disabled = isPublic && (checkbox.value === 'commands' || checkbox.value === 'system');
       });
       if (!chatModeButton) return;
-      if (currentChatKinds.has('public')) {
-        chatModeButton.textContent = 'Public Chat';
-      } else if (currentChatKinds.has('ai')) {
-        chatModeButton.textContent = 'AI Chat';
-      } else {
-        chatModeButton.textContent = 'Local Chat';
-      }
+      chatModeButton.textContent = getChatModeLabel();
     }
 
     function setChatKinds(kinds, options = {}) {
@@ -1148,9 +1189,18 @@
     }
 
     function getActiveInputChatKind() {
-      if (currentChatKinds.has('public')) return 'public';
-      if (currentChatKinds.has('ai')) return 'ai';
+      if (currentChatKinds.size !== CHAT_KINDS.length && currentChatKinds.has('public')) return 'public';
+      if (currentChatKinds.size !== CHAT_KINDS.length && currentChatKinds.has('ai')) return 'ai';
       return 'local';
+    }
+
+    function getChatModeLabel(kinds = currentChatKinds) {
+      if (kinds.size === CHAT_KINDS.length) return 'All Chats';
+      if (kinds.size === 1 && kinds.has('public')) return 'Public Chat';
+      if (kinds.size === 1 && kinds.has('ai')) return 'AI Chat';
+      if (kinds.size === 1 && kinds.has('commands')) return 'Commands';
+      if (kinds.size === 1 && kinds.has('system')) return 'System Chat';
+      return 'Local Chat';
     }
 
     function commandsEnabled() {
@@ -1377,7 +1427,12 @@
       messages.scrollTop = messages.scrollHeight;
     }
 
-    function scheduleScrollToBottom() {
+    function isScrolledNearBottom() {
+      return messages.scrollHeight - messages.scrollTop - messages.clientHeight < 48;
+    }
+
+    function scheduleScrollToBottom(options = {}) {
+      if (!options.force && !isScrolledNearBottom()) return;
       if (scrollFrameId) return;
       scrollFrameId = requestAnimationFrame(() => {
         scrollFrameId = 0;
@@ -1386,6 +1441,7 @@
     }
 
     function addMessage(role, html, options = {}) {
+      const shouldStickToBottom = isScrolledNearBottom();
       const line = document.createElement('div');
       line.className = 'message';
       line.dataset.role = role;
@@ -1398,7 +1454,7 @@
         messages.firstElementChild?.remove();
       }
       line.hidden = !messageMatchesChatMode(line);
-      scheduleScrollToBottom();
+      scheduleScrollToBottom({ force: options.forceScroll || shouldStickToBottom });
       return line;
     }
 
@@ -1542,6 +1598,7 @@
       pinnedMessageLine.innerHTML = html;
       pinnedMessageLine.dataset.chatKind = kind;
 
+      const shouldStickToBottom = isScrolledNearBottom();
       const anchor = getPinnedMessageAnchor(kind);
       if (anchor && anchor.nextSibling !== pinnedMessageLine) {
         messages.insertBefore(pinnedMessageLine, anchor.nextSibling);
@@ -1550,7 +1607,7 @@
       }
       pinnedMessageLine.hidden = !messageMatchesChatMode(pinnedMessageLine);
       applyChatModeFilter();
-      scheduleScrollToBottom();
+      scheduleScrollToBottom({ force: shouldStickToBottom });
       return true;
     }
 
@@ -1561,12 +1618,16 @@
       pinnedMessageLines.delete(normalizedKind);
     }
 
-    function getPinTargetKinds() {
-      return currentChatKinds.size ? Array.from(currentChatKinds) : CHAT_KINDS;
+    function currentNicknameCanPinPublicChat() {
+      return isReservedNickname(currentNickname);
     }
 
-    async function pinMessageToSelectedChats(text) {
+    async function pinPublicChatMessage(text) {
       const pinnedText = String(text || '').trim();
+      if (!currentNicknameCanPinPublicChat()) {
+        addSystemMessage('/pin is reserved for protected nicknames.', { error: true, kind: 'commands' });
+        return false;
+      }
       if (!pinnedText) {
         addSystemMessage('Usage: /pin [text]', { kind: 'commands' });
         return false;
@@ -1579,11 +1640,7 @@
       const nickname = normalizeNickname(currentNickname);
       currentNickname = nickname;
       saveNickname(currentNickname);
-      const targetKinds = getPinTargetKinds();
-      targetKinds
-        .filter((kind) => kind !== 'public')
-        .forEach((kind) => upsertPinnedMessage(pinnedText, nickname, { kind }));
-      if (targetKinds.includes('public') && !(await insertPublicPinnedMessage(pinnedText))) {
+      if (!(await insertPublicPinnedMessage(pinnedText))) {
         return false;
       }
       return true;
@@ -1689,7 +1746,7 @@
     }
 
     function createHelpHtml() {
-      const items = visibleCommands.map((command) => {
+      const items = getVisibleCommands().map((command) => {
         const subcommands = Array.isArray(command.subcommands) && command.subcommands.length
           ? `<br><span class="helpCommandDesc">subcommands: ${command.subcommands.map((subcommand) => escapeHtml(subcommand.name)).join(', ')}</span>`
           : '';
@@ -1702,6 +1759,14 @@
       const command = commandByName.get(commandName);
       if (!command) return '';
       const usageByCommand = {
+        '/chat': [
+          '/chat all',
+          '/chat public',
+          '/chat local',
+          '/chat ai',
+          '/chat commands',
+          '/chat system'
+        ].join('\n'),
         '/clear': '/clear',
         '/clear_public': '/clear_public',
         '/dvd': '/dvd',
@@ -2531,11 +2596,11 @@
     async function insertPublicPinnedMessage(text) {
       const pinnedText = String(text || '').trim();
       if (!pinnedText) {
-        addSystemMessage('Usage: /pin [text]');
+        addSystemMessage('Usage: /pin [text]', { kind: 'commands' });
         return false;
       }
       if (pinnedText.length > 500) {
-        addSystemMessage('Pinned message is too long. Keep it to 500 characters.', { error: true });
+        addSystemMessage('Pinned message is too long. Keep it to 500 characters.', { error: true, kind: 'commands' });
         return false;
       }
       const nickname = normalizeNickname(currentNickname);
@@ -2869,6 +2934,25 @@
       return true;
     }
 
+    function runChatModeCommand(value) {
+      const mode = String(value || '').trim().toLowerCase();
+      const modes = {
+        all: CHAT_KINDS,
+        public: ['public'],
+        local: ['local'],
+        ai: ['ai'],
+        commands: ['commands'],
+        system: ['system']
+      };
+      if (!mode || !modes[mode]) {
+        addSystemMessage('Usage: /chat [all|public|local|ai|commands|system]', { kind: 'commands' });
+        return true;
+      }
+      setChatKinds(modes[mode]);
+      addCommandExecutionMessage('/chat', { message: `/chat ${mode}: ${getChatModeLabel()}` });
+      return true;
+    }
+
     async function handleCommand(raw) {
       const trimmed = String(raw || '').trim();
       const [commandToken = ''] = trimmed.split(/\s+/);
@@ -2876,6 +2960,10 @@
       const arg = trimmed.slice(commandToken.length).trim();
       if (arg.toLowerCase() === '-help') {
         return showCommandUsage(command);
+      }
+
+      if (command === '/chat') {
+        return runChatModeCommand(arg);
       }
 
       if (command === '/nickname') {
@@ -2943,7 +3031,7 @@
       }
 
       if (command === '/pin') {
-        if (await pinMessageToSelectedChats(arg)) {
+        if (await pinPublicChatMessage(arg)) {
           addCommandExecutionMessage('/pin');
         }
         return true;
@@ -3044,11 +3132,11 @@
         if (!handled) addSystemMessage(`${trimmed.split(/\s+/)[0]} is not a known command`, { error: true, kind: 'commands' });
         return;
       }
-      if (currentChatKinds.has('ai')) {
+      const activeInputChatKind = getActiveInputChatKind();
+      if (activeInputChatKind === 'ai') {
         await runAiChatPrompt(trimmed);
         return;
       }
-      const activeInputChatKind = getActiveInputChatKind();
       if (activeInputChatKind === 'local') {
         addLocalChatMessage(trimmed);
         return;
@@ -3076,6 +3164,7 @@
       const suggestionQuery = getSuggestionQuery();
       if (!suggestionQuery) return [];
       if (suggestionQuery.type === 'subcommand') {
+        if (suggestionQuery.command.allChatsOnly && !isAllChatsMode()) return [];
         return suggestionQuery.command.subcommands
           .filter((subcommand) => subcommand.name.toLowerCase().startsWith(suggestionQuery.query))
           .map((subcommand) => ({
@@ -3084,7 +3173,7 @@
             label: `${suggestionQuery.command.name} ${subcommand.name}`
           }));
       }
-      return visibleCommands.filter((command) => command.name.startsWith(suggestionQuery.query));
+      return getVisibleCommands().filter((command) => command.name.startsWith(suggestionQuery.query));
     }
 
     function hideSuggestions() {
@@ -3197,13 +3286,15 @@
       });
 
       chatBaseSelect?.addEventListener('change', () => {
-        if (chatBaseSelect.value === 'public') {
+        if (chatBaseSelect.value === 'all') {
+          setChatKinds(CHAT_KINDS);
+        } else if (chatBaseSelect.value === 'public') {
           setChatKinds(['public']);
         } else if (chatBaseSelect.value === 'ai') {
           setChatKinds(['ai']);
         } else {
           const selected = ['local', ...chatModeCheckboxes
-            .filter((item) => item.checked)
+            .filter((item) => item.value && item.checked)
             .map((item) => item.value)];
           setChatKinds(selected);
         }
@@ -3214,7 +3305,7 @@
         checkbox.addEventListener('change', () => {
           const baseKind = chatBaseSelect && chatBaseSelect.value === 'ai' ? 'ai' : 'local';
           const selected = [baseKind, ...chatModeCheckboxes
-            .filter((item) => item.checked)
+            .filter((item) => item.value && item.checked)
             .map((item) => item.value)];
           setChatKinds(selected);
           chatInput.focus();
