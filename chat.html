@@ -553,19 +553,56 @@
     const commands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
       { name: '/clear_public', value: '/clear_public ', execute: false, desc: 'admin: clear public chat history through the server-side function', hidden: true },
-      { name: '/chat_all', value: '/chat_all', execute: true, desc: 'show all chat messages and send normal messages publicly' },
-      { name: '/chat_public', value: '/chat_public', execute: true, desc: 'show only public chat messages' },
-      { name: '/chat_ai', value: '/chat_ai', execute: true, desc: 'show only /prompt messages and API responses' },
-      { name: '/chat_local', value: '/chat_local', execute: true, desc: 'show only local-only messages and keep normal messages local' },
-      { name: '/chat_system', value: '/chat_system', execute: true, desc: 'show only system messages' },
+      {
+        name: '/chat',
+        value: '/chat ',
+        execute: false,
+        desc: 'set the chat display/send mode',
+        subcommands: [
+          { name: 'all', value: '/chat all', execute: true, desc: 'show all chat messages and send normal messages publicly' },
+          { name: 'public', value: '/chat public', execute: true, desc: 'show only public chat messages' },
+          { name: 'ai', value: '/chat ai', execute: true, desc: 'show only /prompt messages and API responses' },
+          { name: 'local', value: '/chat local', execute: true, desc: 'show only local-only messages and keep normal messages local' },
+          { name: 'system', value: '/chat system', execute: true, desc: 'show only system messages' }
+        ]
+      },
       { name: '/dvd', value: '/dvd', execute: true, desc: 'spawn another bouncing hue-shifting DVD logo, up to 10 total' },
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
-      { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User', 'color #00ff66', 'reset'] },
+      {
+        name: '/nickname',
+        value: '/nickname ',
+        execute: false,
+        desc: 'set the displayed username used by system messages',
+        suggestions: ['Tektite', 'Guest', 'User', 'color #00ff66', 'reset'],
+        subcommands: [
+          { name: 'color', value: '/nickname color ', execute: false, desc: 'set nickname color' },
+          { name: 'color reset', value: '/nickname color reset', execute: true, desc: 'clear nickname color' },
+          { name: 'reset', value: '/nickname reset', execute: true, desc: 'reset to an anonymous nickname' }
+        ]
+      },
       { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a message below the welcome message', hidden: true },
       { name: '/prompt', value: '/prompt ', execute: false, desc: 'send a local-only prompt to the site API' },
-      { name: '/system_prompt', value: '/system_prompt ', execute: false, desc: 'set/show/clear the local system prompt sent with /prompt' },
+      {
+        name: '/system_prompt',
+        value: '/system_prompt ',
+        execute: false,
+        desc: 'set/show/clear the local system prompt sent with /prompt',
+        subcommands: [
+          { name: 'clear', value: '/system_prompt clear', execute: true, desc: 'clear the local system prompt' },
+          { name: 'reset', value: '/system_prompt reset', execute: true, desc: 'clear the local system prompt' },
+          { name: 'off', value: '/system_prompt off', execute: true, desc: 'clear the local system prompt' }
+        ]
+      },
       { name: '/random', value: '/random', execute: true, desc: 'load a random site page in the root iframe' },
-      { name: '/rainbow', value: '/rainbow', execute: true, desc: 'toggle a hue-shifting color filter over the root page' },
+      {
+        name: '/rainbow',
+        value: '/rainbow',
+        execute: true,
+        desc: 'toggle a hue-shifting color filter over the root page',
+        subcommands: [
+          { name: 'speed', value: '/rainbow speed ', execute: false, desc: 'set rainbow filter speed' }
+        ]
+      },
       { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the entire page' },
       { name: '/search', value: '/search ', execute: false, desc: 'search visible text across indexed site HTML files' },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' }
@@ -1282,7 +1319,10 @@
 
     function createHelpHtml() {
       const items = visibleCommands.map((command) => {
-        return `<a href="#" class="helpItem" data-command="${escapeHtml(command.name)}"><span class="helpCommandName">${escapeHtml(command.name)}</span><span class="helpCommandDesc">- ${escapeHtml(command.desc)}</span></a>`;
+        const subcommands = Array.isArray(command.subcommands) && command.subcommands.length
+          ? `<br><span class="helpCommandDesc">subcommands: ${command.subcommands.map((subcommand) => escapeHtml(subcommand.name)).join(', ')}</span>`
+          : '';
+        return `<a href="#" class="helpItem" data-command="${escapeHtml(command.name)}"><span class="helpCommandName">${escapeHtml(command.name)}</span><span class="helpCommandDesc">- ${escapeHtml(command.desc)}${subcommands}</span></a>`;
       }).join('');
       return `<strong>Help with commands...</strong><div class="helpList">${items}</div>`;
     }
@@ -1293,11 +1333,14 @@
       const usageByCommand = {
         '/clear': '/clear',
         '/clear_public': '/clear_public',
-        '/chat_all': '/chat_all',
-        '/chat_public': '/chat_public',
-        '/chat_ai': '/chat_ai',
-        '/chat_local': '/chat_local',
-        '/chat_system': '/chat_system',
+        '/chat': [
+          '/chat',
+          '/chat all',
+          '/chat public',
+          '/chat ai',
+          '/chat local',
+          '/chat system'
+        ].join('\n'),
         '/dvd': '/dvd',
         '/exit': '/exit',
         '/help': '/help',
@@ -2501,11 +2544,27 @@
         return showCommandUsage(command);
       }
 
-      if (command === '/chat_all') return setChatMode('all');
-      if (command === '/chat_public') return setChatMode('public');
-      if (command === '/chat_ai') return setChatMode('ai');
-      if (command === '/chat_local') return setChatMode('local');
-      if (command === '/chat_system') return setChatMode('system');
+      if (command === '/chat') {
+        const mode = normalizeChatMode(arg);
+        if (!arg) {
+          showCommandUsage('/chat');
+          return true;
+        }
+        if (!CHAT_MODES.has(String(arg || '').trim().toLowerCase())) {
+          addSystemMessage(`Unknown /chat mode: ${arg}. Use /chat all, public, ai, local, or system.`, { error: true });
+          return true;
+        }
+        return setChatMode(mode);
+      }
+
+      const legacyChatModes = {
+        '/chat_all': 'all',
+        '/chat_public': 'public',
+        '/chat_ai': 'ai',
+        '/chat_local': 'local',
+        '/chat_system': 'system'
+      };
+      if (legacyChatModes[command]) return setChatMode(legacyChatModes[command]);
 
       if (command === '/nickname') {
         const lowerArg = arg.toLowerCase();
@@ -2672,11 +2731,34 @@
       await sendPublicMessage(trimmed);
     }
 
-    function matchingCommands() {
+    function getSuggestionQuery() {
       const value = chatInput.value;
-      if (!value.startsWith('/')) return [];
+      if (!value.startsWith('/')) return null;
+      const commandToken = value.split(/\s+/)[0].toLowerCase();
+      const command = commandByName.get(commandToken);
+      if (command && Array.isArray(command.subcommands) && /\s$/.test(value)) {
+        return { type: 'subcommand', command, query: '' };
+      }
+      if (command && Array.isArray(command.subcommands) && value.toLowerCase().startsWith(`${commandToken} `)) {
+        return { type: 'subcommand', command, query: value.slice(commandToken.length).trimStart().toLowerCase() };
+      }
       const token = value.split(/\s+/)[0].toLowerCase();
-      return visibleCommands.filter((command) => command.name.startsWith(token));
+      return { type: 'command', query: token };
+    }
+
+    function matchingCommands() {
+      const suggestionQuery = getSuggestionQuery();
+      if (!suggestionQuery) return [];
+      if (suggestionQuery.type === 'subcommand') {
+        return suggestionQuery.command.subcommands
+          .filter((subcommand) => subcommand.name.toLowerCase().startsWith(suggestionQuery.query))
+          .map((subcommand) => ({
+            ...subcommand,
+            parentCommand: suggestionQuery.command.name,
+            label: `${suggestionQuery.command.name} ${subcommand.name}`
+          }));
+      }
+      return visibleCommands.filter((command) => command.name.startsWith(suggestionQuery.query));
     }
 
     function hideSuggestions() {
@@ -2697,7 +2779,7 @@
         const button = document.createElement('button');
         button.type = 'button';
         button.className = index === suggestionIndex ? 'suggestion active' : 'suggestion';
-        button.textContent = command.name;
+        button.textContent = command.desc && command.label ? `${command.label} - ${command.desc}` : command.label || command.name;
         button.addEventListener('mousedown', (event) => {
           event.preventDefault();
           applyCommand(command);
