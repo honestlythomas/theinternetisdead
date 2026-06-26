@@ -916,6 +916,26 @@
       if (publicNicknameColor) publicNicknameColor.value = getColorPickerValue(currentNicknameColor);
     }
 
+    function applyPublicNicknameInput() {
+      if (!publicNicknameInput) return true;
+      const nickname = normalizeNickname(publicNicknameInput.value);
+      if (nickname.length > 40) {
+        addSystemMessage('Nickname is too long. Keep it to 40 characters.', { error: true, kind: 'commands' });
+        publicNicknameInput.value = currentNickname;
+        return false;
+      }
+      if (isReservedNickname(nickname)) {
+        publicNicknameInput.value = currentNickname;
+        setReservedNicknamePasswordMode(nickname);
+        setChatModeMenuOpen(false);
+        return true;
+      }
+      currentNickname = nickname;
+      saveNickname(currentNickname);
+      publicNicknameInput.value = currentNickname;
+      return true;
+    }
+
     function normalizeSystemPrompt(value) {
       return String(value || '').replace(/\r\n?/g, '\n').trim().slice(0, 4000);
     }
@@ -1117,7 +1137,8 @@
     }
 
     function commandsEnabled() {
-      return currentChatKinds.has('commands');
+      const commandsCheckbox = chatModeCheckboxes.find((checkbox) => checkbox.value === 'commands');
+      return currentChatKinds.has('commands') || !!(commandsCheckbox && commandsCheckbox.checked && !commandsCheckbox.disabled);
     }
 
     function setChatModeMenuOpen(open) {
@@ -2698,6 +2719,7 @@
       }
       currentNickname = normalizeNickname(nickname);
       saveNickname(currentNickname);
+      syncPublicChatSettings();
       clearReservedNicknamePasswordMode();
       removeReservedNicknamePromptLine();
       addCommandExecutionMessage('/nickname', {
@@ -3128,11 +3150,13 @@
         setChatModeMenuOpen(!chatModeMenu.classList.contains('open'));
       });
 
-      publicNicknameInput?.addEventListener('change', () => {
-        const nickname = normalizeNickname(publicNicknameInput.value);
-        currentNickname = nickname;
-        saveNickname(currentNickname);
-        publicNicknameInput.value = currentNickname;
+      publicNicknameInput?.addEventListener('change', applyPublicNicknameInput);
+
+      publicNicknameInput?.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        applyPublicNicknameInput();
+        chatInput.focus();
       });
 
       publicNicknameColor?.addEventListener('input', () => {
