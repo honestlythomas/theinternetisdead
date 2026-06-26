@@ -89,16 +89,26 @@
       overflow: auto;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      justify-content: flex-start;
       gap: 6px;
       max-height: none;
-      padding-right: 4px;
-      scrollbar-color: var(--chat-text) transparent;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #messages::-webkit-scrollbar {
+      display: none;
+    }
+
+    #messages::before {
+      content: "";
+      margin-top: auto;
     }
 
     .message {
       width: fit-content;
       max-width: min(920px, calc(100vw - 32px));
+      align-self: flex-start;
       flex-shrink: 0;
       padding: 7px 9px;
       border: 1px solid var(--chat-border);
@@ -111,7 +121,6 @@
     }
 
     .message[data-role="user"] {
-      align-self: flex-end;
       border-color: rgba(var(--chat-primary-rgb), 0.58);
       color: var(--chat-text);
       text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.25);
@@ -366,36 +375,6 @@
       box-shadow: 0 0 22px rgba(255, 255, 255, 0.12);
     }
 
-    .apiResponseTools {
-      display: flex;
-      gap: 6px;
-      margin-top: 7px;
-      flex-wrap: wrap;
-    }
-
-    .apiShareButton {
-      border: 1px solid rgba(var(--chat-primary-rgb), 0.42);
-      background: rgba(0, 0, 0, 0.58);
-      color: var(--chat-text);
-      font: inherit;
-      font-size: 12px;
-      padding: 4px 7px;
-      cursor: pointer;
-      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.28);
-    }
-
-    .apiShareButton:hover,
-    .apiShareButton:focus-visible {
-      outline: none;
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.62);
-    }
-
-    .apiShareButton:disabled {
-      cursor: default;
-      opacity: 0.62;
-    }
-
     .helpList { display: grid; gap: 4px; margin-top: 4px; }
 
     .helpItem {
@@ -571,6 +550,7 @@
     const CHAT_NICKNAME_COLOR_STORAGE_KEY = 'tektiteChatNicknameColor';
     const CHAT_SYSTEM_PROMPT_STORAGE_KEY = 'tektiteChatSystemPrompt';
     const CHAT_MODE_STORAGE_KEY = 'tektiteChatModeDropdown';
+    const CHAT_API_HISTORY_STORAGE_KEY = 'tektiteChatApiHistory';
     const SUPABASE_PROJECT_URL = 'https://fumidkcwrhzgfdmuakqj.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BcNJhaZkgo4r5VH1aJ_stQ_P-kEDY_r';
     const SUPABASE_CHAT_ROOM = 'index';
@@ -586,7 +566,6 @@
     const PUBLIC_CHAT_PIN_PAYLOAD_TYPE = 'theinternetisdead.publicChatPin.v1';
     const CHAT_API_URL = 'https://theinternetisdead.onrender.com/api/chat';
     const CHAT_API_MODEL = 'gpt-5.5';
-    const API_SHARE_MAX_CHARS = 8000;
 
     const commands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
@@ -650,6 +629,7 @@
     let currentNicknameColor = loadNicknameColor();
     let currentSystemPrompt = loadSystemPrompt();
     let currentChatMode = loadChatMode();
+    let apiChatHistory = loadApiChatHistory();
     let renderedPublicMessageKeys = new Set();
     let suggestionIndex = -1;
     let publicChatRefreshInFlight = false;
@@ -686,8 +666,6 @@
       'developer'
     ]);
     const commandExecutionMessages = new Map();
-    const localApiResponses = new Map();
-    let localApiResponseCounter = 0;
     let pendingReservedNickname = '';
     let pendingReservedNicknamePromptLine = null;
     let pendingClearPublicPassword = false;
@@ -841,6 +819,71 @@
         }
       } catch (error) {}
       return mode;
+    }
+
+    function normalizeApiHistoryRole(value) {
+      return value === 'assistant' ? 'assistant' : 'user';
+    }
+
+    function normalizeApiHistoryEntry(entry) {
+      if (!entry || typeof entry !== 'object') return null;
+      const content = String(entry.content || '').trim();
+      if (!content) return null;
+      const normalized = {
+        role: normalizeApiHistoryRole(entry.role),
+        content
+      };
+      if (entry.nickname && normalized.role === 'user') {
+        normalized.nickname = normalizeNickname(entry.nickname);
+      }
+      if (entry.nicknameColor && normalized.role === 'user') {
+        const color = normalizeNicknameColor(entry.nicknameColor);
+        if (color) normalized.nicknameColor = color;
+      }
+      if (entry.createdAt) normalized.createdAt = String(entry.createdAt);
+      return normalized;
+    }
+
+    function normalizeApiChatHistory(value) {
+      if (!Array.isArray(value)) return [];
+      return value.map(normalizeApiHistoryEntry).filter(Boolean);
+    }
+
+    function loadApiChatHistory() {
+      try {
+        const saved = window.localStorage.getItem(CHAT_API_HISTORY_STORAGE_KEY);
+        if (!saved) return [];
+        return normalizeApiChatHistory(JSON.parse(saved));
+      } catch (error) {}
+      return [];
+    }
+
+    function saveApiChatHistory(history = apiChatHistory) {
+      apiChatHistory = normalizeApiChatHistory(history);
+      try {
+        if (apiChatHistory.length) {
+          window.localStorage.setItem(CHAT_API_HISTORY_STORAGE_KEY, JSON.stringify(apiChatHistory));
+        } else {
+          window.localStorage.removeItem(CHAT_API_HISTORY_STORAGE_KEY);
+        }
+      } catch (error) {
+        console.warn('Unable to save API chat history:', error);
+      }
+      return apiChatHistory;
+    }
+
+    function appendApiChatHistory(role, content, options = {}) {
+      const entry = normalizeApiHistoryEntry({
+        role,
+        content,
+        nickname: options.nickname,
+        nicknameColor: options.nicknameColor,
+        createdAt: new Date().toISOString()
+      });
+      if (!entry) return apiChatHistory;
+      apiChatHistory = [...apiChatHistory, entry];
+      saveApiChatHistory(apiChatHistory);
+      return apiChatHistory;
     }
 
     function getMessageKind(line) {
@@ -1159,13 +1202,6 @@
     }
 
     messages.addEventListener('click', (event) => {
-      const apiShareButton = event.target.closest?.('.apiShareButton');
-      if (apiShareButton) {
-        event.preventDefault();
-        shareApiResponseToPublic(apiShareButton);
-        return;
-      }
-
       const youtubeEmbed = event.target.closest?.('.publicChatYoutube');
       if (youtubeEmbed) {
         event.preventDefault();
@@ -1410,71 +1446,28 @@
       return true;
     }
 
-    function clampApiShareText(value) {
-      const text = String(value || '');
-      if (text.length <= API_SHARE_MAX_CHARS) return text;
-      return `${text.slice(0, API_SHARE_MAX_CHARS - 34)}\n\n[truncated for public chat]`;
-    }
-
-    function createSharedApiMessage(promptText, responseText) {
-      return [
-        '🤖 API prompt:',
-        clampApiShareText(promptText),
-        '',
-        '🧠 API response:',
-        clampApiShareText(responseText)
-      ].join('\n');
-    }
-
-    function addLocalUserPromptMessage(promptText) {
-      const nickname = normalizeNickname(currentNickname);
-      const nicknameColor = currentNicknameColor ? ` style="color:${escapeAttribute(currentNicknameColor)}"` : '';
+    function addLocalUserPromptMessage(promptText, options = {}) {
+      const nickname = normalizeNickname(options.nickname || currentNickname);
+      const rawNicknameColor = options.nicknameColor || currentNicknameColor;
+      const nicknameColor = rawNicknameColor ? ` style="color:${escapeAttribute(rawNicknameColor)}"` : '';
       return addMessage('user', `<strong${nicknameColor}>${escapeHtml(nickname)}:</strong> ${renderMarkdownText(promptText)}`, { kind: 'ai' });
     }
 
-    function addApiResponseMessage(promptText, responseText) {
-      const responseId = `api-${++localApiResponseCounter}`;
-      localApiResponses.set(responseId, {
-        prompt: String(promptText || ''),
-        response: String(responseText || '')
-      });
-
-      const html = [
-        '<strong>API:</strong> ',
-        renderMarkdownText(responseText),
-        '<div class="apiResponseTools">',
-        `<button type="button" class="apiShareButton" data-api-response-id="${escapeAttribute(responseId)}" title="Share this prompt and response to public chat">share to public chat</button>`,
-        '</div>'
-      ].join('');
-
-      const line = addMessage('system', html, { kind: 'ai' });
-      line.dataset.apiResponseId = responseId;
-      return line;
+    function addApiResponseMessage(responseText) {
+      return addMessage('system', `<strong>API:</strong> ${renderMarkdownText(responseText)}`, { kind: 'ai' });
     }
 
-    async function shareApiResponseToPublic(button) {
-      const responseId = button && button.dataset ? button.dataset.apiResponseId : '';
-      const record = responseId ? localApiResponses.get(responseId) : null;
-      if (!record) {
-        addSystemMessage('Unable to find API response to share.', { error: true });
-        return false;
-      }
-
-      const originalText = button.textContent;
-      button.disabled = true;
-      button.textContent = 'sharing...';
-      try {
-        await insertPublicChatBody(createSharedApiMessage(record.prompt, record.response));
-        button.textContent = 'shared';
-        addCommandExecutionMessage('/prompt', { message: '/prompt response shared to public chat' });
-        return true;
-      } catch (error) {
-        console.error('Unable to share API response:', error);
-        button.disabled = false;
-        button.textContent = originalText || 'share to public chat';
-        addSystemMessage('Unable to share API response to public chat.', { error: true });
-        return false;
-      }
+    function renderStoredApiChatHistory() {
+      apiChatHistory.forEach((entry) => {
+        if (entry.role === 'assistant') {
+          addApiResponseMessage(entry.content);
+          return;
+        }
+        addLocalUserPromptMessage(entry.content, {
+          nickname: entry.nickname,
+          nicknameColor: entry.nicknameColor
+        });
+      });
     }
 
     function addLocalChatMessage(text) {
@@ -1493,12 +1486,16 @@
         return true;
       }
 
-      addLocalUserPromptMessage(message);
+      const nickname = normalizeNickname(currentNickname);
+      const nicknameColor = currentNicknameColor;
+      addLocalUserPromptMessage(message, { nickname, nicknameColor });
+      const conversationHistory = appendApiChatHistory('user', message, { nickname, nicknameColor });
       const loadingLine = addSystemMessage('API thinking...', { kind: 'ai' });
       try {
         const payload = {
           message,
-          model: CHAT_API_MODEL
+          model: CHAT_API_MODEL,
+          history: conversationHistory
         };
         if (currentSystemPrompt) payload.systemPrompt = currentSystemPrompt;
 
@@ -1526,7 +1523,8 @@
         if (!reply) throw new Error('API returned an empty reply.');
 
         if (loadingLine && loadingLine.isConnected) loadingLine.remove();
-        addApiResponseMessage(message, reply);
+        appendApiChatHistory('assistant', reply);
+        addApiResponseMessage(reply);
         addCommandExecutionMessage('/prompt', { message: '/prompt executed locally' });
         return true;
       } catch (error) {
@@ -1566,6 +1564,7 @@
       Array.from(messages.children).forEach((child) => {
         if (child.dataset.liveChatMessage !== 'true' && child.dataset.pinnedMessage !== 'true') child.remove();
       });
+      saveApiChatHistory([]);
       addSystemMessage('Local chat display cleared. Public chat history remains online.');
       return true;
     }
@@ -2960,6 +2959,7 @@
     }
 
     welcomeMessageLine = addSystemMessage('System: Welcome to chat. Type /help for commands.');
+    renderStoredApiChatHistory();
     applyChatModeFilter();
     loadRecentPublicMessages();
     window.setInterval(() => {

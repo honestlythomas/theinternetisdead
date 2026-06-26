@@ -37,6 +37,26 @@ function normalizeAllowedModel(value) {
 }
 
 const SERVER_OPENAI_MODEL = normalizeAllowedModel(process.env.OPENAI_MODEL) || DEFAULT_OPENAI_MODEL;
+const CHAT_HISTORY_MAX_MESSAGE_CHARS = 12000;
+
+function normalizeChatHistoryRole(value) {
+  return value === "assistant" ? "assistant" : "user";
+}
+
+function normalizeChatHistoryEntry(entry) {
+  if (!entry || typeof entry !== "object") return null;
+  const content = typeof entry.content === "string" ? entry.content.trim() : "";
+  if (!content) return null;
+  return {
+    role: normalizeChatHistoryRole(entry.role),
+    content: content.slice(0, CHAT_HISTORY_MAX_MESSAGE_CHARS)
+  };
+}
+
+function normalizeChatHistory(value) {
+  if (!Array.isArray(value)) return [];
+  return value.map(normalizeChatHistoryEntry).filter(Boolean);
+}
 
 app.get("/", (req, res) => {
   res.type("text/plain").send("theinternetisdead API online. The machine is regrettably breathing.");
@@ -52,7 +72,8 @@ app.get("/health", (req, res) => {
 
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message, systemPrompt, model } = req.body ?? {};
+    const { message, systemPrompt, model, history } = req.body ?? {};
+    const normalizedHistory = normalizeChatHistory(history);
 
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({
@@ -60,7 +81,7 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
-    if (!message || typeof message !== "string") {
+    if ((!message || typeof message !== "string") && normalizedHistory.length === 0) {
       return res.status(400).json({
         error: "Missing message. Send JSON like: { \"message\": \"hello\" }"
       });
@@ -82,10 +103,14 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
-    input.push({
-      role: "user",
-      content: message.slice(0, 12000)
-    });
+    if (normalizedHistory.length) {
+      input.push(...normalizedHistory);
+    } else {
+      input.push({
+        role: "user",
+        content: message.slice(0, CHAT_HISTORY_MAX_MESSAGE_CHARS)
+      });
+    }
 
     const response = await openai.responses.create({
       model: selectedModel,
