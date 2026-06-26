@@ -3220,6 +3220,11 @@
     });
 
     chatInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        submitInput();
+        return;
+      }
       if (event.key === 'Tab' && commandsEnabled() && chatInput.value.startsWith('/')) {
         event.preventDefault();
         cycleSuggestion(event.shiftKey ? -1 : 1);
