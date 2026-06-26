@@ -500,17 +500,20 @@
       color: var(--chat-primary);
     }
 
-    #publicChatSettings {
+    #publicChatSettings,
+    #aiChatSettings {
       display: none;
       gap: 6px;
     }
 
-    #publicChatSettings.visible {
+    #publicChatSettings.visible,
+    #aiChatSettings.visible {
       display: grid;
     }
 
     #publicNicknameInput,
-    #publicNicknameColor {
+    #publicNicknameColor,
+    #aiSystemPromptInput {
       min-width: 0;
       border: 1px solid rgba(var(--chat-primary-rgb), 0.34);
       background: rgba(0, 0, 0, 0.58);
@@ -521,14 +524,17 @@
       text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.22);
     }
 
-    #publicNicknameInput::placeholder {
+    #publicNicknameInput::placeholder,
+    #aiSystemPromptInput::placeholder {
       color: rgba(var(--chat-primary-rgb), 0.52);
     }
 
     #publicNicknameInput:hover,
     #publicNicknameInput:focus-visible,
     #publicNicknameColor:hover,
-    #publicNicknameColor:focus-visible {
+    #publicNicknameColor:focus-visible,
+    #aiSystemPromptInput:hover,
+    #aiSystemPromptInput:focus-visible {
       color: #ffffff;
       border-color: rgba(255, 255, 255, 0.62);
     }
@@ -654,6 +660,10 @@
               <input id="publicNicknameInput" type="text" maxlength="40" placeholder="Nickname" aria-label="Public nickname" />
               <input id="publicNicknameColor" type="color" aria-label="Nickname color" />
             </div>
+            <div id="aiChatSettings">
+              <input id="aiSystemPromptInput" type="text" maxlength="4000" placeholder="System prompt" aria-label="AI system prompt" />
+              <label class="chatModeOption"><input type="checkbox" checked disabled /> GPT-5.5</label>
+            </div>
             <label class="chatModeOption"><input type="checkbox" value="commands" /> Commands</label>
             <label class="chatModeOption"><input type="checkbox" value="system" /> System Chat</label>
           </div>
@@ -745,6 +755,8 @@
     const publicChatSettings = document.getElementById('publicChatSettings');
     const publicNicknameInput = document.getElementById('publicNicknameInput');
     const publicNicknameColor = document.getElementById('publicNicknameColor');
+    const aiChatSettings = document.getElementById('aiChatSettings');
+    const aiSystemPromptInput = document.getElementById('aiSystemPromptInput');
     const chatModeCheckboxes = Array.from(document.querySelectorAll('#chatModeMenu input[type="checkbox"]'));
     const chatCloseButton = document.getElementById('chatCloseButton');
     const suggestions = document.getElementById('suggestions');
@@ -914,6 +926,10 @@
     function syncPublicChatSettings() {
       if (publicNicknameInput) publicNicknameInput.value = normalizeNickname(currentNickname);
       if (publicNicknameColor) publicNicknameColor.value = getColorPickerValue(currentNicknameColor);
+    }
+
+    function syncAiChatSettings() {
+      if (aiSystemPromptInput) aiSystemPromptInput.value = currentSystemPrompt;
     }
 
     function applyPublicNicknameInput() {
@@ -1105,9 +1121,10 @@
       const isLocal = currentChatKinds.has('local');
       if (chatBaseSelect) chatBaseSelect.value = isPublic ? 'public' : (isAi ? 'ai' : 'local');
       publicChatSettings?.classList.toggle('visible', isPublic);
+      aiChatSettings?.classList.toggle('visible', isAi);
       chatModeCheckboxes.forEach((checkbox) => {
         const option = checkbox.closest?.('.chatModeOption');
-        if (option) option.classList.toggle('hidden', isPublic);
+        if (option) option.classList.toggle('hidden', !isLocal);
         checkbox.checked = currentChatKinds.has(normalizeChatKind(checkbox.value));
         checkbox.disabled = isPublic && (checkbox.value === 'commands' || checkbox.value === 'system');
       });
@@ -1834,10 +1851,12 @@
       if (!nextPrompt) return showSystemPromptStatus();
       if (lowerPrompt === 'clear' || lowerPrompt === 'reset' || lowerPrompt === 'off') {
         currentSystemPrompt = saveSystemPrompt('');
+        syncAiChatSettings();
         addCommandExecutionMessage('/system_prompt', { message: '/system_prompt cleared' });
         return true;
       }
       currentSystemPrompt = saveSystemPrompt(nextPrompt);
+      syncAiChatSettings();
       addCommandExecutionMessage('/system_prompt', {
         message: `/system_prompt set (${currentSystemPrompt.length}/4000 chars)`
       });
@@ -3143,6 +3162,7 @@
 
     applyChatModeTheme();
     syncPublicChatSettings();
+    syncAiChatSettings();
     updateChatModeControls();
 
     if (chatModeButton && chatModeMenu) {
@@ -3161,6 +3181,19 @@
 
       publicNicknameColor?.addEventListener('input', () => {
         currentNicknameColor = saveNicknameColor(publicNicknameColor.value);
+      });
+
+      aiSystemPromptInput?.addEventListener('change', () => {
+        currentSystemPrompt = saveSystemPrompt(aiSystemPromptInput.value);
+        aiSystemPromptInput.value = currentSystemPrompt;
+      });
+
+      aiSystemPromptInput?.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        currentSystemPrompt = saveSystemPrompt(aiSystemPromptInput.value);
+        aiSystemPromptInput.value = currentSystemPrompt;
+        chatInput.focus();
       });
 
       chatBaseSelect?.addEventListener('change', () => {
