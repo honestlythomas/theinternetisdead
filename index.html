@@ -215,6 +215,10 @@
       white-space: nowrap;
     }
 
+    .mobile-title-line {
+      display: none;
+    }
+
     .action-row {
       width: 100%;
       flex: 0 1 auto;
@@ -351,6 +355,85 @@
       pointer-events: auto;
     }
 
+    .game-player-overlay {
+      position: fixed;
+      top: 25px;
+      right: 91px;
+      bottom: 91px;
+      left: 91px;
+      z-index: 5;
+      display: none;
+      border: 2px solid var(--lime);
+      background: var(--black);
+      box-shadow:
+        0 0 0 2px var(--black),
+        0 0 18px rgba(57, 255, 20, 0.45);
+      pointer-events: auto;
+    }
+
+    .game-player-overlay.is-active {
+      display: block;
+    }
+
+    .foreground-layer.is-game-active .top-center {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .foreground-layer.is-game-active .game-player-overlay,
+    .foreground-layer.is-game-active .home-skull,
+    .foreground-layer.is-game-active .top-gear,
+    .foreground-layer.is-game-active .bottom-emoji,
+    .foreground-layer.is-game-active .game-player-back {
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .game-player-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: var(--black);
+    }
+
+    .game-player-back {
+      position: fixed;
+      left: 50%;
+      bottom: 25px;
+      z-index: 6;
+      display: none;
+      transform: translateX(-50%);
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: var(--lime);
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(0.9rem, 2.2vw, 1.2rem);
+      font-weight: 700;
+      line-height: 50px;
+      cursor: pointer;
+      text-align: center;
+      text-shadow:
+        0 0 6px var(--lime),
+        0 0 18px rgba(57, 255, 20, 0.7),
+        2px 2px 0 var(--black);
+    }
+
+    .foreground-layer.is-game-active .game-player-back {
+      display: block;
+    }
+
+    .game-player-back:hover,
+    .game-player-back:focus-visible {
+      outline: 0;
+      color: var(--magenta);
+      text-shadow:
+        0 0 6px var(--magenta),
+        0 0 18px rgba(255, 0, 255, 0.7),
+        2px 2px 0 var(--black);
+    }
+
     .lorem-placeholder header {
       margin: 0 0 12px;
       padding: 0 0 10px;
@@ -473,6 +556,51 @@
 
     .lorem-placeholder .card {
       margin: 0;
+    }
+
+    .game-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .game-card {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      min-width: 0;
+      overflow: hidden;
+      border: 2px solid var(--lime);
+      background: rgba(0, 0, 0, 0.45);
+      color: var(--lime);
+      text-decoration: none;
+      box-shadow: 0 0 8px rgba(57, 255, 20, 0.2);
+    }
+
+    .game-card[href]:hover,
+    .game-card[href]:focus-visible {
+      outline: 0;
+      box-shadow:
+        0 0 0 2px var(--magenta),
+        0 0 12px rgba(57, 255, 20, 0.35);
+    }
+
+    .game-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-bottom: 2px solid var(--lime);
+      background: var(--black);
+    }
+
+    .game-card h2 {
+      margin: 0;
+      padding: 9px 10px;
+      color: var(--lime);
+      font-size: clamp(0.7rem, 1.3vw, 0.95rem);
+      line-height: 1.12;
+      letter-spacing: 0;
+      text-shadow: 0 0 6px rgba(57, 255, 20, 0.8);
     }
 
     .lorem-placeholder .stamp {
@@ -699,8 +827,7 @@
         margin-top: 0;
         padding: 6px 6px 14px;
         scroll-padding: 6px 6px 14px;
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: visible;
         scrollbar-width: none;
         -ms-overflow-style: none;
       }
@@ -708,6 +835,19 @@
       .top-center.is-panel-mode {
         padding-bottom: 6px;
         scroll-padding-bottom: 6px;
+      }
+
+      .game-player-overlay {
+        top: calc(16px + 42px + 8px);
+        right: 16px;
+        bottom: calc(16px + 42px + 8px);
+        left: 16px;
+      }
+
+      .game-player-back {
+        bottom: 16px;
+        font-size: clamp(0.74rem, 3.4vw, 0.95rem);
+        line-height: 42px;
       }
 
       .action-stack {
@@ -734,11 +874,22 @@
 
       .title-box {
         flex: 0 0 auto;
+        width: calc(100% - 108px);
+        align-self: center;
+        margin-top: calc(-42px - 8px);
         padding: 3px 6px;
         border-width: 2px;
-        font-size: clamp(0.64rem, 3.55vw, 1.1rem);
+        font-size: clamp(0.9rem, 5vw, 1.35rem);
         line-height: 0.96;
         letter-spacing: 0;
+      }
+
+      .desktop-title-line {
+        display: none;
+      }
+
+      .mobile-title-line {
+        display: block;
       }
 
       .action-row {
@@ -746,7 +897,9 @@
       }
 
       .action-label {
-        font-size: clamp(0.58rem, 2.55vw, 0.78rem);
+        width: calc(100% - 108px);
+        align-self: center;
+        font-size: clamp(0.78rem, 4vw, 1.05rem);
         line-height: 0.95;
         letter-spacing: 0;
       }
@@ -843,13 +996,36 @@
         gap: 6px;
         margin-top: 6px;
       }
+
+      .game-card-grid {
+        grid-template-columns: 1fr;
+        gap: 7px;
+      }
+
+      .game-card {
+        grid-template-columns: 96px minmax(0, 1fr);
+        grid-template-rows: auto;
+      }
+
+      .game-card img {
+        height: 72px;
+        aspect-ratio: auto;
+        border-right: 2px solid var(--lime);
+        border-bottom: 0;
+      }
+
+      .game-card h2 {
+        align-self: center;
+        padding: 7px 8px;
+        font-size: clamp(0.58rem, 2.5vw, 0.72rem);
+      }
     }
 
     @media (max-width: 460px) {
       .title-box {
         max-width: none;
-        width: 100%;
-        font-size: clamp(0.56rem, 3.2vw, 0.92rem);
+        width: calc(100% - 108px);
+        font-size: clamp(0.9rem, 5vw, 1.35rem);
         padding-left: 4px;
         padding-right: 4px;
       }
@@ -888,8 +1064,11 @@
 
       <div class="top-center">
         <section class="title-box" aria-label="Page title">
-          <div>The Internet Is Dead...</div>
-          <div>What now?</div>
+          <div class="desktop-title-line">The Internet Is Dead...</div>
+          <div class="desktop-title-line">What now?</div>
+          <div class="mobile-title-line">The Internet</div>
+          <div class="mobile-title-line">Is Dead...</div>
+          <div class="mobile-title-line">What now?</div>
         </section>
 
         <div class="action-stack">
@@ -902,6 +1081,7 @@
             <option>Listen to my music.</option>
             <option selected>Look at the main page.</option>
             <option>Look at my pictures.</option>
+            <option>Play my web games.</option>
             <option>Share your art with me.</option>
             <option>Watch my videos.</option>
           </select>
@@ -919,10 +1099,15 @@
 
     <button class="bottom-emoji bottom-left ghost-counter-trigger" type="button" aria-label="Show ghosts online"><span>👽</span></button>
     <button class="bottom-emoji bottom-right barrel-roll-trigger" type="button" aria-label="Do a barrel roll"><span>🌀</span></button>
+    <div class="game-player-overlay" aria-hidden="true">
+      <iframe class="game-player-frame" title="Web game"></iframe>
+    </div>
+    <button class="game-player-back" type="button">Go Back</button>
   </div>
 
   <script>
     const barrelRollLayer = document.querySelector('.top-center');
+    const foregroundLayer = document.querySelector('.foreground-layer');
     const barrelRollTrigger = document.querySelector('.barrel-roll-trigger');
     const actionSelect = document.querySelector('.action-select');
     const goButton = document.querySelector('.go-button');
@@ -931,6 +1116,9 @@
     const topCenter = document.querySelector('.top-center');
     const ghostCounterTrigger = document.querySelector('.ghost-counter-trigger');
     const ghostCounterText = ghostCounterTrigger.querySelector('span');
+    const gamePlayerOverlay = document.querySelector('.game-player-overlay');
+    const gamePlayerFrame = document.querySelector('.game-player-frame');
+    const gamePlayerBack = document.querySelector('.game-player-back');
     const alienEmoji = ghostCounterText.textContent;
     let ghostsOnlineCount = null;
     let ghostCounterVisible = false;
@@ -967,6 +1155,29 @@
         return;
       }
 
+      if (selectedAction === 'Play my web games.') {
+        actionStack.classList.remove('is-frame-active');
+        contentBox.classList.remove('is-frame');
+        contentBox.setAttribute('aria-label', 'Play my web games');
+        contentBox.innerHTML = `
+          <div class="game-card-grid">
+            <a class="game-card" href="/dead/games/shooter-game/">
+              <img src="/dead/images/dead-games-shooter-game-assets-levels-shooter-game-level1.jpg" alt="" />
+              <h2>Bananaman Shooter Game</h2>
+            </a>
+            <a class="game-card" href="/dead/games/ball-is-life/">
+              <img src="/dead/images/dead-games-tektite-3d-game.jpg" alt="" />
+              <h2>Ball is Life: Ball Simulator</h2>
+            </a>
+            <article class="game-card" aria-label="More coming soon">
+              <img src="/dead/images/static.gif" alt="" />
+              <h2>More coming soon...</h2>
+            </article>
+          </div>
+        `;
+        return;
+      }
+
       actionStack.classList.remove('is-frame-active');
       contentBox.classList.remove('is-frame');
       contentBox.setAttribute('aria-label', selectedAction);
@@ -981,6 +1192,22 @@
     function selectNextAction() {
       actionSelect.selectedIndex = (actionSelect.selectedIndex + 1) % actionSelect.options.length;
       renderActionSelection();
+    }
+
+    function openGamePlayer(url, title) {
+      gamePlayerFrame.src = url;
+      gamePlayerFrame.title = title || 'Web game';
+      foregroundLayer.classList.add('is-game-active');
+      gamePlayerOverlay.classList.add('is-active');
+      gamePlayerOverlay.setAttribute('aria-hidden', 'false');
+      gamePlayerBack.focus({ preventScroll: true });
+    }
+
+    function closeGamePlayer() {
+      gamePlayerOverlay.classList.remove('is-active');
+      foregroundLayer.classList.remove('is-game-active');
+      gamePlayerOverlay.setAttribute('aria-hidden', 'true');
+      gamePlayerFrame.removeAttribute('src');
     }
 
     function formatGhostsOnlineText(count) {
@@ -1073,6 +1300,20 @@
       barrelRollLayer.classList.remove('barrel-roll');
       void barrelRollLayer.offsetWidth;
       barrelRollLayer.classList.add('barrel-roll');
+    });
+
+    contentBox.addEventListener('click', (event) => {
+      const gameCard = event.target.closest('a.game-card[href]');
+      if (!gameCard || !contentBox.contains(gameCard)) return;
+      event.preventDefault();
+      openGamePlayer(gameCard.getAttribute('href'), gameCard.querySelector('h2')?.textContent || 'Web game');
+    });
+
+    gamePlayerBack.addEventListener('click', closeGamePlayer);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && gamePlayerOverlay.classList.contains('is-active')) {
+        closeGamePlayer();
+      }
     });
 
     actionSelect.addEventListener('change', renderActionSelection);
