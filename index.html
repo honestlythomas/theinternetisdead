@@ -1122,7 +1122,6 @@
     const alienEmoji = ghostCounterText.textContent;
     let ghostsOnlineCount = null;
     let ghostCounterVisible = false;
-    let ghostCounterSocketStarted = false;
 
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, (character) => ({
@@ -1287,13 +1286,7 @@
 
     function toggleGhostCounter() {
       ghostCounterVisible = !ghostCounterVisible;
-      if (ghostCounterVisible && !ghostCounterSocketStarted) {
-        ghostCounterSocketStarted = true;
-        setGhostsOnline(ghostsOnlineCount);
-        connectGhostCounterSocket();
-      } else {
-        updateGhostCounterDisplay();
-      }
+      updateGhostCounterDisplay();
     }
 
     barrelRollTrigger.addEventListener('click', () => {
@@ -1321,6 +1314,7 @@
     ghostCounterTrigger.addEventListener('click', toggleGhostCounter);
     renderActionSelection();
     updateGhostCounterDisplay();
+    connectGhostCounterSocket();
   </script>
 </body>
 </html>
