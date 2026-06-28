@@ -1154,6 +1154,14 @@
         return;
       }
 
+      if (selectedAction === 'Watch my videos.') {
+        actionStack.classList.add('is-frame-active');
+        contentBox.classList.add('is-frame');
+        contentBox.setAttribute('aria-label', 'Watch my videos');
+        contentBox.innerHTML = '<iframe class="content-frame" src="/dead/pages/thumbnail-grid.html" title="Watch my videos" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+        return;
+      }
+
       if (selectedAction === 'Play my web games.') {
         actionStack.classList.remove('is-frame-active');
         contentBox.classList.remove('is-frame');
