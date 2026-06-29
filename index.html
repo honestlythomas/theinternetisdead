@@ -44,6 +44,23 @@
       padding: 25px;
     }
 
+    .page-spin-stage {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      transform-origin: 50% 50%;
+      pointer-events: none;
+    }
+
+    .page-spin-stage.is-wheel-spinning {
+      animation: wheel-of-fortune-spin 1.2s linear infinite;
+    }
+
+    .page-spin-stage.is-warping {
+      animation: page-warp-tunnel 1.35s ease-in-out infinite;
+      filter: saturate(1.75) hue-rotate(0deg);
+    }
+
     .top-center.barrel-roll {
       animation: barrel-roll 1.15s ease-in-out;
     }
@@ -76,6 +93,47 @@
       100% {
         transform: rotate(360deg) scale(1);
       }
+    }
+
+    @keyframes wheel-of-fortune-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes page-warp-tunnel {
+      0% {
+        transform: perspective(760px) translateZ(0) rotate(0deg) scale(1);
+        filter: saturate(1.55) hue-rotate(0deg);
+      }
+      42% {
+        transform: perspective(760px) translateZ(140px) rotate(38deg) scale(1.28);
+        filter: saturate(2.15) hue-rotate(135deg);
+      }
+      72% {
+        transform: perspective(760px) translateZ(-80px) rotate(268deg) scale(0.72);
+        filter: saturate(2.4) hue-rotate(245deg);
+      }
+      100% {
+        transform: perspective(760px) translateZ(0) rotate(360deg) scale(1);
+        filter: saturate(1.55) hue-rotate(360deg);
+      }
+    }
+
+    .warp-background-frame {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      z-index: 1;
+      display: none;
+      pointer-events: none;
+      background: #004e2f;
+    }
+
+    .warp-background-frame.is-active {
+      display: block;
     }
 
     .page-rainbow-filter {
@@ -190,6 +248,8 @@
       overflow: visible;
       text-decoration: none;
       font-size: 0;
+      cursor: pointer;
+      pointer-events: auto;
     }
 
     .top-gear span {
@@ -203,6 +263,46 @@
       line-height: 50px;
       text-align: right;
       transform: translate(4px, -2px);
+    }
+
+    .top-gear::after {
+      content: "✓";
+      position: absolute;
+      top: calc(50% + 1px);
+      left: calc(50% + 13px);
+      display: none;
+      color: var(--lime);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1;
+      text-shadow:
+        0 0 2px var(--black),
+        0 0 6px var(--lime),
+        1px 1px 0 var(--black),
+        -1px -1px 0 var(--black);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .top-gear.is-saved-selection::after {
+      display: block;
+    }
+
+    .top-gear.is-default-saved span {
+      animation: star-default-saved 260ms ease-out;
+    }
+
+    @keyframes star-default-saved {
+      0% {
+        transform: translate(4px, -2px) scale(1);
+      }
+      48% {
+        transform: translate(4px, -2px) scale(1.28);
+      }
+      100% {
+        transform: translate(4px, -2px) scale(1);
+      }
     }
 
     .top-center {
@@ -270,14 +370,14 @@
     }
 
     .action-row {
-      width: 100%;
+      width: calc(100% - 4px);
       flex: 0 1 auto;
       min-width: 0;
       display: flex;
       gap: 8px;
       align-items: center;
       justify-content: center;
-      margin: 0;
+      margin: 0 2px;
     }
 
     .action-stack {
@@ -824,7 +924,53 @@
       pointer-events: auto;
     }
 
+    .barrel-roll-trigger::after {
+      content: attr(data-hold-count);
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 50px;
+      height: 50px;
+      display: none;
+      color: var(--lime);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 50px;
+      text-align: center;
+      text-shadow:
+        0 0 2px var(--black),
+        0 0 8px var(--lime),
+        2px 2px 0 var(--black);
+      transform: translate(13px, 7px);
+      pointer-events: none;
+    }
+
+    .barrel-roll-trigger.is-hold-counting::after {
+      display: block;
+    }
+
+    .wheel-stop-trigger {
+      display: none;
+      z-index: 50;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .wheel-stop-trigger.is-active {
+      display: block;
+    }
+
+    .page-spin-stage.is-wheel-spinning .barrel-roll-trigger,
+    .page-spin-stage.is-warping .barrel-roll-trigger {
+      visibility: hidden;
+    }
+
     .barrel-roll-trigger:focus-visible {
+      outline: 0;
+    }
+
+    .wheel-stop-trigger:focus-visible {
       outline: 0;
     }
 
@@ -1153,15 +1299,16 @@
   </style>
 </head>
 <body>
-  <iframe
-    class="background-frame"
-    src="/dead/pages/starfield-background.html"
-    title="Animated starfield background"
-    aria-hidden="true"
-    tabindex="-1"
-  ></iframe>
+  <div class="page-spin-stage">
+    <iframe
+      class="background-frame"
+      src="/dead/pages/starfield-background.html"
+      title="Animated starfield background"
+      aria-hidden="true"
+      tabindex="-1"
+    ></iframe>
 
-  <div class="foreground-layer">
+    <div class="foreground-layer">
     <div class="top-row">
       <a class="home-skull" href="/" aria-label="Go to root index"><span>💀</span></a>
 
@@ -1178,13 +1325,13 @@
           <div class="action-label">All you can do here is...</div>
           <div class="action-row" role="group" aria-label="Navigation selector">
             <select class="action-select" aria-label="Choose a section">
-            <option>Ask me anything.</option>
-            <option>Chat with weirdos.</option>
-            <option>Enter a random dimension.</option>
-            <option>Listen to my music.</option>
-            <option selected>Look at the main page.</option>
-            <option>Play my web games.</option>
-            <option>Watch my videos.</option>
+            <option>Ask me anything ❓</option>
+            <option>Chat with weirdos 💬</option>
+            <option>Enter a random dimension 🌀</option>
+            <option>Listen to my music 🎵</option>
+            <option selected>Look at the main page 🏠</option>
+            <option>Play my web games 🎮</option>
+            <option>Watch my videos 📺</option>
           </select>
             <button class="go-button" type="button">Go</button>
           </div>
@@ -1195,7 +1342,7 @@
         </div>
       </div>
 
-      <div class="top-gear" role="img" aria-label="Star"><span>⭐</span></div>
+      <div class="top-gear" role="button" aria-label="Save current selection as default" tabindex="0"><span>⭐</span></div>
     </div>
 
     <button class="bottom-emoji bottom-left ghost-counter-trigger" type="button" aria-label="Show ghosts online"><span>👽</span></button>
@@ -1203,20 +1350,28 @@
     <div class="game-player-overlay" aria-hidden="true">
       <iframe class="game-player-frame" title="Web game"></iframe>
     </div>
-    <button class="game-player-back" type="button">Go Back</button>
+      <button class="game-player-back" type="button">Go Back</button>
+    </div>
   </div>
+  <iframe class="warp-background-frame" title="Warp starfield background" aria-hidden="true" tabindex="-1"></iframe>
+  <button class="bottom-emoji bottom-right wheel-stop-trigger" type="button" aria-label="Stop spinning"><span>🛑</span></button>
   <div class="page-rainbow-filter" aria-hidden="true"></div>
   <div class="page-dvd-overlay" aria-hidden="true"></div>
 
   <script>
     const barrelRollLayer = document.querySelector('.top-center');
+    const pageSpinStage = document.querySelector('.page-spin-stage');
     const foregroundLayer = document.querySelector('.foreground-layer');
     const barrelRollTrigger = document.querySelector('.barrel-roll-trigger');
+    const barrelRollTriggerText = barrelRollTrigger.querySelector('span');
+    const wheelStopTrigger = document.querySelector('.wheel-stop-trigger');
+    const warpBackgroundFrame = document.querySelector('.warp-background-frame');
     const actionSelect = document.querySelector('.action-select');
     const goButton = document.querySelector('.go-button');
     const contentBox = document.querySelector('.lorem-placeholder');
     const actionStack = document.querySelector('.action-stack');
     const topCenter = document.querySelector('.top-center');
+    const topGear = document.querySelector('.top-gear');
     const ghostCounterTrigger = document.querySelector('.ghost-counter-trigger');
     const ghostCounterText = ghostCounterTrigger.querySelector('span');
     const gamePlayerOverlay = document.querySelector('.game-player-overlay');
@@ -1225,8 +1380,19 @@
     const pageRainbowFilter = document.querySelector('.page-rainbow-filter');
     const pageDvdOverlay = document.querySelector('.page-dvd-overlay');
     const alienEmoji = ghostCounterText.textContent;
+    const spiralEmoji = barrelRollTriggerText.textContent;
+    const stopSpinEmoji = '🛑';
+    const spinClickWindowMs = 900;
+    const warpLongHoldMs = 10000;
+    const warpBackgroundSource = '/dead/pages/canvas-backgrounds/starfield-background_warp.html?standalone=true';
+    const spinClickTimestamps = [];
     let ghostsOnlineCount = null;
     let ghostCounterVisible = false;
+    let wheelSpinActive = false;
+    let warpActive = false;
+    let warpHoldTimerId = null;
+    let warpHoldSeconds = 0;
+    let suppressNextSpiralClick = false;
     let pageRainbowActive = false;
     let pageDvdAnimationFrameId = null;
     let pageDvdLastTime = 0;
@@ -1235,9 +1401,62 @@
     const pageDvdDefaultSource = 'https://upload.wikimedia.org/wikipedia/commons/8/85/Dvd_logo.svg';
     const pageDvdMaxInstances = 10;
     const pageDvdHueShiftSpeedDegPerSecond = 45;
+    const defaultActionStorageKey = 'theinternetisdead.defaultAction';
 
     function hasThanksMessage() {
       return new URLSearchParams(window.location.search).get('msg') === 'thanks';
+    }
+
+    function normalizeActionValue(value) {
+      const legacyActions = {
+        'Ask me anything.': 'Ask me anything ❓',
+        'Chat with weirdos.': 'Chat with weirdos 💬',
+        'Enter a random dimension.': 'Enter a random dimension 🌀',
+        'Listen to my music.': 'Listen to my music 🎵',
+        'Look at the main page.': 'Look at the main page 🏠',
+        'Play my web games.': 'Play my web games 🎮',
+        'Watch my videos.': 'Watch my videos 📺'
+      };
+      return legacyActions[value] || value;
+    }
+
+    function hasActionOption(value) {
+      const normalizedValue = normalizeActionValue(value);
+      return Array.from(actionSelect.options).some((option) => option.value === normalizedValue);
+    }
+
+    function getSavedDefaultAction() {
+      try {
+        const savedAction = normalizeActionValue(window.localStorage.getItem(defaultActionStorageKey));
+        return savedAction && hasActionOption(savedAction) ? savedAction : '';
+      } catch (error) {
+        return '';
+      }
+    }
+
+    function saveDefaultActionSelection() {
+      const selectedAction = actionSelect.value;
+      try {
+        window.localStorage.setItem(defaultActionStorageKey, selectedAction);
+      } catch (error) {
+      }
+
+      topGear.classList.remove('is-default-saved');
+      void topGear.offsetWidth;
+      topGear.classList.add('is-default-saved');
+      updateSavedSelectionIndicator();
+    }
+
+    function applySavedDefaultAction() {
+      if (hasThanksMessage()) return;
+      const savedAction = getSavedDefaultAction();
+      if (savedAction) {
+        actionSelect.value = savedAction;
+      }
+    }
+
+    function updateSavedSelectionIndicator() {
+      topGear.classList.toggle('is-saved-selection', getSavedDefaultAction() === actionSelect.value);
     }
 
     function escapeHtml(value) {
@@ -1254,8 +1473,9 @@
       const selectedAction = actionSelect.value;
 
       topCenter.classList.add('is-panel-mode');
+      updateSavedSelectionIndicator();
 
-      if (selectedAction === 'Chat with weirdos.') {
+      if (selectedAction === 'Chat with weirdos 💬') {
         actionStack.classList.add('is-frame-active');
         contentBox.classList.add('is-frame');
         contentBox.setAttribute('aria-label', 'Chat with weirdos');
@@ -1263,7 +1483,7 @@
         return;
       }
 
-      if (selectedAction === 'Look at the main page.') {
+      if (selectedAction === 'Look at the main page 🏠') {
         actionStack.classList.add('is-frame-active');
         contentBox.classList.add('is-frame');
         contentBox.setAttribute('aria-label', 'WTF Is This Website?');
@@ -1271,7 +1491,7 @@
         return;
       }
 
-      if (selectedAction === 'Watch my videos.') {
+      if (selectedAction === 'Watch my videos 📺') {
         actionStack.classList.add('is-frame-active');
         contentBox.classList.add('is-frame');
         contentBox.setAttribute('aria-label', 'Watch my videos');
@@ -1279,7 +1499,7 @@
         return;
       }
 
-      if (selectedAction === 'Enter a random dimension.') {
+      if (selectedAction === 'Enter a random dimension 🌀') {
         actionStack.classList.add('is-frame-active');
         contentBox.classList.add('is-frame');
         contentBox.setAttribute('aria-label', 'Enter a random dimension');
@@ -1287,7 +1507,7 @@
         return;
       }
 
-      if (selectedAction === 'Listen to my music.') {
+      if (selectedAction === 'Listen to my music 🎵') {
         actionStack.classList.add('is-frame-active');
         contentBox.classList.add('is-frame');
         contentBox.setAttribute('aria-label', 'Listen to my music');
@@ -1295,7 +1515,7 @@
         return;
       }
 
-      if (selectedAction === 'Play my web games.') {
+      if (selectedAction === 'Play my web games 🎮') {
         actionStack.classList.remove('is-frame-active');
         contentBox.classList.remove('is-frame');
         contentBox.setAttribute('aria-label', 'Play my web games');
@@ -1318,7 +1538,7 @@
         return;
       }
 
-      if (selectedAction === 'Ask me anything.') {
+      if (selectedAction === 'Ask me anything ❓') {
         actionStack.classList.remove('is-frame-active');
         contentBox.classList.remove('is-frame');
         contentBox.setAttribute('aria-label', 'Ask me anything');
@@ -1359,6 +1579,18 @@
     function selectNextAction() {
       actionSelect.selectedIndex = (actionSelect.selectedIndex + 1) % actionSelect.options.length;
       renderActionSelection();
+    }
+
+    function selectRandomAction() {
+      const options = Array.from(actionSelect.options);
+      if (!options.length) return '';
+      const candidates = options.length > 1
+        ? options.filter((option) => option.value !== actionSelect.value)
+        : options;
+      const nextOption = candidates[Math.floor(Math.random() * candidates.length)];
+      actionSelect.value = nextOption.value;
+      renderActionSelection();
+      return actionSelect.value;
     }
 
     function openGamePlayer(url, title) {
@@ -1545,6 +1777,114 @@
       `;
     }
 
+    function setWheelSpin(active) {
+      wheelSpinActive = !!active;
+      pageSpinStage.classList.toggle('is-wheel-spinning', wheelSpinActive);
+      updateSpiralStopState();
+      if (!wheelSpinActive) {
+        spinClickTimestamps.length = 0;
+      }
+    }
+
+    function setWarpMode(active) {
+      warpActive = !!active;
+      pageSpinStage.classList.toggle('is-warping', warpActive);
+      warpBackgroundFrame.classList.toggle('is-active', warpActive);
+      if (warpActive && !warpBackgroundFrame.getAttribute('src')) {
+        warpBackgroundFrame.src = warpBackgroundSource;
+      }
+      if (!warpActive) {
+        warpBackgroundFrame.removeAttribute('src');
+      }
+      updateSpiralStopState();
+    }
+
+    function stopSpiralEffects() {
+      setWheelSpin(false);
+      setWarpMode(false);
+    }
+
+    function updateSpiralStopState() {
+      const active = wheelSpinActive || warpActive;
+      barrelRollTriggerText.textContent = active ? stopSpinEmoji : spiralEmoji;
+      barrelRollTrigger.setAttribute('aria-label', active ? 'Stop spinning' : 'Do a barrel roll');
+      wheelStopTrigger.classList.toggle('is-active', active);
+    }
+
+    function activateWarpMode() {
+      barrelRollLayer.classList.remove('barrel-roll');
+      topCenter.style.removeProperty('transform');
+      setWheelSpin(false);
+      setWarpMode(true);
+    }
+
+    function handleSpiralClick(event) {
+      if (suppressNextSpiralClick) {
+        suppressNextSpiralClick = false;
+        return;
+      }
+
+      if (wheelSpinActive || warpActive) {
+        stopSpiralEffects();
+        return;
+      }
+
+      if (event.shiftKey) {
+        activateWarpMode();
+        return;
+      }
+
+      const now = Date.now();
+      spinClickTimestamps.push(now);
+      while (spinClickTimestamps.length && now - spinClickTimestamps[0] > spinClickWindowMs) {
+        spinClickTimestamps.shift();
+      }
+
+      if (spinClickTimestamps.length >= 3) {
+        barrelRollLayer.classList.remove('barrel-roll');
+        setWheelSpin(true);
+        return;
+      }
+
+      barrelRollLayer.classList.remove('barrel-roll');
+      void barrelRollLayer.offsetWidth;
+      barrelRollLayer.classList.add('barrel-roll');
+    }
+
+    function clearWarpHoldTimer() {
+      if (warpHoldTimerId !== null) {
+        window.clearInterval(warpHoldTimerId);
+        warpHoldTimerId = null;
+      }
+      warpHoldSeconds = 0;
+      barrelRollTrigger.classList.remove('is-hold-counting');
+      barrelRollTrigger.removeAttribute('data-hold-count');
+      if (!warpActive) {
+        topCenter.style.removeProperty('transform');
+      }
+    }
+
+    function startWarpHoldTimer(event) {
+      if (event.pointerType && !['mouse', 'touch', 'pen'].includes(event.pointerType)) return;
+      if (wheelSpinActive || warpActive) return;
+      clearWarpHoldTimer();
+      barrelRollTrigger.classList.add('is-hold-counting');
+      warpHoldTimerId = window.setInterval(() => {
+        warpHoldSeconds += 1;
+        barrelRollTrigger.setAttribute('data-hold-count', String(warpHoldSeconds));
+        topCenter.style.transform = `scale(${Math.max(0, 1 - (warpHoldSeconds * 0.1))})`;
+        if (warpHoldSeconds >= warpLongHoldMs / 1000) {
+          window.clearInterval(warpHoldTimerId);
+          warpHoldTimerId = null;
+          window.setTimeout(() => {
+            suppressNextSpiralClick = true;
+            activateWarpMode();
+            clearWarpHoldTimer();
+          }, 120);
+        }
+      }, 1000);
+    }
+
     function formatGhostsOnlineText(count) {
       return count === 1 ? '1 Ghost Online' : `${Number.isFinite(count) ? count : '?'} Ghosts Online`;
     }
@@ -1625,11 +1965,12 @@
       updateGhostCounterDisplay();
     }
 
-    barrelRollTrigger.addEventListener('click', () => {
-      barrelRollLayer.classList.remove('barrel-roll');
-      void barrelRollLayer.offsetWidth;
-      barrelRollLayer.classList.add('barrel-roll');
-    });
+    barrelRollTrigger.addEventListener('click', handleSpiralClick);
+    barrelRollTrigger.addEventListener('pointerdown', startWarpHoldTimer);
+    barrelRollTrigger.addEventListener('pointerup', clearWarpHoldTimer);
+    barrelRollTrigger.addEventListener('pointercancel', clearWarpHoldTimer);
+    barrelRollTrigger.addEventListener('pointerleave', clearWarpHoldTimer);
+    wheelStopTrigger.addEventListener('click', stopSpiralEffects);
 
     contentBox.addEventListener('click', (event) => {
       const gameCard = event.target.closest('a.game-card[href]');
@@ -1657,6 +1998,18 @@
         spawnPageDvdLogo();
         return;
       }
+      if (data.type === 'pageRandomAction') {
+        const selectedAction = selectRandomAction();
+        if (event.source && typeof event.source.postMessage === 'function') {
+          event.source.postMessage({
+            type: 'pageChatResult',
+            announce: true,
+            command: '/random',
+            message: selectedAction ? `/random selected: ${selectedAction}` : '/random could not select an option'
+          }, '*');
+        }
+        return;
+      }
       if (data.type === 'pageExit') {
         renderFatalExitScreen();
       }
@@ -1664,9 +2017,17 @@
 
     actionSelect.addEventListener('change', renderActionSelection);
     goButton.addEventListener('click', selectNextAction);
+    topGear.addEventListener('click', saveDefaultActionSelection);
+    topGear.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      saveDefaultActionSelection();
+    });
     ghostCounterTrigger.addEventListener('click', toggleGhostCounter);
     if (hasThanksMessage()) {
-      actionSelect.value = 'Ask me anything.';
+      actionSelect.value = 'Ask me anything ❓';
+    } else {
+      applySavedDefaultAction();
     }
     renderActionSelection();
     updateGhostCounterDisplay();

@@ -3326,6 +3326,10 @@
       }
 
       if (command === '/random') {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'pageRandomAction' }, '*');
+          return true;
+        }
         await loadRandomIndexPageFromChat();
         return true;
       }
