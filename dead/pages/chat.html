@@ -18,6 +18,12 @@
 
     body {
       --chat-primary-rgb: 0, 255, 102;
+      --chat-all-rgb: 255, 255, 255;
+      --chat-public-rgb: 57, 255, 20;
+      --chat-ai-rgb: 255, 0, 255;
+      --chat-local-rgb: 255, 255, 0;
+      --chat-commands-rgb: 0, 255, 102;
+      --chat-system-rgb: 255, 0, 255;
       --chat-primary: rgb(var(--chat-primary-rgb));
       --chat-bg: rgba(0, 0, 0, 0.82);
       --chat-border: rgba(var(--chat-primary-rgb), 0.42);
@@ -26,12 +32,12 @@
       --chat-danger: #ff5577;
     }
 
-    body[data-chat-mode="all"] { --chat-primary-rgb: 255, 255, 255; }
-    body[data-chat-mode="public"] { --chat-primary-rgb: 0, 102, 255; }
-    body[data-chat-mode="ai"] { --chat-primary-rgb: 255, 0, 0; }
-    body[data-chat-mode="local"] { --chat-primary-rgb: 255, 255, 0; }
-    body[data-chat-mode="commands"] { --chat-primary-rgb: 0, 255, 102; }
-    body[data-chat-mode="system"] { --chat-primary-rgb: 255, 0, 255; }
+    body[data-chat-mode="all"] { --chat-primary-rgb: var(--chat-all-rgb); }
+    body[data-chat-mode="public"] { --chat-primary-rgb: var(--chat-public-rgb); }
+    body[data-chat-mode="ai"] { --chat-primary-rgb: var(--chat-ai-rgb); }
+    body[data-chat-mode="local"] { --chat-primary-rgb: var(--chat-local-rgb); }
+    body[data-chat-mode="commands"] { --chat-primary-rgb: var(--chat-commands-rgb); }
+    body[data-chat-mode="system"] { --chat-primary-rgb: var(--chat-system-rgb); }
 
     #chatSurface {
       position: fixed;
@@ -135,11 +141,11 @@
       --chat-border: rgba(var(--chat-primary-rgb), 0.42);
     }
 
-    .message[data-chat-kind="public"] { --chat-primary-rgb: 0, 102, 255; }
-    .message[data-chat-kind="ai"] { --chat-primary-rgb: 255, 0, 0; }
-    .message[data-chat-kind="local"] { --chat-primary-rgb: 255, 255, 0; }
-    .message[data-chat-kind="commands"] { --chat-primary-rgb: 0, 255, 102; }
-    .message[data-chat-kind="system"] { --chat-primary-rgb: 255, 0, 255; }
+    .message[data-chat-kind="public"] { --chat-primary-rgb: var(--chat-public-rgb); }
+    .message[data-chat-kind="ai"] { --chat-primary-rgb: var(--chat-ai-rgb); }
+    .message[data-chat-kind="local"] { --chat-primary-rgb: var(--chat-local-rgb); }
+    .message[data-chat-kind="commands"] { --chat-primary-rgb: var(--chat-commands-rgb); }
+    .message[data-chat-kind="system"] { --chat-primary-rgb: var(--chat-system-rgb); }
 
     .message a,
     .message a:visited {
@@ -842,6 +848,7 @@
     const CHAT_NICKNAME_STORAGE_KEY = 'tektiteChatNickname';
     const CHAT_NICKNAME_EXPLICIT_STORAGE_KEY = 'tektiteChatNicknameExplicit';
     const CHAT_NICKNAME_COLOR_STORAGE_KEY = 'tektiteChatNicknameColor';
+    const CHAT_COLOR_STORAGE_KEY = 'tektiteChatColors';
     const CHAT_SYSTEM_PROMPT_STORAGE_KEY = 'tektiteChatSystemPrompt';
     const CHAT_MODE_STORAGE_KEY = 'tektiteChatModeDropdown';
     const CHAT_API_HISTORY_STORAGE_KEY = 'tektiteChatApiHistory';
@@ -867,15 +874,16 @@
         value: '/chat ',
         execute: false,
         desc: 'switch chat mode',
-        allChatsOnly: true,
-        suggestions: ['all', 'public', 'local', 'ai', 'commands', 'system'],
+        suggestions: ['all', 'public', 'local', 'ai', 'commands', 'system', 'color #00ff66', 'color reset'],
         subcommands: [
           { name: 'all', value: '/chat all', execute: true, desc: 'switch to All Chats' },
           { name: 'public', value: '/chat public', execute: true, desc: 'switch to Public Chat' },
           { name: 'local', value: '/chat local', execute: true, desc: 'switch to Local Chat' },
           { name: 'ai', value: '/chat ai', execute: true, desc: 'switch to AI Chat' },
           { name: 'commands', value: '/chat commands', execute: true, desc: 'switch to Commands' },
-          { name: 'system', value: '/chat system', execute: true, desc: 'switch to System Chat' }
+          { name: 'system', value: '/chat system', execute: true, desc: 'switch to System Chat' },
+          { name: 'color', value: '/chat color ', execute: false, desc: 'set current chat color' },
+          { name: 'color reset', value: '/chat color reset', execute: true, desc: 'reset current chat color' }
         ]
       },
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
@@ -947,8 +955,18 @@
     const DEFAULT_CHAT_KINDS = ['public'];
     const CHAT_KIND_SET = new Set(CHAT_KINDS);
     const ALL_CHAT_KINDS = new Set(CHAT_KINDS);
+    const CHAT_COLOR_KINDS = ['all', ...CHAT_KINDS];
+    const CHAT_DEFAULT_COLOR_RGB = {
+      all: '255, 255, 255',
+      public: '57, 255, 20',
+      ai: '255, 0, 255',
+      local: '255, 255, 0',
+      commands: '0, 255, 102',
+      system: '255, 0, 255'
+    };
     let currentNickname = loadNickname();
     let currentNicknameColor = loadNicknameColor();
+    let currentChatColors = loadChatColors();
     let currentSystemPrompt = loadSystemPrompt();
     let currentChatKinds = loadChatKinds();
     let apiChatHistory = loadApiChatHistory();
@@ -1076,6 +1094,65 @@
       }
 
       return '';
+    }
+
+    function cssColorToRgbComponents(value) {
+      const color = normalizeNicknameColor(value);
+      if (!color) return '';
+      const probe = document.createElement('span');
+      probe.style.color = color;
+      probe.style.position = 'absolute';
+      probe.style.left = '-9999px';
+      probe.style.visibility = 'hidden';
+      document.body.appendChild(probe);
+      const computed = window.getComputedStyle(probe).color;
+      probe.remove();
+      const rgb = computed.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/i);
+      if (!rgb) return '';
+      return [rgb[1], rgb[2], rgb[3]]
+        .map((component) => String(Math.max(0, Math.min(255, Number(component)))))
+        .join(', ');
+    }
+
+    function normalizeChatColors(value) {
+      const source = value && typeof value === 'object' ? value : {};
+      const normalized = {};
+      CHAT_COLOR_KINDS.forEach((kind) => {
+        const rawColor = String(source[kind] || '').trim();
+        const rawRgb = rawColor.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
+        const rgb = rawRgb
+          ? [rawRgb[1], rawRgb[2], rawRgb[3]].map((component) => String(Math.max(0, Math.min(255, Number(component))))).join(', ')
+          : cssColorToRgbComponents(rawColor);
+        if (rgb) normalized[kind] = rgb;
+      });
+      return normalized;
+    }
+
+    function loadChatColors() {
+      try {
+        const saved = window.localStorage.getItem(CHAT_COLOR_STORAGE_KEY);
+        if (!saved) return {};
+        return normalizeChatColors(JSON.parse(saved));
+      } catch (error) {}
+      return {};
+    }
+
+    function saveChatColors(value = currentChatColors) {
+      const colors = normalizeChatColors(value);
+      try {
+        if (Object.keys(colors).length) {
+          window.localStorage.setItem(CHAT_COLOR_STORAGE_KEY, JSON.stringify(colors));
+        } else {
+          window.localStorage.removeItem(CHAT_COLOR_STORAGE_KEY);
+        }
+      } catch (error) {}
+      return colors;
+    }
+
+    function applyChatColorTheme() {
+      CHAT_COLOR_KINDS.forEach((kind) => {
+        document.body.style.setProperty(`--chat-${kind}-rgb`, currentChatColors[kind] || CHAT_DEFAULT_COLOR_RGB[kind]);
+      });
     }
 
     function loadNicknameColor() {
@@ -1306,6 +1383,7 @@
     function applyChatModeTheme() {
       const selected = Array.from(currentChatKinds);
       document.body.dataset.chatMode = selected.length === 1 ? selected[0] : 'all';
+      applyChatColorTheme();
     }
 
     function updateChatModeControls() {
@@ -1341,6 +1419,24 @@
       if (currentChatKinds.size !== CHAT_KINDS.length && currentChatKinds.has('public')) return 'public';
       if (currentChatKinds.size !== CHAT_KINDS.length && currentChatKinds.has('ai')) return 'ai';
       return 'local';
+    }
+
+    function getActiveChatColorKind() {
+      if (currentChatKinds.size === CHAT_KINDS.length) return 'all';
+      if (currentChatKinds.size === 1) return Array.from(currentChatKinds)[0];
+      return getActiveInputChatKind();
+    }
+
+    function getChatColorKindLabel(kind = getActiveChatColorKind()) {
+      const labels = {
+        all: 'All Chats',
+        public: 'Public Chat',
+        local: 'Local Chat',
+        ai: 'AI Chat',
+        commands: 'Commands',
+        system: 'System Chat'
+      };
+      return labels[kind] || 'Current Chat';
     }
 
     function getChatModeLabel(kinds = currentChatKinds) {
@@ -1914,7 +2010,9 @@
           '/chat local',
           '/chat ai',
           '/chat commands',
-          '/chat system'
+          '/chat system',
+          '/chat color [color name, hex code, rgb(), or rgba()]',
+          '/chat color reset'
         ].join('\n'),
         '/clear': '/clear',
         '/clear_public': '/clear_public',
@@ -2132,7 +2230,7 @@
         pathname === '/dead/stuff/stuff-for-index/feeds/feeds-bridge.html') {
         return false;
       }
-      if (/^\/(?:nav|chat)\.html$/i.test(pathname)) return false;
+      if (/^\/(?:nav|chat)\.html$/i.test(pathname) || /^\/dead\/pages\/chat\.html$/i.test(pathname)) return false;
       if (/^\/dead\/(?:JSON|audio|images|messages|scripts)\//i.test(pathname)) return false;
       if (/\.(?:css|js|mjs|json|map|png|jpe?g|gif|webp|svg|ico|mp3|wav|ogg|pdf|zip|md|txt)$/i.test(pathname)) return false;
       return /\/$/i.test(pathname) || /\.html$/i.test(pathname);
@@ -2206,7 +2304,7 @@
         const url = new URL(normalized, window.location.origin);
         if (url.origin !== window.location.origin) return false;
         if (!/\.html$/i.test(url.pathname)) return false;
-        if (/^\/(?:index|nav|chat)\.html$/i.test(url.pathname)) return false;
+        if (/^\/(?:index|nav|chat)\.html$/i.test(url.pathname) || /^\/dead\/pages\/chat\.html$/i.test(url.pathname)) return false;
         return !/^\/dead\/(?:JSON|audio|images|messages|scripts)\//i.test(url.pathname);
       } catch (error) {
         return false;
@@ -3083,8 +3181,44 @@
       return true;
     }
 
+    function applyCurrentChatColor(value) {
+      const targetKind = getActiveChatColorKind();
+      const feedbackKind = targetKind === 'all' ? 'system' : targetKind;
+      const rawValue = String(value || '').trim();
+      const lowerValue = rawValue.toLowerCase();
+      if (lowerValue === 'reset' || lowerValue === 'clear') {
+        delete currentChatColors[targetKind];
+        currentChatColors = saveChatColors(currentChatColors);
+        applyChatColorTheme();
+        addCommandExecutionMessage('/chat', {
+          kind: feedbackKind,
+          message: `/chat color reset: ${getChatColorKindLabel(targetKind)}`
+        });
+        return true;
+      }
+
+      const rgb = cssColorToRgbComponents(rawValue);
+      if (!rawValue || !rgb) {
+        addSystemMessage('Usage: /chat color [color name, hex code, rgb(), or rgba()]', { kind: feedbackKind });
+        return true;
+      }
+
+      currentChatColors[targetKind] = rgb;
+      currentChatColors = saveChatColors(currentChatColors);
+      applyChatColorTheme();
+      addCommandExecutionMessage('/chat', {
+        kind: feedbackKind,
+        message: `/chat color ${rawValue}: ${getChatColorKindLabel(targetKind)}`
+      });
+      return true;
+    }
+
     function runChatModeCommand(value) {
-      const mode = String(value || '').trim().toLowerCase();
+      const rawMode = String(value || '').trim();
+      const mode = rawMode.toLowerCase();
+      if (mode === 'color' || mode.startsWith('color ')) {
+        return applyCurrentChatColor(rawMode.slice('color'.length).trim());
+      }
       const modes = {
         all: CHAT_KINDS,
         public: ['public'],
@@ -3094,7 +3228,7 @@
         system: ['system']
       };
       if (!mode || !modes[mode]) {
-        addSystemMessage('Usage: /chat [all|public|local|ai|commands|system]', { kind: 'commands' });
+        addSystemMessage('Usage: /chat [all|public|local|ai|commands|system] or /chat color [color]', { kind: 'commands' });
         return true;
       }
       setChatKinds(modes[mode]);
@@ -3274,6 +3408,11 @@
       }
       if (pendingSiteSearch) {
         await handleSiteSearchInput(trimmed);
+        return;
+      }
+      if (/^\/chat(?:\s|$)/i.test(trimmed)) {
+        const handled = await runCommandWithTaggedOutput(trimmed);
+        if (!handled) addSystemMessage('/chat is not a known command', { error: true, kind: 'commands' });
         return;
       }
       if (trimmed.startsWith('/') && commandsEnabled()) {
