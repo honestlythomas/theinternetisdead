@@ -338,6 +338,59 @@
       display: none;
     }
 
+    .lorem-placeholder .signal-form {
+      min-height: 100%;
+      width: min(100%, 420px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      box-sizing: border-box;
+    }
+
+    .lorem-placeholder .signal-form input,
+    .lorem-placeholder .signal-form textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 2px solid var(--lime);
+      background: var(--black);
+      color: var(--lime);
+      font: inherit;
+      padding: 8px;
+      outline: none;
+      box-shadow: inset 0 0 8px rgba(57, 255, 20, 0.18);
+    }
+
+    .lorem-placeholder .signal-form input::placeholder,
+    .lorem-placeholder .signal-form textarea::placeholder {
+      color: rgba(57, 255, 20, 0.72);
+      opacity: 1;
+    }
+
+    .lorem-placeholder .signal-form textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .lorem-placeholder .signal-form button {
+      align-self: center;
+      border: 2px solid var(--lime);
+      background: rgba(var(--purple-rgb), 0.8);
+      color: var(--lime);
+      font: inherit;
+      font-weight: 700;
+      padding: 8px 16px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.35);
+    }
+
+    .lorem-placeholder .signal-form button:focus,
+    .lorem-placeholder .signal-form button:hover {
+      background: var(--black);
+      text-shadow: 0 0 6px var(--lime);
+    }
+
     .lorem-placeholder.is-frame {
       flex: 1 1 auto;
       min-height: 0;
@@ -1123,6 +1176,10 @@
     let ghostsOnlineCount = null;
     let ghostCounterVisible = false;
 
+    function hasThanksMessage() {
+      return new URLSearchParams(window.location.search).get('msg') === 'thanks';
+    }
+
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, (character) => ({
         '&': '&amp;',
@@ -1162,6 +1219,22 @@
         return;
       }
 
+      if (selectedAction === 'Enter a random dimension.') {
+        actionStack.classList.add('is-frame-active');
+        contentBox.classList.add('is-frame');
+        contentBox.setAttribute('aria-label', 'Enter a random dimension');
+        contentBox.innerHTML = `<iframe class="content-frame" src="/dead/pages/canvas-backgrounds/index.html?v=${Date.now()}" title="Enter a random dimension"></iframe>`;
+        return;
+      }
+
+      if (selectedAction === 'Listen to my music.') {
+        actionStack.classList.add('is-frame-active');
+        contentBox.classList.add('is-frame');
+        contentBox.setAttribute('aria-label', 'Listen to my music');
+        contentBox.innerHTML = '<iframe class="content-frame" width="560" height="315" src="https://www.youtube.com/embed/videoseries?si=zuW7mL9ACEn2oMvJ&amp;list=PLatnmy7XVC5kebBRuAPLE6zcrRw9ACUIj" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+        return;
+      }
+
       if (selectedAction === 'Play my web games.') {
         actionStack.classList.remove('is-frame-active');
         contentBox.classList.remove('is-frame');
@@ -1181,6 +1254,33 @@
               <h2>More coming soon...</h2>
             </article>
           </div>
+        `;
+        return;
+      }
+
+      if (selectedAction === 'Ask me anything.') {
+        actionStack.classList.remove('is-frame-active');
+        contentBox.classList.remove('is-frame');
+        contentBox.setAttribute('aria-label', 'Ask me anything');
+        if (hasThanksMessage()) {
+          contentBox.innerHTML = `
+            <header>
+              <h1>SIGNAL RECEIVED</h1>
+              <p class="subtitle">Your transmission made it through.</p>
+            </header>
+          `;
+          return;
+        }
+
+        contentBox.innerHTML = `
+          <form class="signal-form" action="https://formspree.io/f/mwvdqeao" method="POST">
+            <input type="text" name="name" required placeholder="alias">
+            <input type="text" name="contact" placeholder="contact info optional">
+            <textarea name="message" required placeholder="transmit message..."></textarea>
+            <input type="hidden" name="_subject" value="theinternetisdead.org signal">
+            <input type="hidden" name="_redirect" value="/?msg=thanks">
+            <button type="submit">SEND SIGNAL</button>
+          </form>
         `;
         return;
       }
@@ -1320,6 +1420,9 @@
     actionSelect.addEventListener('change', renderActionSelection);
     goButton.addEventListener('click', selectNextAction);
     ghostCounterTrigger.addEventListener('click', toggleGhostCounter);
+    if (hasThanksMessage()) {
+      actionSelect.value = 'Ask me anything.';
+    }
     renderActionSelection();
     updateGhostCounterDisplay();
     connectGhostCounterSocket();

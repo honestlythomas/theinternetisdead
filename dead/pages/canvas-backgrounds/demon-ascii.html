@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Topographic Lava Lamp</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="topo"></canvas>
+  <script>
+    const canvas = document.getElementById("topo");
+    const ctx = canvas.getContext("2d");
+    let w, h, t = 0;
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    function noise(x, y, t) {
+      return (
+        Math.sin(x * 0.01 + t * 0.3) +
+        Math.sin(y * 0.015 - t * 0.2) +
+        Math.sin((x + y) * 0.008 + t * 0.25)
+      ) / 3;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.lineWidth = 1.4;
+      ctx.strokeStyle = "white";
+      const step = 8;
+      const levels = 14;
+
+      for (let i = 0; i < levels; i++) {
+        const threshold = i / levels * 2 - 1;
+        ctx.beginPath();
+        for (let y = 0; y <= h; y += step) {
+          let drawing = false;
+          for (let x = 0; x <= w; x += step) {
+            const n = noise(x, y, t);
+            if (n > threshold && n < threshold + 0.03) {
+              if (!drawing) {
+                ctx.moveTo(x, y);
+                drawing = true;
+              } else {
+                ctx.lineTo(x, y);
+              }
+            } else {
+              drawing = false;
+            }
+          }
+        }
+        ctx.stroke();
+      }
+
+      t += 0.008;
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>
