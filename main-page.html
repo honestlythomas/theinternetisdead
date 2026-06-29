@@ -94,6 +94,41 @@
         2px 2px 0 var(--black);
     }
 
+    .title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .read-aloud-button {
+      border: 0;
+      background: transparent;
+      color: var(--lime);
+      font: inherit;
+      font-size: clamp(0.62rem, 1.15vw, 0.82rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-shadow:
+        0 0 6px var(--lime),
+        1px 1px 0 var(--black);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .read-aloud-button:hover,
+    .read-aloud-button:focus-visible {
+      color: var(--magenta);
+      outline: 0;
+      text-shadow:
+        0 0 6px var(--magenta),
+        1px 1px 0 var(--black);
+    }
+
+    .read-aloud-word.is-reading {
+      background: rgba(57, 255, 20, 0.5);
+    }
+
     h2 {
       margin: 18px 0 8px;
       color: var(--lime);
@@ -207,6 +242,14 @@
         font-size: clamp(0.82rem, 4.2vw, 1.1rem);
       }
 
+      .title-row {
+        gap: 5px;
+      }
+
+      .read-aloud-button {
+        font-size: clamp(0.48rem, 2.1vw, 0.62rem);
+      }
+
       h2 {
         margin: 10px 0 5px;
         font-size: clamp(0.62rem, 2.55vw, 0.78rem);
@@ -255,7 +298,10 @@
 <body>
   <main class="whitepaper-content" aria-label="WTF Is This Website?">
     <header>
-    <h1>WTF Is This Website?</h1>
+    <div class="title-row">
+      <h1>WTF Is This Website?</h1>
+      <button class="read-aloud-button" type="button">(Read Aloud)</button>
+    </div>
     <p class="subtitle">
             A brief disclaimer for software engineers, web developers, framework priests,
             lighthouse-score monks, and anyone else brave enough to inspect the source.
@@ -389,5 +435,134 @@
     <span class="stamp">IF IT BREAKS, DOCUMENT THE GHOST</span>
     </footer>
   </main>
+  <script>
+    const readAloudButton = document.querySelector('.read-aloud-button');
+    const whitepaperContent = document.querySelector('.whitepaper-content');
+    let availableVoices = [];
+    let readAloudWords = [];
+    let readAloudWordRanges = [];
+    let activeReadWord = null;
+
+    function refreshVoices() {
+      availableVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    }
+
+    function getMicrosoftDavidVoice() {
+      return availableVoices.find((voice) => /microsoft david/i.test(voice.name))
+        || availableVoices.find((voice) => /david/i.test(voice.name))
+        || availableVoices.find((voice) => /^en[-_]/i.test(voice.lang))
+        || null;
+    }
+
+    function shouldSkipReadNode(node) {
+      const parent = node.parentElement;
+      return !parent || Boolean(parent.closest('.read-aloud-button, script, style'));
+    }
+
+    function prepareReadAloudWords() {
+      if (readAloudWords.length) return;
+
+      const walker = document.createTreeWalker(whitepaperContent, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          if (shouldSkipReadNode(node) || !node.nodeValue.trim()) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+      textNodes.forEach((node) => {
+        const fragment = document.createDocumentFragment();
+        node.nodeValue.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) {
+            fragment.appendChild(document.createTextNode(part));
+            return;
+          }
+          const word = document.createElement('span');
+          word.className = 'read-aloud-word';
+          word.textContent = part;
+          fragment.appendChild(word);
+        });
+        node.parentNode.replaceChild(fragment, node);
+      });
+
+      readAloudWords = Array.from(whitepaperContent.querySelectorAll('.read-aloud-word'));
+    }
+
+    function getReadableText() {
+      prepareReadAloudWords();
+      readAloudWordRanges = [];
+      let cursor = 0;
+      const words = readAloudWords.map((word) => {
+        const text = word.textContent;
+        readAloudWordRanges.push({ start: cursor, end: cursor + text.length, word });
+        cursor += text.length + 1;
+        return text;
+      });
+      return words.join(' ');
+    }
+
+    function clearReadHighlight() {
+      if (activeReadWord) {
+        activeReadWord.classList.remove('is-reading');
+        activeReadWord = null;
+      }
+    }
+
+    function highlightReadWord(charIndex) {
+      const range = readAloudWordRanges.find((item) => charIndex >= item.start && charIndex < item.end);
+      if (!range || range.word === activeReadWord) return;
+      clearReadHighlight();
+      activeReadWord = range.word;
+      activeReadWord.classList.add('is-reading');
+    }
+
+    function readPageAloud() {
+      if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        clearReadHighlight();
+        readAloudButton.textContent = '(Read Aloud)';
+        return;
+      }
+
+      refreshVoices();
+      const text = getReadableText();
+      if (!text) return;
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voice = getMicrosoftDavidVoice();
+      if (voice) utterance.voice = voice;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.onboundary = (event) => {
+        if (event.name === 'word') highlightReadWord(event.charIndex);
+      };
+      utterance.onend = () => {
+        clearReadHighlight();
+        readAloudButton.textContent = '(Read Aloud)';
+      };
+      utterance.onerror = () => {
+        clearReadHighlight();
+        readAloudButton.textContent = '(Read Aloud)';
+      };
+
+      readAloudButton.textContent = '(Stop Reading)';
+      window.speechSynthesis.speak(utterance);
+    }
+
+    if (window.speechSynthesis) {
+      refreshVoices();
+      window.speechSynthesis.addEventListener('voiceschanged', refreshVoices);
+      readAloudButton.addEventListener('click', readPageAloud);
+    } else {
+      readAloudButton.disabled = true;
+      readAloudButton.textContent = '(Read Aloud Unavailable)';
+    }
+  </script>
 </body>
 </html>

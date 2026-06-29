@@ -113,11 +113,12 @@
     }
 
     .message {
+      position: relative;
       width: fit-content;
       max-width: min(920px, calc(100vw - 32px));
       align-self: flex-start;
       flex-shrink: 0;
-      padding: 7px 9px;
+      padding: 7px 32px 7px 9px;
       border: 1px solid var(--chat-border);
       background: var(--chat-bg);
       color: var(--chat-text);
@@ -125,6 +126,30 @@
       line-height: 1.35;
       overflow-wrap: anywhere;
       box-shadow: 0 0 18px rgba(var(--chat-primary-rgb), 0.08);
+    }
+
+    .messageReadButton {
+      position: absolute;
+      top: 2px;
+      right: 3px;
+      border: 0;
+      background: transparent;
+      color: var(--chat-text);
+      font: inherit;
+      font-size: 15px;
+      line-height: 1;
+      padding: 2px;
+      cursor: pointer;
+      opacity: 0.72;
+      text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.55);
+    }
+
+    .messageReadButton:hover,
+    .messageReadButton:focus-visible,
+    .messageReadButton.is-reading {
+      opacity: 1;
+      outline: 1px solid var(--chat-border);
+      background: rgba(var(--chat-primary-rgb), 0.12);
     }
 
     .message[data-role="user"] {
@@ -668,7 +693,7 @@
 
     body.embedded .message {
       max-width: min(760px, calc(100vw - 18px));
-      padding: 4px 6px;
+      padding: 4px 28px 4px 6px;
       line-height: 1.18;
       box-shadow: 0 0 10px rgba(var(--chat-primary-rgb), 0.07);
     }
@@ -1020,6 +1045,70 @@
     const welcomeMessageLines = new Map();
     const pinnedMessageLines = new Map();
     let previousChatInputPlaceholder = chatInput.getAttribute('placeholder') || '';
+    let speechVoices = [];
+    let activeSpeechButton = null;
+
+    function refreshSpeechVoices() {
+      speechVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    }
+
+    function getMicrosoftDavidVoice() {
+      return speechVoices.find((voice) => /microsoft david/i.test(voice.name))
+        || speechVoices.find((voice) => /david/i.test(voice.name))
+        || speechVoices.find((voice) => /^en[-_]/i.test(voice.lang))
+        || null;
+    }
+
+    function getMessageSpeechText(line) {
+      const clone = line.cloneNode(true);
+      clone.querySelectorAll('.messageReadButton, .messageTimestamp').forEach((node) => node.remove());
+      const leadingLabel = clone.firstElementChild;
+      if (leadingLabel && leadingLabel.tagName === 'STRONG' && /:$/.test(leadingLabel.textContent.trim())) {
+        leadingLabel.remove();
+      }
+      return clone.textContent.replace(/\s+/g, ' ').trim();
+    }
+
+    function readMessageAloud(line) {
+      if (!window.speechSynthesis || !window.SpeechSynthesisUtterance || !line) return;
+      const button = line.querySelector('.messageReadButton');
+      if (button && button === activeSpeechButton && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        activeSpeechButton = null;
+        button.classList.remove('is-reading');
+        button.setAttribute('aria-label', 'Read message aloud');
+        return;
+      }
+
+      const text = getMessageSpeechText(line);
+      if (!text) return;
+
+      window.speechSynthesis.cancel();
+      if (activeSpeechButton) {
+        activeSpeechButton.classList.remove('is-reading');
+        activeSpeechButton.setAttribute('aria-label', 'Read message aloud');
+      }
+      refreshSpeechVoices();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voice = getMicrosoftDavidVoice();
+      if (voice) utterance.voice = voice;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.onend = () => {
+        if (button) {
+          button.classList.remove('is-reading');
+          button.setAttribute('aria-label', 'Read message aloud');
+        }
+        if (activeSpeechButton === button) activeSpeechButton = null;
+      };
+      utterance.onerror = utterance.onend;
+      if (button) {
+        activeSpeechButton = button;
+        button.classList.add('is-reading');
+        button.setAttribute('aria-label', 'Stop reading message');
+      }
+      window.speechSynthesis.speak(utterance);
+    }
 
     function generateAnonymousNickname() {
       return `Anonymous Ghost ${Math.floor(Math.random() * 900) + 100}`;
@@ -1694,6 +1783,12 @@
       if (options.publicMessage) line.dataset.liveChatMessage = 'true';
       if (options.error) line.dataset.error = 'true';
       line.innerHTML = html;
+      const readButton = document.createElement('button');
+      readButton.className = 'messageReadButton';
+      readButton.type = 'button';
+      readButton.textContent = '🔊';
+      readButton.setAttribute('aria-label', 'Read message aloud');
+      line.appendChild(readButton);
       messages.appendChild(line);
       while (messages.children.length > SUPABASE_CHAT_MAX_VISIBLE + 30) {
         messages.firstElementChild?.remove();
@@ -1760,6 +1855,14 @@
     }
 
     messages.addEventListener('click', (event) => {
+      const readButton = event.target.closest?.('.messageReadButton');
+      if (readButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        readMessageAloud(readButton.closest('.message'));
+        return;
+      }
+
       const youtubeEmbed = event.target.closest?.('.publicChatYoutube');
       if (youtubeEmbed) {
         event.preventDefault();
@@ -1795,6 +1898,11 @@
     });
 
     chatLightboxClose?.addEventListener('click', closeChatImageLightbox);
+
+    if (window.speechSynthesis) {
+      refreshSpeechVoices();
+      window.speechSynthesis.addEventListener('voiceschanged', refreshSpeechVoices);
+    }
 
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && chatLightbox?.classList.contains('active')) {
