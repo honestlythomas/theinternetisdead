@@ -78,6 +78,56 @@
       }
     }
 
+    .page-rainbow-filter {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      pointer-events: none;
+      backdrop-filter: hue-rotate(0deg) saturate(1.8);
+      -webkit-backdrop-filter: hue-rotate(0deg) saturate(1.8);
+      animation: page-rainbow-filter var(--page-rainbow-duration, 6s) linear infinite;
+    }
+
+    .page-rainbow-filter.is-active {
+      display: block;
+    }
+
+    @keyframes page-rainbow-filter {
+      to {
+        backdrop-filter: hue-rotate(360deg) saturate(1.8);
+        -webkit-backdrop-filter: hue-rotate(360deg) saturate(1.8);
+      }
+    }
+
+    .page-dvd-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .page-dvd-overlay.is-active {
+      display: block;
+    }
+
+    .page-dvd-logo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: min(22vw, 180px);
+      height: auto;
+      opacity: 0.96;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      filter: hue-rotate(0deg) drop-shadow(0 0 10px rgba(255, 255, 255, 0.28));
+      transform: translate3d(0, 0, 0);
+      will-change: transform, filter;
+    }
+
     .background-frame {
       position: fixed;
       inset: 0;
@@ -1155,6 +1205,8 @@
     </div>
     <button class="game-player-back" type="button">Go Back</button>
   </div>
+  <div class="page-rainbow-filter" aria-hidden="true"></div>
+  <div class="page-dvd-overlay" aria-hidden="true"></div>
 
   <script>
     const barrelRollLayer = document.querySelector('.top-center');
@@ -1170,9 +1222,19 @@
     const gamePlayerOverlay = document.querySelector('.game-player-overlay');
     const gamePlayerFrame = document.querySelector('.game-player-frame');
     const gamePlayerBack = document.querySelector('.game-player-back');
+    const pageRainbowFilter = document.querySelector('.page-rainbow-filter');
+    const pageDvdOverlay = document.querySelector('.page-dvd-overlay');
     const alienEmoji = ghostCounterText.textContent;
     let ghostsOnlineCount = null;
     let ghostCounterVisible = false;
+    let pageRainbowActive = false;
+    let pageDvdAnimationFrameId = null;
+    let pageDvdLastTime = 0;
+    let pageDvdLogoCounter = 0;
+    const pageDvdInstances = [];
+    const pageDvdDefaultSource = 'https://upload.wikimedia.org/wikipedia/commons/8/85/Dvd_logo.svg';
+    const pageDvdMaxInstances = 10;
+    const pageDvdHueShiftSpeedDegPerSecond = 45;
 
     function hasThanksMessage() {
       return new URLSearchParams(window.location.search).get('msg') === 'thanks';
@@ -1315,6 +1377,174 @@
       gamePlayerFrame.removeAttribute('src');
     }
 
+    function setPageRainbowFilter({ active = true, speed = 1, toggle = false } = {}) {
+      if (!pageRainbowFilter) return;
+      pageRainbowActive = toggle ? !pageRainbowActive : !!active;
+      const numericSpeed = Number(speed);
+      const safeSpeed = Number.isFinite(numericSpeed) && numericSpeed > 0 ? Math.min(20, Math.max(0.05, numericSpeed)) : 1;
+      pageRainbowFilter.style.setProperty('--page-rainbow-duration', `${6 / safeSpeed}s`);
+      pageRainbowFilter.classList.toggle('is-active', pageRainbowActive);
+    }
+
+    function positionPageDvdInstance(instance, force = false) {
+      if (!instance || !instance.el || !pageDvdOverlay) return;
+      const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0, 1);
+      const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, 1);
+      const logoRect = instance.el.getBoundingClientRect();
+      const logoWidth = Math.max(logoRect.width || instance.el.offsetWidth || 180, 1);
+      const logoHeight = Math.max(logoRect.height || instance.el.offsetHeight || Math.round(logoWidth * 0.45), 1);
+      const maxX = Math.max(0, viewportWidth - logoWidth);
+      const maxY = Math.max(0, viewportHeight - logoHeight);
+
+      instance.x = Math.min(Math.max(instance.x, 0), maxX);
+      instance.y = Math.min(Math.max(instance.y, 0), maxY);
+      if (force) instance.initialized = true;
+
+      instance.el.style.transform = `translate3d(${instance.x}px, ${instance.y}px, 0)`;
+      instance.el.style.filter = `hue-rotate(${instance.hue}deg) drop-shadow(0 0 10px rgba(255, 255, 255, 0.28))`;
+    }
+
+    function stepPageDvdAnimation(now) {
+      if (!pageDvdOverlay || !pageDvdInstances.length) {
+        pageDvdAnimationFrameId = null;
+        return;
+      }
+
+      if (!pageDvdLastTime) pageDvdLastTime = now;
+      const deltaMs = Math.min(32, Math.max(0, now - pageDvdLastTime));
+      pageDvdLastTime = now;
+
+      const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0, 1);
+      const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, 1);
+
+      pageDvdInstances.forEach((instance) => {
+        const logoRect = instance.el.getBoundingClientRect();
+        const logoWidth = Math.max(logoRect.width || instance.el.offsetWidth || 180, 1);
+        const logoHeight = Math.max(logoRect.height || instance.el.offsetHeight || Math.round(logoWidth * 0.45), 1);
+        const maxX = Math.max(0, viewportWidth - logoWidth);
+        const maxY = Math.max(0, viewportHeight - logoHeight);
+
+        instance.x += instance.vx * deltaMs;
+        instance.y += instance.vy * deltaMs;
+
+        if (instance.x <= 0) {
+          instance.x = 0;
+          instance.vx = Math.abs(instance.vx);
+        } else if (instance.x >= maxX) {
+          instance.x = maxX;
+          instance.vx = -Math.abs(instance.vx);
+        }
+
+        if (instance.y <= 0) {
+          instance.y = 0;
+          instance.vy = Math.abs(instance.vy);
+        } else if (instance.y >= maxY) {
+          instance.y = maxY;
+          instance.vy = -Math.abs(instance.vy);
+        }
+
+        instance.hue = (instance.hue + ((pageDvdHueShiftSpeedDegPerSecond * deltaMs) / 1000)) % 360;
+        positionPageDvdInstance(instance);
+      });
+
+      pageDvdAnimationFrameId = requestAnimationFrame(stepPageDvdAnimation);
+    }
+
+    function spawnPageDvdLogo() {
+      if (!pageDvdOverlay || pageDvdInstances.length >= pageDvdMaxInstances) return false;
+
+      const index = pageDvdInstances.length;
+      const img = document.createElement('img');
+      img.className = 'page-dvd-logo';
+      img.alt = 'DVD logo';
+      img.referrerPolicy = 'no-referrer';
+      img.crossOrigin = 'anonymous';
+      img.dataset.dvdId = `page-dvd-${++pageDvdLogoCounter}`;
+
+      const instance = {
+        id: img.dataset.dvdId,
+        el: img,
+        x: 24 + ((index * 37) % 320),
+        y: 24 + ((index * 29) % 220),
+        vx: (index % 2 === 0 ? 1 : -1) * (0.065 + (index * 0.009)),
+        vy: (index % 3 === 0 ? -1 : 1) * (0.055 + (index * 0.008)),
+        hue: (index * 36) % 360
+      };
+
+      img.src = pageDvdDefaultSource;
+      img.onload = () => positionPageDvdInstance(instance, true);
+      pageDvdInstances.push(instance);
+      pageDvdOverlay.appendChild(img);
+      pageDvdOverlay.classList.add('is-active');
+      pageDvdOverlay.setAttribute('aria-hidden', 'false');
+      positionPageDvdInstance(instance, true);
+      pageDvdLastTime = 0;
+      if (pageDvdAnimationFrameId === null) {
+        pageDvdAnimationFrameId = requestAnimationFrame(stepPageDvdAnimation);
+      }
+      return true;
+    }
+
+    function renderFatalExitScreen() {
+      const escaped = [
+        '            .ed"""" """$$$$be.',
+        '          -"           ^""**$$$e.',
+        '        ."                   \'$$$c',
+        '       /                      "4$$b',
+        '      d  3                      $$$$',
+        '      $  *                   .$$$$$$',
+        '     .$  ^c           $$$$$e$$$$$$$$.',
+        '     d$L  4.         4$$$$$$$$$$$$$$b',
+        '     $$$$b ^ceeeee.  4$$ECL.F*$$$$$$$',
+        '     $$$$P d$$$$F $ $$$$$$$$$- $$$$$$',
+        '     3$$$F "$$$$b   $"$$$$$$$  $$$$*"',
+        '      $$P"  "$$b   .$ $$$$$...e$$',
+        '       *c    ..    $$ 3$$$$$$$$$$eF',
+        '         %ce"    $$$  $$$$$$$$$$*',
+        '          *$e.    "$  $$$$$$$$$P',
+        '           $$$      4J$$$$$$$"',
+        '          $"$   $"*$$$$$$$$$B',
+        '          $  "F"   ^*$$$$$$$*',
+        '           $"     .d$$$$$$$',
+        '           ^%ceeed$$$$$$$$$*',
+        '              """*$$$$$$$$$*',
+        '                   ^""""',
+        '',
+        'BOOT STATUS: PAGE FATALITY',
+        'CAUSE: USER EXECUTED /exit',
+        'RESULT: you killed the page',
+        '',
+        'Manual reboot required.',
+        'Refresh the page.'
+      ].join('\n');
+
+      document.documentElement.innerHTML = `
+        <head>
+          <meta charset="UTF-8" />
+          <title>/exit</title>
+          <style>
+            html, body { margin: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+            body { display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; color: #00ff66; font-family: "Courier New", Courier, monospace; background:
+              radial-gradient(circle at 20% 20%, rgba(255, 0, 80, 0.28), transparent 28%),
+              radial-gradient(circle at 80% 25%, rgba(0, 255, 120, 0.24), transparent 26%),
+              radial-gradient(circle at 50% 80%, rgba(0, 140, 255, 0.24), transparent 30%),
+              #000; }
+            pre { margin: 0; white-space: pre; font-size: clamp(10px, 1.35vw, 16px); line-height: 1.1; color: #00ff66; text-shadow: 0 0 8px rgba(0, 255, 102, 0.35); background: rgba(0, 0, 0, 0.38); padding: 18px 20px 30px 20px; box-shadow: 0 0 0 1px rgba(0, 255, 102, 0.18), inset 0 0 24px rgba(0, 0, 0, 0.45); transform-origin: 0 0; animation: fatal-skull-glitch 1.15s steps(2, end) infinite; }
+            @keyframes fatal-skull-glitch {
+              0%, 100% { opacity: 1; transform: translate(0, 0) skewX(0deg); text-shadow: 0 0 8px rgba(0, 255, 102, 0.35); }
+              12% { opacity: 0.82; transform: translate(2px, -1px) skewX(-1deg); text-shadow: -2px 0 rgba(255, 0, 80, 0.65), 2px 0 rgba(0, 140, 255, 0.55), 0 0 10px rgba(0, 255, 102, 0.5); }
+              14% { opacity: 1; transform: translate(-1px, 1px) skewX(1deg); }
+              42% { opacity: 0.9; transform: translate(1px, 0) skewX(0deg); }
+              44% { opacity: 1; transform: translate(-2px, 0) skewX(1deg); text-shadow: 2px 0 rgba(255, 0, 80, 0.55), -2px 0 rgba(0, 140, 255, 0.5), 0 0 12px rgba(0, 255, 102, 0.55); }
+              68% { opacity: 0.78; transform: translate(0, 1px) skewX(-1deg); }
+              70% { opacity: 1; transform: translate(0, 0) skewX(0deg); }
+            }
+          </style>
+        </head>
+        <body><pre>${escaped}</pre></body>
+      `;
+    }
+
     function formatGhostsOnlineText(count) {
       return count === 1 ? '1 Ghost Online' : `${Number.isFinite(count) ? count : '?'} Ghosts Online`;
     }
@@ -1412,6 +1642,23 @@
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && gamePlayerOverlay.classList.contains('is-active')) {
         closeGamePlayer();
+      }
+    });
+    window.addEventListener('resize', () => {
+      pageDvdInstances.forEach((instance) => positionPageDvdInstance(instance, true));
+    });
+    window.addEventListener('message', (event) => {
+      const data = event.data || {};
+      if (data.type === 'pageRainbow') {
+        setPageRainbowFilter(data);
+        return;
+      }
+      if (data.type === 'pageDvd') {
+        spawnPageDvdLogo();
+        return;
+      }
+      if (data.type === 'pageExit') {
+        renderFatalExitScreen();
       }
     });
 

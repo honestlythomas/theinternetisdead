@@ -3360,6 +3360,11 @@
       if (command === '/dvd') {
         const nextAttempt = dvdCommandAttemptCount + 1;
         dvdCommandAttemptCount = nextAttempt;
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'pageDvd' }, '*');
+          addCommandExecutionMessage('/dvd', { detail: `(root page ${nextAttempt})` });
+          return true;
+        }
         const spawned = spawnDvdInstance();
         const countLabel = `(${Math.min(dvdInstances.length, dvdNormalMaxInstances)}/${dvdNormalMaxInstances}${spawned ? '' : ' MAX'})`;
         addCommandExecutionMessage('/dvd', { detail: countLabel });
