@@ -907,6 +907,7 @@
         ]
       },
       { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a public chat message', hidden: true },
+      { name: '/sound', value: '/sound ', execute: false, desc: 'reserved: play an MP3 from /dead/sounds for everyone in chat' },
       {
         name: '/system_prompt',
         value: '/system_prompt ',
@@ -959,7 +960,16 @@
     const CHAT_KIND_SET = new Set(CHAT_KINDS);
     const ALL_CHAT_KINDS = new Set(CHAT_KINDS);
     const CHAT_COLOR_KINDS = ['all', ...CHAT_KINDS];
-    const PUBLIC_SITE_EFFECT_COMMANDS = new Set(['/dvd', '/rainbow', '/random', '/refresh', '/exit']);
+    const PUBLIC_SITE_EFFECT_COMMANDS = new Set(['/dvd', '/rainbow', '/random', '/refresh', '/exit', '/sound']);
+    const SOUND_FILES = [
+      'anime-wow-sound-effect.mp3',
+      'bone-crack.mp3',
+      'do-that-there.mp3',
+      'hitmarker.mp3',
+      'link-yell.mp3',
+      'oof.mp3',
+      'spaceinvaders.mp3'
+    ];
     const CHAT_DEFAULT_COLOR_RGB = {
       all: '255, 255, 255',
       public: '57, 255, 20',
@@ -2167,6 +2177,28 @@
       return `<strong>Help with commands...</strong><div class="helpList">${items}</div>`;
     }
 
+    function normalizeSoundFileName(value) {
+      const fileName = String(value || '').trim().split(/[\\/]/).pop() || '';
+      return SOUND_FILES.includes(fileName) ? fileName : '';
+    }
+
+    function getSoundFileUrl(fileName) {
+      const soundFile = normalizeSoundFileName(fileName);
+      return soundFile ? `/dead/sounds/${encodeURIComponent(soundFile)}` : '';
+    }
+
+    function createSoundListHtml() {
+      const canClick = isReservedNickname(currentNickname);
+      const items = SOUND_FILES.map((fileName) => {
+        const label = escapeHtml(fileName);
+        if (!canClick) {
+          return `<span class="helpItem"><span class="helpCommandName">${label}</span><span class="helpCommandDesc">- reserved nickname only</span></span>`;
+        }
+        return `<a href="#" class="helpItem" data-command="/sound ${escapeAttribute(fileName)}"><span class="helpCommandName">${label}</span><span class="helpCommandDesc">- play for everyone</span></a>`;
+      }).join('');
+      return `<strong>Sounds in /dead/sounds/</strong><div class="helpList">${items}</div>`;
+    }
+
     function getCommandUsage(commandName) {
       const command = commandByName.get(commandName);
       if (!command) return '';
@@ -2201,6 +2233,10 @@
         '/search': [
           '/search',
           '/search [search text]'
+        ].join('\n'),
+        '/sound': [
+          '/sound',
+          '/sound [mp3 filename]'
         ].join('\n'),
         '/nickname': [
           '/nickname [name]',
@@ -2460,8 +2496,28 @@
 
     function canBroadcastSiteEffectCommand(command) {
       const normalizedCommand = String(command || '').trim().toLowerCase();
-      if (normalizedCommand !== '/exit') return true;
+      if (normalizedCommand !== '/exit' && normalizedCommand !== '/sound') return true;
       return isReservedNickname(currentNickname);
+    }
+
+    function playChatSound(fileName, options = {}) {
+      const soundFile = normalizeSoundFileName(fileName);
+      const soundUrl = getSoundFileUrl(soundFile);
+      if (!soundUrl) {
+        if (!options.silent) addSystemMessage('Usage: /sound [mp3 filename]', { error: true, kind: 'commands' });
+        return false;
+      }
+
+      const audio = new Audio(soundUrl);
+      audio.preload = 'auto';
+      const playResult = audio.play();
+      if (playResult && typeof playResult.catch === 'function') {
+        playResult.catch((error) => {
+          console.warn('Unable to play chat sound:', error);
+          if (!options.silent) addSystemMessage('Unable to play sound. The browser may require a click first.', { error: true, kind: 'commands' });
+        });
+      }
+      return true;
     }
 
     function executeSiteEffectCommand(rawCommand, options = {}) {
@@ -2485,6 +2541,10 @@
 
       if (command === '/refresh') {
         return refreshEntirePage();
+      }
+
+      if (command === '/sound') {
+        return playChatSound(arg, options);
       }
 
       if (command === '/dvd') {
@@ -2519,7 +2579,11 @@
     async function broadcastSiteEffectCommand(rawCommand) {
       const [commandToken = ''] = String(rawCommand || '').trim().split(/\s+/);
       if (!canBroadcastSiteEffectCommand(commandToken)) {
-        addSystemMessage('/exit can only affect everyone when used by a reserved nickname.', { error: true, kind: 'commands' });
+        const commandName = String(commandToken || '').trim().toLowerCase();
+        const message = commandName === '/sound'
+          ? '/sound is reserved for protected nicknames.'
+          : '/exit can only affect everyone when used by a reserved nickname.';
+        addSystemMessage(message, { error: true, kind: 'commands' });
         return true;
       }
 
@@ -2958,6 +3022,7 @@
       const command = String(payload.command || raw.split(/\s+/)[0] || '').trim().toLowerCase();
       if (!isPublicSiteEffectCommand(command)) return false;
       if (command === '/exit' && !isReservedNickname(message.nickname || '')) return false;
+      if (command === '/sound' && !isReservedNickname(message.nickname || '')) return false;
       executeSiteEffectCommand(raw, { silent: true });
       addCommandExecutionMessage(command, {
         message: `${raw} affected the site for everyone`
@@ -3643,6 +3708,23 @@
           addCommandExecutionMessage('/pin');
         }
         return true;
+      }
+
+      if (command === '/sound') {
+        if (!isReservedNickname(currentNickname)) {
+          addSystemMessage('/sound is reserved for protected nicknames.', { error: true, kind: 'commands' });
+          return true;
+        }
+        if (!arg) {
+          addMessage('system', createSoundListHtml(), { kind: 'commands' });
+          return true;
+        }
+        const soundFile = normalizeSoundFileName(arg);
+        if (!soundFile) {
+          addSystemMessage('Usage: /sound [mp3 filename]', { error: true, kind: 'commands' });
+          return true;
+        }
+        return broadcastSiteEffectCommand(`/sound ${soundFile}`);
       }
 
       if (command === '/system_prompt') {
