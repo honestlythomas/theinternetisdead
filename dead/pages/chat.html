@@ -2207,7 +2207,7 @@
         if (!canClick) {
           return `<span class="helpItem"><span class="helpCommandName">${label}</span><span class="helpCommandDesc">- reserved nickname only</span></span>`;
         }
-        return `<a href="#" class="helpItem" data-command="/sound ${escapeAttribute(fileName)}"><span class="helpCommandName">${label}</span><span class="helpCommandDesc">- play for everyone</span></a>`;
+        return `<a href="#" class="helpItem" data-command="!sound ${escapeAttribute(fileName)}"><span class="helpCommandName">${label}</span><span class="helpCommandDesc">- play for everyone</span></a>`;
       }).join('');
       return `<strong>Sounds in /dead/sounds/</strong><div class="helpList">${items}</div>`;
     }
@@ -2524,6 +2524,15 @@
       if (!isBroadcastSiteEffectCommand(commandToken)) return raw;
       const normalizedCommand = normalizeSiteEffectCommandToken(commandToken);
       return `${normalizedCommand}${raw.slice(commandToken.length)}`;
+    }
+
+    function getSiteEffectCommandFromPayload(payload) {
+      const raw = payload && (payload.raw || payload.command || '');
+      return String(payload && (payload.command || String(raw).split(/\s+/)[0]) || '').trim().toLowerCase();
+    }
+
+    function shouldHidePublicSiteCommandOutput(payload) {
+      return getSiteEffectCommandFromPayload(payload) === '/sound' && !canUseRestrictedSiteEffectCommands();
     }
 
     function shouldBroadcastSiteEffectCommand(command) {
@@ -3113,11 +3122,12 @@
       const command = String(payload.command || raw.split(/\s+/)[0] || '').trim().toLowerCase();
       if (!isPublicSiteEffectCommand(command)) return false;
       if (!isReservedNickname(message.nickname || '')) return false;
-      if (command === '/sound' && payload.clientId === chatClientId) return false;
       executeSiteEffectCommand(raw, { silent: true });
-      addCommandExecutionMessage(command, {
-        message: `${raw} affected the site for everyone`
-      });
+      if (!shouldHidePublicSiteCommandOutput(payload)) {
+        addCommandExecutionMessage(command, {
+          message: `${raw} affected the site for everyone`
+        });
+      }
       return true;
     }
 
@@ -3139,6 +3149,7 @@
       }
       if (payload.type === 'siteCommand') {
         executePublicSiteCommandMessage(message, payload);
+        if (shouldHidePublicSiteCommandOutput(payload)) return;
       }
       const timestamp = escapeHtml(formatPublicMessageTimestamp(message.created_at));
       const timestampHtml = timestamp ? `<span class="messageTimestamp">${timestamp}</span>` : '';
@@ -4189,12 +4200,13 @@
         applyCommand(command);
         return;
       }
-      if (rawCommand.startsWith('/')) {
+      if (rawCommand.startsWith('/') || rawCommand.startsWith('!')) {
         chatInput.value = rawCommand;
         hideSuggestions();
         runCommandWithTaggedOutput(rawCommand).then((handled) => {
           if (chatInput.value === rawCommand) chatInput.value = '';
-          if (!handled) addSystemMessage(`${rawCommand.split(/\s+/)[0]} is not a known command`, { error: true, kind: 'commands' });
+          const commandName = normalizeSiteEffectCommandToken(rawCommand.split(/\s+/)[0]);
+          if (!handled) addSystemMessage(`${commandName} is not a known command`, { error: true, kind: 'commands' });
         });
       }
     });
