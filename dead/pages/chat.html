@@ -1627,6 +1627,23 @@
       return { ok, text };
     }
 
+    function isAllowedChatFileLinkHost(hostname) {
+      const host = String(hostname || '').replace(/^www\./i, '').toLowerCase();
+      return host === 'theinternetisdead.org' ||
+        host.endsWith('.theinternetisdead.org') ||
+        host === 'youtu.be' ||
+        host === 'youtube.com' ||
+        host.endsWith('.youtube.com') ||
+        host === 'youtube-nocookie.com' ||
+        host.endsWith('.youtube-nocookie.com') ||
+        host === 'ytimg.com' ||
+        host.endsWith('.ytimg.com');
+    }
+
+    function isChatFileUrlPath(pathname) {
+      return /\.[a-z0-9]{1,12}$/i.test(String(pathname || ''));
+    }
+
     function validateChatInputBody(value) {
       const raw = String(value || '').trim();
       if (!raw) return { ok: false, text: '', message: 'Type a message first.' };
@@ -1652,18 +1669,13 @@
       if (/\b(?:javascript|vbscript|data\s*:\s*text\/html)\s*:/i.test(text)) {
         return { ok: false, text: '', message: 'Script-like links are not allowed in chat.' };
       }
-      if (/(^|[\s([<{])[\w./-]+\.(?:m?js|html?|xhtml)(?=$|[\s)\]}>.,!?;:])/i.test(text)) {
-        return { ok: false, text: '', message: '.js and .html files are not allowed in chat.' };
-      }
 
       let blockedFileUrl = '';
       text.replace(/https?:\/\/[^\s<]+/gi, (match) => {
         const { url } = splitUrlTrailingPunctuation(match);
-        const info = getYouTubeEmbedInfo(url);
-        if (info) return match;
         try {
           const parsed = new URL(url);
-          if (/\.(?:m?js|html?|xhtml)$/i.test(parsed.pathname)) {
+          if (isChatFileUrlPath(parsed.pathname) && !isAllowedChatFileLinkHost(parsed.hostname)) {
             blockedFileUrl = url;
           }
         } catch (error) {
@@ -1671,7 +1683,7 @@
         return match;
       });
       if (blockedFileUrl) {
-        return { ok: false, text: '', message: 'Links to .js or .html files are not allowed in chat.' };
+        return { ok: false, text: '', message: 'File links are only allowed from theinternetisdead.org or YouTube.' };
       }
 
       return { ok: true, text, message: '' };
@@ -2446,6 +2458,12 @@
       return isAllChatsMode() && isPublicSiteEffectCommand(command);
     }
 
+    function canBroadcastSiteEffectCommand(command) {
+      const normalizedCommand = String(command || '').trim().toLowerCase();
+      if (normalizedCommand !== '/exit') return true;
+      return isReservedNickname(currentNickname);
+    }
+
     function executeSiteEffectCommand(rawCommand, options = {}) {
       const raw = String(rawCommand || '').trim();
       const [commandToken = ''] = raw.split(/\s+/);
@@ -2499,6 +2517,12 @@
     }
 
     async function broadcastSiteEffectCommand(rawCommand) {
+      const [commandToken = ''] = String(rawCommand || '').trim().split(/\s+/);
+      if (!canBroadcastSiteEffectCommand(commandToken)) {
+        addSystemMessage('/exit can only affect everyone when used by a reserved nickname.', { error: true, kind: 'commands' });
+        return true;
+      }
+
       try {
         await insertPublicSiteCommand(rawCommand);
         return true;
@@ -2931,9 +2955,11 @@
       if (!Number.isFinite(createdTime) || !Number.isFinite(sessionStartTime) || createdTime <= sessionStartTime) return false;
 
       const raw = payload.raw || payload.command || '';
-      if (!isPublicSiteEffectCommand(payload.command || raw.split(/\s+/)[0])) return false;
+      const command = String(payload.command || raw.split(/\s+/)[0] || '').trim().toLowerCase();
+      if (!isPublicSiteEffectCommand(command)) return false;
+      if (command === '/exit' && !isReservedNickname(message.nickname || '')) return false;
       executeSiteEffectCommand(raw, { silent: true });
-      addCommandExecutionMessage(payload.command || raw.split(/\s+/)[0], {
+      addCommandExecutionMessage(command, {
         message: `${raw} affected the site for everyone`
       });
       return true;
