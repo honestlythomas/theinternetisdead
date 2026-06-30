@@ -1439,6 +1439,9 @@
     const pageDvdMaxInstances = 10;
     const pageDvdHueShiftSpeedDegPerSecond = 45;
     const defaultActionStorageKey = 'theinternetisdead.defaultAction';
+    const defaultDocumentTitle = document.title;
+    const chatDocumentTitle = 'theinternetisdead.org chat';
+    const newChatMessageDocumentTitle = 'new dead msg';
 
     function updateTitleClock() {
       const clocks = document.querySelectorAll('.title-clock');
@@ -1544,12 +1547,15 @@
       updateSavedSelectionIndicator();
 
       if (selectedAction === 'Chat with weirdos 💬') {
+        document.title = chatDocumentTitle;
         actionStack.classList.add('is-frame-active');
         contentBox.classList.add('is-frame');
         contentBox.setAttribute('aria-label', 'Chat with weirdos');
         contentBox.innerHTML = '<iframe class="content-frame" src="/dead/pages/chat.html?open=1" title="Chat with weirdos" allow="clipboard-write"></iframe>';
         return;
       }
+
+      document.title = defaultDocumentTitle;
 
       if (selectedAction === 'Look at the main page 🏠') {
         actionStack.classList.add('is-frame-active');
@@ -2080,6 +2086,18 @@
       }
       if (data.type === 'pageExit') {
         renderFatalExitScreen();
+        return;
+      }
+      if (data.type === 'pageNewPublicChatMessage') {
+        if (actionSelect.value === 'Chat with weirdos 💬') {
+          document.title = newChatMessageDocumentTitle;
+        }
+        return;
+      }
+      if (data.type === 'pageChatActive') {
+        if (actionSelect.value === 'Chat with weirdos 💬') {
+          document.title = chatDocumentTitle;
+        }
       }
     });
 

@@ -3035,6 +3035,9 @@
       if (!key || renderedPublicMessageKeys.has(key)) return;
       renderedPublicMessageKeys.add(key);
       const createdAt = String(message.created_at || '');
+      const createdTime = Date.parse(createdAt);
+      const sessionStartTime = Date.parse(chatSessionStartedAt);
+      const isNewSinceChatOpened = Number.isFinite(createdTime) && Number.isFinite(sessionStartTime) && createdTime > sessionStartTime;
       if (createdAt && (!latestPublicMessageCreatedAt || createdAt > latestPublicMessageCreatedAt)) {
         latestPublicMessageCreatedAt = createdAt;
       }
@@ -3057,6 +3060,9 @@
       const body = renderPublicChatBody(message.body || '');
       const line = addMessage('public', `${timestampHtml}<strong${nicknameClass}${nicknameStyle}>${nickname}:</strong> ${body}`, { publicMessage: true, kind: 'public' });
       line.dataset.publicMessageKey = key;
+      if (isNewSinceChatOpened && window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'pageNewPublicChatMessage' }, '*');
+      }
       trimRenderedPublicMessages();
     }
 
@@ -4013,7 +4019,18 @@
       submitInput();
     });
 
-    chatInput.addEventListener('input', renderSuggestions);
+    function notifyParentChatActive() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'pageChatActive' }, '*');
+      }
+    }
+
+    chatInput.addEventListener('focus', notifyParentChatActive);
+
+    chatInput.addEventListener('input', (event) => {
+      notifyParentChatActive();
+      renderSuggestions(event);
+    });
 
     chatInput.addEventListener('paste', (event) => {
       const items = Array.from(event.clipboardData && event.clipboardData.items ? event.clipboardData.items : []);
