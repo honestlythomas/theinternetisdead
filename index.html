@@ -365,6 +365,37 @@
       white-space: nowrap;
     }
 
+    .title-line-with-clock {
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.55ch;
+      max-width: 100%;
+    }
+
+    .title-clock-line {
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.55ch;
+      max-width: 100%;
+    }
+
+    .title-clock {
+      display: inline-flex;
+      align-items: baseline;
+      color: inherit;
+      font: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
+      white-space: nowrap;
+    }
+
+    .title-clock-period {
+      margin-left: 0.12ch;
+    }
+
     .mobile-title-line {
       display: none;
     }
@@ -1141,6 +1172,10 @@
         display: block;
       }
 
+      .mobile-title-line.title-line-with-clock {
+        display: inline-flex;
+      }
+
       .action-row {
         gap: 5px;
       }
@@ -1314,10 +1349,12 @@
 
       <div class="top-center">
         <section class="title-box" aria-label="Page title">
-          <div class="desktop-title-line">The Internet Is Dead...</div>
+          <div class="desktop-title-line">The Internet Is Dead</div>
+          <div class="desktop-title-line title-line-with-clock"><span class="title-clock-line"><span>The time is</span><span class="title-clock" aria-label="Current time"><span class="title-clock-time">?</span><span class="title-clock-period"></span></span></span></div>
           <div class="desktop-title-line">What now?</div>
           <div class="mobile-title-line">The Internet</div>
-          <div class="mobile-title-line">Is Dead...</div>
+          <div class="mobile-title-line">Is Dead</div>
+          <div class="mobile-title-line title-line-with-clock"><span class="title-clock-line"><span>The time is</span><span class="title-clock" aria-label="Current time"><span class="title-clock-time">?</span><span class="title-clock-period"></span></span></span></div>
           <div class="mobile-title-line">What now?</div>
         </section>
 
@@ -1402,6 +1439,37 @@
     const pageDvdMaxInstances = 10;
     const pageDvdHueShiftSpeedDegPerSecond = 45;
     const defaultActionStorageKey = 'theinternetisdead.defaultAction';
+
+    function updateTitleClock() {
+      const clocks = document.querySelectorAll('.title-clock');
+      if (!clocks.length) return;
+
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Toronto',
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      }).formatToParts(new Date());
+
+      const timeText = parts
+        .filter((part) => part.type !== 'dayPeriod')
+        .map((part) => part.value)
+        .join('')
+        .trim();
+      const dayPeriod = (parts.find((part) => part.type === 'dayPeriod')?.value || '')
+        .toLowerCase()
+        .replace(/\./g, '');
+      const label = `${timeText} ${dayPeriod}`.trim();
+
+      clocks.forEach((clock) => {
+        const timeEl = clock.querySelector('.title-clock-time');
+        const periodEl = clock.querySelector('.title-clock-period');
+        if (timeEl) timeEl.textContent = timeText;
+        if (periodEl) periodEl.textContent = dayPeriod;
+        clock.setAttribute('aria-label', label);
+      });
+    }
 
     function hasThanksMessage() {
       return new URLSearchParams(window.location.search).get('msg') === 'thanks';
@@ -2029,6 +2097,8 @@
     } else {
       applySavedDefaultAction();
     }
+    updateTitleClock();
+    window.setInterval(updateTitleClock, 1000);
     renderActionSelection();
     updateGhostCounterDisplay();
     connectGhostCounterSocket();
