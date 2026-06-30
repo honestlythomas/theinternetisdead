@@ -4091,9 +4091,13 @@
         applyCommand(command);
         return;
       }
-      if (rawCommand.startsWith('/') && commandsEnabled()) {
+      if (rawCommand.startsWith('/')) {
         chatInput.value = rawCommand;
-        submitInput();
+        hideSuggestions();
+        runCommandWithTaggedOutput(rawCommand).then((handled) => {
+          if (chatInput.value === rawCommand) chatInput.value = '';
+          if (!handled) addSystemMessage(`${rawCommand.split(/\s+/)[0]} is not a known command`, { error: true, kind: 'commands' });
+        });
       }
     });
 
