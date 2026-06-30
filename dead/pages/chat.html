@@ -1612,6 +1612,71 @@
       };
     }
 
+    function replaceAllowedYouTubeIframeEmbeds(value) {
+      let ok = true;
+      const text = String(value || '').replace(/<iframe\b[\s\S]*?<\/iframe\s*>/gi, (match) => {
+        const srcMatch = match.match(/\bsrc\s*=\s*(["'])(.*?)\1/i) || match.match(/\bsrc\s*=\s*([^\s>]+)/i);
+        const src = srcMatch ? String(srcMatch[2] || srcMatch[1] || '').trim() : '';
+        const info = getYouTubeEmbedInfo(src);
+        if (!info) {
+          ok = false;
+          return match;
+        }
+        return info.url;
+      });
+      return { ok, text };
+    }
+
+    function validateChatInputBody(value) {
+      const raw = String(value || '').trim();
+      if (!raw) return { ok: false, text: '', message: 'Type a message first.' };
+
+      const iframeResult = replaceAllowedYouTubeIframeEmbeds(raw);
+      if (!iframeResult.ok) {
+        return { ok: false, text: '', message: 'Only YouTube iframe embed code is allowed.' };
+      }
+
+      const text = iframeResult.text.trim();
+      if (/<\/?iframe\b/i.test(text)) {
+        return { ok: false, text: '', message: 'Only YouTube iframe embed code is allowed.' };
+      }
+      if (/<\s*(?:script|object|embed|link|meta|style|form|input|button|textarea|select|svg|math|base)\b/i.test(text)) {
+        return { ok: false, text: '', message: 'HTML, scripts, and embeds are not allowed in chat.' };
+      }
+      if (/<\/?[a-z][^>]*>/i.test(text)) {
+        return { ok: false, text: '', message: 'HTML is not allowed in chat. Links are fine.' };
+      }
+      if (/&lt;\s*\/?\s*[a-z][\s\S]*?&gt;/i.test(text)) {
+        return { ok: false, text: '', message: 'HTML is not allowed in chat. Links are fine.' };
+      }
+      if (/\b(?:javascript|vbscript|data\s*:\s*text\/html)\s*:/i.test(text)) {
+        return { ok: false, text: '', message: 'Script-like links are not allowed in chat.' };
+      }
+      if (/(^|[\s([<{])[\w./-]+\.(?:m?js|html?|xhtml)(?=$|[\s)\]}>.,!?;:])/i.test(text)) {
+        return { ok: false, text: '', message: '.js and .html files are not allowed in chat.' };
+      }
+
+      let blockedFileUrl = '';
+      text.replace(/https?:\/\/[^\s<]+/gi, (match) => {
+        const { url } = splitUrlTrailingPunctuation(match);
+        const info = getYouTubeEmbedInfo(url);
+        if (info) return match;
+        try {
+          const parsed = new URL(url);
+          if (/\.(?:m?js|html?|xhtml)$/i.test(parsed.pathname)) {
+            blockedFileUrl = url;
+          }
+        } catch (error) {
+        }
+        return match;
+      });
+      if (blockedFileUrl) {
+        return { ok: false, text: '', message: 'Links to .js or .html files are not allowed in chat.' };
+      }
+
+      return { ok: true, text, message: '' };
+    }
+
     function getYouTubeEmbedsFromText(value) {
       const found = [];
       const seen = new Set();
@@ -2173,8 +2238,12 @@
     }
 
     function addLocalChatMessage(text) {
-      const body = String(text || '').trim();
-      if (!body) return false;
+      const validated = validateChatInputBody(text);
+      if (!validated.ok) {
+        addSystemMessage(validated.message, { error: true, kind: 'local' });
+        return false;
+      }
+      const body = validated.text;
       const nickname = normalizeNickname(currentNickname);
       const nicknameColor = currentNicknameColor ? ` style="color:${escapeAttribute(currentNicknameColor)}"` : '';
       addMessage('user', `<strong${nicknameColor}>${escapeHtml(nickname)}:</strong> ${renderMarkdownText(body)}`, { kind: 'local' });
@@ -2182,11 +2251,12 @@
     }
 
     async function runAiChatPrompt(promptText) {
-      const message = String(promptText || '').trim();
-      if (!message) {
-        addSystemMessage('Type a message while AI Chat is checked.', { kind: 'ai' });
+      const validated = validateChatInputBody(promptText);
+      if (!validated.ok) {
+        addSystemMessage(validated.message || 'Type a message while AI Chat is checked.', { error: true, kind: 'ai' });
         return true;
       }
+      const message = validated.text;
 
       const nickname = normalizeNickname(currentNickname);
       const nicknameColor = currentNicknameColor;
@@ -3065,11 +3135,12 @@
     }
 
     async function insertPublicPinnedMessage(text) {
-      const pinnedText = String(text || '').trim();
-      if (!pinnedText) {
-        addSystemMessage('Usage: /pin [text]', { kind: 'commands' });
+      const validated = validateChatInputBody(text);
+      if (!validated.ok) {
+        addSystemMessage(validated.message || 'Usage: /pin [text]', { error: true, kind: getActiveInputChatKind() });
         return false;
       }
+      const pinnedText = validated.text;
       if (pinnedText.length > 500) {
         addSystemMessage('Pinned message is too long. Keep it to 500 characters.', { error: true, kind: 'commands' });
         return false;
@@ -3109,8 +3180,12 @@
     }
 
     async function sendPublicMessage(rawBody) {
-      const body = String(rawBody || '').trim();
-      if (!body) return false;
+      const validated = validateChatInputBody(rawBody);
+      if (!validated.ok) {
+        addSystemMessage(validated.message, { error: true, kind: 'public' });
+        return false;
+      }
+      const body = validated.text;
       if (body.length > 500) {
         addSystemMessage('Message is too long. Keep public chat messages to 500 characters.', { error: true });
         return false;
