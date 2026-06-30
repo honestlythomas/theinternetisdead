@@ -892,8 +892,9 @@
       },
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
       { name: '/clear_public', value: '/clear_public ', execute: false, desc: 'admin: clear public chat history through the server-side function', hidden: true },
-      { name: '/dvd', value: '/dvd', execute: true, desc: 'spawn another bouncing hue-shifting DVD logo, up to 10 total' },
-      { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
+      { name: '/dump', value: '/dump', execute: true, desc: 'spawn the image dump as bouncing logos', siteEffect: true },
+      { name: '/dvd', value: '/dvd', execute: true, desc: 'spawn another bouncing hue-shifting DVD logo, up to 10 total', siteEffect: true },
+      { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen', siteEffect: true },
       {
         name: '/nickname',
         value: '/nickname ',
@@ -907,7 +908,7 @@
         ]
       },
       { name: '/pin', value: '/pin ', execute: false, desc: 'reserved: pin a public chat message', hidden: true },
-      { name: '/sound', value: '/sound ', execute: false, desc: 'reserved: play an MP3 from /dead/sounds for everyone in chat' },
+      { name: '/sound', value: '/sound ', execute: false, desc: 'reserved: play an MP3 from /dead/sounds', siteEffect: true },
       {
         name: '/system_prompt',
         value: '/system_prompt ',
@@ -919,17 +920,18 @@
           { name: 'off', value: '/system_prompt off', execute: true, desc: 'clear the local system prompt' }
         ]
       },
-      { name: '/random', value: '/random', execute: true, desc: 'load a random site page in the root iframe' },
+      { name: '/random', value: '/random', execute: true, desc: 'load a random site page in the root iframe', siteEffect: true },
       {
         name: '/rainbow',
         value: '/rainbow',
         execute: true,
         desc: 'toggle a hue-shifting color filter over the root page',
+        siteEffect: true,
         subcommands: [
           { name: 'speed', value: '/rainbow speed ', execute: false, desc: 'set rainbow filter speed' }
         ]
       },
-      { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the entire page' },
+      { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the entire page', siteEffect: true },
       { name: '/reset', value: '/reset', execute: true, desc: 'clear local browser storage and reload', hidden: true },
       { name: '/search', value: '/search ', execute: false, desc: 'search visible text across indexed site HTML files' },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' }
@@ -960,7 +962,7 @@
     const CHAT_KIND_SET = new Set(CHAT_KINDS);
     const ALL_CHAT_KINDS = new Set(CHAT_KINDS);
     const CHAT_COLOR_KINDS = ['all', ...CHAT_KINDS];
-    const PUBLIC_SITE_EFFECT_COMMANDS = new Set(['/dvd', '/rainbow', '/random', '/refresh', '/exit', '/sound']);
+    const PUBLIC_SITE_EFFECT_COMMANDS = new Set(['/dump', '/dvd', '/rainbow', '/random', '/refresh', '/exit', '/sound']);
     const SOUND_FILES = [
       'anime-wow-sound-effect.mp3',
       'bone-crack.mp3',
@@ -998,6 +1000,8 @@
     let dvdCommandAttemptCount = 0;
     const dvdInstances = [];
     const dvdDefaultSource = 'https://upload.wikimedia.org/wikipedia/commons/8/85/Dvd_logo.svg';
+    const dumpImageIndexUrl = '/dead/JSON/image_dump.json';
+    const dumpImageIndexBaseUrl = new URL(dumpImageIndexUrl, window.location.href);
     const dvdNormalMaxInstances = 10;
     const dvdHueShiftSpeedDegPerSecond = 45;
     const COMMAND_EXECUTION_MESSAGE_TTL_MS = 15000;
@@ -1449,8 +1453,16 @@
       return currentChatKinds.size === CHAT_KINDS.length;
     }
 
+    function canUseRestrictedSiteEffectCommands() {
+      return isReservedNickname(currentNickname);
+    }
+
     function getVisibleCommands() {
-      return commands.filter((command) => command.hidden !== true && (!command.allChatsOnly || isAllChatsMode()));
+      return commands.filter((command) => (
+        command.hidden !== true
+        && (!command.allChatsOnly || isAllChatsMode())
+        && (!command.siteEffect || canUseRestrictedSiteEffectCommands())
+      ));
     }
 
     function applyChatModeFilter() {
@@ -2216,8 +2228,9 @@
         ].join('\n'),
         '/clear': '/clear',
         '/clear_public': '/clear_public',
-        '/dvd': '/dvd',
-        '/exit': '/exit',
+        '/dump': ['/dump', '!dump'].join('\n'),
+        '/dvd': ['/dvd', '!dvd'].join('\n'),
+        '/exit': ['/exit', '!exit'].join('\n'),
         '/help': '/help',
         '/pin': '/pin [text]',
         '/system_prompt': [
@@ -2225,19 +2238,22 @@
           '/system_prompt [system prompt text]',
           '/system_prompt clear'
         ].join('\n'),
-        '/random': '/random',
+        '/random': ['/random', '!random'].join('\n'),
         '/rainbow': [
           '/rainbow',
           '/rainbow speed [number]',
+          '!rainbow',
+          '!rainbow speed [number]'
         ].join('\n'),
-        '/refresh': '/refresh',
+        '/refresh': ['/refresh', '!refresh'].join('\n'),
         '/search': [
           '/search',
           '/search [search text]'
         ].join('\n'),
         '/sound': [
           '/sound',
-          '/sound [mp3 filename]'
+          '/sound [mp3 filename]',
+          '!sound [mp3 filename]'
         ].join('\n'),
         '/nickname': [
           '/nickname [name]',
@@ -2491,14 +2507,31 @@
       return PUBLIC_SITE_EFFECT_COMMANDS.has(String(command || '').trim().toLowerCase());
     }
 
+    function normalizeSiteEffectCommandToken(command) {
+      const normalizedCommand = String(command || '').trim().toLowerCase();
+      if (normalizedCommand.startsWith('!')) return `/${normalizedCommand.slice(1)}`;
+      return normalizedCommand;
+    }
+
+    function isBroadcastSiteEffectCommand(command) {
+      const normalizedCommand = String(command || '').trim().toLowerCase();
+      return normalizedCommand.startsWith('!') && isPublicSiteEffectCommand(normalizeSiteEffectCommandToken(normalizedCommand));
+    }
+
+    function normalizeBroadcastSiteEffectCommand(rawCommand) {
+      const raw = String(rawCommand || '').trim();
+      const [commandToken = ''] = raw.split(/\s+/);
+      if (!isBroadcastSiteEffectCommand(commandToken)) return raw;
+      const normalizedCommand = normalizeSiteEffectCommandToken(commandToken);
+      return `${normalizedCommand}${raw.slice(commandToken.length)}`;
+    }
+
     function shouldBroadcastSiteEffectCommand(command) {
-      return isAllChatsMode() && isPublicSiteEffectCommand(command);
+      return isAllChatsMode() && isBroadcastSiteEffectCommand(command);
     }
 
     function canBroadcastSiteEffectCommand(command) {
-      const normalizedCommand = String(command || '').trim().toLowerCase();
-      if (normalizedCommand !== '/exit' && normalizedCommand !== '/sound') return true;
-      return isReservedNickname(currentNickname);
+      return isAllChatsMode() && isBroadcastSiteEffectCommand(command) && canUseRestrictedSiteEffectCommands();
     }
 
     function playChatSound(fileName, options = {}) {
@@ -2521,7 +2554,7 @@
       return true;
     }
 
-    function executeSiteEffectCommand(rawCommand, options = {}) {
+    async function executeSiteEffectCommand(rawCommand, options = {}) {
       const raw = String(rawCommand || '').trim();
       const [commandToken = ''] = raw.split(/\s+/);
       const command = commandToken.toLowerCase();
@@ -2546,6 +2579,19 @@
 
       if (command === '/sound') {
         return playChatSound(arg, options);
+      }
+
+      if (command === '/dump') {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'pageDump' }, '*');
+          if (!options.silent) addCommandExecutionMessage('/dump', { detail: '(root page)' });
+          return true;
+        }
+        const spawnedCount = await spawnDumpImages();
+        if (!options.silent) {
+          addCommandExecutionMessage('/dump', { detail: `(${spawnedCount} images)` });
+        }
+        return true;
       }
 
       if (command === '/dvd') {
@@ -2580,16 +2626,18 @@
     async function broadcastSiteEffectCommand(rawCommand) {
       const [commandToken = ''] = String(rawCommand || '').trim().split(/\s+/);
       if (!canBroadcastSiteEffectCommand(commandToken)) {
-        const commandName = String(commandToken || '').trim().toLowerCase();
-        const message = commandName === '/sound'
-          ? '/sound is reserved for protected nicknames.'
-          : '/exit can only affect everyone when used by a reserved nickname.';
+        const commandName = normalizeSiteEffectCommandToken(commandToken) || '/command';
+        const message = !isAllChatsMode()
+          ? `${commandName} can only affect everyone from All Chats mode.`
+          : canUseRestrictedSiteEffectCommands()
+          ? `${commandName} only affects everyone when run as !${commandName.slice(1)}.`
+          : `${commandName} can only affect everyone when used by a protected nickname.`;
         addSystemMessage(message, { error: true, kind: 'commands' });
         return true;
       }
 
       try {
-        await insertPublicSiteCommand(rawCommand);
+        await insertPublicSiteCommand(normalizeBroadcastSiteEffectCommand(rawCommand));
         return true;
       } catch (error) {
         console.error('Unable to broadcast site command:', error);
@@ -2899,13 +2947,37 @@
       return true;
     }
 
-    function createDvdInstance() {
-      if (!dvdOverlay || dvdInstances.length >= dvdNormalMaxInstances) return null;
+    function getDumpImageSource(item) {
+      const rawPath = String(item && (item.path || item.src || item.file) || '').trim();
+      if (!rawPath) return '';
+      try {
+        return new URL(rawPath, dumpImageIndexBaseUrl).href;
+      } catch (error) {
+        return '';
+      }
+    }
+
+    async function loadDumpImages() {
+      const response = await fetch(dumpImageIndexUrl, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const items = await response.json();
+      if (!Array.isArray(items)) return [];
+      return items
+        .map((item) => ({
+          src: getDumpImageSource(item),
+          alt: String(item && (item.title || item.file) || 'Dump image').trim() || 'Dump image'
+        }))
+        .filter((item) => item.src);
+    }
+
+    function createDvdInstance(source = dvdDefaultSource, alt = 'DVD logo', options = {}) {
+      if (!dvdOverlay) return null;
+      if (options.enforceLimit !== false && dvdInstances.length >= dvdNormalMaxInstances) return null;
 
       const index = dvdInstances.length;
       const img = document.createElement('img');
       img.className = 'dvdLogo';
-      img.alt = 'DVD logo';
+      img.alt = alt;
       img.referrerPolicy = 'no-referrer';
       img.crossOrigin = 'anonymous';
       img.dataset.dvdId = `dvd-${++dvdLogoCounter}`;
@@ -2920,7 +2992,7 @@
         hue: (index * 36) % 360
       };
 
-      img.src = dvdDefaultSource;
+      img.src = source;
       img.onload = () => positionDvdInstance(instance, true);
       dvdInstances.push(instance);
       dvdOverlay.appendChild(img);
@@ -2937,6 +3009,23 @@
       if (!instance) return false;
       startDvdAnimation();
       return true;
+    }
+
+    async function spawnDumpImages() {
+      let items = [];
+      try {
+        items = await loadDumpImages();
+      } catch (error) {
+        console.error('Unable to load image dump:', error);
+        addSystemMessage('Unable to load image dump.', { error: true, kind: 'commands' });
+        return 0;
+      }
+      let spawnedCount = 0;
+      items.forEach((item) => {
+        if (createDvdInstance(item.src, item.alt, { enforceLimit: false })) spawnedCount += 1;
+      });
+      if (spawnedCount > 0) startDvdAnimation();
+      return spawnedCount;
     }
 
     function publicMessageKey(message) {
@@ -3023,8 +3112,7 @@
       const raw = payload.raw || payload.command || '';
       const command = String(payload.command || raw.split(/\s+/)[0] || '').trim().toLowerCase();
       if (!isPublicSiteEffectCommand(command)) return false;
-      if (command === '/exit' && !isReservedNickname(message.nickname || '')) return false;
-      if (command === '/sound' && !isReservedNickname(message.nickname || '')) return false;
+      if (!isReservedNickname(message.nickname || '')) return false;
       if (command === '/sound' && payload.clientId === chatClientId) return false;
       executeSiteEffectCommand(raw, { silent: true });
       addCommandExecutionMessage(command, {
@@ -3641,6 +3729,9 @@
       const [commandToken = ''] = trimmed.split(/\s+/);
       const command = commandToken.toLowerCase();
       const arg = trimmed.slice(commandToken.length).trim();
+      if (isBroadcastSiteEffectCommand(command)) {
+        return broadcastSiteEffectCommand(trimmed);
+      }
       if (arg.toLowerCase() === '-help') {
         return showCommandUsage(command);
       }
@@ -3735,7 +3826,8 @@
           return true;
         }
         playChatSound(soundFile);
-        return broadcastSiteEffectCommand(`/sound ${soundFile}`);
+        addCommandExecutionMessage('/sound', { detail: `(${soundFile})` });
+        return true;
       }
 
       if (command === '/system_prompt') {
@@ -3773,6 +3865,11 @@
         }
         await runSiteSearch(arg);
         return true;
+      }
+
+      if (command === '/dump') {
+        if (shouldBroadcastSiteEffectCommand(command)) return broadcastSiteEffectCommand(trimmed);
+        return executeSiteEffectCommand(trimmed);
       }
 
       if (command === '/dvd') {
@@ -3824,9 +3921,10 @@
         if (!handled) addSystemMessage('/chat is not a known command', { error: true, kind: 'commands' });
         return;
       }
-      if (trimmed.startsWith('/') && commandsEnabled()) {
+      if ((trimmed.startsWith('/') || trimmed.startsWith('!')) && commandsEnabled()) {
         const handled = await runCommandWithTaggedOutput(trimmed);
-        if (!handled) addSystemMessage(`${trimmed.split(/\s+/)[0]} is not a known command`, { error: true, kind: 'commands' });
+        const commandName = normalizeSiteEffectCommandToken(trimmed.split(/\s+/)[0]);
+        if (!handled) addSystemMessage(`${commandName} is not a known command`, { error: true, kind: 'commands' });
         return;
       }
       const activeInputChatKind = getActiveInputChatKind();

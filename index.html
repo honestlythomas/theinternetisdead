@@ -1422,9 +1422,16 @@
     const spinClickWindowMs = 900;
     const warpLongHoldMs = 10000;
     const warpBackgroundSource = '/dead/pages/canvas-backgrounds/starfield-background_warp.html?standalone=true';
+    const ghostIdleTimeoutMs = 5 * 60 * 1000;
+    const ghostReconnectDelayMs = 5000;
     const spinClickTimestamps = [];
     let ghostsOnlineCount = null;
     let ghostCounterVisible = false;
+    let ghostCounterSocket = null;
+    let ghostCounterReconnectTimerId = null;
+    let ghostCounterIdleTimerId = null;
+    let ghostCounterLastActivityAt = Date.now();
+    let ghostCounterIdle = false;
     let wheelSpinActive = false;
     let warpActive = false;
     let warpHoldTimerId = null;
@@ -1436,6 +1443,8 @@
     let pageDvdLogoCounter = 0;
     const pageDvdInstances = [];
     const pageDvdDefaultSource = 'https://upload.wikimedia.org/wikipedia/commons/8/85/Dvd_logo.svg';
+    const pageDumpImageIndexUrl = '/dead/JSON/image_dump.json';
+    const pageDumpImageIndexBaseUrl = new URL(pageDumpImageIndexUrl, window.location.href);
     const pageDvdMaxInstances = 10;
     const pageDvdHueShiftSpeedDegPerSecond = 45;
     const defaultActionStorageKey = 'theinternetisdead.defaultAction';
@@ -1756,13 +1765,37 @@
       pageDvdAnimationFrameId = requestAnimationFrame(stepPageDvdAnimation);
     }
 
-    function spawnPageDvdLogo() {
-      if (!pageDvdOverlay || pageDvdInstances.length >= pageDvdMaxInstances) return false;
+    function getPageDumpImageSource(item) {
+      const rawPath = String(item && (item.path || item.src || item.file) || '').trim();
+      if (!rawPath) return '';
+      try {
+        return new URL(rawPath, pageDumpImageIndexBaseUrl).href;
+      } catch (error) {
+        return '';
+      }
+    }
+
+    async function loadPageDumpImages() {
+      const response = await fetch(pageDumpImageIndexUrl, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const items = await response.json();
+      if (!Array.isArray(items)) return [];
+      return items
+        .map((item) => ({
+          src: getPageDumpImageSource(item),
+          alt: String(item && (item.title || item.file) || 'Dump image').trim() || 'Dump image'
+        }))
+        .filter((item) => item.src);
+    }
+
+    function spawnPageDvdLogo(source = pageDvdDefaultSource, alt = 'DVD logo', options = {}) {
+      if (!pageDvdOverlay) return false;
+      if (options.enforceLimit !== false && pageDvdInstances.length >= pageDvdMaxInstances) return false;
 
       const index = pageDvdInstances.length;
       const img = document.createElement('img');
       img.className = 'page-dvd-logo';
-      img.alt = 'DVD logo';
+      img.alt = alt;
       img.referrerPolicy = 'no-referrer';
       img.crossOrigin = 'anonymous';
       img.dataset.dvdId = `page-dvd-${++pageDvdLogoCounter}`;
@@ -1777,7 +1810,7 @@
         hue: (index * 36) % 360
       };
 
-      img.src = pageDvdDefaultSource;
+      img.src = source;
       img.onload = () => positionPageDvdInstance(instance, true);
       pageDvdInstances.push(instance);
       pageDvdOverlay.appendChild(img);
@@ -1789,6 +1822,21 @@
         pageDvdAnimationFrameId = requestAnimationFrame(stepPageDvdAnimation);
       }
       return true;
+    }
+
+    async function spawnPageDumpImages() {
+      let items = [];
+      try {
+        items = await loadPageDumpImages();
+      } catch (error) {
+        console.error('Unable to load image dump:', error);
+        return 0;
+      }
+      let spawnedCount = 0;
+      items.forEach((item) => {
+        if (spawnPageDvdLogo(item.src, item.alt, { enforceLimit: false })) spawnedCount += 1;
+      });
+      return spawnedCount;
     }
 
     function renderFatalExitScreen() {
@@ -1992,7 +2040,55 @@
       updateGhostCounterDisplay();
     }
 
+    function clearGhostCounterReconnectTimer() {
+      if (ghostCounterReconnectTimerId !== null) {
+        window.clearTimeout(ghostCounterReconnectTimerId);
+        ghostCounterReconnectTimerId = null;
+      }
+    }
+
+    function scheduleGhostCounterReconnect() {
+      if (ghostCounterIdle || ghostCounterReconnectTimerId !== null) return;
+      ghostCounterReconnectTimerId = window.setTimeout(() => {
+        ghostCounterReconnectTimerId = null;
+        connectGhostCounterSocket();
+      }, ghostReconnectDelayMs);
+    }
+
+    function closeGhostCounterSocket() {
+      if (!ghostCounterSocket) return;
+      const socket = ghostCounterSocket;
+      ghostCounterSocket = null;
+      try {
+        socket.close();
+      } catch (error) {}
+    }
+
+    function markGhostCounterIdle() {
+      ghostCounterIdle = true;
+      clearGhostCounterReconnectTimer();
+      closeGhostCounterSocket();
+    }
+
+    function scheduleGhostCounterIdleCheck() {
+      if (ghostCounterIdleTimerId !== null) {
+        window.clearTimeout(ghostCounterIdleTimerId);
+      }
+      const elapsedMs = Date.now() - ghostCounterLastActivityAt;
+      const remainingMs = Math.max(0, ghostIdleTimeoutMs - elapsedMs);
+      ghostCounterIdleTimerId = window.setTimeout(markGhostCounterIdle, remainingMs);
+    }
+
+    function recordGhostCounterActivity() {
+      ghostCounterLastActivityAt = Date.now();
+      const wasIdle = ghostCounterIdle;
+      ghostCounterIdle = false;
+      scheduleGhostCounterIdleCheck();
+      if (wasIdle || !ghostCounterSocket) connectGhostCounterSocket();
+    }
+
     function connectGhostCounterSocket() {
+      if (ghostCounterIdle || ghostCounterSocket) return;
       if (!window.WebSocket) {
         setGhostsOnline(null);
         return;
@@ -2005,9 +2101,11 @@
       try {
         socket = new WebSocket(socketUrl);
       } catch (error) {
-        window.setTimeout(connectGhostCounterSocket, 5000);
+        scheduleGhostCounterReconnect();
         return;
       }
+
+      ghostCounterSocket = socket;
 
       socket.addEventListener('message', (event) => {
         try {
@@ -2022,14 +2120,16 @@
       });
 
       socket.addEventListener('close', () => {
-        window.setTimeout(connectGhostCounterSocket, 5000);
+        if (ghostCounterSocket === socket) ghostCounterSocket = null;
+        scheduleGhostCounterReconnect();
       });
 
       socket.addEventListener('error', () => {
         try {
           socket.close();
         } catch (error) {
-          window.setTimeout(connectGhostCounterSocket, 5000);
+          if (ghostCounterSocket === socket) ghostCounterSocket = null;
+          scheduleGhostCounterReconnect();
         }
       });
     }
@@ -2038,6 +2138,11 @@
       ghostCounterVisible = !ghostCounterVisible;
       updateGhostCounterDisplay();
     }
+
+    ['pointerdown', 'keydown', 'touchstart', 'scroll', 'focus'].forEach((eventName) => {
+      window.addEventListener(eventName, recordGhostCounterActivity, { passive: true });
+    });
+    window.addEventListener('beforeunload', closeGhostCounterSocket);
 
     barrelRollTrigger.addEventListener('click', handleSpiralClick);
     barrelRollTrigger.addEventListener('pointerdown', startWarpHoldTimer);
@@ -2070,6 +2175,10 @@
       }
       if (data.type === 'pageDvd') {
         spawnPageDvdLogo();
+        return;
+      }
+      if (data.type === 'pageDump') {
+        spawnPageDumpImages();
         return;
       }
       if (data.type === 'pageRandomAction') {
@@ -2119,6 +2228,7 @@
     window.setInterval(updateTitleClock, 1000);
     renderActionSelection();
     updateGhostCounterDisplay();
+    scheduleGhostCounterIdleCheck();
     connectGhostCounterSocket();
   </script>
 </body>

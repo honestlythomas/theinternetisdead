@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Dead Favicon",
+    "file": "dead-favicon.png",
+    "path": "../images/dead-favicon.png"
+  },
+  {
+    "title": "Deadlogo Green",
+    "file": "deadlogo-green.png",
+    "path": "../images/deadlogo-green.png"
+  },
+  {
+    "title": "Oldtube Alt 1",
+    "file": "oldtube-alt-1.png",
+    "path": "../images/oldtube-alt-1.png"
+  },
+  {
+    "title": "Oldtube Alt 2",
+    "file": "oldtube-alt-2.png",
+    "path": "../images/oldtube-alt-2.png"
+  },
+  {
+    "title": "Oldtube",
+    "file": "oldtube.png",
+    "path": "../images/oldtube.png"
+  },
+  {
+    "title": "Subscribe",
+    "file": "subscribe.png",
+    "path": "../images/subscribe.png"
+  }
+]
