@@ -1021,6 +1021,7 @@
     const commandExecutionMessages = new Map();
     const executedPublicSiteCommandKeys = new Set();
     const chatSessionStartedAt = new Date().toISOString();
+    const chatClientId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
     let commandOutputDepth = 0;
     let pendingReservedNickname = '';
     let pendingReservedNicknamePromptLine = null;
@@ -2980,6 +2981,7 @@
             type: 'siteCommand',
             command: typeof parsed.command === 'string' ? parsed.command.trim().toLowerCase() : '',
             raw: typeof parsed.raw === 'string' ? parsed.raw.trim() : '',
+            clientId: typeof parsed.clientId === 'string' ? parsed.clientId : '',
             nicknameColor: normalizeNicknameColor(parsed.nicknameColor || '')
           };
         }
@@ -3023,6 +3025,7 @@
       if (!isPublicSiteEffectCommand(command)) return false;
       if (command === '/exit' && !isReservedNickname(message.nickname || '')) return false;
       if (command === '/sound' && !isReservedNickname(message.nickname || '')) return false;
+      if (command === '/sound' && payload.clientId === chatClientId) return false;
       executeSiteEffectCommand(raw, { silent: true });
       addCommandExecutionMessage(command, {
         message: `${raw} affected the site for everyone`
@@ -3191,6 +3194,7 @@
         type: PUBLIC_CHAT_SITE_COMMAND_PAYLOAD_TYPE,
         command: commandToken.toLowerCase(),
         raw,
+        clientId: chatClientId,
         nicknameColor: currentNicknameColor
       });
     }
@@ -3730,6 +3734,7 @@
           addSystemMessage('Usage: /sound [mp3 filename]', { error: true, kind: 'commands' });
           return true;
         }
+        playChatSound(soundFile);
         return broadcastSiteEffectCommand(`/sound ${soundFile}`);
       }
 
@@ -4079,8 +4084,17 @@
       const item = event.target && event.target.closest ? event.target.closest('.helpItem[data-command]') : null;
       if (!item) return;
       event.preventDefault();
-      const command = commandByName.get(item.dataset.command || '');
-      if (command) applyCommand(command);
+      const rawCommand = String(item.dataset.command || '').trim();
+      const commandToken = rawCommand.split(/\s+/)[0].toLowerCase();
+      const command = commandByName.get(rawCommand) || commandByName.get(commandToken);
+      if (command && rawCommand === command.name) {
+        applyCommand(command);
+        return;
+      }
+      if (rawCommand.startsWith('/') && commandsEnabled()) {
+        chatInput.value = rawCommand;
+        submitInput();
+      }
     });
 
     window.addEventListener('message', (event) => {
