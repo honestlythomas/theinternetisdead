@@ -868,6 +868,7 @@
     const PUBLIC_CHAT_IMAGE_MAX_DIMENSION = 960;
     const PUBLIC_CHAT_IMAGE_PAYLOAD_TYPE = 'theinternetisdead.publicChatImage.v1';
     const PUBLIC_CHAT_PIN_PAYLOAD_TYPE = 'theinternetisdead.publicChatPin.v1';
+    const PUBLIC_CHAT_SITE_COMMAND_PAYLOAD_TYPE = 'theinternetisdead.publicChatSiteCommand.v1';
     const CHAT_API_URL = 'https://theinternetisdead.onrender.com/api/chat';
     const CHAT_API_MODEL = 'gpt-5.5';
 
@@ -958,6 +959,7 @@
     const CHAT_KIND_SET = new Set(CHAT_KINDS);
     const ALL_CHAT_KINDS = new Set(CHAT_KINDS);
     const CHAT_COLOR_KINDS = ['all', ...CHAT_KINDS];
+    const PUBLIC_SITE_EFFECT_COMMANDS = new Set(['/dvd', '/rainbow', '/random', '/refresh', '/exit']);
     const CHAT_DEFAULT_COLOR_RGB = {
       all: '255, 255, 255',
       public: '57, 255, 20',
@@ -1007,6 +1009,8 @@
       'developer'
     ]);
     const commandExecutionMessages = new Map();
+    const executedPublicSiteCommandKeys = new Set();
+    const chatSessionStartedAt = new Date().toISOString();
     let commandOutputDepth = 0;
     let pendingReservedNickname = '';
     let pendingReservedNicknamePromptLine = null;
@@ -1482,6 +1486,7 @@
     }
 
     function getActiveInputChatKind() {
+      if (currentChatKinds.size === CHAT_KINDS.length) return 'public';
       if (currentChatKinds.size !== CHAT_KINDS.length && currentChatKinds.has('public')) return 'public';
       if (currentChatKinds.size !== CHAT_KINDS.length && currentChatKinds.has('ai')) return 'ai';
       return 'local';
@@ -2363,6 +2368,77 @@
       return true;
     }
 
+    function isPublicSiteEffectCommand(command) {
+      return PUBLIC_SITE_EFFECT_COMMANDS.has(String(command || '').trim().toLowerCase());
+    }
+
+    function shouldBroadcastSiteEffectCommand(command) {
+      return isAllChatsMode() && isPublicSiteEffectCommand(command);
+    }
+
+    function executeSiteEffectCommand(rawCommand, options = {}) {
+      const raw = String(rawCommand || '').trim();
+      const [commandToken = ''] = raw.split(/\s+/);
+      const command = commandToken.toLowerCase();
+      const arg = raw.slice(commandToken.length).trim();
+
+      if (command === '/random') {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'pageRandomAction' }, '*');
+          return true;
+        }
+        loadRandomIndexPageFromChat();
+        return true;
+      }
+
+      if (command === '/rainbow') {
+        return requestRootRainbowFilter(arg);
+      }
+
+      if (command === '/refresh') {
+        return refreshEntirePage();
+      }
+
+      if (command === '/dvd') {
+        const nextAttempt = dvdCommandAttemptCount + 1;
+        dvdCommandAttemptCount = nextAttempt;
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'pageDvd' }, '*');
+          if (!options.silent) addCommandExecutionMessage('/dvd', { detail: `(root page ${nextAttempt})` });
+          return true;
+        }
+        const spawned = spawnDvdInstance();
+        if (!options.silent) {
+          const countLabel = `(${Math.min(dvdInstances.length, dvdNormalMaxInstances)}/${dvdNormalMaxInstances}${spawned ? '' : ' MAX'})`;
+          addCommandExecutionMessage('/dvd', { detail: countLabel });
+        }
+        return true;
+      }
+
+      if (command === '/exit') {
+        if (!options.silent) addCommandExecutionMessage('/exit');
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'pageExit' }, '*');
+        } else {
+          renderFatalExitScreen();
+        }
+        return true;
+      }
+
+      return false;
+    }
+
+    async function broadcastSiteEffectCommand(rawCommand) {
+      try {
+        await insertPublicSiteCommand(rawCommand);
+        return true;
+      } catch (error) {
+        console.error('Unable to broadcast site command:', error);
+        addSystemMessage('Unable to broadcast site command.', { error: true, kind: 'commands' });
+        return false;
+      }
+    }
+
     function refreshEntirePage() {
       addCommandExecutionMessage('/refresh');
       window.setTimeout(() => {
@@ -2741,6 +2817,14 @@
             nicknameColor: normalizeNicknameColor(parsed.nicknameColor || '')
           };
         }
+        if (parsed && parsed.type === PUBLIC_CHAT_SITE_COMMAND_PAYLOAD_TYPE) {
+          return {
+            type: 'siteCommand',
+            command: typeof parsed.command === 'string' ? parsed.command.trim().toLowerCase() : '',
+            raw: typeof parsed.raw === 'string' ? parsed.raw.trim() : '',
+            nicknameColor: normalizeNicknameColor(parsed.nicknameColor || '')
+          };
+        }
         if (parsed && parsed.type === 'theinternetisdead.publicChatText.v1') {
           return {
             type: 'text',
@@ -2755,12 +2839,34 @@
 
     function renderPublicChatBody(body) {
       const payload = parsePublicChatPayload(body);
+      if (payload.type === 'siteCommand') {
+        return renderMarkdownText(`${payload.raw || payload.command || '/command'} affected the site`);
+      }
       if (payload.type !== 'image') return renderMarkdownText(payload.text);
       if (!/^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(payload.src)) {
         return escapeHtml('[unsupported image]');
       }
       const captionHtml = payload.caption ? `<div>${renderMarkdownText(payload.caption)}</div>` : '';
       return `${captionHtml}<img class="publicChatImage" src="${escapeAttribute(payload.src)}" alt="${escapeAttribute(payload.alt)}" loading="lazy" decoding="async" tabindex="0" title="Open larger image" />`;
+    }
+
+    function executePublicSiteCommandMessage(message, payload) {
+      const key = publicMessageKey(message);
+      if (!key || executedPublicSiteCommandKeys.has(key)) return false;
+      executedPublicSiteCommandKeys.add(key);
+
+      const createdAt = String(message.created_at || '');
+      const createdTime = Date.parse(createdAt);
+      const sessionStartTime = Date.parse(chatSessionStartedAt);
+      if (!Number.isFinite(createdTime) || !Number.isFinite(sessionStartTime) || createdTime <= sessionStartTime) return false;
+
+      const raw = payload.raw || payload.command || '';
+      if (!isPublicSiteEffectCommand(payload.command || raw.split(/\s+/)[0])) return false;
+      executeSiteEffectCommand(raw, { silent: true });
+      addCommandExecutionMessage(payload.command || raw.split(/\s+/)[0], {
+        message: `${raw} affected the site for everyone`
+      });
+      return true;
     }
 
     function addPublicChatMessage(message) {
@@ -2775,6 +2881,9 @@
       if (payload.type === 'pin') {
         upsertPinnedMessage(payload.text, message.nickname || 'Anonymous');
         return;
+      }
+      if (payload.type === 'siteCommand') {
+        executePublicSiteCommandMessage(message, payload);
       }
       const timestamp = escapeHtml(formatPublicMessageTimestamp(message.created_at));
       const timestampHtml = timestamp ? `<span class="messageTimestamp">${timestamp}</span>` : '';
@@ -2908,6 +3017,17 @@
       });
     }
 
+    function createPublicSiteCommandBody(rawCommand) {
+      const raw = String(rawCommand || '').trim();
+      const [commandToken = ''] = raw.split(/\s+/);
+      return JSON.stringify({
+        type: PUBLIC_CHAT_SITE_COMMAND_PAYLOAD_TYPE,
+        command: commandToken.toLowerCase(),
+        raw,
+        nicknameColor: currentNicknameColor
+      });
+    }
+
     async function insertPublicChatBody(body) {
       const nickname = normalizeNickname(currentNickname);
       currentNickname = nickname;
@@ -2918,6 +3038,25 @@
           Prefer: 'return=representation'
         },
         body: JSON.stringify({ room: SUPABASE_CHAT_ROOM, nickname, body: createPublicTextBody(body) })
+      });
+      const [message] = Array.isArray(rows) ? rows : [];
+      if (message) addPublicChatMessage(message);
+      await prunePublicChatHistory({ force: true });
+      return true;
+    }
+
+    async function insertPublicSiteCommand(rawCommand) {
+      const raw = String(rawCommand || '').trim();
+      if (!raw) return false;
+      const nickname = normalizeNickname(currentNickname);
+      currentNickname = nickname;
+      const rows = await supabaseRequest(`/rest/v1/${SUPABASE_CHAT_TABLE}?select=id,room,nickname,body,created_at`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation'
+        },
+        body: JSON.stringify({ room: SUPABASE_CHAT_ROOM, nickname, body: createPublicSiteCommandBody(raw) })
       });
       const [message] = Array.isArray(rows) ? rows : [];
       if (message) addPublicChatMessage(message);
@@ -3411,22 +3550,18 @@
       }
 
       if (command === '/random') {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'pageRandomAction' }, '*');
-          return true;
-        }
-        await loadRandomIndexPageFromChat();
-        return true;
+        if (shouldBroadcastSiteEffectCommand(command)) return broadcastSiteEffectCommand(trimmed);
+        return executeSiteEffectCommand(trimmed);
       }
 
       if (command === '/rainbow') {
-        requestRootRainbowFilter(arg);
-        return true;
+        if (shouldBroadcastSiteEffectCommand(command)) return broadcastSiteEffectCommand(trimmed);
+        return executeSiteEffectCommand(trimmed);
       }
 
       if (command === '/refresh') {
-        refreshEntirePage();
-        return true;
+        if (shouldBroadcastSiteEffectCommand(command)) return broadcastSiteEffectCommand(trimmed);
+        return executeSiteEffectCommand(trimmed);
       }
 
       if (command === '/reset') {
@@ -3447,27 +3582,13 @@
       }
 
       if (command === '/dvd') {
-        const nextAttempt = dvdCommandAttemptCount + 1;
-        dvdCommandAttemptCount = nextAttempt;
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'pageDvd' }, '*');
-          addCommandExecutionMessage('/dvd', { detail: `(root page ${nextAttempt})` });
-          return true;
-        }
-        const spawned = spawnDvdInstance();
-        const countLabel = `(${Math.min(dvdInstances.length, dvdNormalMaxInstances)}/${dvdNormalMaxInstances}${spawned ? '' : ' MAX'})`;
-        addCommandExecutionMessage('/dvd', { detail: countLabel });
-        return true;
+        if (shouldBroadcastSiteEffectCommand(command)) return broadcastSiteEffectCommand(trimmed);
+        return executeSiteEffectCommand(trimmed);
       }
 
       if (command === '/exit') {
-        addCommandExecutionMessage('/exit');
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'pageExit' }, '*');
-        } else {
-          renderFatalExitScreen();
-        }
-        return true;
+        if (shouldBroadcastSiteEffectCommand(command)) return broadcastSiteEffectCommand(trimmed);
+        return executeSiteEffectCommand(trimmed);
       }
 
       return false;
