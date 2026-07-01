@@ -1487,26 +1487,6 @@
       return new URLSearchParams(window.location.search).get('msg') === 'thanks';
     }
 
-    function getInitialFramePath() {
-      const params = new URLSearchParams(window.location.search);
-      const rawFrame = params.get('frame') || (() => {
-        try {
-          return window.sessionStorage.getItem('deadRootShellFramePath') || '';
-        } catch (error) {
-          return '';
-        }
-      })();
-      if (!rawFrame) return '';
-      try {
-        const frameUrl = new URL(rawFrame, window.location.origin);
-        if (frameUrl.origin !== window.location.origin) return '';
-        if (!frameUrl.pathname.startsWith('/dead/pages/')) return '';
-        return `${frameUrl.pathname}${frameUrl.search}${frameUrl.hash}`;
-      } catch (error) {
-        return '';
-      }
-    }
-
     function normalizeActionValue(value) {
       const legacyActions = {
         'Ask me anything.': 'Ask me anything ❓',
@@ -1677,22 +1657,6 @@
           <p class="subtitle">This channel is still tuning itself into existence.</p>
         </header>
       `;
-    }
-
-    function renderInitialFramePath() {
-      const framePath = getInitialFramePath();
-      if (!framePath) return false;
-      try {
-        window.sessionStorage.removeItem('deadRootShellFramePath');
-      } catch (error) {}
-      document.title = defaultDocumentTitle;
-      actionSelect.value = 'Enter a random dimension ðŸŒ€';
-      actionStack.classList.add('is-frame-active');
-      contentBox.classList.add('is-frame');
-      contentBox.setAttribute('aria-label', 'Enter a random dimension');
-      contentBox.innerHTML = `<iframe class="content-frame" src="${escapeHtml(framePath)}" title="Enter a random dimension"></iframe>`;
-      updateSavedSelectionIndicator();
-      return true;
     }
 
     function selectNextAction() {
@@ -2262,7 +2226,7 @@
     }
     updateTitleClock();
     window.setInterval(updateTitleClock, 1000);
-    if (!renderInitialFramePath()) renderActionSelection();
+    renderActionSelection();
     updateGhostCounterDisplay();
     scheduleGhostCounterIdleCheck();
     connectGhostCounterSocket();

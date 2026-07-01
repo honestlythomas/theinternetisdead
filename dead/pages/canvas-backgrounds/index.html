@@ -5,16 +5,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>/dead/pages/canvas-backgrounds/</title>
-<script>
-const standaloneParams = new URLSearchParams(window.location.search);
-const allowStandalone = standaloneParams.get('standalone') === 'true';
-
-if (window.top === window.self && !allowStandalone) {
-  const shellFramePath = '/dead/pages/canvas-backgrounds/' + window.location.search + window.location.hash;
-  window.sessionStorage.setItem('deadRootShellFramePath', shellFramePath);
-  window.location.replace('/?frame=' + encodeURIComponent(shellFramePath));
-}
-</script>
   <style>
     :root {
       color-scheme: dark;
