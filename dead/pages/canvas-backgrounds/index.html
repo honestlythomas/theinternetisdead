@@ -4,13 +4,13 @@
   <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>/dead/experiments/canvas-backgrounds/</title>
+  <title>/dead/pages/canvas-backgrounds/</title>
 <script>
 const standaloneParams = new URLSearchParams(window.location.search);
 const allowStandalone = standaloneParams.get('standalone') === 'true';
 
 if (window.top === window.self && !allowStandalone) {
-  const shellFramePath = '/dead/experiments/canvas-backgrounds/' + window.location.search + window.location.hash;
+  const shellFramePath = '/dead/pages/canvas-backgrounds/' + window.location.search + window.location.hash;
   window.sessionStorage.setItem('deadRootShellFramePath', shellFramePath);
   window.location.replace('/?frame=' + encodeURIComponent(shellFramePath));
 }
