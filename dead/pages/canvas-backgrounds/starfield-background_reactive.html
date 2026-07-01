@@ -5,16 +5,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>/dead/pages/canvas-backgrounds/starfield-background_reactive.html</title>
-<script>
-const standaloneParams = new URLSearchParams(window.location.search);
-const allowStandalone = standaloneParams.get('standalone') === 'true';
-
-if (window.top === window.self && !allowStandalone) {
-  const shellFramePath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-  window.sessionStorage.setItem('deadRootShellFramePath', shellFramePath);
-  window.location.replace('/?frame=' + encodeURIComponent(shellFramePath));
-}
-</script>
 <style>
   /*
     background.html
