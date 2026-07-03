@@ -113,12 +113,15 @@
     }
 
     .message {
-      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      column-gap: 8px;
       width: fit-content;
       max-width: min(920px, calc(100vw - 32px));
       align-self: flex-start;
       flex-shrink: 0;
-      padding: 7px 56px 7px 9px;
+      padding: 7px 9px;
       border: 1px solid var(--chat-border);
       background: var(--chat-bg);
       color: var(--chat-text);
@@ -128,10 +131,20 @@
       box-shadow: 0 0 18px rgba(var(--chat-primary-rgb), 0.08);
     }
 
+    .messageContent {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .messageActions {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 4px;
+      line-height: 1;
+    }
+
     .messageReadButton,
     .messageDeleteButton {
-      position: absolute;
-      top: 2px;
       border: 0;
       background: transparent;
       color: var(--chat-text);
@@ -144,17 +157,13 @@
       text-shadow: 0 0 6px rgba(var(--chat-primary-rgb), 0.55);
     }
 
-    .messageReadButton {
-      right: 28px;
-    }
-
     .messageDeleteButton {
-      right: 3px;
       color: #ff5577;
       text-shadow: 0 0 6px rgba(255, 85, 119, 0.55);
     }
 
-    .messageDeleteButton[hidden] {
+    .messageDeleteButton[hidden],
+    .messageActions:empty {
       display: none;
     }
 
@@ -1046,6 +1055,7 @@
     let pendingReservedNickname = '';
     let pendingReservedNicknamePromptLine = null;
     let verifiedReservedNicknamePassword = '';
+    let pendingDeletePublicMessageLine = null;
     let pendingClearPublicPassword = false;
     let pendingClearPublicPromptLine = null;
     let pendingNicknameColor = false;
@@ -1074,8 +1084,8 @@
 
     function getMessageSpeechText(line) {
       const clone = line.cloneNode(true);
-      clone.querySelectorAll('.messageReadButton, .messageDeleteButton, .messageTimestamp').forEach((node) => node.remove());
-      const leadingLabel = clone.firstElementChild;
+      clone.querySelectorAll('.messageActions, .messageReadButton, .messageDeleteButton, .messageTimestamp').forEach((node) => node.remove());
+      const leadingLabel = clone.querySelector('.messageContent > strong:first-child');
       if (leadingLabel && leadingLabel.tagName === 'STRONG' && /:$/.test(leadingLabel.textContent.trim())) {
         leadingLabel.remove();
       }
@@ -1894,13 +1904,18 @@
       line.dataset.chatKind = options.kind || (options.publicMessage ? 'public' : (role === 'system' && commandOutputDepth > 0 ? 'commands' : role));
       if (options.publicMessage) line.dataset.liveChatMessage = 'true';
       if (options.error) line.dataset.error = 'true';
-      line.innerHTML = html;
+      const content = document.createElement('span');
+      content.className = 'messageContent';
+      content.innerHTML = html;
+      line.appendChild(content);
+      const actions = document.createElement('span');
+      actions.className = 'messageActions';
       const readButton = document.createElement('button');
       readButton.className = 'messageReadButton';
       readButton.type = 'button';
       readButton.textContent = '🔊';
       readButton.setAttribute('aria-label', 'Read message aloud');
-      line.appendChild(readButton);
+      actions.appendChild(readButton);
       if (options.publicMessage) {
         const deleteButton = document.createElement('button');
         deleteButton.className = 'messageDeleteButton';
@@ -1908,8 +1923,9 @@
         deleteButton.textContent = '❌';
         deleteButton.hidden = !currentNicknameCanDeletePublicChat();
         deleteButton.setAttribute('aria-label', 'Delete public chat message');
-        line.appendChild(deleteButton);
+        actions.appendChild(deleteButton);
       }
+      line.appendChild(actions);
       messages.appendChild(line);
       while (messages.children.length > SUPABASE_CHAT_MAX_VISIBLE + 30) {
         messages.firstElementChild?.remove();
@@ -3528,6 +3544,13 @@
         return false;
       }
 
+      if (!verifiedReservedNicknamePassword) {
+        pendingDeletePublicMessageLine = line;
+        addSystemMessage('Enter the restricted nickname password to delete that public chat message.', { kind: 'commands' });
+        setReservedNicknamePasswordMode(currentNickname);
+        return false;
+      }
+
       const deleteButton = line.querySelector('.messageDeleteButton');
       if (deleteButton) deleteButton.disabled = true;
 
@@ -3551,6 +3574,12 @@
       } catch (error) {
         console.error('Unable to delete public chat message:', error);
         addSystemMessage('Unable to delete public chat message.', { error: true, kind: 'commands' });
+        if (/unauthorized/i.test(String(error && error.message || error))) {
+          verifiedReservedNicknamePassword = '';
+          pendingDeletePublicMessageLine = line;
+          addSystemMessage('Re-enter the restricted nickname password to delete that public chat message.', { kind: 'commands' });
+          setReservedNicknamePasswordMode(currentNickname);
+        }
         if (deleteButton && line.isConnected) deleteButton.disabled = false;
         return false;
       }
@@ -3648,6 +3677,11 @@
       addCommandExecutionMessage('/nickname', {
         message: formatCommandExecutionMessage('/nickname', 'executed', currentNickname)
       });
+      const lineToDelete = pendingDeletePublicMessageLine;
+      pendingDeletePublicMessageLine = null;
+      if (lineToDelete && lineToDelete.isConnected) {
+        await deletePublicChatMessage(lineToDelete);
+      }
       return true;
     }
 
@@ -3849,6 +3883,7 @@
         if (lowerArg === 'reset') {
           currentNickname = generateAnonymousNickname();
           verifiedReservedNicknamePassword = '';
+          pendingDeletePublicMessageLine = null;
           saveNickname('');
           refreshPublicChatDeleteButtons();
           addCommandExecutionMessage('/nickname', {
