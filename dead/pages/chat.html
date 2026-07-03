@@ -1045,6 +1045,7 @@
     let commandOutputDepth = 0;
     let pendingReservedNickname = '';
     let pendingReservedNicknamePromptLine = null;
+    let verifiedReservedNicknamePassword = '';
     let pendingClearPublicPassword = false;
     let pendingClearPublicPromptLine = null;
     let pendingNicknameColor = false;
@@ -3538,6 +3539,7 @@
             action: 'delete_message',
             room: SUPABASE_CHAT_ROOM,
             messageId,
+            password: verifiedReservedNicknamePassword,
             nickname: normalizeNickname(currentNickname)
           })
         });
@@ -3631,10 +3633,12 @@
       if (!nickname) return false;
       const ok = await verifyAdminPassword(password);
       if (!ok) {
+        verifiedReservedNicknamePassword = '';
         clearReservedNicknamePasswordMode();
         addSystemMessage('Incorrect password. Nickname unchanged.', { error: true });
         return true;
       }
+      verifiedReservedNicknamePassword = String(password || '');
       currentNickname = normalizeNickname(nickname);
       saveNickname(currentNickname);
       syncPublicChatSettings();
@@ -3844,6 +3848,7 @@
         const lowerArg = arg.toLowerCase();
         if (lowerArg === 'reset') {
           currentNickname = generateAnonymousNickname();
+          verifiedReservedNicknamePassword = '';
           saveNickname('');
           refreshPublicChatDeleteButtons();
           addCommandExecutionMessage('/nickname', {
