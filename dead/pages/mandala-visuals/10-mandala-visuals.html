@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RGB Infinite Mandala Tunnel - Stable Flight</title>
+  <style>
+    /*
+      RGB Infinite Mandala Tunnel - Stable Flight
+
+      Fixes the previous "math fighting itself in a parking lot" problem:
+      - Stack movement is handled ONLY by moving whole slice groups in Z.
+      - Objects stay in stable local coordinates inside each slice.
+      - 4D/non-Euclidean distortion is now mild local warping, not a second depth transform.
+      - Infinite flight is done by recycling mandala slices as they pass the camera.
+      - Center stays active but not blown out.
+      - Red / green / blue object assignment remains roughly 33.3% each.
+      - No overlay. No UI.
+
+      Controls:
+      - Click or Space: pause/resume
+      - R: reseed/rebuild
+    */
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from "three";
+
+    let seed = Math.floor(Math.random() * 999999999);
+    let frame = 0;
+    let paused = false;
+
+    const TAU = Math.PI * 2;
+    const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+
+    const SETTINGS = {
+      slices: 22,
+      sliceSpacing: 185,
+      flySpeed: 3.4,
+
+      rings: 13,
+      layers: 4,
+      symmetry: 12,
+      coreRings: 5,
+      stars: 900,
+
+      ringSpread: 365,
+      centerVoid: 32,
+      objectScale: 0.82,
+
+      spinSpeed: 0.0032,
+      localWarpStrength: 0.18,
+      fourthDimStrength: 0.24,
+
+      dprMax: 1.45
+    };
+
+    const TUNNEL_LENGTH = SETTINGS.slices * SETTINGS.sliceSpacing;
+    const CAMERA_Z = 520;
+    const RECYCLE_FRONT_Z = CAMERA_Z + 170;
+    const RECYCLE_BACK_Z = RECYCLE_FRONT_Z - TUNNEL_LENGTH;
+
+    const RGB = [
+      { name: "red",   color: new THREE.Color(1.0, 0.12, 0.08) },
+      { name: "green", color: new THREE.Color(0.0, 1.0, 0.34) },
+      { name: "blue",  color: new THREE.Color(0.14, 0.46, 1.0) }
+    ];
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+    scene.fog = new THREE.FogExp2(0x000000, 0.00162);
+
+    const camera = new THREE.PerspectiveCamera(
+      66,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      6200
+    );
+    camera.position.set(0, 0, CAMERA_Z);
+    camera.lookAt(0, 0, -340);
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      powerPreference: "high-performance"
+    });
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, SETTINGS.dprMax));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    document.body.appendChild(renderer.domElement);
+
+    const world = new THREE.Group();
+    const tunnel = new THREE.Group();
+    const starfield = new THREE.Group();
+
+    scene.add(world);
+    world.add(tunnel);
+    world.add(starfield);
+
+    scene.add(new THREE.AmbientLight(0x15152b, 0.64));
+
+    const lightGreen = new THREE.PointLight(0x33ff99, 0.76, 1900);
+    lightGreen.position.set(280, -220, 470);
+    scene.add(lightGreen);
+
+    const lightBlue = new THREE.PointLight(0x3355ff, 0.70, 1900);
+    lightBlue.position.set(-320, 250, 270);
+    scene.add(lightBlue);
+
+    const lightRed = new THREE.PointLight(0xff2222, 0.48, 1600);
+    lightRed.position.set(0, 0, 720);
+    scene.add(lightRed);
+
+    function fract(v) {
+      return v - Math.floor(v);
+    }
+
+    function hash(n) {
+      return fract(Math.sin(n * 91.3458 + seed * 0.000031) * 47453.5453123);
+    }
+
+    function hash2(x, y, salt = 0) {
+      return hash(x * 127.1 + y * 311.7 + salt * 74.3);
+    }
+
+    function smoothNoise(x, y, salt = 0) {
+      const ix = Math.floor(x);
+      const iy = Math.floor(y);
+      const fx = fract(x);
+      const fy = fract(y);
+
+      const ux = fx * fx * (3 - 2 * fx);
+      const uy = fy * fy * (3 - 2 * fy);
+
+      const a = hash2(ix, iy, salt);
+      const b = hash2(ix + 1, iy, salt);
+      const c = hash2(ix, iy + 1, salt);
+      const d = hash2(ix + 1, iy + 1, salt);
+
+      return THREE.MathUtils.lerp(
+        THREE.MathUtils.lerp(a, b, ux),
+        THREE.MathUtils.lerp(c, d, ux),
+        uy
+      );
+    }
+
+    function fbm(x, y, octaves = 3, salt = 0) {
+      let value = 0;
+      let amp = 0.5;
+      let freq = 1;
+      let norm = 0;
+
+      for (let i = 0; i < octaves; i++) {
+        value += smoothNoise(x * freq, y * freq, salt + i * 31.17) * amp;
+        norm += amp;
+        amp *= 0.54;
+        freq *= 2.0;
+      }
+
+      return value / norm;
+    }
+
+    function colorIndex(id) {
+      return Math.floor(hash(id) * 3);
+    }
+
+    function rotate2(a, b, angle) {
+      const c = Math.cos(angle);
+      const s = Math.sin(angle);
+      return [a * c - b * s, a * s + b * c];
+    }
+
+    function local4DWarp(x, y, z, w4, time, id) {
+      // Mild fake 4D local deformation.
+      // This does NOT handle tunnel depth anymore, because that was the previous crime.
+      let tx = x;
+      let ty = y;
+      let tz = z;
+      let tw = w4;
+
+      [tx, tw] = rotate2(tx, tw, time * 0.00058 + hash(id + 1.1) * TAU);
+      [ty, tw] = rotate2(ty, tw, time * -0.00046 + hash(id + 2.2) * TAU);
+
+      const factor = 1 + Math.tanh(tw / 260) * SETTINGS.fourthDimStrength;
+      const warp = SETTINGS.localWarpStrength;
+
+      return {
+        x: THREE.MathUtils.lerp(x, tx * factor, warp),
+        y: THREE.MathUtils.lerp(y, ty * factor, warp),
+        z: THREE.MathUtils.lerp(z, tz + tw * 0.08, warp),
+        factor
+      };
+    }
+
+    function hyperbolicRadius(baseRadius, rNorm, theta, layer, sliceIndex) {
+      const saddle = Math.sin(theta * 2 + sliceIndex * 0.55 + layer) * 0.16;
+      const pinch = Math.tanh((rNorm - 0.5) * 2.2) * 0.18;
+      return baseRadius * (1 + saddle + pinch);
+    }
+
+    function makeTriangleGeometry() {
+      const shape = new THREE.Shape();
+
+      for (let i = 0; i < 3; i++) {
+        const a = -Math.PI / 2 + i * TAU / 3;
+        const x = Math.cos(a);
+        const y = Math.sin(a);
+
+        if (i === 0) shape.moveTo(x, y);
+        else shape.lineTo(x, y);
+      }
+
+      shape.closePath();
+
+      return new THREE.ExtrudeGeometry(shape, {
+        depth: 0.055,
+        bevelEnabled: false
+      });
+    }
+
+    const triangleGeometry = makeTriangleGeometry();
+    const squareGeometry = new THREE.BoxGeometry(1.45, 1.45, 0.055);
+
+    const lineTriangleGeometry = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, 1, 0),
+      new THREE.Vector3(-0.866, -0.5, 0),
+      new THREE.Vector3(0.866, -0.5, 0),
+      new THREE.Vector3(0, 1, 0)
+    ]);
+
+    const lineSquareGeometry = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-0.7, -0.7, 0),
+      new THREE.Vector3(0.7, -0.7, 0),
+      new THREE.Vector3(0.7, 0.7, 0),
+      new THREE.Vector3(-0.7, 0.7, 0),
+      new THREE.Vector3(-0.7, -0.7, 0)
+    ]);
+
+    function makeMaterials() {
+      return RGB.map((entry) => ({
+        solid: new THREE.MeshBasicMaterial({
+          color: entry.color,
+          transparent: true,
+          opacity: 0.13,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide
+        }),
+        line: new THREE.LineBasicMaterial({
+          color: entry.color,
+          transparent: true,
+          opacity: 0.50,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        }),
+        coreLine: new THREE.LineBasicMaterial({
+          color: entry.color,
+          transparent: true,
+          opacity: 0.34,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+      }));
+    }
+
+    let materials = makeMaterials();
+
+    const sliceGroups = [];
+    const objects = [];
+    const stars = [];
+
+    function clearGroup(group) {
+      while (group.children.length) {
+        group.remove(group.children[0]);
+      }
+    }
+
+    function addShape(parent, id, sides, x, y, z, w4, size, angle, layer, isCore = false) {
+      const ci = colorIndex(id);
+      const mats = materials[ci];
+      const group = new THREE.Group();
+
+      const mesh = new THREE.Mesh(sides === 3 ? triangleGeometry : squareGeometry, mats.solid);
+      const line = new THREE.Line(sides === 3 ? lineTriangleGeometry : lineSquareGeometry, isCore ? mats.coreLine : mats.line);
+
+      mesh.scale.setScalar(size);
+      line.scale.setScalar(size * 1.1);
+
+      group.add(mesh);
+      group.add(line);
+
+      group.position.set(x, y, z);
+      group.rotation.set(
+        Math.sin(id * 0.013) * 0.38,
+        Math.cos(id * 0.017) * 0.38,
+        angle
+      );
+
+      group.userData = {
+        id,
+        baseX: x,
+        baseY: y,
+        baseZ: z,
+        baseW: w4,
+        baseAngle: angle,
+        baseSize: size,
+        layer,
+        isCore,
+        orbitRate: (isCore ? 0.0010 : 0.00042) + hash(id + 5.5) * (isCore ? 0.00125 : 0.00095),
+        spinRate: (hash(id + 8.8) > 0.5 ? 1 : -1) * ((isCore ? 0.007 : 0.004) + hash(id + 9.9) * 0.008),
+        breatheRate: (isCore ? 0.014 : 0.009) + hash(id + 11.1) * 0.014,
+        breathePhase: hash(id + 12.2) * TAU
+      };
+
+      parent.add(group);
+      objects.push(group);
+    }
+
+    function buildSlice(sliceIndex) {
+      const slice = new THREE.Group();
+
+      slice.userData = {
+        sliceIndex,
+        baseZ: -sliceIndex * SETTINGS.sliceSpacing
+      };
+
+      slice.position.z = slice.userData.baseZ;
+      tunnel.add(slice);
+      sliceGroups.push(slice);
+
+      const sliceTwist = sliceIndex * GOLDEN_ANGLE * 0.58;
+
+      for (let layer = 0; layer < SETTINGS.layers; layer++) {
+        const layerScale = 1 - layer * 0.06;
+
+        for (let r = 2; r < SETTINGS.rings; r++) {
+          const rNorm = r / SETTINGS.rings;
+          const baseRadius = SETTINGS.centerVoid + Math.pow(rNorm, 1.22) * SETTINGS.ringSpread * layerScale;
+          const count = Math.max(SETTINGS.symmetry, Math.floor(SETTINGS.symmetry + r * 1.08));
+          const cell = TAU / count;
+
+          for (let i = 0; i < count; i++) {
+            const id = sliceIndex * 10000000 + layer * 100000 + r * 1000 + i;
+            const baseTheta = i * cell + sliceTwist;
+
+            const n = fbm(
+              Math.cos(baseTheta * 1.5 + layer) * 1.7 + sliceIndex * 0.42,
+              Math.sin(baseTheta * 1.5 - layer) * 1.7 - rNorm * 4.8,
+              3,
+              layer * 101 + r * 9 + sliceIndex * 13
+            );
+
+            const petal = Math.sin(baseTheta * SETTINGS.symmetry + rNorm * 9 + sliceIndex * 0.66);
+            const gate = n + petal * 0.08 + Math.sin(rNorm * TAU * 4 + sliceIndex) * 0.055;
+
+            if (gate < 0.535) continue;
+
+            const spiral = 4.85 * (1 - rNorm) + layer * 0.17 + sliceTwist;
+            const theta = baseTheta + spiral;
+
+            const curvedRadius = hyperbolicRadius(baseRadius, rNorm, theta, layer, sliceIndex);
+            const rr = curvedRadius + (n - 0.5) * 18;
+
+            const x = Math.cos(theta) * rr;
+            const y = Math.sin(theta) * rr;
+            const z = Math.sin(baseTheta * 2.6 + layer + sliceIndex) * 32;
+            const w4 = Math.sin(theta * 2 + sliceIndex * 0.7 + layer) * 145 + (rNorm - 0.5) * 120;
+
+            if (Math.hypot(x, y) < SETTINGS.centerVoid) continue;
+
+            const size = (4.0 + n * 11.4) * (0.74 + (1 - rNorm) * 0.68) * SETTINGS.objectScale;
+            const sides = (r + i + layer + sliceIndex) % 3 === 0 ? 4 : 3;
+            const angle = theta + rNorm * TAU * 2.0 + layer * Math.PI / 9 + n * TAU;
+
+            addShape(slice, id, sides, x, y, z, w4, size, angle, layer, false);
+          }
+        }
+      }
+
+      buildCore(slice, sliceIndex, sliceTwist);
+    }
+
+    function buildCore(slice, sliceIndex, sliceTwist) {
+      for (let ring = 1; ring <= SETTINGS.coreRings; ring++) {
+        const q = ring / SETTINGS.coreRings;
+        const radius = 18 + Math.pow(q, 1.14) * 104;
+        const count = 10 + ring * 3;
+
+        for (let i = 0; i < count; i++) {
+          const id = 800000000 + sliceIndex * 10000000 + ring * 1000 + i;
+          const theta = i * TAU / count + ring * GOLDEN_ANGLE + sliceTwist * 0.2;
+          const n = fbm(Math.cos(theta) * ring * 0.32, Math.sin(theta) * ring * 0.32, 3, 3000 + ring + sliceIndex);
+
+          const r = radius + (n - 0.5) * 8;
+          const x = Math.cos(theta) * r;
+          const y = Math.sin(theta) * r;
+          const z = -34 + (q - 0.5) * 86 + Math.sin(theta * 3) * 8;
+          const w4 = Math.cos(theta * 2 + sliceIndex * 0.5) * 105;
+
+          const sides = (i + ring + sliceIndex) % 2 ? 3 : 4;
+          const size = (2.6 + n * 6.5) * (1.04 - q * 0.12);
+
+          addShape(
+            slice,
+            id,
+            sides,
+            x,
+            y,
+            z,
+            w4,
+            size,
+            theta * 2 + n * TAU,
+            ring,
+            true
+          );
+        }
+      }
+
+      for (let ring = 0; ring < 3; ring++) {
+        const ci = (ring + sliceIndex) % 3;
+        const radius = 34 + ring * 32;
+        const points = [];
+
+        for (let i = 0; i <= 120; i++) {
+          const t = i / 120;
+          const theta = t * TAU;
+          const localWarp = Math.sin(theta * 3 + sliceIndex) * 4;
+          points.push(new THREE.Vector3(
+            Math.cos(theta) * (radius + localWarp),
+            Math.sin(theta) * (radius - localWarp),
+            -42 - ring * 20
+          ));
+        }
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const line = new THREE.LineLoop(geometry, materials[ci].coreLine);
+
+        line.userData = {
+          isCoreRing: true,
+          ring,
+          sliceIndex,
+          spinRate: (ring % 2 ? -1 : 1) * (0.0014 + ring * 0.0004)
+        };
+
+        slice.add(line);
+      }
+    }
+
+    function buildStarfield() {
+      for (let i = 0; i < SETTINGS.stars; i++) {
+        const id = 15000000 + i;
+        const ci = colorIndex(id);
+        const c = RGB[ci].color;
+        const geometry = new THREE.BufferGeometry();
+
+        const theta = hash(i * 2.1) * TAU;
+        const rad = 180 + Math.pow(hash(i * 3.7), 0.55) * 1120;
+        const z = RECYCLE_BACK_Z + hash(i * 4.4) * TUNNEL_LENGTH;
+        const x = Math.cos(theta) * rad;
+        const y = Math.sin(theta) * rad;
+
+        geometry.setAttribute(
+          "position",
+          new THREE.Float32BufferAttribute([0, 0, 0], 3)
+        );
+
+        const material = new THREE.PointsMaterial({
+          color: c,
+          size: 1.1 + hash(i * 5.5) * 2.1,
+          transparent: true,
+          opacity: 0.25,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+
+        const point = new THREE.Points(geometry, material);
+        point.position.set(x, y, z);
+        point.userData = {
+          id,
+          baseTheta: theta,
+          baseRad: rad,
+          baseZ: z,
+          orbitRate: 0.00015 + hash(i * 6.6) * 0.0005
+        };
+
+        starfield.add(point);
+        stars.push(point);
+      }
+    }
+
+    function buildWorld() {
+      objects.length = 0;
+      sliceGroups.length = 0;
+      stars.length = 0;
+
+      clearGroup(tunnel);
+      clearGroup(starfield);
+
+      for (let i = 0; i < SETTINGS.slices; i++) {
+        buildSlice(i);
+      }
+
+      buildStarfield();
+    }
+
+    function recycleSlice(slice) {
+      if (slice.position.z > RECYCLE_FRONT_Z) {
+        slice.position.z -= TUNNEL_LENGTH;
+      }
+    }
+
+    function recycleStar(star) {
+      if (star.position.z > RECYCLE_FRONT_Z) {
+        star.position.z -= TUNNEL_LENGTH;
+      }
+    }
+
+    function updateObject(obj) {
+      const u = obj.userData;
+      const t = frame;
+
+      const radial = Math.hypot(u.baseX, u.baseY);
+      const baseTheta = Math.atan2(u.baseY, u.baseX);
+      const radialLimit = u.isCore ? 190 : 520;
+
+      const orbit = t * u.orbitRate;
+      const spiralDrag = (1 - Math.min(1, radial / radialLimit)) * t * (u.isCore ? 0.0031 : 0.0019);
+      const theta = baseTheta + orbit + spiralDrag;
+
+      const localX = Math.cos(theta) * radial;
+      const localY = Math.sin(theta) * radial;
+      const localZ = u.baseZ + Math.sin(t * (u.isCore ? 0.010 : 0.007) + u.id * 0.01) * (u.isCore ? 7 : 12);
+      const localW = u.baseW + Math.sin(t * 0.0055 + u.id * 0.003) * 34;
+
+      const warped = local4DWarp(localX, localY, localZ, localW, t, u.id);
+
+      obj.position.x = warped.x;
+      obj.position.y = warped.y;
+      obj.position.z = warped.z;
+
+      const breathe = 1 + Math.sin(t * u.breatheRate + u.breathePhase) * (u.isCore ? 0.07 : 0.05);
+      obj.scale.setScalar(breathe * THREE.MathUtils.clamp(warped.factor, 0.82, 1.22));
+
+      obj.rotation.z = u.baseAngle + t * u.spinRate + theta * 0.12;
+      obj.rotation.x = Math.sin(t * 0.0032 + u.id * 0.02) * (u.isCore ? 0.28 : 0.40);
+      obj.rotation.y = Math.cos(t * 0.0026 + u.id * 0.015) * (u.isCore ? 0.28 : 0.40);
+    }
+
+    function updateWorld() {
+      const globalSpin = frame * SETTINGS.spinSpeed;
+
+      world.rotation.z = Math.sin(frame * 0.0006) * 0.12;
+      world.rotation.x = Math.sin(frame * 0.0011) * 0.035;
+      world.rotation.y = Math.cos(frame * 0.0013) * 0.040;
+
+      tunnel.rotation.z = globalSpin * 0.54;
+      tunnel.rotation.y = Math.sin(frame * 0.0017) * 0.060;
+
+      for (const slice of sliceGroups) {
+        slice.position.z += SETTINGS.flySpeed;
+        recycleSlice(slice);
+
+        const index = slice.userData.sliceIndex;
+        slice.rotation.z = globalSpin * (0.52 + index * 0.010);
+        slice.rotation.x = Math.sin(frame * 0.001 + index) * 0.018;
+        slice.rotation.y = Math.cos(frame * 0.0012 + index) * 0.018;
+      }
+
+      for (const obj of objects) {
+        updateObject(obj);
+      }
+
+      for (const slice of sliceGroups) {
+        for (const child of slice.children) {
+          if (child.userData && child.userData.isCoreRing) {
+            child.rotation.z = frame * child.userData.spinRate;
+          }
+        }
+      }
+
+      for (const star of stars) {
+        const u = star.userData;
+        const theta = u.baseTheta + frame * u.orbitRate;
+        star.position.x = Math.cos(theta) * u.baseRad;
+        star.position.y = Math.sin(theta) * u.baseRad;
+        star.position.z += SETTINGS.flySpeed * 0.72;
+        recycleStar(star);
+      }
+
+      camera.position.x = Math.sin(frame * 0.00125) * 36;
+      camera.position.y = Math.cos(frame * 0.0011) * 28;
+      camera.position.z = CAMERA_Z + Math.sin(frame * 0.0014) * 22;
+
+      const lookX = Math.sin(frame * 0.0017) * 34;
+      const lookY = Math.cos(frame * 0.0015) * 26;
+      camera.lookAt(lookX, lookY, -360);
+    }
+
+    function animate() {
+      if (!paused) {
+        frame++;
+        updateWorld();
+      }
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+
+    function reseed() {
+      seed = Math.floor(Math.random() * 999999999);
+      frame = 0;
+      buildWorld();
+      updateWorld();
+    }
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, SETTINGS.dprMax));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    window.addEventListener("click", () => {
+      paused = !paused;
+    });
+
+    window.addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+
+      if (key === " ") {
+        event.preventDefault();
+        paused = !paused;
+      }
+
+      if (key === "r") {
+        reseed();
+      }
+    });
+
+    buildWorld();
+    updateWorld();
+    animate();
+  </script>
+</body>
+</html>

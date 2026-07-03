@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Cursed Background",
+    "file": "cursed-background.html",
+    "path": "./cursed-background.html"
+  },
+  {
+    "title": "Demon Ascii",
+    "file": "demon-ascii.html",
+    "path": "./demon-ascii.html"
+  },
+  {
+    "title": "Dot Lavalamp",
+    "file": "dot-lavalamp.html",
+    "path": "./dot-lavalamp.html"
+  },
+  {
+    "title": "Rainbow Background",
+    "file": "rainbow-background.html",
+    "path": "./rainbow-background.html"
+  },
+  {
+    "title": "Starfield Background",
+    "file": "starfield-background.html",
+    "path": "./starfield-background.html"
+  },
+  {
+    "title": "Starfield Background Reactive",
+    "file": "starfield-background_reactive.html",
+    "path": "./starfield-background_reactive.html"
+  },
+  {
+    "title": "Starfield Background Warp",
+    "file": "starfield-background_warp.html",
+    "path": "./starfield-background_warp.html"
+  }
+]

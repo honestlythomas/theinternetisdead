@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tektite's New 3D Game</title>
+  <style>
+    /*
+      new-3D-game.html
+      Infinite-ish RCT-inspired terrain:
+      - Start menu before Three.js initializes
+      - Default seed: tektite
+      - Chunked terrain generates around camera as you move
+      - Seeded fractal terrain, no visible finite map edge
+      - Grass square tops
+      - Dirt vertical sides using assets/png/dirt.png
+      - Optional grass texture at assets/png/grass.png
+      - OSRS-ish camera controls
+    */
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #050509;
+      color: #e9ffd0;
+      font-family: "Courier New", monospace;
+      user-select: none;
+    }
+
+    #game {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      cursor: default;
+      background: #87ceeb;
+    }
+
+    #game.dragging {
+      cursor: grabbing;
+    }
+
+    #game.clickable-tree {
+      cursor: pointer;
+    }
+
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      color: #fff;
+    }
+
+    .loading-screen.hidden {
+      display: none;
+    }
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .loading-content h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #fff;
+    }
+
+    .loading-content img {
+      display: block;
+      max-width: min(280px, 70vw);
+      max-height: min(280px, 50vh);
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .loading-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 2px;
+    }
+
+    .loading-button {
+      border: 1px solid rgba(233, 255, 208, 0.8);
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: rgba(0, 0, 0, 0.42);
+      color: #e9ffd0;
+      font: 700 12px/1 "Courier New", monospace;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .loading-button:hover,
+    .loading-button:focus-visible {
+      background: rgba(233, 255, 208, 0.16);
+      outline: none;
+    }
+
+    .loading-note {
+      max-width: min(420px, 86vw);
+      margin: -4px 0 0;
+      color: rgba(233, 255, 208, 0.72);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    body.loading-state #game,
+    body.loading-state .underwater-overlay,
+    body.loading-state .minimap,
+    body.loading-state .esc-menu-button,
+    body.loading-state .hud,
+    body.loading-state .start-menu {
+      visibility: hidden !important;
+    }
+
+    .start-menu {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      background:
+        radial-gradient(circle at top, rgba(135, 206, 235, 0.26), transparent 36%),
+        linear-gradient(180deg, #0d1022 0%, #050509 100%);
+    }
+
+    .start-panel {
+      width: min(680px, calc(100vw - 32px));
+      padding: 28px;
+      border: 2px solid #1b1b1b;
+      border-radius: 18px;
+      background: rgba(18, 12, 8, 0.92);
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.58);
+      text-align: center;
+    }
+
+    .start-panel h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 5vw, 48px);
+      line-height: 1;
+      letter-spacing: 0.035em;
+      color: #d2b07b;
+      text-shadow: 0 3px 0 #2d1b11;
+      text-transform: uppercase;
+    }
+
+    .start-panel p {
+      margin: 8px auto 18px;
+      max-width: 580px;
+      color: #e8dac6;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .seed-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .seed-row input,
+    .seed-row select {
+      min-width: 0;
+      padding: 13px 14px;
+      border: 2px solid #6a4b2e;
+      border-radius: 12px;
+      background: #140d08;
+      color: #ffe5bd;
+      font: inherit;
+      outline: none;
+    }
+
+    .seed-row select {
+      cursor: pointer;
+      color-scheme: dark;
+    }
+
+    .seed-row input:focus,
+    .seed-row select:focus {
+      border-color: #d2b07b;
+      box-shadow: 0 0 0 3px rgba(210, 176, 123, 0.2);
+    }
+
+    .seed-row button,
+    .secondary-button {
+      padding: 13px 18px;
+      border: 2px solid #6a4b2e;
+      border-radius: 12px;
+      background: #d2b07b;
+      color: #1b1109;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .seed-row button:hover,
+    .secondary-button:hover {
+      filter: brightness(1.08);
+    }
+
+    .secondary-button {
+      margin-top: 12px;
+      background: transparent;
+      color: #d2b07b;
+    }
+
+    .start-panel .tiny {
+      margin-top: 12px;
+      color: #aa9277;
+      font-size: 12px;
+    }
+
+    .esc-menu-button {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      z-index: 21;
+      box-sizing: border-box;
+      padding: 10px 14px;
+      border: 2px solid #1b1b1b;
+      border-radius: 10px;
+      background: rgba(210, 176, 123, 0.94);
+      color: #1b1109;
+      font: inherit;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(0, 0, 0, 0.28);
+      opacity: 0.1;
+      transition: opacity 160ms ease, filter 160ms ease;
+    }
+
+    .esc-menu-button:hover,
+    .esc-menu-button:focus-visible {
+      opacity: 1;
+      filter: brightness(1.08);
+    }
+
+    .hud {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      z-index: 20;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      width: min(888px, calc(100vw - 32px));
+      height: min(500px, calc(100vh - 32px));
+      padding: 14px 16px;
+      border: 2px solid #1b1b1b;
+      border-radius: 12px;
+      background: rgba(14, 10, 7, 0.5);
+      box-shadow: 0 0 18px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hud.hidden {
+      display: none;
+    }
+
+    .hud h1 {
+      margin: 0 0 8px;
+      color: #d2b07b;
+      font-size: 18px;
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hud .esc-menu-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 8px;
+      pointer-events: auto;
+    }
+
+    .hud .esc-menu-header h1 {
+      flex: 0 0 auto;
+      margin: 0;
+    }
+
+    .hud .esc-menu-header select {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0;
+      padding: 7px 9px;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .hud p {
+      margin: 4px 0;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #f1dfc8;
+    }
+
+    .hud .dim {
+      color: #b9a78e;
+    }
+
+    .hud button,
+    .hud select {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      margin: 6px 0;
+      padding: 9px 10px;
+      border: 1px solid #6a4b2e;
+      border-radius: 8px;
+      background: rgba(20, 13, 8, 0.92);
+      color: #ffe5bd;
+      font: inherit;
+      pointer-events: auto;
+    }
+
+    .hud button {
+      cursor: pointer;
+      color: #1b1109;
+      background: #d2b07b;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hud .stats-storage-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      pointer-events: auto;
+    }
+
+    .hud .stats-storage-actions button,
+    .hud .stats-storage-actions a {
+      box-sizing: border-box;
+      flex: 1 1 0;
+      min-width: 0;
+      margin: 0;
+      padding: 8px 9px;
+      border: 1px solid #6a4b2e;
+      border-radius: 8px;
+      font: inherit;
+      font-size: 12px;
+      line-height: 1.15;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .hud .stats-storage-actions a {
+      color: #ffb4b4;
+      background: rgba(20, 13, 8, 0.92);
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: 700;
+    }
+
+    .hud select {
+      cursor: pointer;
+      color-scheme: dark;
+    }
+
+    .hud .controls-panel.hidden,
+    .hud .menu-panel.hidden {
+      display: none;
+    }
+
+    .hud .controls-panel,
+    .hud .menu-panel {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      min-height: 0;
+      flex: 1 1 auto;
+      margin: 4px 0 0;
+      padding-top: 2px;
+      overflow: auto;
+      pointer-events: auto;
+    }
+
+    .hud .controls-panel p,
+    .hud .menu-panel label,
+    .hud .menu-panel p {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+
+    .hud .collapsible-options-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 8px;
+    }
+
+    .hud .collapsible-options-toggle:not(:first-child) {
+      margin-top: 10px;
+    }
+
+    .hud .collapsible-options-toggle::after {
+      content: "▾";
+      display: inline-block;
+      transition: transform 180ms ease;
+    }
+
+    .hud .collapsible-options-toggle[aria-expanded="false"]::after {
+      transform: rotate(-90deg);
+    }
+
+    .hud .collapsible-options-panel {
+      max-height: 520px;
+      overflow: hidden;
+      opacity: 1;
+      transition: max-height 220ms ease, opacity 180ms ease, margin 180ms ease;
+    }
+
+    .hud .collapsible-options-panel.collapsed {
+      max-height: 0;
+      opacity: 0;
+      margin: 0;
+      pointer-events: none;
+    }
+
+    .hud .volume-options-panel {
+      padding: 0 0 4px;
+    }
+
+    .hud .sphere-texture-status {
+      display: none !important;
+    }
+
+    .hud label {
+      display: block;
+      margin: 8px 0 2px;
+      color: #d2b07b;
+      font-size: 13px;
+      pointer-events: auto;
+    }
+
+    .hud .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+      color: #ffe5bd;
+      font-size: 13px;
+      pointer-events: auto;
+    }
+
+    .hud .checkbox-row input {
+      width: auto;
+      accent-color: #d2b07b;
+      cursor: pointer;
+    }
+
+    .hud input[type="range"] {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      margin: 6px 0;
+      cursor: pointer;
+      accent-color: #d2b07b;
+      pointer-events: auto;
+    }
+
+    .hud input[type="range"]::-webkit-slider-thumb {
+      cursor: pointer;
+    }
+
+    .hud input[type="range"]::-moz-range-thumb {
+      cursor: pointer;
+    }
+
+    .bush-inventory {
+      --inventory-peek-height: 29px;
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-bottom: 0;
+      border-radius: 10px 10px 0 0;
+      background: linear-gradient(180deg, rgba(59, 83, 79, 0.86), rgba(25, 41, 39, 0.92));
+      box-shadow:
+        0 -2px 12px rgba(0, 0, 0, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(3px);
+      transform: translate(-50%, calc(100% - var(--inventory-peek-height)));
+      transition: transform 180ms ease;
+      pointer-events: auto;
+    }
+
+    .inventory-title {
+      box-sizing: border-box;
+      width: 142px;
+      min-height: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 6px;
+      border: 1px solid rgba(255, 255, 255, 0.58);
+      border-radius: 4px;
+      background: rgba(11, 18, 17, 0.46);
+      color: #f2fff9;
+      font-family: "Courier New", monospace;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+      user-select: none;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .inventory-title:hover {
+      background: rgba(21, 35, 31, 0.68);
+      border-color: rgba(255, 255, 255, 0.82);
+    }
+
+    .inventory-slot-row {
+      display: flex;
+      gap: 7px;
+    }
+
+    .bush-inventory:not(.open) .inventory-slot-row {
+      pointer-events: none;
+    }
+
+    .bush-inventory.open {
+      transform: translate(-50%, 0);
+      pointer-events: auto;
+    }
+
+    .bush-slot {
+      position: relative;
+      box-sizing: border-box;
+      width: 35px;
+      height: 35px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 4px;
+      background: rgba(122, 164, 152, 0.5);
+      box-shadow: inset 0 0 7px rgba(255, 255, 255, 0.16);
+    }
+
+    .bush-slot[data-bush-slot="0"] {
+      border-color: rgba(84, 165, 255, 0.95);
+      box-shadow:
+        inset 0 0 7px rgba(84, 165, 255, 0.22),
+        0 0 6px rgba(84, 165, 255, 0.18);
+    }
+
+    .bush-slot[data-bush-slot="6"] {
+      border-color: rgba(255, 64, 74, 0.98);
+      box-shadow:
+        inset 0 0 7px rgba(255, 64, 74, 0.24),
+        0 0 7px rgba(255, 64, 74, 0.2);
+    }
+
+    .bush-slot img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 27px;
+      height: 27px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .bush-slot.has-bush,
+    .bush-slot.has-rubble {
+      cursor: default;
+    }
+
+    .bush-slot.has-bush:active,
+    .bush-slot.has-rubble:active,
+    .bush-slot.carry-target {
+      cursor: grabbing;
+    }
+
+    .bush-slot.carry-target {
+      outline: 1px solid rgba(210, 176, 123, 0.9);
+      outline-offset: 2px;
+    }
+
+    .bush-carry-ghost {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 9999;
+      width: 35px;
+      height: 35px;
+      box-sizing: border-box;
+      padding: 3px;
+      border: 1px dashed rgba(255, 255, 255, 0.95);
+      border-radius: 4px;
+      pointer-events: none;
+      opacity: 0.72;
+      transform: translate(-50%, -50%) scale(1.14);
+      background: rgba(0, 0, 0, 0.16);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+    }
+
+    .bush-carry-ghost img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .bush-carry-ghost .bush-slot-count {
+      right: -3px;
+      bottom: -1px;
+    }
+
+    .bush-slot-count {
+      position: absolute;
+      right: 2px;
+      bottom: 1px;
+      min-width: 13px;
+      padding: 1px 3px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.78);
+      color: #ffe5bd;
+      font: 700 8px/1.25 "Courier New", monospace;
+      pointer-events: none;
+      text-align: center;
+      text-shadow: 0 1px 0 #000;
+      pointer-events: none;
+    }
+
+    .underwater-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+      background-image:
+        linear-gradient(rgba(18, 85, 180, 0.46), rgba(0, 34, 120, 0.62)),
+        url("assets/png/water.png");
+      background-repeat: no-repeat, repeat;
+      background-size: cover, 220px 220px;
+      background-position: center center, 0 0;
+      mix-blend-mode: normal;
+      transition: opacity 90ms linear;
+    }
+
+    .minimap {
+      position: fixed;
+      right: 16px;
+      top: 16px;
+      z-index: 19;
+      width: 190px;
+      height: 190px;
+      border: 2px solid #1b1b1b;
+      border-radius: 12px;
+      background: rgba(10, 14, 8, 0.82);
+      box-shadow: 0 0 18px rgba(0, 0, 0, 0.32);
+      overflow: hidden;
+      pointer-events: auto;
+      transform: scale(0.5);
+      transform-origin: top right;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .minimap:hover {
+      transform: scale(1);
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.42);
+    }
+
+    .minimap.hidden {
+      display: none;
+    }
+
+    .minimap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+
+    @media (max-width: 560px) {
+      .hud {
+        width: calc(100vw - 20px);
+        height: min(calc((100vw - 20px) * 0.5625), calc(100vh - 20px));
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .minimap {
+        width: 132px;
+        height: 132px;
+        right: 10px;
+        top: 10px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .seed-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="loading-state">
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-content">
+      <h1>Loading...</h1>
+      <img src="assets/webp/loading.webp" alt="Loading" />
+      <div class="loading-actions" aria-label="Loading screen storage controls">
+        <button class="loading-button" id="loadingClearLocalStorageButton" type="button">Clear LocalStorage + SessionStorage</button>
+      </div>
+      <p class="loading-note" id="loadingLocalStorageNote">Use this if the game gets stuck loading from a cursed saved state.</p>
+    </div>
+  </div>
+
+  <div class="start-menu" id="startMenu">
+    <section class="start-panel">
+      <h1>Tektite's New 3D Game</h1>
+      <p>Enter a generation seed. Terrain streams in larger chunks around the camera using seeded fractal noise with regional chances for mountain chains, rolling plains, inland lakes, and occasional rivers. Choose Dev Mode for free camera editing, or Ball Mode to roll a sphere across the tiles like a tiny physics gremlin.</p>
+
+      <div class="seed-row">
+        <input id="seedInput" type="text" value="tektite" autocomplete="off" spellcheck="false" aria-label="Generation seed" />
+        <select id="cameraModeSelect" aria-label="Camera mode">
+          <option value="dev">Dev Mode</option>
+          <option value="third-person" selected>Ball Mode</option>
+        </select>
+        <button id="startButton" type="button">Start</button>
+      </div>
+
+      <button class="secondary-button" id="randomSeedButton" type="button">Random Seed</button>
+      <p class="tiny">Textures expected at <code>assets/png/dirt.png</code>, <code>assets/png/grass.png</code>, <code>assets/png/water.png</code>, <code>assets/png/sand.png</code>, and <code>assets/png/cobblestone.png</code></p>
+      <p class="tiny">This menu only appears with <code>?menu=start</code>. Shortcut: <strong>Shift + D</strong> starts Dev Sphere mode with seed <code>tektite</code> and <code>lime-magenta_sphere.png</code>.</p>
+    </section>
+  </div>
+
+  <canvas id="game"></canvas>
+  <div id="underwaterOverlay" class="underwater-overlay"></div>
+  <div id="minimap" class="minimap">
+    <canvas id="minimapCanvas" width="190" height="190"></canvas>
+  </div>
+
+  <button id="escMenuButton" class="esc-menu-button" type="button">Esc Menu</button>
+
+  <div class="hud hidden" id="hud">
+    <div class="esc-menu-header">
+      <h1>Esc Menu</h1>
+      <select id="escMenuSelect" aria-label="Select Esc Menu panel">
+        <option value="tutorial" selected>Tutorial</option>
+        <option value="controls">Controls</option>
+        <option value="customization">Customization</option>
+        <option value="stats">Stats for Nerds</option>
+      </select>
+    </div>
+
+    <div class="menu-panel tutorial-panel" id="tutorialPanel">
+      <p><strong>Welcome to the rolling wilderness.</strong> You are a physics ball exploring a procedurally generated chunky little world, because apparently spheres need purpose too.</p>
+      <p><strong>Goal:</strong> roam around, learn the terrain, flatten trees by touching them, then click flattened trees to collect them as bushes.</p>
+      <p><strong>Movement:</strong> use WASD or Arrow Keys to roll. Hold Shift on land to sprint. Press Space to jump. Press Shift + Space for a stronger launch jump.</p>
+      <p><strong>Camera:</strong> drag with right/middle mouse, use Q/E to rotate, and scroll to zoom.</p>
+      <p><strong>Water:</strong> when underwater, Space floats upward and Shift sinks downward. Yes, the ball has submarine ambitions.</p>
+      <p><strong>Inventory:</strong> press I or click the Inventory tab to slide the 7-slot inventory open/closed. Hold Left Shift while clicking a bush or rubble stack to pick it up, drop, merge, swap, or right-click-drag to spread one item per slot. Double-click any stack without Shift to gather matching items up to a full stack. Rubble in the red right slot can be fired with left click.</p>
+      <p><strong>Rubble Vacuum:</strong> hold Left Control near loose rubble to absorb it into the player.</p>
+      <p><strong>Menu:</strong> use this dropdown to switch between Tutorial, Controls, Customization, and Stats for Nerds.</p>
+    </div>
+
+    <div class="controls-panel hidden" id="controlsPanel">
+      <p><strong>Rotate/Tilt:</strong> right/middle drag, Q/E</p>
+      <p><strong>Move:</strong> WASD or Arrow Keys</p>
+      <p><strong>Ball Mode:</strong> WASD accelerates sphere, Shift sprints on land, Shift+Space launches, Q/E rotates camera. In water, Shift sinks and Space floats up.</p>
+      <p><strong>Zoom:</strong> Mouse wheel</p>
+      <p><strong>Fullscreen:</strong> F</p>
+      <p><strong>Minimap Zoom:</strong> slider in Customization</p>
+      <p><strong>Menu:</strong> Esc or top-left button</p>
+      <p><strong>Reset:</strong> R</p>
+    </div>
+
+    <div class="menu-panel hidden" id="customizationPanel">
+      <button class="collapsible-options-toggle" id="playerOptionsToggle" type="button" aria-expanded="false" aria-controls="playerOptionsPanel">Player Options</button>
+      <div class="collapsible-options-panel collapsed" id="playerOptionsPanel">
+        <label for="liveCameraModeSelect">Camera Mode</label>
+        <select id="liveCameraModeSelect">
+          <option value="dev">Dev Mode</option>
+          <option value="third-person" selected>Ball Mode</option>
+        </select>
+
+        <label for="sphereTextureSelect">Sphere Texture</label>
+        <select id="sphereTextureSelect">
+          <option value="assets/png/default_sphere.png" selected>default_sphere.png</option>
+        </select>
+
+        <button id="setSpawnButton" type="button">Set Spawn</button>
+        <p class="dim sphere-texture-status" id="sphereTextureStatus" aria-hidden="true">Sphere texture: default_sphere.png</p>
+      </div>
+
+      <button class="collapsible-options-toggle" id="gameOptionsToggle" type="button" aria-expanded="false" aria-controls="gameOptionsPanel">Game Options</button>
+      <div class="collapsible-options-panel collapsed" id="gameOptionsPanel">
+        <button class="collapsible-options-toggle" id="volumeOptionsToggle" type="button" aria-expanded="false" aria-controls="volumeOptionsPanel">Volume Options</button>
+        <div class="collapsible-options-panel volume-options-panel collapsed" id="volumeOptionsPanel">
+          <label for="soundFxVolumeSlider">Sound FX</label>
+          <input id="soundFxVolumeSlider" type="range" min="0" max="200" step="1" value="100" />
+
+          <label for="musicVolumeSlider">Music</label>
+          <input id="musicVolumeSlider" type="range" min="0" max="200" step="1" value="50" />
+
+          <label class="checkbox-row" for="muteAllCheckbox">
+            <input id="muteAllCheckbox" type="checkbox" />
+            <span>Mute All <span class="dim">(Shift + M)</span></span>
+          </label>
+        </div>
+
+        <label class="checkbox-row" for="showGridCheckbox">
+          <input id="showGridCheckbox" type="checkbox" />
+          <span>Show Grid</span>
+        </label>
+        <label class="checkbox-row" for="hideMinimapCheckbox">
+          <input id="hideMinimapCheckbox" type="checkbox" />
+          <span>Hide Minimap</span>
+        </label>
+        <label class="checkbox-row" for="hideTreesCheckbox">
+          <input id="hideTreesCheckbox" type="checkbox" />
+          <span>Hide Trees</span>
+        </label>
+
+        <label for="minimapZoomSlider">Minimap Zoom</label>
+        <input id="minimapZoomSlider" type="range" min="-5" max="5" step="1" value="1" />
+        <p class="dim" id="minimapZoomStatus">Minimap zoom: 1x</p>
+
+        <p class="dim" id="spawnStatus">Spawn: 0 / 0 / 0</p>
+      </div>
+    </div>
+
+    <div class="menu-panel hidden" id="statsPanel">
+      <p class="dim" id="modeReadout">Mode: Dev Mode</p>
+      <p class="dim" id="seedReadout">Seed: none</p>
+      <p class="dim" id="sphereCoordsReadout">Sphere XYZ from spawn: 0 / 0 / 0</p>
+      <p class="dim" id="cameraDirectionReadout">Camera facing: North</p>
+      <p class="dim" id="spawnCoordsReadout">Spawn XYZ: 0 / 0 / 0</p>
+      <p class="dim" id="chunkReadout">Detailed chunks: 0</p>
+      <p class="dim" id="distantChunkReadout">Distant LOD chunks: 0</p>
+      <p class="dim" id="worldCacheReadout">World cache: not loaded</p>
+      <p class="dim" id="seaLevelReadout">Sea level: 0</p>
+      <p class="dim" id="bushesCollectedReadout">Collected Bushes: 0</p>
+      <p class="dim" id="rubbleCollectedReadout">Collected Rubble: 0</p>
+      <p class="dim" id="localStorageStatus">LocalStorage: ready</p>
+      <div class="stats-storage-actions">
+        <a id="clearLocalStorageLink" href="#">Clear LocalStorage + SessionStorage</a>
+        <button id="saveStateButton" type="button">Save State</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bush-inventory" id="bushInventory" aria-label="7-slot inventory" aria-hidden="true">
+    <button class="inventory-title" id="inventoryTitleButton" type="button" aria-controls="bushInventory" aria-expanded="false">Inventory</button>
+    <div class="inventory-slot-row">
+      <div class="bush-slot" data-bush-slot="0"></div>
+      <div class="bush-slot" data-bush-slot="1"></div>
+      <div class="bush-slot" data-bush-slot="2"></div>
+      <div class="bush-slot" data-bush-slot="3"></div>
+      <div class="bush-slot" data-bush-slot="4"></div>
+      <div class="bush-slot" data-bush-slot="5"></div>
+      <div class="bush-slot" data-bush-slot="6"></div>
+    </div>
+  </div>
+  <div class="bush-carry-ghost" id="bushCarryGhost" aria-hidden="true" hidden>
+    <img src="assets/png/topdown-pine-tree01.png" alt="">
+    <span class="bush-slot-count" id="bushCarryGhostCount">x1</span>
+  </div>
+
+
+  <script>
+    (() => {
+      const collapsiblePairs = [
+        ["playerOptionsToggle", "playerOptionsPanel"],
+        ["gameOptionsToggle", "gameOptionsPanel"],
+        ["volumeOptionsToggle", "volumeOptionsPanel"]
+      ];
+
+      for (const [toggleId, panelId] of collapsiblePairs) {
+        const toggle = document.getElementById(toggleId);
+        const panel = document.getElementById(panelId);
+        if (!toggle || !panel) continue;
+
+        toggle.addEventListener("click", () => {
+          const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+          toggle.setAttribute("aria-expanded", String(!isExpanded));
+          panel.classList.toggle("collapsed", isExpanded);
+        });
+      }
+    })();
+  </script>
+  <script type="module" src="./assets/scripts/runtime-bridge.js?v=rubble-slot-projectile-20260508"></script>
+</body>
+</html>

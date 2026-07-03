@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MP3 Crunchifier</title>
+  <style>
+    :root {
+      --bg: #08030f;
+      --panel: rgba(20, 7, 34, 0.92);
+      --lime: #b6ff00;
+      --purple: #b14cff;
+      --pink: #ff4fd8;
+      --text: #f2eaff;
+      --muted: #bda7d8;
+      --danger: #ff5470;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(177, 76, 255, 0.22), transparent 30%),
+        radial-gradient(circle at 80% 80%, rgba(182, 255, 0, 0.12), transparent 28%),
+        linear-gradient(135deg, #050109, #12061d 60%, #050109);
+      color: var(--text);
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.035) 0,
+          rgba(255,255,255,0.035) 1px,
+          transparent 2px,
+          transparent 5px
+        );
+      mix-blend-mode: screen;
+      opacity: 0.45;
+    }
+
+    .wrap {
+      width: min(920px, 100%);
+      border: 1px solid rgba(182, 255, 0, 0.55);
+      background: var(--panel);
+      box-shadow:
+        0 0 24px rgba(177, 76, 255, 0.35),
+        inset 0 0 28px rgba(182, 255, 0, 0.055);
+      padding: clamp(18px, 4vw, 34px);
+      position: relative;
+      isolation: isolate;
+    }
+
+    .wrap::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(255, 79, 216, 0.25);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: var(--lime);
+      font-size: clamp(1.7rem, 5vw, 3.2rem);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-shadow: 2px 0 var(--pink), -2px 0 var(--purple);
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 760px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      border: 1px solid rgba(177, 76, 255, 0.55);
+      background: rgba(0, 0, 0, 0.34);
+      padding: 16px;
+      min-height: 100%;
+    }
+
+    label {
+      display: block;
+      color: var(--lime);
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-size: 0.88rem;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px dashed rgba(182, 255, 0, 0.8);
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.42);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--lime);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .row span {
+      color: var(--pink);
+      font-weight: 700;
+      min-width: 62px;
+      text-align: right;
+    }
+
+    .checkrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkrow input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--pink);
+    }
+
+    .checkrow span {
+      color: var(--text);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.88rem;
+    }
+
+    button,
+    a.download {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--lime);
+      background: rgba(182, 255, 0, 0.08);
+      color: var(--lime);
+      padding: 12px 16px;
+      font: inherit;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
+    }
+
+    button:hover,
+    a.download:hover {
+      transform: translateY(-1px);
+      background: rgba(182, 255, 0, 0.18);
+      box-shadow: 0 0 18px rgba(182, 255, 0, 0.2);
+    }
+
+    button:disabled,
+    a.download[aria-disabled="true"] {
+      opacity: 0.42;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
+      filter: hue-rotate(55deg) saturate(1.4);
+    }
+
+    .status {
+      margin-top: 18px;
+      color: var(--muted);
+      min-height: 1.4em;
+      line-height: 1.45;
+    }
+
+    .status.bad {
+      color: var(--danger);
+    }
+
+    .tiny {
+      margin-top: 18px;
+      color: rgba(242, 234, 255, 0.68);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .meter {
+      height: 10px;
+      border: 1px solid rgba(182, 255, 0, 0.45);
+      background: rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .meter > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--purple), var(--pink), var(--lime));
+      transition: width 120ms ease;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>MP3 Crunchifier</h1>
+    <p class="subtitle">
+      Drop in an MP3. This page decodes it locally, mangles it with bitcrushing, downsampling, clipping, and noise,
+      then gives you a downloadable crunchy WAV. No server. No upload. No cloud goblin licking your files.
+    </p>
+
+    <section class="grid">
+      <div class="card">
+        <label for="file">1. Choose MP3</label>
+        <input id="file" type="file" accept=".mp3,audio/mpeg" />
+
+        <div class="status" id="fileStatus">Awaiting sacrifice...</div>
+
+        <label style="margin-top: 20px;">Original Preview</label>
+        <audio id="originalAudio" controls></audio>
+      </div>
+
+      <div class="card">
+        <label>2. Crunch Settings</label>
+
+        <div class="row">
+          <label for="bits">Bit Depth</label>
+          <span id="bitsValue">5</span>
+        </div>
+        <input id="bits" type="range" min="2" max="12" value="5" step="1" />
+
+        <div class="row">
+          <label for="downsample">Downsample</label>
+          <span id="downsampleValue">8x</span>
+        </div>
+        <input id="downsample" type="range" min="1" max="32" value="8" step="1" />
+
+        <div class="row">
+          <label for="drive">Drive</label>
+          <span id="driveValue">3.0x</span>
+        </div>
+        <input id="drive" type="range" min="1" max="12" value="3" step="0.1" />
+
+        <div class="row">
+          <label for="noise">Noise</label>
+          <span id="noiseValue">0.015</span>
+        </div>
+        <input id="noise" type="range" min="0" max="0.12" value="0.015" step="0.001" />
+
+        <label class="checkrow" for="pinkNoise">
+          <input id="pinkNoise" type="checkbox" />
+          <span>Use Pink Noise</span>
+        </label>
+
+        <div class="row">
+          <label for="mix">Wet Mix</label>
+          <span id="mixValue">100%</span>
+        </div>
+        <input id="mix" type="range" min="0" max="1" value="1" step="0.01" />
+      </div>
+    </section>
+
+    <div class="actions">
+      <button id="process" disabled>Crunch Audio</button>
+      <a id="download" class="download" aria-disabled="true">Download Crunchy WAV</a>
+    </div>
+
+    <div class="meter" aria-hidden="true"><div id="meterFill"></div></div>
+    <p class="status" id="status">Load an MP3 first. The machine demands tribute.</p>
+
+    <label style="margin-top: 22px;">Crunchy Preview</label>
+    <audio id="processedAudio" controls></audio>
+
+    <p class="tiny">
+      Note: browsers can decode MP3, but they do not reliably encode MP3 without extra libraries.
+      This exports WAV so the file works anywhere. If you truly need MP3 output, convert the WAV afterward with ffmpeg:
+      <code>ffmpeg -i crunchy.wav -b:a 64k crunchy.mp3</code>
+    </p>
+  </main>
+
+  <script>
+    const els = {
+      file: document.getElementById("file"),
+      fileStatus: document.getElementById("fileStatus"),
+      originalAudio: document.getElementById("originalAudio"),
+      processedAudio: document.getElementById("processedAudio"),
+      process: document.getElementById("process"),
+      download: document.getElementById("download"),
+      status: document.getElementById("status"),
+      meterFill: document.getElementById("meterFill"),
+      bits: document.getElementById("bits"),
+      downsample: document.getElementById("downsample"),
+      drive: document.getElementById("drive"),
+      noise: document.getElementById("noise"),
+      pinkNoise: document.getElementById("pinkNoise"),
+      mix: document.getElementById("mix"),
+      bitsValue: document.getElementById("bitsValue"),
+      downsampleValue: document.getElementById("downsampleValue"),
+      driveValue: document.getElementById("driveValue"),
+      noiseValue: document.getElementById("noiseValue"),
+      mixValue: document.getElementById("mixValue")
+    };
+
+    let selectedFile = null;
+    let originalUrl = null;
+    let processedUrl = null;
+
+    function setStatus(message, bad = false) {
+      els.status.textContent = message;
+      els.status.classList.toggle("bad", bad);
+    }
+
+    function updateSliderLabels() {
+      els.bitsValue.textContent = els.bits.value;
+      els.downsampleValue.textContent = `${els.downsample.value}x`;
+      els.driveValue.textContent = `${Number(els.drive.value).toFixed(1)}x`;
+      els.noiseValue.textContent = Number(els.noise.value).toFixed(3);
+      els.mixValue.textContent = `${Math.round(Number(els.mix.value) * 100)}%`;
+    }
+
+    function resetOutput() {
+      if (processedUrl) URL.revokeObjectURL(processedUrl);
+      processedUrl = null;
+      els.processedAudio.removeAttribute("src");
+      els.download.removeAttribute("href");
+      els.download.removeAttribute("download");
+      els.download.setAttribute("aria-disabled", "true");
+      els.meterFill.style.width = "0%";
+    }
+
+    function sanitizeBaseName(name) {
+      return name
+        .replace(/\.[^.]+$/, "")
+        .replace(/[^a-z0-9_-]+/gi, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 80) || "crunchy_audio";
+    }
+
+    async function decodeAudio(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContextClass();
+      const audioBuffer = await ctx.decodeAudioData(arrayBuffer.slice(0));
+      await ctx.close();
+      return audioBuffer;
+    }
+
+    function makePinkNoiseGenerator() {
+      // Paul Kellet style pink-ish noise filter. Tiny, fast, and rude enough for this purpose.
+      let b0 = 0;
+      let b1 = 0;
+      let b2 = 0;
+      let b3 = 0;
+      let b4 = 0;
+      let b5 = 0;
+      let b6 = 0;
+
+      return function pinkNoise() {
+        const white = Math.random() * 2 - 1;
+
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+
+        const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+        b6 = white * 0.115926;
+
+        return pink * 0.11;
+      };
+    }
+
+    function crunchySample(sample, settings, noiseSource) {
+      let x = sample * settings.drive;
+
+      // Soft-ish clip into hard-ish ugliness. Civilization collapses in floating point.
+      x = Math.tanh(x * 1.6);
+
+      if (settings.noise > 0) {
+        const noise = settings.usePinkNoise ? noiseSource() : Math.random() * 2 - 1;
+        x += noise * settings.noise;
+      }
+
+      const levels = Math.pow(2, settings.bits);
+      x = Math.round(x * levels) / levels;
+
+      return Math.max(-1, Math.min(1, x));
+    }
+
+    function processAudioBuffer(audioBuffer, settings) {
+      const output = {
+        sampleRate: audioBuffer.sampleRate,
+        numberOfChannels: audioBuffer.numberOfChannels,
+        length: audioBuffer.length,
+        channels: []
+      };
+
+      for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+        const input = audioBuffer.getChannelData(channel);
+        const out = new Float32Array(input.length);
+        const noiseSource = makePinkNoiseGenerator();
+
+        let held = 0;
+        for (let i = 0; i < input.length; i++) {
+          if (i % settings.downsample === 0) {
+            held = crunchySample(input[i], settings, noiseSource);
+          }
+
+          const dry = input[i];
+          const wet = held;
+          out[i] = dry * (1 - settings.mix) + wet * settings.mix;
+
+          if (i % 50000 === 0 && channel === 0) {
+            const progress = Math.round((i / input.length) * 80) + 10;
+            els.meterFill.style.width = `${progress}%`;
+          }
+        }
+
+        output.channels.push(out);
+      }
+
+      els.meterFill.style.width = "92%";
+      return output;
+    }
+
+    function floatTo16BitPCM(view, offset, input) {
+      for (let i = 0; i < input.length; i++, offset += 2) {
+        const s = Math.max(-1, Math.min(1, input[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+    }
+
+    function writeString(view, offset, string) {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    }
+
+    function encodeWAV(rendered) {
+      const numChannels = rendered.numberOfChannels;
+      const sampleRate = rendered.sampleRate;
+      const length = rendered.length;
+      const bytesPerSample = 2;
+      const blockAlign = numChannels * bytesPerSample;
+      const buffer = new ArrayBuffer(44 + length * blockAlign);
+      const view = new DataView(buffer);
+
+      writeString(view, 0, "RIFF");
+      view.setUint32(4, 36 + length * blockAlign, true);
+      writeString(view, 8, "WAVE");
+      writeString(view, 12, "fmt ");
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * blockAlign, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, 16, true);
+      writeString(view, 36, "data");
+      view.setUint32(40, length * blockAlign, true);
+
+      let offset = 44;
+
+      for (let i = 0; i < length; i++) {
+        for (let channel = 0; channel < numChannels; channel++) {
+          const s = Math.max(-1, Math.min(1, rendered.channels[channel][i]));
+          view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+          offset += 2;
+        }
+      }
+
+      return new Blob([view], { type: "audio/wav" });
+    }
+
+    els.file.addEventListener("change", () => {
+      resetOutput();
+
+      selectedFile = els.file.files && els.file.files[0] ? els.file.files[0] : null;
+
+      if (!selectedFile) {
+        els.process.disabled = true;
+        els.fileStatus.textContent = "Awaiting sacrifice...";
+        setStatus("Load an MP3 first. The machine demands tribute.");
+        return;
+      }
+
+      if (!selectedFile.name.toLowerCase().endsWith(".mp3") && selectedFile.type !== "audio/mpeg") {
+        els.process.disabled = true;
+        els.fileStatus.textContent = "That does not look like an MP3.";
+        setStatus("Please choose an .mp3 file. The shrine is picky today.", true);
+        return;
+      }
+
+      if (originalUrl) URL.revokeObjectURL(originalUrl);
+      originalUrl = URL.createObjectURL(selectedFile);
+      els.originalAudio.src = originalUrl;
+
+      els.process.disabled = false;
+      els.fileStatus.textContent = `${selectedFile.name} loaded (${(selectedFile.size / 1024 / 1024).toFixed(2)} MB)`;
+      setStatus("Ready to crunch. Lower bit depth and higher downsample = nastier audio sludge.");
+    });
+
+    els.process.addEventListener("click", async () => {
+      if (!selectedFile) return;
+
+      resetOutput();
+      els.process.disabled = true;
+      setStatus("Decoding MP3...");
+      els.meterFill.style.width = "5%";
+
+      try {
+        const audioBuffer = await decodeAudio(selectedFile);
+
+        setStatus("Applying digital vandalism...");
+        const settings = {
+          bits: Number(els.bits.value),
+          downsample: Number(els.downsample.value),
+          drive: Number(els.drive.value),
+          noise: Number(els.noise.value),
+          usePinkNoise: els.pinkNoise.checked,
+          mix: Number(els.mix.value)
+        };
+
+        await new Promise(requestAnimationFrame);
+        const rendered = processAudioBuffer(audioBuffer, settings);
+
+        setStatus("Encoding WAV...");
+        await new Promise(requestAnimationFrame);
+        const wavBlob = encodeWAV(rendered);
+
+        processedUrl = URL.createObjectURL(wavBlob);
+        const base = sanitizeBaseName(selectedFile.name);
+        const outName = `${base}_crunchy.wav`;
+
+        els.processedAudio.src = processedUrl;
+        els.download.href = processedUrl;
+        els.download.download = outName;
+        els.download.removeAttribute("aria-disabled");
+
+        els.meterFill.style.width = "100%";
+        setStatus(`Done. Download ready: ${outName}`);
+      } catch (error) {
+        console.error(error);
+        setStatus(`Could not process this file: ${error.message || error}`, true);
+      } finally {
+        els.process.disabled = !selectedFile;
+      }
+    });
+
+    els.download.addEventListener("click", (event) => {
+      if (!processedUrl) {
+        event.preventDefault();
+        setStatus("Crunch something first. The download button is not a prophecy.", true);
+      }
+    });
+
+    [els.bits, els.downsample, els.drive, els.noise, els.mix].forEach((input) => {
+      input.addEventListener("input", updateSliderLabels);
+    });
+
+    updateSliderLabels();
+  </script>
+</body>
+</html>

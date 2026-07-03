@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>/dead/pages/background/</title>
+<style>
+  /*
+    /dead/pages/background/
+    Single-file extraction of the shooter-game Level 1 starfield background.
+
+    This intentionally keeps the canvas sizing/rendering style close to the
+    source game instead of doing fancy high-DPI scaling. The old game used
+    canvas.width = window.innerWidth and canvas.height = window.innerHeight,
+    because apparently crisp modern rendering was too emotionally stable.
+  */
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    overflow: hidden;
+    color: #0f0;
+    font-family: monospace;
+  }
+
+  body {
+    touch-action: none;
+  }
+
+  canvas {
+    display: block;
+    touch-action: none;
+  }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<script>
+/*
+  Extracted background-only starfield.
+
+  Kept from shooter-game:
+  - black canvas background
+  - three parallax star layers
+  - exact layer counts, vertical speeds, parallax multipliers, size ranges
+  - exact alpha values per layer
+  - exact resize behavior: canvas.width/height = window.innerWidth/Height
+  - exact menu/start-screen idle sway formula
+
+  Removed:
+  - player
+  - enemies
+  - bullets
+  - bombs
+  - menus
+  - HUD
+  - pause
+  - audio
+  - controller logic
+  - keyboard gameplay logic
+  - post-FX
+*/
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+document.body.style.touchAction = "none";
+canvas.style.touchAction = "none";
+
+// Mirrors the old runtime helper used by the starfield setup.
+function rand(min, max){
+  return min + Math.random() * (max - min);
+}
+
+/* =======================
+   Parallax Starfield
+======================= */
+const starLayers = [
+  { count: 180, baseSpeedY: 40,  parallaxX: 0.35, sizeMin: 1, sizeMax: 2 },
+  { count: 120, baseSpeedY: 80,  parallaxX: 0.60, sizeMin: 1, sizeMax: 3 },
+  { count: 70,  baseSpeedY: 140, parallaxX: 0.90, sizeMin: 2, sizeMax: 4 }
+];
+
+let stars = [];
+let playerVxSmoothed = 0;
+let starfieldReady = false;
+let time = 0;
+let last = performance.now();
+
+// In the original game this value was passed into updateStarfield().
+// This preserves the same visual scale for the menu/start-screen idle sway.
+const playerSpeed = 7;
+
+// Use the start-menu / non-playing idle sway, because this file has no
+// gameplay input. To mimic gameplay with no left/right movement, set this to 0.
+const MENU_IDLE_SWAY_STRENGTH = 0.15;
+
+function resetStarfield(){
+  stars = starLayers.map(layer => {
+    const arr = [];
+    for (let i = 0; i < layer.count; i++){
+      arr.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        s: rand(layer.sizeMin, layer.sizeMax),
+        vyMul: rand(0.7, 1.3)
+      });
+    }
+    return arr;
+  });
+  starfieldReady = true;
+}
+
+function updateStarfield(dt){
+  if (!starfieldReady) return;
+
+  // Original non-playing/start-menu branch:
+  // vxIntent = 0.15 * Math.sin(time * 0.6)
+  const vxIntent = MENU_IDLE_SWAY_STRENGTH * Math.sin(time * 0.6);
+
+  const targetVx = vxIntent * playerSpeed * 55;
+  playerVxSmoothed += (targetVx - playerVxSmoothed) * Math.min(1, dt * 8);
+
+  for (let li = 0; li < starLayers.length; li++){
+    const layer = starLayers[li];
+    const arr = stars[li];
+
+    const driftX = -playerVxSmoothed * layer.parallaxX;
+    const driftY = layer.baseSpeedY;
+
+    for (const st of arr){
+      st.x += driftX * dt;
+      st.y += driftY * st.vyMul * dt;
+
+      if (st.y > canvas.height + 10) st.y = -10;
+      if (st.x < -10) st.x = canvas.width + 10;
+      if (st.x > canvas.width + 10) st.x = -10;
+    }
+  }
+}
+
+function drawStarfield(){
+  // Source game default: black, unless a runtime override or Stage 2+ red shift exists.
+  // This extraction keeps the normal start-menu / early-game background.
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (!starfieldReady) return;
+
+  for (let li = 0; li < starLayers.length; li++){
+    const arr = stars[li];
+    const alpha = li === 0 ? 0.35 : (li === 1 ? 0.55 : 0.85);
+
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+
+    for (const st of arr){
+      ctx.fillRect(st.x, st.y, st.s, st.s);
+    }
+  }
+}
+
+/* =======================
+   Resize
+======================= */
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  resetStarfield();
+}
+window.addEventListener("resize", resize);
+
+function frame(now){
+  const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
+  last = now;
+  time += dt;
+
+  updateStarfield(dt);
+  drawStarfield();
+
+  requestAnimationFrame(frame);
+}
+
+resize();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RGB Infinite Spiral Vortex Mandala</title>
+  <style>
+    /*
+      RGB Infinite Spiral Vortex Mandala
+
+      Changes:
+      - Every object is deterministically assigned red, green, or blue.
+      - Distribution is roughly 33.3% red / 33.3% green / 33.3% blue.
+      - Entire field rotates forever as an infinite spiral.
+      - Center glow is still restrained because we learned one tiny lesson, somehow.
+      - No text overlay. No UI. No pixel-buffer murder pass.
+    */
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="vortex"></canvas>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const canvas = document.getElementById("vortex");
+      const ctx = canvas.getContext("2d", { alpha: false });
+
+      let w = 0;
+      let h = 0;
+      let dpr = 1;
+      let cx = 0;
+      let cy = 0;
+      let minDim = 0;
+      let maxR = 0;
+      let frame = 0;
+      let paused = false;
+      let seed = Math.floor(Math.random() * 999999999);
+
+      const TAU = Math.PI * 2;
+      const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+
+      const SETTINGS = {
+        rings: 42,
+        layers: 6,
+        symmetry: 14,
+        branchCount: 5,
+        branchSteps: 34,
+        staticDots: 900,
+        dprMax: 1.5,
+        spinSpeed: 0.0042,
+        spiralPull: 5.15
+      };
+
+      const RGB = [
+        { name: "red",   main: [255, 44, 38],  soft: [255, 90, 70] },
+        { name: "green", main: [0, 255, 92],   soft: [90, 255, 145] },
+        { name: "blue",  main: [40, 145, 255], soft: [95, 210, 255] }
+      ];
+
+      function clamp(v, a, b) {
+        return Math.max(a, Math.min(b, v));
+      }
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function fract(v) {
+        return v - Math.floor(v);
+      }
+
+      function hash(n) {
+        return fract(Math.sin(n * 91.3458 + seed * 0.000031) * 47453.5453123);
+      }
+
+      function hash2(x, y, salt = 0) {
+        return hash(x * 127.1 + y * 311.7 + salt * 74.3);
+      }
+
+      function smoothNoise(x, y, salt = 0) {
+        const ix = Math.floor(x);
+        const iy = Math.floor(y);
+        const fx = fract(x);
+        const fy = fract(y);
+
+        const ux = fx * fx * (3 - 2 * fx);
+        const uy = fy * fy * (3 - 2 * fy);
+
+        const a = hash2(ix, iy, salt);
+        const b = hash2(ix + 1, iy, salt);
+        const c = hash2(ix, iy + 1, salt);
+        const d = hash2(ix + 1, iy + 1, salt);
+
+        return lerp(lerp(a, b, ux), lerp(c, d, ux), uy);
+      }
+
+      function fbm(x, y, octaves = 3, salt = 0) {
+        let value = 0;
+        let amp = 0.5;
+        let freq = 1;
+        let norm = 0;
+
+        for (let i = 0; i < octaves; i++) {
+          value += smoothNoise(x * freq, y * freq, salt + i * 31.17) * amp;
+          norm += amp;
+          amp *= 0.54;
+          freq *= 2.0;
+        }
+
+        return value / norm;
+      }
+
+      function rgba(rgb, alpha) {
+        return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
+      }
+
+      function resize() {
+        dpr = clamp(window.devicePixelRatio || 1, 1, SETTINGS.dprMax);
+
+        w = window.innerWidth;
+        h = window.innerHeight;
+        minDim = Math.min(w, h);
+        maxR = Math.hypot(w * 0.5, h * 0.5);
+
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        canvas.style.width = `${w}px`;
+        canvas.style.height = `${h}px`;
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = false;
+
+        cx = w * 0.5;
+        cy = h * 0.5;
+      }
+
+      function polygonPath(sides, r) {
+        ctx.beginPath();
+
+        for (let i = 0; i < sides; i++) {
+          const a = -Math.PI / 2 + i * TAU / sides;
+          const x = Math.cos(a) * r;
+          const y = Math.sin(a) * r;
+
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+
+        ctx.closePath();
+      }
+
+      function colorIndex(id) {
+        // Quantized to thirds, so the visible object population gets the democratic RGB nonsense requested.
+        // Red: [0, 1/3), Green: [1/3, 2/3), Blue: [2/3, 1)
+        return Math.floor(hash(id) * 3);
+      }
+
+      function drawShape(x, y, size, angle, sides, layer, alpha, id) {
+        const c = RGB[colorIndex(id)];
+        const shimmer = 0.82 + Math.sin(frame * 0.018 + id * 0.07) * 0.18;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        // Same hue family per object, not rainbow soup. Humanity demanded categories.
+        for (let i = 0; i < 2; i++) {
+          ctx.save();
+          const offset = (i === 0 ? -0.5 : 0.5) * (1 + layer * 0.18);
+          ctx.translate(offset, -offset * 0.6);
+          ctx.rotate((i - 0.5) * 0.012);
+          polygonPath(sides, size * (1 - i * 0.07));
+          ctx.strokeStyle = rgba(i === 0 ? c.main : c.soft, alpha * (i === 0 ? shimmer : 0.58));
+          ctx.lineWidth = Math.max(0.34, size * 0.022);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        if (size > 10) {
+          ctx.globalCompositeOperation = "source-over";
+          ctx.rotate(Math.PI / sides);
+          polygonPath(sides === 3 ? 4 : 3, size * 0.34);
+          ctx.strokeStyle = rgba(c.soft, alpha * 0.10);
+          ctx.lineWidth = Math.max(0.24, size * 0.009);
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      function vortexAngle(rNorm, theta, layer) {
+        const globalSpin = frame * SETTINGS.spinSpeed;
+        const infiniteSpiral = SETTINGS.spiralPull * (1 - rNorm);
+        const pulse = Math.sin(rNorm * 25 - frame * 0.010 + layer) * 0.07;
+
+        // Everything rotates as a field, while inner rings pull harder into the spiral.
+        // Very "GPU gets flushed down a celestial drain," but tastefully. Barely.
+        return theta + globalSpin + infiniteSpiral + layer * 0.14 + pulse;
+      }
+
+      function drawMandalaRings() {
+        const rings = SETTINGS.rings;
+        const symmetry = SETTINGS.symmetry;
+        const time = frame * 0.003;
+
+        for (let layer = 0; layer < SETTINGS.layers; layer++) {
+          const layerScale = 1 - layer * 0.045;
+          const layerAlpha = 0.105 + layer * 0.013;
+
+          for (let r = 2; r < rings; r++) {
+            const rNorm = r / rings;
+            const ringRadius = Math.pow(rNorm, 1.28) * maxR * 0.72 * layerScale;
+            const count = Math.max(symmetry, Math.floor(symmetry + r * 1.18));
+            const cell = TAU / count;
+
+            for (let i = 0; i < count; i++) {
+              const baseTheta = i * cell;
+              const id = layer * 100000 + r * 1000 + i;
+
+              const n = fbm(
+                Math.cos(baseTheta * 1.65 + layer) * 1.9 + rNorm * 4.6,
+                Math.sin(baseTheta * 1.65 - layer) * 1.9 - rNorm * 4.6,
+                3,
+                layer * 101 + r * 9
+              );
+
+              const petal = Math.sin(baseTheta * symmetry + rNorm * 12 - time);
+              const gate = n + petal * 0.12 + Math.sin(rNorm * TAU * 5) * 0.08;
+
+              if (gate < 0.49) continue;
+
+              const theta = vortexAngle(rNorm, baseTheta, layer);
+              const wobble = (n - 0.5) * 24;
+              const rr = ringRadius + wobble;
+              const x = cx + Math.cos(theta) * rr;
+              const y = cy + Math.sin(theta) * rr;
+
+              if (Math.hypot(x - cx, y - cy) < minDim * 0.045) continue;
+
+              const centerBoost = 1 - rNorm;
+              const size = (3.4 + n * 13.5) * (0.76 + centerBoost * 1.08);
+              const sides = (r + i + layer) % 3 === 0 ? 4 : 3;
+
+              // Shape-local rotation also turns, slower than the full field.
+              const angle = theta + frame * 0.0017 + rNorm * TAU * 2.25 + layer * Math.PI / 9 + n * TAU;
+
+              drawShape(x, y, size, angle, sides, layer, layerAlpha + n * 0.19, id);
+            }
+          }
+        }
+      }
+
+      function drawRecursivePetals() {
+        const symmetry = 12;
+        const globalSpin = frame * SETTINGS.spinSpeed;
+
+        for (let s = 0; s < symmetry; s++) {
+          const wedge = s * TAU / symmetry + globalSpin;
+
+          for (let branch = 0; branch < SETTINGS.branchCount; branch++) {
+            const twist = branch * GOLDEN_ANGLE + frame * 0.0011 * (branch % 2 ? -1 : 1);
+
+            for (let j = 1; j < SETTINGS.branchSteps; j++) {
+              const q = j / SETTINGS.branchSteps;
+              const id = 5000000 + s * 100000 + branch * 1000 + j;
+              const spiral = q * q * maxR * 0.66;
+              const theta = wedge + twist * 0.17 + q * (3.25 + branch * 0.18) + (1 - q) * frame * 0.002;
+              const n = fbm(
+                Math.cos(theta) * 2.7 + q * 4.4,
+                Math.sin(theta) * 2.7 - q * 4.4,
+                3,
+                800 + branch * 61
+              );
+
+              if (n < 0.42) continue;
+
+              const x = cx + Math.cos(theta) * spiral;
+              const y = cy + Math.sin(theta) * spiral;
+
+              if (Math.hypot(x - cx, y - cy) < minDim * 0.045) continue;
+
+              const pinch = Math.sin(q * Math.PI);
+              const size = 2.7 + pinch * 15.5 * n;
+              const sides = branch % 2 ? 3 : 4;
+
+              drawShape(
+                x,
+                y,
+                size,
+                theta + Math.PI / 2 + frame * 0.0015 + n * TAU,
+                sides,
+                branch + 2,
+                0.11 + n * 0.17,
+                id
+              );
+            }
+          }
+        }
+      }
+
+      function drawCentralCore() {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(frame * SETTINGS.spinSpeed * 1.35);
+        ctx.globalCompositeOperation = "lighter";
+
+        const coreRadius = minDim * 0.145;
+        const rings = 10;
+
+        for (let r = rings; r >= 1; r--) {
+          const q = r / rings;
+          const count = 8 + r * 4;
+          const radius = Math.pow(q, 1.45) * coreRadius;
+
+          for (let i = 0; i < count; i++) {
+            const id = 9000000 + r * 1000 + i;
+            const ci = colorIndex(id);
+            const c = RGB[ci];
+            const a = i * TAU / count + r * GOLDEN_ANGLE + frame * 0.0024 * (r % 2 ? 1 : -1);
+            const n = fbm(Math.cos(a) * r * 0.22, Math.sin(a) * r * 0.22, 3, 1200 + r);
+
+            ctx.save();
+            ctx.translate(Math.cos(a) * radius, Math.sin(a) * radius);
+            ctx.rotate(a * 2 + n * TAU);
+            polygonPath(r % 2 ? 3 : 4, 2.2 + n * 7.2);
+            ctx.strokeStyle = rgba(c.main, 0.13 + n * 0.15);
+            ctx.lineWidth = 0.35 + n * 0.55;
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+
+        ctx.globalCompositeOperation = "source-over";
+        const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, coreRadius * 1.8);
+        grd.addColorStop(0, "rgba(0, 0, 0, 0.12)");
+        grd.addColorStop(0.35, "rgba(20, 20, 50, 0.055)");
+        grd.addColorStop(0.72, "rgba(10, 0, 24, 0.035)");
+        grd.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(0, 0, coreRadius * 1.8, 0, TAU);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function drawEdgeEchoes() {
+        const count = 22;
+        const edgeR = maxR * 0.76;
+        const globalSpin = frame * SETTINGS.spinSpeed;
+
+        for (let i = 0; i < count; i++) {
+          const id = 12000000 + i;
+          const a = i * TAU / count + globalSpin * 0.75;
+          const n = fbm(Math.cos(a) * 5.4, Math.sin(a) * 5.4, 3, 2200 + i);
+          const x = cx + Math.cos(a) * edgeR;
+          const y = cy + Math.sin(a) * edgeR;
+
+          drawShape(
+            x,
+            y,
+            12 + n * 26,
+            a + Math.PI / 4 + frame * 0.001 + n,
+            i % 2 ? 3 : 4,
+            i % SETTINGS.layers,
+            0.10 + n * 0.13,
+            id
+          );
+        }
+      }
+
+      function drawCheapStaticDots() {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        for (let i = 0; i < SETTINGS.staticDots; i++) {
+          const id = 15000000 + i;
+          const spin = frame * SETTINGS.spinSpeed * 0.42;
+          const rawX = hash(i * 4.13 + seed) * w - cx;
+          const rawY = hash(i * 8.71 + seed) * h - cy;
+          const dist = Math.hypot(rawX, rawY);
+          const a = Math.atan2(rawY, rawX) + spin + (1 - Math.min(1, dist / maxR)) * frame * 0.0015;
+
+          const x = cx + Math.cos(a) * dist;
+          const y = cy + Math.sin(a) * dist;
+          const n = hash(i * 13.19 + frame * 0.06);
+
+          if (n < 0.45) continue;
+
+          const c = RGB[colorIndex(id)];
+          const alpha = 0.045 + n * 0.12;
+          const size = 0.45 + hash(i + 33.3) * 0.95;
+
+          ctx.fillStyle = rgba(c.main, alpha);
+          ctx.fillRect(x, y, size, size);
+        }
+
+        ctx.restore();
+      }
+
+      function render() {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, w, h);
+
+        const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+        bg.addColorStop(0, "rgba(4, 0, 12, 0.92)");
+        bg.addColorStop(0.42, "rgba(0, 0, 0, 0.97)");
+        bg.addColorStop(1, "rgba(0, 0, 0, 1)");
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, w, h);
+
+        drawMandalaRings();
+        drawRecursivePetals();
+        drawCentralCore();
+        drawEdgeEchoes();
+        drawCheapStaticDots();
+
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(0,0,0,0.05)";
+        ctx.fillRect(0, 0, w, h);
+
+        if (!paused) frame++;
+        requestAnimationFrame(render);
+      }
+
+      function saveFrame() {
+        const a = document.createElement("a");
+        a.download = `rgb-infinite-spiral-vortex-${seed}-${frame}.png`;
+        a.href = canvas.toDataURL("image/png");
+        a.click();
+      }
+
+      function reseed() {
+        seed = Math.floor(Math.random() * 999999999);
+        frame = 0;
+      }
+
+      window.addEventListener("resize", resize);
+
+      window.addEventListener("keydown", (event) => {
+        const key = event.key.toLowerCase();
+
+        if (key === " ") {
+          event.preventDefault();
+          paused = !paused;
+        }
+
+        if (key === "r") reseed();
+        if (key === "s") saveFrame();
+      });
+
+      window.addEventListener("click", () => {
+        paused = !paused;
+      });
+
+      resize();
+      render();
+    })();
+  </script>
+</body>
+</html>
