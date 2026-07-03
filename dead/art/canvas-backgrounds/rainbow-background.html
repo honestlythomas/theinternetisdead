@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>/dead/art/canvas-backgrounds/rainbow-background.html</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: black;
+    height: 100%;
+    width: 100%;
+    touch-action: none;
+  }
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="trippy"></canvas>
+<script>
+const canvas = document.getElementById('trippy');
+const ctx = canvas.getContext('2d');
+let w, h;
+let swipeX = 0, swipeY = 0;
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// swipe detection
+let touchStart = null;
+window.addEventListener('touchstart', e => {
+  touchStart = e.touches[0];
+});
+window.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  swipeX = (t.clientX - touchStart.clientX) * 0.2;
+  swipeY = (t.clientY - touchStart.clientY) * 0.2;
+});
+
+function drawScanlines(time) {
+  const freq = 0.005;
+  for (let y = 0; y < h; y += 3) {
+    const hue = (Math.sin(time * freq + y * 0.03) * 180 + 180) % 360;
+    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+    ctx.beginPath();
+    const amplitude = 10 + Math.sin(time * 0.002 + y * 0.05) * 5;
+    for (let x = 0; x < w; x += 10) {
+      const yOffset = Math.sin(x * 0.05 + time * 0.005 + y + swipeX * 0.1 + swipeY * 0.1) * amplitude;
+      ctx.lineTo(x, y + yOffset);
+    }
+    ctx.stroke();
+  }
+}
+
+function animate(time) {
+  ctx.fillStyle = "rgba(0,0,0,0.15)";
+  ctx.fillRect(0,0,w,h);
+  drawScanlines(time);
+  requestAnimationFrame(animate);
+}
+animate(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+<meta charset="UTF-8">
+<title>/dead/experiments/stacks.html</title>
+<style>
+body{
+margin:0;
+overflow:hidden;
+background:black;
+font-family:monospace;
+}
+
+#menu{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:rgba(0,0,0,0.92);
+border:1px solid #555;
+padding:18px 20px;
+display:none;
+color:white;
+z-index:10;
+min-width:280px;
+box-shadow:0 0 30px rgba(255,255,255,0.08);
+}
+
+#menu h3{
+margin:0 0 12px 0;
+font-size:18px;
+}
+
+.menu-row{
+margin:10px 0;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.menu-row input[type="file"]{
+max-width:100%;
+}
+
+.menu-row label{
+cursor:pointer;
+user-select:none;
+}
+
+#hint{
+position:fixed;
+bottom:10px;
+left:10px;
+color:#aaa;
+font-size:12px;
+background:rgba(0,0,0,0.45);
+padding:6px 8px;
+border-radius:6px;
+}
+</style>
+</head>
+<body>
+
+<div id="menu">
+  <h3>Settings</h3>
+
+  <div class="menu-row">
+    <input type="file" id="upload" accept="image/*">
+  </div>
+
+  <div class="menu-row">
+    <input type="checkbox" id="warpToggle" checked>
+    <label for="warpToggle">Breathing Warp</label>
+  </div>
+
+  <div class="menu-row">
+    <input type="checkbox" id="auto4dToggle" checked>
+    <label for="auto4dToggle">4D Autopilot</label>
+  </div>
+
+  <div class="menu-row">
+    <input type="checkbox" id="echoToggle" checked>
+    <label for="echoToggle">Echo Copies</label>
+  </div>
+</div>
+
+<div id="hint">
+Mouse rotate • Scroll zoom • WASD steer 4D • ESC menu
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+/* ---------- SCENE ---------- */
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  70,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100000
+);
+
+let camRadius = 180;
+let theta = 0;
+let phi = 0.6;
+
+function updateCamera(){
+  camera.position.x = camRadius * Math.sin(phi) * Math.cos(theta);
+  camera.position.y = camRadius * Math.cos(phi);
+  camera.position.z = camRadius * Math.sin(phi) * Math.sin(theta);
+  camera.lookAt(0,0,0);
+}
+updateCamera();
+
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+document.body.appendChild(renderer.domElement);
+
+window.addEventListener("resize", ()=>{
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+/* ---------- STARFIELD ---------- */
+
+function createStarfield(){
+  const starCount = 20000;
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(starCount * 3);
+  const radius = 20000;
+
+  for(let i=0; i<starCount; i++){
+    const t = Math.random() * Math.PI * 2;
+    const p = Math.acos((Math.random() * 2) - 1);
+
+    positions[i*3]   = radius * Math.sin(p) * Math.cos(t);
+    positions[i*3+1] = radius * Math.sin(p) * Math.sin(t);
+    positions[i*3+2] = radius * Math.cos(p);
+  }
+
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+  const material = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 4
+  });
+
+  const stars = new THREE.Points(geometry, material);
+  scene.add(stars);
+}
+createStarfield();
+
+/* ---------- TEXTURE ---------- */
+
+const loader = new THREE.TextureLoader();
+let texture = loader.load("L_0.jpg", undefined, undefined, () => {
+  console.warn("Default texture L_0.jpg did not load. Upload one with ESC.");
+});
+
+/* ---------- TORUS STRUCTURE ---------- */
+
+let torusGroup = new THREE.Group();
+scene.add(torusGroup);
+
+const TORUS_SETTINGS = {
+  majorRadius: 70,
+  tubeRadius: 22,
+  rings: 220,
+  ghostCount: 3
+};
+
+function makeMaterial(tex, opacity=1){
+  return new THREE.MeshBasicMaterial({
+    map: tex,
+    side: THREE.DoubleSide,
+    transparent: opacity < 1,
+    opacity
+  });
+}
+
+function createRingMesh(tex, opacity=1){
+  const geo = new THREE.RingGeometry(
+    TORUS_SETTINGS.tubeRadius,
+    TORUS_SETTINGS.tubeRadius + 0.6,
+    128
+  );
+
+  const mesh = new THREE.Mesh(geo, makeMaterial(tex, opacity));
+  mesh.userData.baseRotationX = 0;
+  mesh.userData.baseRotationY = 0;
+  mesh.userData.baseRotationZ = 0;
+  return mesh;
+}
+
+function build(tex){
+  torusGroup.clear();
+
+  const baseLayer = new THREE.Group();
+  baseLayer.userData.phaseShiftZW = 0;
+  baseLayer.userData.phaseShiftXW = 0;
+  baseLayer.userData.echoOffset = 0;
+  baseLayer.userData.wBias = 0;
+  torusGroup.add(baseLayer);
+
+  for(let g=1; g<=TORUS_SETTINGS.ghostCount; g++){
+    const ghost = new THREE.Group();
+    ghost.visible = document.getElementById("echoToggle").checked;
+    ghost.userData.phaseShiftZW = g * 0.85;
+    ghost.userData.phaseShiftXW = g * 0.55;
+    ghost.userData.echoOffset = g * 0.14;
+    ghost.userData.wBias = g * 0.32;
+    torusGroup.add(ghost);
+  }
+
+  torusGroup.children.forEach((group, groupIndex)=>{
+    const opacity = groupIndex === 0 ? 1 : 0.18;
+
+    for(let i=0; i<TORUS_SETTINGS.rings; i++){
+      const u = (i / TORUS_SETTINGS.rings) * Math.PI * 2;
+
+      const cx = Math.cos(u) * TORUS_SETTINGS.majorRadius;
+      const cz = Math.sin(u) * TORUS_SETTINGS.majorRadius;
+
+      const ring = createRingMesh(tex, opacity);
+      ring.lookAt(0,0,0);
+
+      ring.userData.p4 = {
+        x: cx,
+        y: 0,
+        z: cz,
+        w: 0
+      };
+
+      ring.userData.index = i;
+      ring.userData.u = u;
+      ring.userData.phase = Math.random() * Math.PI * 2;
+      ring.userData.seedA = Math.random() * Math.PI * 2;
+      ring.userData.seedB = Math.random() * Math.PI * 2;
+
+      group.add(ring);
+    }
+  });
+}
+
+build(texture);
+
+/* ---------- CAMERA CONTROLS ---------- */
+
+let dragging = false;
+let lastX = 0;
+let lastY = 0;
+
+renderer.domElement.addEventListener("mousedown", (e)=>{
+  if(menuOpen) return;
+  if(e.button !== 0) return;
+  dragging = true;
+  lastX = e.clientX;
+  lastY = e.clientY;
+});
+
+window.addEventListener("mouseup", ()=> dragging = false);
+
+window.addEventListener("mousemove", (e)=>{
+  if(!dragging) return;
+
+  theta -= (e.clientX - lastX) * 0.005;
+  phi   -= (e.clientY - lastY) * 0.005;
+
+  lastX = e.clientX;
+  lastY = e.clientY;
+
+  updateCamera();
+});
+
+renderer.domElement.addEventListener("wheel", (e)=>{
+  e.preventDefault();
+  camRadius += e.deltaY * 0.08;
+  camRadius = Math.max(30, Math.min(4000, camRadius));
+  updateCamera();
+}, { passive:false });
+
+/* ---------- MENU ---------- */
+
+let menuOpen = false;
+const menu = document.getElementById("menu");
+
+window.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape"){
+    menuOpen = !menuOpen;
+    menu.style.display = menuOpen ? "block" : "none";
+  }
+});
+
+/* ---------- SETTINGS TOGGLES ---------- */
+
+const warpToggle   = document.getElementById("warpToggle");
+const auto4dToggle = document.getElementById("auto4dToggle");
+const echoToggle   = document.getElementById("echoToggle");
+
+echoToggle.addEventListener("change", ()=>{
+  torusGroup.children.forEach((group, index)=>{
+    if(index === 0) return;
+    group.visible = echoToggle.checked;
+  });
+});
+
+/* ---------- TEXTURE UPLOAD ---------- */
+
+document.getElementById("upload").addEventListener("change", (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    texture = new THREE.TextureLoader().load(ev.target.result, ()=>{
+      build(texture);
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ---------- KEYBOARD CONTROL ---------- */
+
+const keys = {};
+
+window.addEventListener("keydown", (e)=>{
+  keys[e.key.toLowerCase()] = true;
+});
+
+window.addEventListener("keyup", (e)=>{
+  keys[e.key.toLowerCase()] = false;
+});
+
+/* ---------- 4D ROTATION ---------- */
+
+let rotZW = 0;
+let rotXW = 0;
+let time = 0;
+const projDist = 220;
+
+/* ---------- LOOP ---------- */
+
+function animate(){
+  requestAnimationFrame(animate);
+
+  time += 0.012;
+
+  const manualSpeed = 0.018;
+  if(keys["w"]) rotZW += manualSpeed;
+  if(keys["s"]) rotZW -= manualSpeed;
+  if(keys["a"]) rotXW += manualSpeed;
+  if(keys["d"]) rotXW -= manualSpeed;
+
+  if(auto4dToggle.checked){
+    rotZW += 0.0045;
+    rotXW += 0.0027;
+  }
+
+  torusGroup.children.forEach((group, groupIndex)=>{
+    const groupZW = rotZW + group.userData.phaseShiftZW;
+    const groupXW = rotXW + group.userData.phaseShiftXW;
+
+    const cosZW = Math.cos(groupZW);
+    const sinZW = Math.sin(groupZW);
+    const cosXW = Math.cos(groupXW);
+    const sinXW = Math.sin(groupXW);
+
+    group.children.forEach((ring)=>{
+      const p = ring.userData.p4;
+
+      let px = p.x;
+      let py = p.y;
+      let pz = p.z;
+      let pw = p.w + group.userData.wBias;
+
+      if(warpToggle.checked){
+        const phase = ring.userData.phase;
+        const u = ring.userData.u;
+
+        const radialBreath =
+          Math.sin(time * 1.9 + phase) * 4.8 +
+          Math.cos(time * 0.8 + ring.userData.seedA) * 2.1;
+
+        const swirl =
+          Math.sin(time * 1.35 + u * 3.0 + ring.userData.seedB) * 3.0;
+
+        const rise =
+          Math.cos(time * 1.6 + phase + u * 2.0) * 7.5;
+
+        const nx = Math.cos(u);
+        const nz = Math.sin(u);
+
+        px += nx * radialBreath;
+        pz += nz * radialBreath;
+
+        py += rise * Math.sin(u * 2.0);
+        pw += swirl * 0.32;
+
+        ring.rotation.z = Math.sin(time * 1.5 + phase) * 0.65;
+        ring.rotation.y = Math.cos(time * 0.9 + phase) * 0.18;
+      } else {
+        ring.rotation.z = 0;
+        ring.rotation.y = 0;
+      }
+
+      /* ZW rotation */
+      let z1 = pz * cosZW - pw * sinZW;
+      let w1 = pz * sinZW + pw * cosZW;
+
+      /* XW rotation */
+      let x2 = px * cosXW - w1 * sinXW;
+      let w2 = px * sinXW + w1 * cosXW;
+
+      const scale = projDist / Math.max(20, projDist - w2);
+
+      ring.position.x = x2 * scale;
+      ring.position.y = py * scale;
+      ring.position.z = z1 * scale;
+
+      if(groupIndex > 0){
+        const echoPulse = 1 + Math.sin(time * 1.2 + ring.userData.phase + group.userData.echoOffset * 10) * 0.03;
+        ring.scale.setScalar(echoPulse + group.userData.echoOffset);
+      } else {
+        ring.scale.setScalar(1);
+      }
+
+      ring.lookAt(0,0,0);
+    });
+  });
+
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>

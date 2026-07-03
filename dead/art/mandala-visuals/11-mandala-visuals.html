@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RGB Vortex Shrine - Lightweight Canvas</title>
+  <style>
+    /*
+      RGB Vortex Shrine - Lightweight Canvas
+
+      Fresh rethink, inspired by the whole cursed genealogy so far:
+      - Vortex mandala energy from the early canvas versions.
+      - RGB object buckets from the red/green/blue request.
+      - "Flying forever" illusion from the Three.js tunnel attempts.
+      - Non-Euclidean / 4D vibe expressed as 2D warped projection, not 3D object soup.
+      - Designed to avoid lag by drawing trails on one 2D canvas.
+      - No external libraries.
+      - No text overlay.
+      - No getImageData / putImageData.
+      - No thousands of Three.js objects.
+      - Uses precomputed particles and cheap trigonometry.
+
+      Controls:
+      - Click or Space: pause
+      - R: reseed
+      - S: save PNG frame
+    */
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="vortex"></canvas>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const canvas = document.getElementById("vortex");
+      const ctx = canvas.getContext("2d", { alpha: false });
+
+      const TAU = Math.PI * 2;
+      const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+
+      const SETTINGS = {
+        particleCount: 760,
+        ringCount: 42,
+        symmetry: 12,
+        depthLayers: 7,
+        trailFade: 0.135,
+        spinSpeed: 0.004,
+        flySpeed: 0.0065,
+        dprMax: 1.35,
+        lineAlpha: 0.34,
+        coreAlpha: 0.22
+      };
+
+      const RGB = [
+        [255, 44, 38],
+        [0, 255, 92],
+        [48, 142, 255]
+      ];
+
+      let w = 0;
+      let h = 0;
+      let cx = 0;
+      let cy = 0;
+      let minDim = 0;
+      let maxDim = 0;
+      let dpr = 1;
+      let frame = 0;
+      let seed = Math.floor(Math.random() * 999999999);
+      let paused = false;
+
+      let particles = [];
+      let ringNodes = [];
+
+      function clamp(v, a, b) {
+        return Math.max(a, Math.min(b, v));
+      }
+
+      function fract(v) {
+        return v - Math.floor(v);
+      }
+
+      function hash(n) {
+        return fract(Math.sin(n * 91.3458 + seed * 0.000031) * 47453.5453123);
+      }
+
+      function colorFor(id, alpha) {
+        const c = RGB[Math.floor(hash(id) * 3)];
+        return `rgba(${c[0]},${c[1]},${c[2]},${alpha})`;
+      }
+
+      function resize() {
+        dpr = clamp(window.devicePixelRatio || 1, 1, SETTINGS.dprMax);
+        w = window.innerWidth;
+        h = window.innerHeight;
+        cx = w * 0.5;
+        cy = h * 0.5;
+        minDim = Math.min(w, h);
+        maxDim = Math.max(w, h);
+
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        canvas.style.width = `${w}px`;
+        canvas.style.height = `${h}px`;
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = false;
+        clearHard();
+      }
+
+      function clearHard() {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      function buildParticles() {
+        particles = [];
+        ringNodes = [];
+
+        for (let i = 0; i < SETTINGS.particleCount; i++) {
+          const layer = Math.floor(hash(i + 100) * SETTINGS.depthLayers);
+          const arm = Math.floor(hash(i + 200) * SETTINGS.symmetry);
+          const q = Math.pow(hash(i + 300), 0.62);
+          const theta = arm * TAU / SETTINGS.symmetry + q * 5.5 + layer * GOLDEN_ANGLE;
+          const radius = 0.055 + q * 0.92;
+          const shape = hash(i + 400) < 0.5 ? 3 : 4;
+
+          particles.push({
+            id: i,
+            layer,
+            arm,
+            q,
+            theta,
+            radius,
+            shape,
+            size: 2.5 + hash(i + 500) * 10,
+            spin: (hash(i + 600) > 0.5 ? 1 : -1) * (0.015 + hash(i + 700) * 0.035),
+            phase: hash(i + 800) * TAU,
+            wobble: 0.02 + hash(i + 900) * 0.07
+          });
+        }
+
+        for (let r = 0; r < SETTINGS.ringCount; r++) {
+          const q = (r + 1) / SETTINGS.ringCount;
+          const count = Math.floor(8 + q * 34);
+
+          for (let i = 0; i < count; i++) {
+            ringNodes.push({
+              id: 100000 + r * 1000 + i,
+              r,
+              i,
+              q,
+              theta: i * TAU / count + r * GOLDEN_ANGLE * 0.23,
+              count,
+              layer: r % SETTINGS.depthLayers
+            });
+          }
+        }
+      }
+
+      function project(q, theta, layer, phaseOffset = 0) {
+        const t = frame;
+        const depthPhase = fract(q + t * SETTINGS.flySpeed + layer / SETTINGS.depthLayers);
+        const depth = 0.22 + depthPhase * 1.42;
+
+        // Pseudo non-Euclidean warp: spiral strength changes by depth and radius.
+        const curve = Math.sin(theta * 2 + depthPhase * TAU * 2.0 + t * 0.011) * 0.12;
+        const fold = Math.cos(theta * 3 - t * 0.006 + layer) * 0.07;
+        const spiral = SETTINGS.spinSpeed * t + (1 - q) * 5.2 + depthPhase * 2.3 + curve;
+
+        // Fake 4D cross-section: w changes scale and bends angle without making actual object soup.
+        const w4 = Math.sin(theta * 2.0 + t * 0.008 + layer + phaseOffset);
+        const fourDScale = 1 + w4 * 0.17;
+        const warpedQ = clamp(q * (1 + curve + fold) * fourDScale, 0.02, 1.75);
+
+        const viewScale = minDim * 0.43;
+        const r = warpedQ * viewScale * depth;
+        const a = theta + spiral + w4 * 0.12;
+
+        return {
+          x: cx + Math.cos(a) * r,
+          y: cy + Math.sin(a) * r,
+          depth,
+          alpha: clamp((1.6 - depth) * 0.52, 0.03, 0.55),
+          scale: clamp(depth * fourDScale, 0.25, 1.9),
+          angle: a
+        };
+      }
+
+      function drawPolygon(x, y, sides, size, angle) {
+        ctx.beginPath();
+
+        for (let i = 0; i < sides; i++) {
+          const a = angle - Math.PI / 2 + i * TAU / sides;
+          const px = x + Math.cos(a) * size;
+          const py = y + Math.sin(a) * size;
+
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+
+        ctx.closePath();
+      }
+
+      function drawShapeParticle(p) {
+        const wobble = Math.sin(frame * p.wobble + p.phase) * 0.022;
+        const q = fract(p.q + frame * SETTINGS.flySpeed * (0.35 + p.layer * 0.07));
+        const pos = project(q + wobble, p.theta, p.layer, p.phase);
+
+        if (
+          pos.x < -80 || pos.x > w + 80 ||
+          pos.y < -80 || pos.y > h + 80 ||
+          pos.alpha <= 0.035
+        ) {
+          return;
+        }
+
+        const size = p.size * pos.scale;
+        const alpha = pos.alpha * 0.7;
+        const angle = pos.angle + frame * p.spin;
+
+        ctx.globalCompositeOperation = "lighter";
+        ctx.lineWidth = Math.max(0.5, size * 0.105);
+        ctx.strokeStyle = colorFor(p.id, alpha);
+        drawPolygon(pos.x, pos.y, p.shape, size, angle);
+        ctx.stroke();
+
+        if (size > 5.5) {
+          ctx.lineWidth = Math.max(0.25, size * 0.035);
+          ctx.strokeStyle = colorFor(p.id + 9999, alpha * 0.34);
+          drawPolygon(pos.x, pos.y, p.shape === 3 ? 4 : 3, size * 0.46, -angle * 0.7);
+          ctx.stroke();
+        }
+      }
+
+      function drawRingLattice() {
+        ctx.globalCompositeOperation = "lighter";
+
+        for (const node of ringNodes) {
+          const nextTheta = node.theta + TAU / node.count;
+          const p1 = project(node.q, node.theta, node.layer, node.r * 0.1);
+          const p2 = project(node.q, nextTheta, node.layer, node.r * 0.1);
+
+          if (p1.alpha < 0.035 || p2.alpha < 0.035) continue;
+
+          const dx = p2.x - p1.x;
+          const dy = p2.y - p1.y;
+
+          if (dx * dx + dy * dy > minDim * minDim * 0.07) continue;
+
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.lineWidth = 0.5 + p1.scale * 0.26;
+          ctx.strokeStyle = colorFor(node.id, p1.alpha * SETTINGS.lineAlpha);
+          ctx.stroke();
+
+          // Sparse radial chords, because pure rings looked too polite.
+          if ((node.i + node.r) % 7 === 0 && node.r > 2) {
+            const inward = project(Math.max(0.03, node.q - 0.055), node.theta - 0.04, node.layer + 1, node.r * 0.2);
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(inward.x, inward.y);
+            ctx.lineWidth = 0.45;
+            ctx.strokeStyle = colorFor(node.id + 2222, p1.alpha * 0.16);
+            ctx.stroke();
+          }
+        }
+      }
+
+      function drawCore() {
+        const t = frame;
+        const coreR = minDim * 0.055;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(-t * SETTINGS.spinSpeed * 1.8);
+        ctx.globalCompositeOperation = "lighter";
+
+        for (let ring = 0; ring < 7; ring++) {
+          const q = (ring + 1) / 7;
+          const count = 8 + ring * 4;
+          const radius = coreR * (0.35 + q * 2.4);
+
+          for (let i = 0; i < count; i++) {
+            const id = 500000 + ring * 1000 + i;
+            const theta = i * TAU / count + ring * GOLDEN_ANGLE;
+            const w4 = Math.sin(theta * 3 + t * 0.018 + ring);
+            const x = Math.cos(theta + w4 * 0.12) * radius * (1 + w4 * 0.08);
+            const y = Math.sin(theta - w4 * 0.12) * radius * (1 - w4 * 0.06);
+            const size = 2.5 + q * 5.5;
+
+            ctx.lineWidth = 0.55;
+            ctx.strokeStyle = colorFor(id, SETTINGS.coreAlpha * (1.1 - q * 0.35));
+            drawPolygon(x, y, ring % 2 ? 3 : 4, size, theta + t * 0.01);
+            ctx.stroke();
+          }
+        }
+
+        // A dark pupil so the center has activity without becoming a flashlight.
+        ctx.globalCompositeOperation = "source-over";
+        const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, coreR * 2.8);
+        grd.addColorStop(0, "rgba(0,0,0,0.24)");
+        grd.addColorStop(0.5, "rgba(0,0,0,0.05)");
+        grd.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(0, 0, coreR * 2.8, 0, TAU);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function drawBackgroundVignette() {
+        ctx.globalCompositeOperation = "source-over";
+
+        const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxDim * 0.75);
+        bg.addColorStop(0, "rgba(7,0,18,0.10)");
+        bg.addColorStop(0.45, "rgba(0,0,0,0.02)");
+        bg.addColorStop(1, "rgba(0,0,0,0.35)");
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      function drawFrame() {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        // Trail fade. This is the cheap "flying forever" illusion. Finally, restraint.
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = `rgba(0,0,0,${SETTINGS.trailFade})`;
+        ctx.fillRect(0, 0, w, h);
+
+        drawBackgroundVignette();
+        drawRingLattice();
+
+        // Draw particles after lattice so shapes punch through.
+        for (const p of particles) {
+          drawShapeParticle(p);
+        }
+
+        drawCore();
+
+        if (!paused) frame++;
+        requestAnimationFrame(drawFrame);
+      }
+
+      function reseed() {
+        seed = Math.floor(Math.random() * 999999999);
+        frame = 0;
+        buildParticles();
+        clearHard();
+      }
+
+      function saveFrame() {
+        const a = document.createElement("a");
+        a.download = `rgb-vortex-shrine-lightweight-${seed}-${frame}.png`;
+        a.href = canvas.toDataURL("image/png");
+        a.click();
+      }
+
+      window.addEventListener("resize", resize);
+
+      window.addEventListener("click", () => {
+        paused = !paused;
+      });
+
+      window.addEventListener("keydown", (event) => {
+        const key = event.key.toLowerCase();
+
+        if (key === " ") {
+          event.preventDefault();
+          paused = !paused;
+        }
+
+        if (key === "r") reseed();
+        if (key === "s") saveFrame();
+      });
+
+      resize();
+      buildParticles();
+      clearHard();
+      drawFrame();
+    })();
+  </script>
+</body>
+</html>

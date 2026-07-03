@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>/dead/experiments/photosphere.html</title>
+<style>
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: black;
+  font-family: sans-serif;
+  overscroll-behavior: none;
+}
+body {
+  position: fixed;
+  inset: 0;
+}
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100dvh;
+  touch-action: none;
+}
+#menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.92);
+  color: white;
+  padding: 20px;
+  border: 1px solid #555;
+  display: none;
+  z-index: 9999;
+  width: min(92vw, 420px);
+  max-height: min(88dvh, 760px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  border-radius: 14px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+}
+#menu::-webkit-scrollbar { width: 0; height: 0; display: none; }
+#menuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+#menuTitle {
+  font-weight: 700;
+  min-width: 0;
+}
+#mobileHeaderButtons {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+#mobileFullscreenBtn,
+#mobileCloseBtn {
+  display: none;
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  min-height: 38px;
+  margin-top: 0;
+  padding: 0;
+  border: 1px solid #888;
+  border-radius: 0;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 22px;
+  line-height: 1;
+  text-align: center;
+  touch-action: manipulation;
+}
+#mobileFullscreenBtn {
+  font-size: 18px;
+}
+#mobileFXLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0) 36%),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.045) 0px,
+      rgba(255,255,255,0.045) 1px,
+      rgba(0,0,0,0) 3px,
+      rgba(0,0,0,0) 8px
+    );
+}
+label { display:block; margin-top:10px; }
+select, button, input[type="range"] { margin-top:10px; display:block; width: 100%; box-sizing: border-box; }
+button, select, input { min-height: 42px; font-size: 16px; }
+.small { opacity: 0.8; font-size: 12px; margin-top: 6px; line-height: 1.25; }
+#themeStatus { margin-top: 8px; font-size: 12px; opacity: 0.9; }
+#themeStatus.ok { color: #9dffb0; }
+#themeStatus.err { color: #ff9d9d; }
+@media (max-width: 700px) {
+  #menu {
+    top: max(env(safe-area-inset-top), 8px);
+    left: 50%;
+    bottom: max(env(safe-area-inset-bottom), 8px);
+    transform: translateX(-50%);
+    width: min(96vw, 520px);
+    max-height: none;
+    height: auto;
+    padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+    border-radius: 16px;
+  }
+  #customButtons {
+    flex-direction: column;
+  }
+  #mobileHeaderButtons {
+    display: inline-flex;
+  }
+  #mobileFullscreenBtn,
+  #mobileCloseBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #mobileFXLayer.active {
+    opacity: 0.82;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="menu">
+  <div id="menuHeader">
+    <div id="menuTitle">Options</div>
+    <div id="mobileHeaderButtons">
+      <button id="mobileFullscreenBtn" type="button" aria-label="Toggle fullscreen">⛶</button>
+      <button id="mobileCloseBtn" type="button" aria-label="Close menu">✕</button>
+    </div>
+  </div>
+<select id="themeSelect">
+    <option value="" selected>-- Select Theme --</option>
+    <option value="custom">Custom</option>
+    <!-- EDIT THESE to match the photosphere theme folders -->
+    <option value="zentangle">zentangle</option>
+  </select>
+  
+<div id="customButtons" style="display:none; margin-top:10px; gap:10px;">
+  <button id="btnSphere">Upload Sphere</button>
+  <button id="btnSkybox">Upload Skybox</button>
+</div>
+<button id="applyThemeBtn">Apply Theme</button>
+
+  <div id="themeStatus" class="small"></div>
+<label><input type="checkbox" id="magneticToggle"> Magnetic Field Bands</label>
+<select id="bandMode" style="display:none; margin-top:6px;">
+  <option value="1">1 Band</option>
+  <option value="2">2 Bands (reverse)</option>
+</select>
+  <label><input type="checkbox" id="fogToggle"> Radiant Fog Glow</label>
+  <label><input type="checkbox" id="postFXToggle"> Overlay Post FX</label>
+  <div class="small">Light vignette + breathing RGB chromatic aberration + slow hue shift.</div>
+
+  <label><input type="checkbox" id="autoOrbitToggle"> Auto Orbit Camera</label>
+  <div class="small">Smoothly orbits the camera around the scene without changing zoom.</div>
+
+  <label><input type="checkbox" id="innerPulseToggle"> Inner Sphere Pulse</label>
+  <div class="small">Pulses the inner sphere scale without affecting camera zoom.</div>
+
+  <label style="display:none;"><input type="checkbox" id="chaosToggle"> CHAOS MODE</label>
+  <div class="small" style="display:none;">Erratic, organic camera jumps across the skybox.</div>
+
+  
+  <label><input type="checkbox" id="axisToggle"> Axis Lines</label>
+<div class="small">6 white axes from sphere center to skybox</div>
+
+<label><input type="checkbox" id="walkModeToggle"> Walk Around Inner Sphere</label>
+  <div class="small">Turns WASD into simple surface walking, like a game camera moving around the sphere.</div>
+
+  <label>WASD Rotation Speed</label>
+  <input type="range" id="wasdSpeed" min="1" max="4" step="1" value="1">
+  <div class="small">1x, 2x, 3x, 4x speed</div>
+
+  <button onclick="toggleMenu()">Close (Esc)</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js">
+// === SAFE CUSTOM MODE ===
+window.addEventListener("DOMContentLoaded", () => {
+  const themeSelect = document.getElementById("themeSelect");
+  const customButtons = document.getElementById("customButtons");
+
+  const btnSphere = document.getElementById("btnSphere");
+  const btnSkybox = document.getElementById("btnSkybox");
+
+  const sphereFile = document.getElementById("sphereFile");
+  const skyboxFile = document.getElementById("skyboxFile");
+
+  function updateUI(){
+    customButtons.style.display = (themeSelect.value === "custom") ? "flex" : "none";
+  }
+
+  themeSelect.addEventListener("change", updateUI);
+  updateUI();
+
+  btnSphere.addEventListener("click", ()=> sphereFile.click());
+  btnSkybox.addEventListener("click", ()=> skyboxFile.click());
+
+  sphereFile.addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+
+    new THREE.TextureLoader().load(url, tex=>{
+      sphere.material = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff });
+    });
+  });
+
+  skyboxFile.addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+
+    new THREE.TextureLoader().load(url, tex=>{
+      outer.material = new THREE.MeshBasicMaterial({
+        map: tex,
+        side: THREE.BackSide
+      });
+    });
+  });
+
+});
+
+</script>
+
+<script>
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
+const baseFov = camera.fov;
+let cameraDistance = 5;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const mobileFXLayer = document.createElement("div");
+mobileFXLayer.id = "mobileFXLayer";
+document.body.appendChild(mobileFXLayer);
+
+// slight global punch
+renderer.domElement.style.filter = "contrast(1.1) saturate(1.2)";
+renderer.domElement.style.touchAction = "none";
+
+const isTouchDevice = window.matchMedia("(pointer: coarse)").matches || ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
+const mobileVisualScale = isTouchDevice ? Math.min(1.85, Math.max(1.2, ((window.devicePixelRatio || 1) * 0.55) + (Math.min(window.innerWidth, window.innerHeight) / 700))) : 1;
+const mobileTimeScale = isTouchDevice ? 1.8 : 1;
+const mobileOrbitBoost = isTouchDevice ? 1.35 : 1;
+const mobileParallaxBoost = isTouchDevice ? 1.45 : 1;
+const mobileFieldBoost = isTouchDevice ? 1.4 : 1;
+const mobilePulseBoost = isTouchDevice ? 1.35 : 1;
+let activeTouches = new Map();
+let pinchStartDistance = null;
+let pinchStartCameraDistance = null;
+let lastTapTime = 0;
+
+function getTouchDistance(a, b){
+  const dx = a.clientX - b.clientX;
+  const dy = a.clientY - b.clientY;
+  return Math.hypot(dx, dy);
+}
+
+function screenToNDC(clientX, clientY){
+  return {
+    x: (clientX / window.innerWidth) * 2 - 1,
+    y: -(clientY / window.innerHeight) * 2 + 1
+  };
+}
+
+function sphereHitTest(clientX, clientY){
+  const p = screenToNDC(clientX, clientY);
+  mouse.x = p.x;
+  mouse.y = p.y;
+  raycaster.setFromCamera(mouse, camera);
+  return raycaster.intersectObject(sphere, true).length > 0;
+}
+
+function openMenu(){
+  menu.style.display = "block";
+}
+
+// ===== POST FX (VIGNETTE + RGB SHIFT + HUE SHIFT) =====
+let postFXEnabled = false;
+const postFXToggle = document.getElementById("postFXToggle");
+postFXToggle.addEventListener("change", e=>{
+  postFXEnabled = e.target.checked;
+});
+
+// ===== AUTO ORBIT (CAMERA) =====
+let autoOrbitEnabled = false;
+let orbitAngle = 0;
+const autoOrbitToggle = document.getElementById("autoOrbitToggle");
+if(autoOrbitToggle){
+  autoOrbitToggle.addEventListener("change", e=>{
+    autoOrbitEnabled = e.target.checked;
+    // initialize angle from current camera position so it feels continuous
+    orbitAngle = Math.atan2(camera.position.z, camera.position.x);
+  });
+}
+
+// ===== INNER PULSE (SCALE) =====
+let innerPulseEnabled = false;
+let pulseT = 0;
+const innerPulseToggle = document.getElementById("innerPulseToggle");
+if(innerPulseToggle){
+  innerPulseToggle.addEventListener("change", e=>{
+    innerPulseEnabled = e.target.checked;
+    pulseT = 0;
+  });
+}
+
+// ===== CHAOS MODE =====
+let chaosEnabled = false;
+let chaosTarget = new THREE.Vector3(0,0,0);
+let chaosTimer = 0;
+const chaosToggle = document.getElementById("chaosToggle");
+if(chaosToggle){
+  chaosToggle.addEventListener("change", e=>{
+    chaosEnabled = e.target.checked;
+    chaosTimer = 0;
+  });
+}
+
+// Render target for postprocessing
+let renderTarget = new THREE.WebGLRenderTarget(innerWidth, innerHeight, {
+  minFilter: THREE.LinearFilter,
+  magFilter: THREE.LinearFilter,
+  format: THREE.RGBAFormat,
+  depthBuffer: true,
+  stencilBuffer: false
+});
+
+// Fullscreen quad scene
+const postScene = new THREE.Scene();
+const postCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+const postMat = new THREE.ShaderMaterial({
+  uniforms: {
+    tDiffuse: { value: renderTarget.texture },
+    time: { value: 0 },
+    resolution: { value: new THREE.Vector2(innerWidth, innerHeight) },
+    sphereCenter: { value: new THREE.Vector2(0.5, 0.5) },
+    sphereRadiusPx: { value: 0.0 },
+    atmospherePx: { value: 15.0 },
+    vignetteStrength: { value: 0.22 },   // keep it "light"
+    aberrationStrength: { value: 0.003 }, // in UV space
+    hueSpeed: { value: 0.015 }            // radians/sec-ish
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    
+vec3 hueShift(vec3 color, float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  mat3 m = mat3(
+    0.299 + 0.701*c + 0.168*s, 0.587 - 0.587*c + 0.330*s, 0.114 - 0.114*c - 0.497*s,
+    0.299 - 0.299*c - 0.328*s, 0.587 + 0.413*c + 0.035*s, 0.114 - 0.114*c + 0.292*s,
+    0.299 - 0.300*c + 1.250*s, 0.587 - 0.588*c - 1.050*s, 0.114 + 0.886*c - 0.203*s
+  );
+
+  return clamp(m * color, 0.0, 1.0);
+}
+
+void main(){
+      vUv = uv;
+      gl_Position = vec4(position.xy, 0.0, 1.0);
+    }
+  `,
+  fragmentShader: `
+    precision highp float;
+    varying vec2 vUv;
+    uniform sampler2D tDiffuse;
+    uniform float time;
+    uniform vec2 resolution;
+    uniform float vignetteStrength;
+    uniform float aberrationStrength;
+    uniform float hueSpeed;
+
+    
+    uniform vec2 sphereCenter;
+    uniform float sphereRadiusPx;
+    uniform float atmospherePx;
+vec3 hueRotateYIQ(vec3 col, float ang){
+      // RGB -> YIQ
+      float Y = dot(col, vec3(0.299, 0.587, 0.114));
+      float I = dot(col, vec3(0.596, -0.274, -0.322));
+      float Q = dot(col, vec3(0.211, -0.523, 0.312));
+
+      float c = cos(ang);
+      float s = sin(ang);
+
+      float I2 = I * c - Q * s;
+      float Q2 = I * s + Q * c;
+
+      // YIQ -> RGB
+      vec3 outc;
+      outc.r = Y + 0.956 * I2 + 0.621 * Q2;
+      outc.g = Y - 0.272 * I2 - 0.647 * Q2;
+      outc.b = Y - 1.106 * I2 + 1.703 * Q2;
+      return clamp(outc, 0.0, 1.0);
+    }
+
+    
+vec3 hueShift(vec3 color, float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  mat3 m = mat3(
+    0.299 + 0.701*c + 0.168*s, 0.587 - 0.587*c + 0.330*s, 0.114 - 0.114*c - 0.497*s,
+    0.299 - 0.299*c - 0.328*s, 0.587 + 0.413*c + 0.035*s, 0.114 - 0.114*c + 0.292*s,
+    0.299 - 0.300*c + 1.250*s, 0.587 - 0.588*c - 1.050*s, 0.114 + 0.886*c - 0.203*s
+  );
+
+  return clamp(m * color, 0.0, 1.0);
+}
+
+void main(){
+      vec2 uv = vUv;
+
+      // "breathing" chromatic aberration
+      float breath = (sin(time * 2.0) * 0.5 + 0.5);
+      float ab = aberrationStrength * (0.35 + 0.65 * breath);
+
+      // push channels along a gentle diagonal and slightly radial
+      vec2 dir = normalize(vec2(0.85, 0.52));
+      vec2 radial = normalize(uv - 0.5);
+      vec2 shift = (dir + radial * 0.75) * ab;
+
+      float r = texture2D(tDiffuse, uv + shift).r;
+      float g = texture2D(tDiffuse, uv).g;
+      float b = texture2D(tDiffuse, uv - shift).b;
+      vec3 col = vec3(r, g, b);
+
+      // slow hue shift (disabled on the inner sphere + a thin atmospheric ring, in *pixel space* so it never becomes an oval)
+      vec2 fragPx = uv * resolution;
+      vec2 centerPx = sphereCenter * resolution;
+      float distPx = length(fragPx - centerPx);
+
+      // Hue shift only applies outside the planet + atmosphere thickness (in pixels)
+      if(distPx > (sphereRadiusPx + atmospherePx)){
+        col = hueRotateYIQ(col, time * hueSpeed);
+      }// light vignette (darken edges slightly, keep it subtle)
+      vec2 p = uv - 0.5;
+      float d = dot(p, p);
+      float vig = smoothstep(0.15, 0.65, d);
+      col = mix(col, col * (1.0 - vignetteStrength), vig);
+
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `
+});
+
+const postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2,2), postMat);
+postScene.add(postQuad);
+
+// ===== LIGHTING =====
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(5,5,5);
+scene.add(light);
+
+// ===== SPHERE =====
+let sphereMaterial = new THREE.MeshToonMaterial({ color: 0x2EE6A6 }) // seafoam green;
+const sphere = new THREE.Mesh(new THREE.SphereGeometry(2,32,32), sphereMaterial);
+scene.add(sphere);
+
+// ===== AXIS LINES (FIXED TO SPHERE) =====
+const axisGroup = new THREE.Group();
+sphere.add(axisGroup);
+
+const axisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.45 });
+
+function createAxis(rotation){
+  const geo = new THREE.CylinderGeometry(0.04, 0.04, 200, 8);
+  const mesh = new THREE.Mesh(geo, axisMaterial);
+  mesh.rotation.set(rotation.x, rotation.y, rotation.z);
+  return mesh;
+}
+
+// X, Y, Z axes
+axisGroup.add(createAxis({x:0, y:0, z:Math.PI/2}));
+axisGroup.add(createAxis({x:0, y:0, z:0}));
+axisGroup.add(createAxis({x:Math.PI/2, y:0, z:0}));
+
+axisGroup.visible = false;
+
+// toggle hook (safe attach after DOM load)
+setTimeout(()=>{
+  const axisToggle = document.getElementById("axisToggle");
+  if(axisToggle){
+    axisToggle.addEventListener("change", e=>{
+      axisGroup.visible = e.target.checked;
+    });
+  }
+}, 0);
+
+
+
+// ===== OUTLINE (FIXED SCREEN-SPACE STYLE) =====
+const outlineMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    thickness: { value: 0.08 },
+  },
+  vertexShader: `
+    uniform float thickness;
+    void main() {
+      vec3 newPosition = position + normal * thickness;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+    }
+  `,
+  fragmentShader: `
+    void main() {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+  `,
+  side: THREE.BackSide
+});
+
+const outline = new THREE.Mesh(
+  new THREE.SphereGeometry(2, 32, 32),
+  outlineMaterial
+);
+
+sphere.add(outline);
+
+// ===== SKYBOX =====
+const skyMaterial = new THREE.ShaderMaterial({
+  side: THREE.BackSide,
+  uniforms: {
+    time: { value: 0 },
+    lightPos: { value: new THREE.Vector3(0,0,0) }
+  },
+  vertexShader: `
+    varying vec3 vWorldPos;
+    void main(){
+      vec4 worldPos = modelMatrix * vec4(position, 1.0);
+      vWorldPos = worldPos.xyz;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vWorldPos;
+    uniform vec3 lightPos;
+    uniform float time;
+
+    void main(){
+      vec3 dir = normalize(vWorldPos - lightPos);
+
+      float bandShadow = sin(dir.y * 20.0 + time * 2.0) * 0.5 + 0.5;
+
+      float axisShadow = max(
+        1.0 - abs(dir.x),
+        max(1.0 - abs(dir.y), 1.0 - abs(dir.z))
+      );
+
+      float shadow = bandShadow * 0.5 + axisShadow * 0.5;
+
+      vec3 base = vec3(0.05, 0.1, 0.2);
+      base *= 1.0 - shadow * 0.6;
+
+      gl_FragColor = vec4(base, 1.0);
+    }
+  `
+});
+const outer = new THREE.Mesh(new THREE.SphereGeometry(100,32,32), skyMaterial);
+scene.add(outer);
+
+// ===== SKYBOX WIREFRAME (THICKER STABLE LINES) =====
+// ===== SKYBOX WIREFRAME (ENHANCED GRID + LIME) =====
+// ===== SKYBOX WIREFRAME (STABLE FIX) =====
+const geo = new THREE.SphereGeometry(100, 64, 64);
+const edges = new THREE.EdgesGeometry(geo);
+
+const outerWire = new THREE.LineSegments(
+  edges,
+  new THREE.LineBasicMaterial({
+    color: 0x00ff66,
+    transparent: true,
+    opacity: 0.6,
+    depthTest: false,
+    depthWrite: false
+  })
+);
+
+// keep normal orientation, just follow skybox
+scene.add(outerWire);
+outerWire.visible = true;
+
+
+
+
+
+// ===== FOG GLOW =====
+const fogMaterial = new THREE.ShaderMaterial({
+  transparent: true,
+  blending: THREE.AdditiveBlending,
+  uniforms: { time: { value: 0 } },
+  vertexShader: `
+    varying vec3 vNormal;
+    
+vec3 hueShift(vec3 color, float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  mat3 m = mat3(
+    0.299 + 0.701*c + 0.168*s, 0.587 - 0.587*c + 0.330*s, 0.114 - 0.114*c - 0.497*s,
+    0.299 - 0.299*c - 0.328*s, 0.587 + 0.413*c + 0.035*s, 0.114 - 0.114*c + 0.292*s,
+    0.299 - 0.300*c + 1.250*s, 0.587 - 0.588*c - 1.050*s, 0.114 + 0.886*c - 0.203*s
+  );
+
+  return clamp(m * color, 0.0, 1.0);
+}
+
+void main(){
+      vNormal = normalize(normalMatrix * normal);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vNormal;
+    uniform float time;
+
+    
+vec3 hueShift(vec3 color, float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  mat3 m = mat3(
+    0.299 + 0.701*c + 0.168*s, 0.587 - 0.587*c + 0.330*s, 0.114 - 0.114*c - 0.497*s,
+    0.299 - 0.299*c - 0.328*s, 0.587 + 0.413*c + 0.035*s, 0.114 - 0.114*c + 0.292*s,
+    0.299 - 0.300*c + 1.250*s, 0.587 - 0.588*c - 1.050*s, 0.114 + 0.886*c - 0.203*s
+  );
+
+  return clamp(m * color, 0.0, 1.0);
+}
+
+void main(){
+      float intensity = pow(1.0 - dot(normalize(vNormal), vec3(0.0,0.0,1.0)), 2.5);
+      float pulse = sin(time * 2.0) * 0.5 + 0.5;
+      vec3 color = vec3(0.2 + pulse * 0.8, 0.4, 1.0);
+      gl_FragColor = vec4(color, intensity * 0.4);
+    }
+  `
+});
+
+const fogSphere = new THREE.Mesh(new THREE.SphereGeometry(2.6, 64, 64), fogMaterial);
+if(isTouchDevice){
+  fogMaterial.uniforms.time.value = 0;
+}
+// === INNER SPHERE REPEL DEFAULT (no menu toggle; this is the default behavior) ===
+let mouseNDC = { x: 0, y: 0 };           // normalized device coords [-1,1]
+const repelOffset = new THREE.Vector3();  // reused each frame
+const tmpVec3 = new THREE.Vector3();      // reused each frame
+const baseSpherePos = sphere.position.clone();
+const baseFogPos = fogSphere.position.clone();
+const baseOutlinePos = outline.position.clone();
+
+// tuning
+const repelMaxOffset = 0.35;   // world units: how far the sphere can get pushed
+const repelInnerRadius = 0.55; // ndc: strongest repulsion inside this radius from screen center
+const repelOuterRadius = 1.25; // ndc: repulsion fades out by this radius
+const repelLerp = 0.12;        // smoothing (higher = snappier)
+const fovParallaxMax = 3.0;    // degrees of FOV modulation for parallax feel
+
+fogSphere.visible = false;
+scene.add(fogSphere);
+
+// Preserve baseline scales (used by Inner Sphere Pulse)
+const baseSphereScale = sphere.scale.clone();
+const baseFogScale = fogSphere.scale.clone();
+
+// ===== MAGNETIC FIELD =====
+const fieldGroup = new THREE.Group();
+scene.add(fieldGroup);
+
+const fieldMaterial = new THREE.ShaderMaterial({
+  transparent: true,
+  uniforms: {
+    time: { value: 0 },
+    fogInfluence: { value: 0.0 }
+  },
+  vertexShader: `
+    varying vec3 vNormal;
+    varying vec2 vUv;
+    
+vec3 hueShift(vec3 color, float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  mat3 m = mat3(
+    0.299 + 0.701*c + 0.168*s, 0.587 - 0.587*c + 0.330*s, 0.114 - 0.114*c - 0.497*s,
+    0.299 - 0.299*c - 0.328*s, 0.587 + 0.413*c + 0.035*s, 0.114 - 0.114*c + 0.292*s,
+    0.299 - 0.300*c + 1.250*s, 0.587 - 0.588*c - 1.050*s, 0.114 + 0.886*c - 0.203*s
+  );
+
+  return clamp(m * color, 0.0, 1.0);
+}
+
+void main(){
+      vNormal = normalize(normalMatrix * normal);
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vNormal;
+    varying vec2 vUv;
+    uniform float time;
+    uniform float fogInfluence;
+
+    
+vec3 hueShift(vec3 color, float angle) {
+  float s = sin(angle);
+  float c = cos(angle);
+
+  mat3 m = mat3(
+    0.299 + 0.701*c + 0.168*s, 0.587 - 0.587*c + 0.330*s, 0.114 - 0.114*c - 0.497*s,
+    0.299 - 0.299*c - 0.328*s, 0.587 + 0.413*c + 0.035*s, 0.114 - 0.114*c + 0.292*s,
+    0.299 - 0.300*c + 1.250*s, 0.587 - 0.588*c - 1.050*s, 0.114 + 0.886*c - 0.203*s
+  );
+
+  return clamp(m * color, 0.0, 1.0);
+}
+
+void main(){
+      float fresnel = pow(1.0 - dot(normalize(vNormal), vec3(0.0,0.0,1.0)), 4.0);
+      float wave = sin(vUv.y * 20.0 + time * 3.0) * 0.5 + 0.5;
+      float intensity = fresnel * wave;
+
+      vec3 col = mix(vec3(1.0), vec3(0.0), intensity);
+
+      // fog "bounce"
+      col += fogInfluence * intensity * vec3(0.2,0.5,1.0);
+
+      // internal chroma wobble
+      col.r += intensity * 0.20;
+      col.b -= intensity * 0.20;
+
+      gl_FragColor = vec4(col, intensity * 0.85);
+    }
+  `
+});
+
+for(let i=0;i<6;i++){
+  const torus = new THREE.Mesh(
+    new THREE.TorusGeometry(2.5 + i*0.35, 0.08, 32, 200),
+    fieldMaterial
+  );
+  torus.rotation.x = Math.PI/2;
+  torus.rotation.y = i * 0.4;
+  torus.rotation.z = i * 0.2;
+  fieldGroup.add(torus);
+}
+fieldGroup.visible = false;
+
+// ===== REVERSE FIELD GROUP (SAFE INIT) =====
+const reverseFieldGroup = new THREE.Group();
+scene.add(reverseFieldGroup);
+
+// clone torus meshes
+fieldGroup.children.forEach(torus=>{
+  const clone = torus.clone();
+  reverseFieldGroup.add(clone);
+});
+
+reverseFieldGroup.visible = false;
+
+
+// ===== UI TOGGLES =====
+document.getElementById("magneticToggle").addEventListener("change", e=>{
+  fieldGroup.visible = e.target.checked;
+  const bandMode = document.getElementById("bandMode");
+  if(bandMode) bandMode.style.display = e.target.checked ? "block" : "none";
+});
+document.getElementById("fogToggle").addEventListener("change", e=>{
+  fogSphere.visible = e.target.checked;
+});
+
+// ===== THEME LOADER (APPLY BUTTON + STATUS) =====
+const themeSelect = document.getElementById("themeSelect");
+const applyThemeBtn = document.getElementById("applyThemeBtn");
+const themeStatus = document.getElementById("themeStatus");
+
+function setThemeStatus(msg, ok){
+  themeStatus.textContent = msg;
+  themeStatus.classList.remove("ok","err");
+  themeStatus.classList.add(ok ? "ok" : "err");
+}
+
+function applyTheme(themeName){
+  if(!themeName){
+    setThemeStatus("No theme selected.", false);
+    return;
+  }
+
+  if(location.protocol === "file:"){
+    setThemeStatus("Theme load may be blocked on file://. Run a local server.", false);
+  } else {
+    setThemeStatus("Loading theme: " + themeName + " ...", true);
+  }
+
+  const loader = new THREE.TextureLoader();
+  loader.setCrossOrigin("anonymous");
+
+  // Try the centralized theme JSON first; fallback to default filenames if missing.
+  fetch(`/dead/JSON/${themeName}-theme.json`)
+    .then(res => {
+      if(!res.ok) throw new Error("no theme.json");
+      return res.json();
+    })
+    .then(meta => {
+      const sphereFile = meta.sphere || "sphere.png";
+      const skyFile = meta.skybox || "skybox.png";
+      loadTextures(themeName, sphereFile, skyFile, loader);
+    })
+    .catch(() => {
+      // Fallback path
+      loadTextures(themeName, "sphere.png", "skybox.png", loader);
+    });
+}
+
+function loadTextures(themeName, sphereFile, skyFile, loader){
+  const sphereURL = `/dead/experiments/photosphere/themes/${themeName}/${sphereFile}`;
+  const skyURL    = `/dead/experiments/photosphere/themes/${themeName}/${skyFile}`;
+
+  let okSphere = false;
+  let okSky = false;
+
+  loader.load(
+    sphereURL,
+    tex => {
+      tex.needsUpdate = true;
+      sphere.material = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff });
+      okSphere = true;
+      if(okSphere && okSky) setThemeStatus("Theme applied: " + themeName, true);
+    },
+    undefined,
+    err => {
+      console.warn("Failed to load:", sphereURL, err);
+      setThemeStatus("Could not load " + sphereURL, false);
+    }
+  );
+
+  loader.load(
+    skyURL,
+    tex => {
+      tex.needsUpdate = true;
+      outer.material = new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide });
+      okSky = true;
+      if(okSphere && okSky) setThemeStatus("Theme applied: " + themeName, true);
+    },
+    undefined,
+    err => {
+      console.warn("Failed to load:", skyURL, err);
+      setThemeStatus("Could not load " + skyURL, false);
+    }
+  );
+}
+
+applyThemeBtn.addEventListener("click", ()=> applyTheme(themeSelect.value));
+themeSelect.addEventListener("dblclick", ()=> applyTheme(themeSelect.value));
+
+// ===== CONTROLS =====
+let isDragging=false, prevX=0, prevY=0;
+let velX=0, velY=0;
+const damping = isTouchDevice ? 0.965 : 0.95;
+
+// ===== WASD ROTATION CONTROL =====
+let keys = { w:false, a:false, s:false, d:false };
+let rotVelX = 0;
+let rotVelY = 0;
+let speedMultiplier = 1;
+const accel = 0.0008;
+const maxSpeed = 0.05;
+const rotDamping = 0.96;
+
+// ===== WALK MODE (SURFACE CAMERA) =====
+let walkModeEnabled = false;
+let walkTheta = 0;                 // latitude-like angle
+let walkPhi = 0;                   // longitude-like angle
+let walkHeading = 0;               // facing direction around local up axis
+const sphereRadius = 2.0;
+const walkHeight = 0.22;           // camera offset above sphere surface
+const walkMoveSpeed = 0.012;
+const walkTurnSpeed = 0.03;
+const walkLookAhead = 0.6;
+const walkUp = new THREE.Vector3();
+const walkEast = new THREE.Vector3();
+const walkNorth = new THREE.Vector3();
+const walkPos = new THREE.Vector3();
+const walkForward = new THREE.Vector3();
+const walkTarget = new THREE.Vector3();
+
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "w") keys.w = true;
+  if(e.key === "s") keys.s = true;
+  if(e.key === "a") keys.a = true;
+  if(e.key === "d") keys.d = true;
+});
+
+
+const wasdSlider = document.getElementById("wasdSpeed");
+if(wasdSlider){
+  wasdSlider.addEventListener("input", e=>{
+    speedMultiplier = parseInt(e.target.value);
+  });
+}
+
+const walkModeToggle = document.getElementById("walkModeToggle");
+if(walkModeToggle){
+  walkModeToggle.addEventListener("change", e=>{
+    walkModeEnabled = e.target.checked;
+
+    if(walkModeEnabled){
+      autoOrbitEnabled = false;
+      chaosEnabled = false;
+      if(autoOrbitToggle) autoOrbitToggle.checked = false;
+      if(chaosToggle) chaosToggle.checked = false;
+
+      rotVelX = 0;
+      rotVelY = 0;
+
+      walkTheta = 0;
+      walkPhi = 0;
+      walkHeading = Math.PI * 0.5;
+      camera.fov = baseFov;
+      camera.updateProjectionMatrix();
+    }
+  });
+}
+
+
+document.addEventListener("keyup", (e)=>{
+  if(e.key === "w") keys.w = false;
+  if(e.key === "s") keys.s = false;
+  if(e.key === "a") keys.a = false;
+  if(e.key === "d") keys.d = false;
+});
+
+
+document.addEventListener("mousedown", e=>{
+  if(isTouchDevice) return;
+  isDragging=true;
+  prevX=e.clientX;
+  prevY=e.clientY;
+});
+document.addEventListener("mouseup", ()=>{
+  isDragging=false;
+});
+document.addEventListener("mousemove", e=>{
+  mouseNDC.x = (e.clientX / innerWidth) * 2 - 1;
+  mouseNDC.y = -(e.clientY / innerHeight) * 2 + 1;
+
+  if(isTouchDevice || !isDragging) return;
+  let dx=e.clientX-prevX, dy=e.clientY-prevY;
+  velY=dx*0.005; velX=dy*0.005;
+  prevX=e.clientX; prevY=e.clientY;
+});
+
+renderer.domElement.addEventListener("touchstart", (e)=>{
+  for(const touch of e.changedTouches){
+    activeTouches.set(touch.identifier, {
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      startX: touch.clientX,
+      startY: touch.clientY
+    });
+  }
+
+  if(activeTouches.size === 1){
+    const t = e.changedTouches[0];
+    isDragging = true;
+    prevX = t.clientX;
+    prevY = t.clientY;
+  } else if(activeTouches.size >= 2){
+    const touches = Array.from(activeTouches.values()).slice(0, 2);
+    pinchStartDistance = getTouchDistance(touches[0], touches[1]);
+    pinchStartCameraDistance = cameraDistance;
+    isDragging = false;
+  }
+}, { passive: true });
+
+renderer.domElement.addEventListener("touchmove", (e)=>{
+  const changedIds = new Set();
+  for(const touch of e.changedTouches){
+    changedIds.add(touch.identifier);
+    const prev = activeTouches.get(touch.identifier) || { startX: touch.clientX, startY: touch.clientY };
+    activeTouches.set(touch.identifier, {
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      startX: prev.startX,
+      startY: prev.startY
+    });
+  }
+
+  const touches = Array.from(activeTouches.values());
+  if(touches.length >= 2){
+    e.preventDefault();
+    const dist = getTouchDistance(touches[0], touches[1]);
+    if(pinchStartDistance && pinchStartCameraDistance != null){
+      cameraDistance = pinchStartCameraDistance * (pinchStartDistance / Math.max(1, dist));
+      cameraDistance = Math.max(2.5, Math.min(20, cameraDistance));
+    }
+    return;
+  }
+
+  if(touches.length === 1){
+    e.preventDefault();
+    const t = touches[0];
+    mouseNDC.x = (t.clientX / innerWidth) * 2 - 1;
+    mouseNDC.y = -(t.clientY / innerHeight) * 2 + 1;
+    let dx=t.clientX-prevX, dy=t.clientY-prevY;
+    velY=dx*0.005; velX=dy*0.005;
+    prevX=t.clientX; prevY=t.clientY;
+  }
+}, { passive: false });
+
+renderer.domElement.addEventListener("touchend", (e)=>{
+  let tappedSphere = false;
+
+  for(const touch of e.changedTouches){
+    const info = activeTouches.get(touch.identifier);
+    if(info){
+      const moveDist = Math.hypot(touch.clientX - info.startX, touch.clientY - info.startY);
+      const tapAgeOk = true;
+      if(moveDist < 12 && tapAgeOk && sphereHitTest(touch.clientX, touch.clientY)){
+        tappedSphere = true;
+      }
+    }
+    activeTouches.delete(touch.identifier);
+  }
+
+  if(activeTouches.size < 2){
+    pinchStartDistance = null;
+    pinchStartCameraDistance = null;
+  }
+
+  if(activeTouches.size === 0){
+    isDragging = false;
+  }
+
+  if(isTouchDevice && tappedSphere){
+    const now = Date.now();
+    if(now - lastTapTime > 250){
+      openMenu();
+    }
+    lastTapTime = now;
+  }
+}, { passive: true });
+
+renderer.domElement.addEventListener("touchcancel", ()=>{
+  activeTouches.clear();
+  pinchStartDistance = null;
+  pinchStartCameraDistance = null;
+  isDragging = false;
+});
+
+document.addEventListener("wheel", e=>{
+  e.preventDefault();
+  cameraDistance += e.deltaY*0.01;
+  cameraDistance = Math.max(2.5, Math.min(20, cameraDistance));
+},{passive:false});
+
+// ===== MENU =====
+const menu = document.getElementById("menu");
+const mobileCloseBtn = document.getElementById("mobileCloseBtn");
+if(mobileCloseBtn){
+  mobileCloseBtn.addEventListener("click", ()=>{
+    menu.style.display = "none";
+  });
+}
+function toggleMenu(){
+  if(menu.style.display === "none" || menu.style.display === "") menu.style.display = "block";
+  else menu.style.display = "none";
+}
+
+// ===== FULLSCREEN TOGGLE (F KEY) =====
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "f" || e.key === "F"){
+    if(!document.fullscreenElement){
+      document.documentElement.requestFullscreen().catch(err=>{});
+    } else {
+      document.exitFullscreen().catch(err=>{});
+    }
+  }
+});
+
+
+document.addEventListener("keydown", e=>{
+  if(e.key === "Escape" || e.key === "/") toggleMenu();
+});
+
+// ===== ANIMATE =====
+
+// ===== DESKTOP SPHERE CLICK OPENS ESC MENU =====
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+renderer.domElement.addEventListener("click", (event) => {
+  if(isTouchDevice) return;
+
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObject(sphere, true);
+
+  if(intersects.length > 0){
+    event.preventDefault();
+    event.stopPropagation();
+    menu.style.display = "block";
+  }
+});
+
+function animate(){
+  // auto visibility control
+if (typeof outerWire !== 'undefined'){
+  const hasSky = outer.material.map != null;
+  const hasSphere = sphere.material.map != null;
+  outerWire.visible = !(hasSky || hasSphere);
+}
+requestAnimationFrame(animate);
+  // SKYBOX HUE SHIFT (tied to Post FX toggle)
+if (postFXEnabled && outer.material && outer.material.color) {
+  const t = performance.now() * 0.0001;
+  const hue = t % 1;
+  outer.material.color.setHSL(hue, 1.0, 0.5);
+} else if (outer.material && outer.material.color) {
+  outer.material.color.setHSL(0.0, 0.0, 1.0);
+}
+
+
+  sphere.rotation.y += velY;
+  sphere.rotation.x += velX;
+
+  if(isTouchDevice){
+    const tMobile = performance.now() * 0.001 * mobileTimeScale;
+    mobileFXLayer.classList.add("active");
+    const scanShift = (Math.sin(tMobile * 1.7) * 8).toFixed(2);
+    const glowX = (50 + Math.sin(tMobile * 0.9) * 9).toFixed(2);
+    const glowY = (50 + Math.cos(tMobile * 1.13) * 9).toFixed(2);
+    mobileFXLayer.style.transform = `translate3d(0, ${scanShift}px, 0)`;
+    mobileFXLayer.style.background = `radial-gradient(circle at ${glowX}% ${glowY}%, rgba(255,255,255,0.08) 0%, rgba(80,160,255,0.05) 18%, rgba(0,0,0,0) 42%), repeating-linear-gradient(to bottom, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, rgba(0,0,0,0) 3px, rgba(0,0,0,0) 8px)`;
+  }
+
+fieldGroup.rotation.y += 0.01 * mobileFieldBoost;
+
+// dual band logic (non-destructive)
+const bandMode = document.getElementById("bandMode");
+if(bandMode && bandMode.value === "2" && fieldGroup.visible){
+  reverseFieldGroup.visible = true;
+  reverseFieldGroup.rotation.y -= 0.01 * mobileFieldBoost;
+} else {
+  reverseFieldGroup.visible = false;
+}
+
+
+  fieldMaterial.uniforms.time.value += 0.02 * mobileTimeScale;
+  fogMaterial.uniforms.time.value += 0.02 * mobileTimeScale;
+  postMat.uniforms.time.value += 0.02 * mobileTimeScale;
+  if(skyMaterial.uniforms){
+    if(typeof outerWire !== 'undefined'){
+      outerWire.position.copy(camera.position);
+      if(typeof outerWire2 !== 'undefined'){
+        outerWire2.position.copy(camera.position);
+        outerWire2.rotation.copy(outerWire.rotation);
+      }
+      outerWire.rotation.copy(outer.rotation);
+    }
+    skyMaterial.uniforms.time.value += 0.02;
+    skyMaterial.uniforms.lightPos.value.copy(sphere.position);
+  }
+
+  fieldMaterial.uniforms.fogInfluence.value = (fogSphere.visible && fieldGroup.visible) ? 1.0 : 0.0;
+
+  velX *= damping;
+  velY *= damping;
+
+  // WASD rotation inertia (disabled during walk mode)
+  if(!walkModeEnabled){
+    if(keys.w) rotVelX -= accel * speedMultiplier;
+    if(keys.s) rotVelX += accel * speedMultiplier;
+    if(keys.a) rotVelY -= accel * speedMultiplier;
+    if(keys.d) rotVelY += accel * speedMultiplier;
+
+    // clamp speed
+    rotVelX = Math.max(-maxSpeed, Math.min(maxSpeed, rotVelX));
+    rotVelY = Math.max(-maxSpeed, Math.min(maxSpeed, rotVelY));
+
+    sphere.rotation.x += rotVelX;
+    sphere.rotation.y += rotVelY;
+
+    rotVelX *= rotDamping;
+    rotVelY *= rotDamping;
+  }
+
+
+  // Inner Sphere Pulse (non-destructive: only scales meshes)
+  if(innerPulseEnabled){
+    pulseT += 0.08 * mobilePulseBoost;
+
+    // stronger pulse
+    const s = 1.0 + Math.sin(pulseT) * (isTouchDevice ? 0.16 : 0.12);
+
+    sphere.scale.set(baseSphereScale.x * s, baseSphereScale.y * s, baseSphereScale.z * s);
+    fogSphere.scale.set(baseFogScale.x * s, baseFogScale.y * s, baseFogScale.z * s);
+
+    // sync subtle rotation boost with pulse
+    sphere.rotation.y += Math.sin(pulseT) * 0.01;
+    sphere.rotation.x += Math.cos(pulseT) * 0.005;
+
+} else {
+    sphere.scale.copy(baseSphereScale);
+    fogSphere.scale.copy(baseFogScale);
+}
+
+  
+  // === INNER SPHERE REPEL + FOV PARALLAX ===
+// DISABLED DURING CHAOS MODE
+if(!chaosEnabled){
+
+  const mx = mouseNDC.x, my = mouseNDC.y;
+  const r = Math.hypot(mx, my);
+
+  let influence = 0.0;
+  if (r < repelOuterRadius) {
+    const denom = Math.max(1e-6, (repelOuterRadius - repelInnerRadius));
+    let t = (repelOuterRadius - r) / denom;
+    t = Math.max(0.0, Math.min(1.0, t));
+    influence = t * t * (3.0 - 2.0 * t);
+  }
+
+  repelOffset.set(-mx, -my, 0);
+  if (repelOffset.lengthSq() > 1e-8) repelOffset.normalize();
+  repelOffset.multiplyScalar(influence * repelMaxOffset);
+
+  tmpVec3.copy(baseSpherePos).add(repelOffset);
+  sphere.position.lerp(tmpVec3, repelLerp);
+
+  tmpVec3.copy(baseFogPos).add(repelOffset);
+  fogSphere.position.lerp(tmpVec3, repelLerp);
+
+  camera.fov = baseFov + influence * fovParallaxMax * mobileParallaxBoost;
+  camera.updateProjectionMatrix();
+
+} else {
+  // reset everything clean during chaos
+  sphere.position.lerp(baseSpherePos, 0.2);
+  fogSphere.position.lerp(baseFogPos, 0.2);
+
+  camera.fov = baseFov;
+  camera.updateProjectionMatrix();
+}
+
+// Camera placement (preserves zoom via cameraDistance unless walk mode overrides it)
+  if(walkModeEnabled){
+    const turnStep = walkTurnSpeed * speedMultiplier;
+    if(keys.a) walkHeading += turnStep;
+    if(keys.d) walkHeading -= turnStep;
+
+    const moveStep = walkMoveSpeed * speedMultiplier;
+    if(keys.w){
+      walkTheta += Math.cos(walkHeading) * moveStep;
+      walkPhi += Math.sin(walkHeading) * moveStep;
+    }
+    if(keys.s){
+      walkTheta -= Math.cos(walkHeading) * moveStep;
+      walkPhi -= Math.sin(walkHeading) * moveStep;
+    }
+
+    const thetaLimit = Math.PI * 0.48;
+    walkTheta = Math.max(-thetaLimit, Math.min(thetaLimit, walkTheta));
+
+    const cosTheta = Math.cos(walkTheta);
+    walkUp.set(
+      cosTheta * Math.cos(walkPhi),
+      Math.sin(walkTheta),
+      cosTheta * Math.sin(walkPhi)
+    ).normalize();
+
+    walkEast.set(-Math.sin(walkPhi), 0, Math.cos(walkPhi)).normalize();
+    walkNorth.crossVectors(walkUp, walkEast).normalize();
+
+    walkForward.copy(walkNorth).multiplyScalar(Math.cos(walkHeading)).addScaledVector(walkEast, Math.sin(walkHeading)).normalize();
+
+    walkPos.copy(walkUp).multiplyScalar(sphereRadius + walkHeight);
+    camera.position.copy(walkPos);
+
+    walkTarget.copy(walkPos).addScaledVector(walkForward, walkLookAhead);
+    camera.up.copy(walkUp);
+    camera.lookAt(walkTarget);
+  } else if(!chaosEnabled && autoOrbitEnabled){
+    // intensified spiral orbit (tornado vibe)
+    orbitAngle += 0.01 * mobileOrbitBoost;
+
+    const r = cameraDistance;
+    const t = performance.now() * 0.001;
+
+    const vertical = Math.sin(t * (isTouchDevice ? 3.4 : 2.5)) * (isTouchDevice ? 1.55 : 1.2); // vertical swirl
+    const radiusMod = 1.0 + Math.sin(t * (isTouchDevice ? 2.3 : 1.8)) * (isTouchDevice ? 0.34 : 0.25); // breathing radius
+
+    camera.position.set(
+      Math.cos(orbitAngle) * r * radiusMod,
+      vertical,
+      Math.sin(orbitAngle) * r * radiusMod
+    );
+    camera.lookAt(0,0,0);
+  } else {
+    camera.position.set(0,0,cameraDistance);
+    camera.lookAt(0,0,0);
+  }
+  // --- keep Post FX center mask locked to the sphere (no aspect-ratio oval) ---
+  // Compute sphere center + projected radius in pixels each frame, so the Post FX "hole" hugs the planet.
+  // Uses current cameraDistance, auto-orbit, and inner pulse scale.
+  {
+    const centerNDC = sphere.position.clone().project(camera);
+    const centerUv = new THREE.Vector2(centerNDC.x * 0.5 + 0.5, centerNDC.y * 0.5 + 0.5);
+
+    const viewDir = new THREE.Vector3();
+    camera.getWorldDirection(viewDir);
+    const right = new THREE.Vector3().crossVectors(viewDir, camera.up).normalize();
+
+    const worldRadius = 2.0 * sphere.scale.x; // base sphere radius is 2
+    const edgeWorld = sphere.position.clone().add(right.multiplyScalar(worldRadius));
+    const edgeNDC = edgeWorld.project(camera);
+    const edgeUv = new THREE.Vector2(edgeNDC.x * 0.5 + 0.5, edgeNDC.y * 0.5 + 0.5);
+
+    const dx = (edgeUv.x - centerUv.x) * innerWidth;
+    const dy = (edgeUv.y - centerUv.y) * innerHeight;
+    const radiusPx = Math.sqrt(dx*dx + dy*dy);
+
+    postMat.uniforms.sphereCenter.value.copy(centerUv);
+    postMat.uniforms.sphereRadiusPx.value = radiusPx;
+    // atmospherePx stays at 15.0, set once in uniforms unless you want it adjustable.
+  }
+
+  // ===== CHAOS MODE (GLIDING / ORGANIC) =====
+if(chaosEnabled && !walkModeEnabled){
+
+  autoOrbitEnabled = false;
+
+  chaosTimer -= 0.016;
+
+  if(chaosTimer <= 0){
+    chaosTarget.set(
+      (Math.random()-0.5)*10,
+      (Math.random()-0.5)*6,
+      (Math.random()-0.5)*10
+    ).normalize().multiplyScalar(cameraDistance);
+
+    chaosTimer = 0.6 + Math.random()*1.2;
+  }
+
+  const glideSpeed = 0.06;
+  camera.position.lerp(chaosTarget, glideSpeed);
+
+  const t = performance.now() * 0.001;
+
+  camera.position.x += Math.sin(t * 1.7) * 0.01;
+  camera.position.y += Math.cos(t * 1.3) * 0.01;
+  camera.position.z += Math.sin(t * 1.1) * 0.01;
+
+  camera.lookAt(0,0,0);
+}
+
+  outer.position.copy(camera.position);
+  outer.rotation.copy(sphere.rotation);
+  // SKYBOX PARALLAX NUDGE (very subtle)
+  outer.rotation.y += mouseNDC.x * (isTouchDevice ? 0.075 : 0.05);
+  outer.rotation.x += mouseNDC.y * (isTouchDevice ? 0.05 : 0.03);
+
+  if(isTouchDevice){
+    sphere.rotation.z += Math.sin(performance.now() * 0.0016) * 0.0009 * mobileVisualScale;
+    fogSphere.rotation.y += 0.006 * mobileVisualScale;
+    fogSphere.rotation.x += 0.003 * mobileVisualScale;
+    outline.material.uniforms.thickness.value = 0.1 * mobileVisualScale;
+  } else {
+    outline.material.uniforms.thickness.value = 0.08;
+  }
+
+  if(postFXEnabled){
+    renderer.setRenderTarget(renderTarget);
+    renderer.render(scene, camera);
+    renderer.setRenderTarget(null);
+    postMat.uniforms.tDiffuse.value = renderTarget.texture;
+    renderer.render(postScene, postCam);
+  } else {
+    renderer.render(scene, camera);
+  }
+}
+
+animate();
+
+window.addEventListener("resize", ()=>{
+  if(isTouchDevice){
+    mobileFXLayer.classList.add("active");
+  }
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  renderTarget.setSize(innerWidth, innerHeight);
+  postMat.uniforms.resolution.value.set(innerWidth, innerHeight);
+});
+
+// === SAFE CUSTOM MODE ===
+window.addEventListener("DOMContentLoaded", () => {
+  const themeSelect = document.getElementById("themeSelect");
+  const customButtons = document.getElementById("customButtons");
+
+  const btnSphere = document.getElementById("btnSphere");
+  const btnSkybox = document.getElementById("btnSkybox");
+
+  const sphereFile = document.getElementById("sphereFile");
+  const skyboxFile = document.getElementById("skyboxFile");
+
+  function updateUI(){
+    customButtons.style.display = (themeSelect.value === "custom") ? "flex" : "none";
+  }
+
+  themeSelect.addEventListener("change", updateUI);
+  updateUI();
+
+  btnSphere.addEventListener("click", ()=> sphereFile.click());
+  btnSkybox.addEventListener("click", ()=> skyboxFile.click());
+
+  sphereFile.addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+
+    new THREE.TextureLoader().load(url, tex=>{
+      sphere.material = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff });
+    });
+  });
+
+  skyboxFile.addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+
+    new THREE.TextureLoader().load(url, tex=>{
+      outer.material = new THREE.MeshBasicMaterial({
+        map: tex,
+        side: THREE.BackSide
+      });
+    });
+  });
+
+});
+
+</script>
+
+
+<input type="file" id="sphereFile" accept="image/*" style="display:none;">
+<input type="file" id="skyboxFile" accept="image/*" style="display:none;">
+
+<script>
+
+/* ===== FORCE ESC MENU ABOVE WEBGL CANVAS ===== */
+
+window.addEventListener("DOMContentLoaded", ()=>{
+
+  const menu = document.getElementById("menu");
+const mobileCloseBtn = document.getElementById("mobileCloseBtn");
+if(mobileCloseBtn){
+  mobileCloseBtn.addEventListener("click", ()=>{
+    menu.style.display = "none";
+  });
+}
+
+  if(!menu) return;
+
+  /* create overlay layer */
+  const uiLayer = document.createElement("div");
+
+  uiLayer.style.position = "fixed";
+  uiLayer.style.top = "0";
+  uiLayer.style.left = "0";
+  uiLayer.style.width = "100%";
+  uiLayer.style.height = "100%";
+  uiLayer.style.zIndex = "10000";
+  uiLayer.style.pointerEvents = "none";
+
+  document.body.appendChild(uiLayer);
+
+  /* move menu into overlay layer */
+  uiLayer.appendChild(menu);
+
+  /* allow interaction */
+  menu.style.pointerEvents = "auto";
+
+});
+
+</script>
+</body>
+
+</html>
