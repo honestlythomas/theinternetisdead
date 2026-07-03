@@ -365,6 +365,11 @@
       white-space: nowrap;
     }
 
+    .title-speech-line {
+      pointer-events: auto;
+      cursor: default;
+    }
+
     .title-line-with-clock {
       display: inline-flex;
       align-items: baseline;
@@ -393,7 +398,7 @@
     }
 
     .title-clock-period {
-      margin-left: 0.12ch;
+      margin-left: 0;
     }
 
     .mobile-title-line {
@@ -1349,13 +1354,12 @@
 
       <div class="top-center">
         <section class="title-box" aria-label="Page title">
-          <div class="desktop-title-line">The Internet Is Dead</div>
-          <div class="desktop-title-line title-line-with-clock"><span class="title-clock-line"><span>The time is</span><span class="title-clock" aria-label="Current time"><span class="title-clock-time">?</span><span class="title-clock-period"></span></span></span></div>
-          <div class="desktop-title-line">What now?</div>
-          <div class="mobile-title-line">The Internet</div>
-          <div class="mobile-title-line">Is Dead</div>
-          <div class="mobile-title-line title-line-with-clock"><span class="title-clock-line"><span>The time is</span><span class="title-clock" aria-label="Current time"><span class="title-clock-time">?</span><span class="title-clock-period"></span></span></span></div>
-          <div class="mobile-title-line">What now?</div>
+          <div class="desktop-title-line title-speech-line" data-title-speech="The Internet Is Dead" tabindex="0">The Internet Is Dead</div>
+          <div class="desktop-title-line title-line-with-clock title-speech-line" data-title-speech-clock tabindex="0"><span class="title-clock-line"><span>The time is</span><span class="title-clock" aria-label="Current time"><span class="title-clock-time">?</span><span class="title-clock-period"></span></span></span></div>
+          <div class="desktop-title-line title-speech-line" data-title-speech="Now what..." tabindex="0">Now what...</div>
+          <div class="mobile-title-line title-speech-line" data-title-speech="The Internet Is Dead" tabindex="0">The Internet Is Dead</div>
+          <div class="mobile-title-line title-line-with-clock title-speech-line" data-title-speech-clock tabindex="0"><span class="title-clock-line"><span>The time is</span><span class="title-clock" aria-label="Current time"><span class="title-clock-time">?</span><span class="title-clock-period"></span></span></span></div>
+          <div class="mobile-title-line title-speech-line" data-title-speech="Now what..." tabindex="0">Now what...</div>
         </section>
 
         <div class="action-stack">
@@ -1451,6 +1455,7 @@
     const defaultDocumentTitle = document.title;
     const chatDocumentTitle = 'theinternetisdead.org chat';
     const newChatMessageDocumentTitle = 'new dead msg';
+    let titleSpeechVoice = null;
 
     function updateTitleClock() {
       const clocks = document.querySelectorAll('.title-clock');
@@ -1460,7 +1465,6 @@
         timeZone: 'America/Toronto',
         hour: 'numeric',
         minute: '2-digit',
-        second: '2-digit',
         hour12: true
       }).formatToParts(new Date());
 
@@ -1480,6 +1484,60 @@
         if (timeEl) timeEl.textContent = timeText;
         if (periodEl) periodEl.textContent = dayPeriod;
         clock.setAttribute('aria-label', label);
+      });
+    }
+
+    function getTitleSpeechText(line) {
+      if (line.hasAttribute('data-title-speech-clock')) {
+        const clock = line.querySelector('.title-clock');
+        const time = clock ? clock.getAttribute('aria-label') : '';
+        return `The time is ${time}`.trim();
+      }
+
+      return line.getAttribute('data-title-speech') || line.textContent.trim();
+    }
+
+    function updateTitleSpeechVoice() {
+      if (!('speechSynthesis' in window)) return;
+
+      const voices = window.speechSynthesis.getVoices();
+      titleSpeechVoice = voices.find((voice) => /microsoft david/i.test(voice.name)) || null;
+    }
+
+    function stopTitleSpeech() {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+    }
+
+    function speakTitleLine(line) {
+      if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
+
+      const text = getTitleSpeechText(line);
+      if (!text) return;
+
+      stopTitleSpeech();
+      updateTitleSpeechVoice();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      if (titleSpeechVoice) utterance.voice = titleSpeechVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function setupTitleSpeech() {
+      const lines = document.querySelectorAll('.title-speech-line');
+      if (!lines.length || !('speechSynthesis' in window)) return;
+
+      updateTitleSpeechVoice();
+      window.speechSynthesis.onvoiceschanged = updateTitleSpeechVoice;
+
+      lines.forEach((line) => {
+        line.addEventListener('pointerenter', () => speakTitleLine(line));
+        line.addEventListener('pointerleave', stopTitleSpeech);
+        line.addEventListener('pointercancel', stopTitleSpeech);
+        line.addEventListener('focus', () => speakTitleLine(line));
+        line.addEventListener('blur', stopTitleSpeech);
       });
     }
 
@@ -2225,6 +2283,7 @@
       applySavedDefaultAction();
     }
     updateTitleClock();
+    setupTitleSpeech();
     window.setInterval(updateTitleClock, 1000);
     renderActionSelection();
     updateGhostCounterDisplay();
