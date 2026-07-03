@@ -1,0 +1,8 @@
+# Keep real static assets/pages addressable before any dashboard-level SPA fallback.
+/dead/pages/canvas-backgrounds/starfield-background_reactive.html /dead/pages/canvas-backgrounds/starfield-background_reactive.html 200
+/dead/pages/canvas-backgrounds/* /dead/pages/canvas-backgrounds/:splat 200
+/dead/pages/* /dead/pages/:splat 200
+/dead/games/* /dead/games/:splat 200
+/dead/* /dead/:splat 200
+/main-page.html /main-page.html 200
+/index.html /index.html 200
