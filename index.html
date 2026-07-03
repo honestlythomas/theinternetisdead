@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bookmark Manager Top Bar</title>
+
+  <style>
+    html {
+      height: 100%;
+      background: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: transparent;
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    .background-frame {
+      position: fixed;
+      left: 0;
+      top: 53px;
+      width: 100%;
+      height: calc(100vh - 53px);
+      border: 0;
+      background: transparent;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: auto;
+      z-index: 2;
+      width: 100%;
+      height: 53px;
+      background: black;
+      border-bottom: 3px solid lime;
+      box-sizing: border-box;
+
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .clock-widget {
+      margin-left: auto;
+      border: 0;
+      padding: 0 4px 0 0;
+      width: 96px;
+      min-width: 96px;
+      height: 50px;
+      background: black;
+      color: white;
+      cursor: default;
+
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+
+      font-family: "Courier New", Courier, monospace;
+      font-weight: 700;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    .bar-hide-toggle {
+      border: 0;
+      padding: 0;
+      flex: 0 0 50px;
+      width: 50px;
+      height: 50px;
+      background: black;
+      color: #8200e0;
+      cursor: default;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 24px;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    .clock-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0;
+    }
+
+    .clock-time {
+      font-size: 15px;
+      white-space: nowrap;
+    }
+
+    .clock-date {
+      margin-top: 5px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .bookmark-controls {
+      display: flex;
+      align-items: center;
+      width: max-content;
+    }
+
+    .bookmark-button {
+      border: 0;
+      padding: 0;
+      width: max-content;
+      height: 50px;
+      background: transparent;
+      color: white;
+      cursor: default;
+
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      font: 16px/1 "Courier New", Courier, monospace;
+      box-sizing: border-box;
+    }
+
+    .bookmark-button .emoji-label {
+      text-align: left;
+      flex: 0 0 auto;
+      color: lime;
+    }
+
+    .action-toggle {
+      border: 0;
+      padding: 0;
+      width: 24px;
+      height: 50px;
+      background: transparent;
+      color: white;
+      cursor: default;
+      font-size: 14px;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    .add-toggle {
+      color: #40d85a;
+    }
+
+    .clear-toggle {
+      color: #8200e0;
+    }
+
+    .emoji-icon {
+      flex: 0 0 50px;
+      width: 50px;
+      height: 50px;
+      background: rgb(59 0 102 / 70%);
+      color: white;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 24px;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    .bookmark-button .emoji-icon {
+      box-shadow: none;
+    }
+
+    .emoji-label {
+      min-width: 0;
+      flex: 1 1 auto;
+      padding: 0 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bookmark-button .emoji-label {
+      font-weight: 700;
+    }
+
+    .static-only * {
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+
+<body>
+  <iframe class="background-frame" src="/background.html" title="Background" aria-hidden="true"></iframe>
+
+  <div class="bottom-bar static-only" aria-label="Static bookmark top bar preview">
+    <button class="bookmark-button" type="button" tabindex="-1" aria-hidden="true">
+      <span class="emoji-icon">&#9760;</span>
+      <span class="emoji-label">theinternetisdead.org</span>
+    </button>
+    <button class="clock-widget" type="button" tabindex="-1" aria-hidden="true">
+      <span class="clock-text">
+        <span class="clock-time" id="clock-time"></span>
+        <span class="clock-date" id="clock-date"></span>
+      </span>
+    </button>
+    <button class="bar-hide-toggle" type="button" tabindex="-1" aria-hidden="true">&#9881;&#65039;</button>
+  </div>
+  <script>
+    const clockTime = document.getElementById("clock-time");
+    const clockDate = document.getElementById("clock-date");
+
+    const updateClock = () => {
+      const now = new Date();
+
+      clockTime.textContent = now.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      }).replace(/\s/g, "");
+
+      clockDate.textContent = now.toLocaleDateString([], {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+    };
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
