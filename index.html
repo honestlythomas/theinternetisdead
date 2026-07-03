@@ -78,11 +78,15 @@
     .clock-text {
       flex: 0 0 96px;
       width: 96px;
+      height: 50px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       margin-right: 0;
+      border-left: 1px solid lime;
+      border-right: 1px solid lime;
+      box-sizing: border-box;
     }
 
     .clock-time {
@@ -112,8 +116,39 @@
       box-sizing: border-box;
     }
 
+    .emoji-tint {
+      position: relative;
+      display: inline-block;
+      line-height: 1;
+      isolation: isolate;
+    }
+
+    .emoji-tint::after {
+      content: attr(data-emoji);
+      position: absolute;
+      inset: 0;
+      color: lime;
+      filter: sepia(100%) saturate(600%) hue-rotate(55deg) brightness(120%);
+      mix-blend-mode: color;
+      pointer-events: none;
+    }
+
+    .emoji-tint.is-screen::after {
+      mix-blend-mode: screen;
+    }
+
+    .emoji-tint.is-skull {
+      color: lime;
+      font-weight: 900;
+    }
+
+    .emoji-tint.is-skull::after {
+      content: none;
+    }
+
     .skull-icon {
       background: rgb(59 0 102);
+      border-right: 1px solid lime;
     }
 
     .alien-icon {
@@ -121,6 +156,7 @@
       width: auto;
       padding-left: 10px;
       gap: 8px;
+      border-left: 1px solid lime;
       color: lime;
       font-size: 15px;
       font-weight: 700;
@@ -156,12 +192,47 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
     }
 
     .bar-content .emoji-label {
       text-align: left;
       color: lime;
       font-weight: 700;
+    }
+
+    .bar-content .home-link {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site-divider {
+      flex: 0 0 1px;
+      width: 1px;
+      height: 50px;
+      background: lime;
+    }
+
+    .index-link-slot {
+      min-width: 0;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .site-divider.after-site {
+      margin-left: 8px;
+    }
+
+    .bar-content .index-link {
+      text-decoration: underline;
+    }
+
+    .emoji-mid-divider {
+      display: none;
     }
 
     .ghost-counter.is-you-dummy {
@@ -181,42 +252,128 @@
 
     @media (max-width: 600px) {
       .background-frame {
-        top: 103px;
-        height: calc(100vh - 103px);
+        top: 153px;
+        height: calc(100vh - 153px);
       }
 
       .bottom-bar {
-        height: 103px;
+        height: 153px;
       }
 
       .bar-content {
-        height: 100px;
-        flex-wrap: wrap;
-        align-content: flex-start;
+        position: relative;
+        height: 150px;
+        display: grid;
+        grid-template-columns: 50px minmax(0, 1fr) 88px;
+        grid-template-rows: 50px 50px 50px;
+        align-items: stretch;
+      }
+
+      .bar-content::before,
+      .bar-content::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: lime;
+        pointer-events: none;
+      }
+
+      .bar-content::before {
+        top: 49px;
+      }
+
+      .bar-content::after {
+        top: 99px;
+      }
+
+      .emoji-mid-divider {
+        position: absolute;
+        top: 50px;
+        left: var(--emoji-mid-divider-left, 50%);
+        z-index: 1;
+        display: block;
+        width: 1px;
+        height: 50px;
+        background: lime;
+        transform: translateX(-0.5px);
+        pointer-events: none;
       }
 
       .bar-content .emoji-label {
-        flex: 0 1 calc(100% - 50px);
-        width: calc(100% - 50px);
-        max-width: calc(100% - 50px);
-        box-sizing: border-box;
+        display: contents;
       }
 
       .clock-group {
-        flex: 0 0 100%;
-        margin-left: 0;
+        display: contents;
+      }
+
+      .skull-icon {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .bar-content .emoji-label > .home-link {
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 0;
+        height: 50px;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        box-sizing: border-box;
+      }
+
+      .site-divider {
+        display: none;
+      }
+
+      .clock-text {
+        grid-column: 3;
+        grid-row: 1;
+        width: 88px;
+        border-right: 0;
+      }
+
+      .index-link-slot {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        min-width: 0;
+        height: 50px;
+      }
+
+      .ghost-counter {
+        grid-column: 1 / 3;
+        grid-row: 2;
+        min-width: 0;
+        overflow: hidden;
+        border-left: 0;
+        justify-self: stretch;
         justify-content: center;
+      }
+
+      .gear-icon {
+        grid-column: 3;
+        grid-row: 2;
+        justify-self: center;
       }
 
       .alien-icon {
         padding-left: 0;
         gap: 4px;
+        border-left: 0;
         font-size: 13px;
       }
 
-      .clock-text {
-        flex-basis: 88px;
-        width: 88px;
+      .ghost-text {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
   </style>
@@ -226,32 +383,54 @@
   <iframe class="background-frame" src="/dead/pages/background/" title="Background" aria-hidden="true"></iframe>
 
   <div class="bottom-bar" aria-label="Static bookmark top bar preview">
-    <button class="bar-content" type="button" tabindex="-1" aria-hidden="true">
-      <span class="emoji-icon skull-icon">&#9760;</span>
-      <span class="emoji-label">theinternetisdead.org</span>
+    <div class="bar-content">
+      <span class="emoji-icon skull-icon"><span class="emoji-tint is-screen is-skull" data-emoji="&#9760;">&#9760;</span></span>
+      <span class="emoji-label"><a class="home-link" href="/">theinternetisdead.org</a><span class="site-divider after-site" aria-hidden="true"></span><span class="index-link-slot"><span class="site-divider" aria-hidden="true"></span><a class="home-link index-link" href="/">index.html</a><span class="site-divider" aria-hidden="true"></span></span></span>
       <span class="clock-group">
         <span class="emoji-icon alien-icon ghost-counter" id="ghost-counter" role="status" aria-label="? Ghosts Online">
           <span class="ghost-text">
             <span class="ghost-count" id="ghost-count">?</span><span class="ghost-label" id="ghost-label">Ghosts Online</span>
           </span>
-          <span class="alien-glyph">&#128125;</span>
+          <span class="alien-glyph"><span class="emoji-tint" data-emoji="&#128125;">&#128125;</span></span>
         </span>
         <span class="clock-text">
           <span class="clock-time" id="clock-time"></span>
           <span class="clock-date" id="clock-date"></span>
         </span>
-        <span class="emoji-icon gear-icon">&#9881;&#65039;</span>
+        <span class="emoji-icon gear-icon"><span class="emoji-tint" data-emoji="&#9881;&#65039;">&#9881;&#65039;</span></span>
       </span>
-    </button>
+      <span class="emoji-mid-divider" aria-hidden="true"></span>
+    </div>
   </div>
   <script>
     const clockTime = document.getElementById("clock-time");
     const clockDate = document.getElementById("clock-date");
+    const barContent = document.querySelector(".bar-content");
     const ghostCounter = document.getElementById("ghost-counter");
     const ghostCount = document.getElementById("ghost-count");
     const ghostLabel = document.getElementById("ghost-label");
+    const alienGlyph = document.querySelector(".alien-glyph .emoji-tint");
+    const gearGlyph = document.querySelector(".gear-icon .emoji-tint");
+    const emojiMidDivider = document.querySelector(".emoji-mid-divider");
     const YOU_DUMMY_TEXT = "It's YOU dummy!";
     let ghostsOnlineCount = null;
+
+    const updateEmojiMidDivider = () => {
+      if (!window.matchMedia("(max-width: 600px)").matches) return;
+
+      const barRect = barContent.getBoundingClientRect();
+      const alienRect = alienGlyph.getBoundingClientRect();
+      const gearRect = gearGlyph.getBoundingClientRect();
+      const alienCenter = alienRect.left + alienRect.width / 2;
+      const gearCenter = gearRect.left + gearRect.width / 2;
+      const dividerLeft = (alienCenter + gearCenter) / 2 - barRect.left;
+
+      emojiMidDivider.style.setProperty("--emoji-mid-divider-left", `${dividerLeft}px`);
+    };
+
+    const scheduleEmojiMidDividerUpdate = () => {
+      window.requestAnimationFrame(updateEmojiMidDivider);
+    };
 
     const updateClock = () => {
       const now = new Date();
@@ -284,6 +463,7 @@
       ghostCount.textContent = countText;
       ghostLabel.textContent = suffixText;
       ghostCounter.setAttribute("aria-label", label);
+      scheduleEmojiMidDividerUpdate();
     };
 
     const restoreGhostCounterLabel = () => {
@@ -338,8 +518,10 @@
 
     ghostCounter.addEventListener("mouseenter", showYouDummyLabel);
     ghostCounter.addEventListener("mouseleave", restoreGhostCounterLabel);
+    window.addEventListener("resize", scheduleEmojiMidDividerUpdate);
 
     setGhostsOnline(null);
+    scheduleEmojiMidDividerUpdate();
     connectGhostCounterSocket();
   </script>
 </body>
