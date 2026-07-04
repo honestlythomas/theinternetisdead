@@ -2275,34 +2275,38 @@
       .gear-icon .emoji-tint::after {
         content: none;
       }
+
     }
 
 
-    /* Mobile backgrounds mirror the desktop top-bar controls. */
+    /* Mobile checkerboard background layout with fully opaque cells. */
     @media (max-width: 600px) {
       .bar-content {
-        --mobile-bg-purple: rgb(59 0 102 / 100%);
-        --mobile-bg-black: rgb(0 0 0 / 100%);
+        --mobile-bg-purple: rgb(30 0 51 / 100%);
+        --mobile-bg-green: rgb(0 128 0 / 60%);
       }
 
-      .skull-icon {
+      /* Top row: purple, green, purple */
+      .skull-icon,
+      .clock-text {
         background-color: var(--mobile-bg-purple) !important;
       }
 
-      .site-link,
-      .clock-text {
-        background-color: var(--mobile-bg-black) !important;
+      .site-link {
+        background-color: var(--mobile-bg-green) !important;
       }
 
+      /* Middle row: green, purple, green */
       .recycle-icon,
       .gear-icon {
-        background-color: var(--mobile-bg-purple) !important;
+        background-color: var(--mobile-bg-green) !important;
       }
 
       .ghost-counter {
-        background-color: var(--mobile-bg-black) !important;
+        background-color: var(--mobile-bg-purple) !important;
       }
 
+      /* Bottom row: purple, green, purple, green, purple */
       .spiral-icon,
       .mobile-ghost-icon {
         background-color: var(--mobile-bg-purple) !important;
@@ -2314,12 +2318,28 @@
 
       .index-nav-left,
       .index-nav-right {
-        background-color: var(--mobile-bg-black) !important;
+        background-color: var(--mobile-bg-green) !important;
       }
 
       .index-link-panel,
       .index-link-stack {
         background-color: var(--mobile-bg-purple) !important;
+      }
+
+      .clock-text::before,
+      .emoji-icon::before,
+      .site-link::before,
+      .index-link-stack::before,
+      .index-nav-button::before,
+      .index-nav-left::before,
+      .index-nav-right::before,
+      .ghost-counter::before,
+      .mobile-ghost-icon::before {
+        animation:
+          header-texture-slide-smooth 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite running,
+          header-texture-thickness-pulse 1.6s ease-in-out infinite running !important;
+        animation-delay: 0s, 0s !important;
+        animation-direction: normal, normal !important;
       }
     }
 
