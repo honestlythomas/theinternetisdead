@@ -83,16 +83,28 @@
 
     .static-viewport-image {
       --static-image-inset: calc((100vh - 53px) * 0.025);
+      --static-image-left-offset: 0px;
+      --static-image-right-offset: 0px;
       position: fixed;
-      left: var(--static-image-inset);
+      left: calc(var(--static-image-inset) + var(--static-image-left-offset));
       top: calc(53px + var(--static-image-inset));
       z-index: 0;
-      width: calc(100vw - (var(--static-image-inset) * 2));
+      width: calc(100vw - (var(--static-image-inset) * 2) - var(--static-image-left-offset) - var(--static-image-right-offset));
       height: calc((100vh - 53px) * 0.95);
       outline: 3px solid lime;
       box-sizing: border-box;
       object-fit: fill;
       pointer-events: none;
+    }
+
+    @media (min-width: 601px) {
+      body.has-left-sidebar-open .static-viewport-image {
+        --static-image-left-offset: var(--grave-sidebar-width, 25vw);
+      }
+
+      body.has-right-sidebar-open .static-viewport-image {
+        --static-image-right-offset: var(--grave-sidebar-width, 25vw);
+      }
     }
 
     .bar-content {
@@ -678,6 +690,12 @@
         width: 100vw;
         height: calc(100vh - 153px);
         border-right: 0;
+      }
+
+      .grave-sidebar-right {
+        left: 0;
+        right: auto;
+        border-left: 0;
       }
 
       .static-viewport-image {
@@ -2602,6 +2620,8 @@
       }
 
       .ghost-counter .ghost-text {
+        position: relative !important;
+        z-index: 3 !important;
         flex: 0 0 auto !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -2635,6 +2655,8 @@
       }
 
       .ghost-counter .alien-glyph {
+        position: relative !important;
+        z-index: 1 !important;
         flex: 0 0 auto !important;
         width: auto !important;
         min-width: 0 !important;
@@ -2644,6 +2666,10 @@
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
+      }
+
+      .ghost-counter.is-you-dummy .ghost-text {
+        z-index: 4 !important;
       }
     }
 
@@ -2967,6 +2993,7 @@
 
       if (!desktopSidebarQuery.matches) {
         sidebars.forEach((sidebar) => sidebar.style.removeProperty("--grave-sidebar-width"));
+        document.body.style.removeProperty("--grave-sidebar-width");
         return;
       }
 
@@ -2976,7 +3003,13 @@
         sidebars.forEach((sidebar) => {
           sidebar.style.setProperty("--grave-sidebar-width", `${leftColumnWidth / 2}px`);
         });
+        document.body.style.setProperty("--grave-sidebar-width", `${leftColumnWidth / 2}px`);
       }
+    };
+
+    const syncSidebarBodyState = () => {
+      document.body.classList.toggle("has-left-sidebar-open", graveSidebar?.classList.contains("is-open"));
+      document.body.classList.toggle("has-right-sidebar-open", gearSidebar?.classList.contains("is-open"));
     };
 
     const setSidebarOpen = (sidebar, button, isOpen) => {
@@ -2986,11 +3019,19 @@
       sidebar.classList.toggle("is-open", isOpen);
       sidebar.setAttribute("aria-hidden", isOpen ? "false" : "true");
       button.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      syncSidebarBodyState();
     };
 
     const toggleSidebar = (sidebar, button) => {
       if (!sidebar) return;
-      setSidebarOpen(sidebar, button, !sidebar.classList.contains("is-open"));
+      const shouldOpen = !sidebar.classList.contains("is-open");
+
+      if (shouldOpen) {
+        if (sidebar !== graveSidebar) setSidebarOpen(graveSidebar, skullButton, false);
+        if (sidebar !== gearSidebar) setSidebarOpen(gearSidebar, gearButton, false);
+      }
+
+      setSidebarOpen(sidebar, button, shouldOpen);
     };
 
     const toggleGraveSidebar = () => {
