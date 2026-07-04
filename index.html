@@ -295,6 +295,26 @@
       cursor: pointer;
     }
 
+    .timezone-panel {
+      gap: 8px;
+    }
+
+    .timezone-select {
+      width: min(82%, 170px);
+      min-width: 0;
+      height: 28px;
+      border: 0;
+      outline: 3px solid lime;
+      background: black;
+      color: white;
+      font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      text-align: center;
+      cursor: pointer;
+    }
+
     @keyframes page-color-filter-hueshift {
       from {
         filter: hue-rotate(0deg);
@@ -3252,6 +3272,22 @@
     <button class="gear-sidebar-panel save-settings-button" id="remember-settings-toggle" type="button" aria-pressed="false">
       <span class="texture-content"><span id="remember-settings-label">Save Settings</span><span class="save-settings-check" id="remember-settings-check" aria-hidden="true"></span></span>
     </button>
+    <div class="gear-sidebar-panel timezone-panel" role="group" aria-label="Clock timezone">
+      <select class="timezone-select" id="timezone-select" aria-label="Clock timezone">
+        <option value="">Local Time</option>
+        <option value="America/New_York">Eastern</option>
+        <option value="America/Chicago">Central</option>
+        <option value="America/Denver">Mountain</option>
+        <option value="America/Los_Angeles">Pacific</option>
+        <option value="America/Anchorage">Alaska</option>
+        <option value="Pacific/Honolulu">Hawaii</option>
+        <option value="UTC">UTC</option>
+        <option value="Europe/London">London</option>
+        <option value="Europe/Paris">Paris</option>
+        <option value="Asia/Tokyo">Tokyo</option>
+        <option value="Australia/Sydney">Sydney</option>
+      </select>
+    </div>
     <button class="gear-sidebar-panel" id="audio-toggle-button" type="button" aria-pressed="false">
       <span class="texture-content"><span id="audio-toggle-label">Mute</span><span class="save-settings-check" id="audio-toggle-check" aria-hidden="true"></span></span>
     </button>
@@ -3302,6 +3338,7 @@
     const gearButton = document.querySelector(".gear-icon");
     const audioToggleButton = document.getElementById("audio-toggle-button");
     const audioToggleLabel = document.getElementById("audio-toggle-label");
+    const timezoneSelect = document.getElementById("timezone-select");
     const pageColorFilter = document.getElementById("page-color-filter");
     const colorFilterPanel = document.getElementById("color-filter-panel");
     const colorFilterToggle = document.getElementById("color-filter-toggle");
@@ -3388,6 +3425,7 @@
       colorFilterOpen: Boolean(colorFilterPanel?.classList.contains("is-open")),
       color: colorFilterPicker?.value || "#ff00ff",
       blendMode: blendModeSelect?.value || "color",
+      timezone: timezoneSelect?.value || "",
       hueshifting: Boolean(hueshiftToggle?.checked),
       inverted: Boolean(invertToggle?.checked)
     });
@@ -3454,20 +3492,27 @@
         clearCustomizationSettings();
       }
     });
+    timezoneSelect?.addEventListener("change", () => {
+      updateClock();
+      saveCustomizationSettings();
+    });
 
     const updateClock = () => {
       const now = new Date();
+      const selectedTimeZone = timezoneSelect?.value || undefined;
 
       clockTime.textContent = now.toLocaleTimeString([], {
         hour: "numeric",
         minute: "2-digit",
+        timeZone: selectedTimeZone,
         hour12: true
       }).replace(/\s/g, "");
 
       clockDate.textContent = now.toLocaleDateString([], {
         month: "short",
         day: "numeric",
-        year: "numeric"
+        year: "numeric",
+        timeZone: selectedTimeZone
       });
     };
 
@@ -3697,8 +3742,10 @@
       setRememberSettingsEnabled(true);
       if (colorFilterPicker && typeof settings.color === "string") colorFilterPicker.value = settings.color;
       if (blendModeSelect && typeof settings.blendMode === "string") blendModeSelect.value = settings.blendMode;
+      if (timezoneSelect && typeof settings.timezone === "string") timezoneSelect.value = settings.timezone;
       if (hueshiftToggle) hueshiftToggle.checked = Boolean(settings.hueshifting);
       if (invertToggle) invertToggle.checked = Boolean(settings.inverted);
+      updateClock();
 
       const isColorFilterOpen = Boolean(settings.colorFilterOpen);
       colorFilterPanel?.classList.toggle("is-open", isColorFilterOpen);
