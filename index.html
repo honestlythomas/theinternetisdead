@@ -2601,6 +2601,266 @@
       }
     }
 
+
+    /* Skull hover breathe: scale only the glyph, never the 50px top-bar square. */
+    @keyframes skull-hover-breathe-scale {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.33);
+      }
+    }
+
+    .skull-icon .emoji-tint {
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    .skull-icon:hover .emoji-tint {
+      animation: skull-hover-breathe-scale 1800ms ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .skull-icon:hover .emoji-tint {
+        animation: none;
+        transform: scale(1.33);
+      }
+    }
+
+
+
+    /* Shared 33% slow hover breathe for top-bar glyph/text content only.
+       Transforms the inner visual content, never the layout boxes. */
+    @keyframes topbar-hover-breathe-scale {
+      0%,
+      100% {
+        transform: var(--topbar-breathe-base-transform, none) scale(1);
+      }
+
+      50% {
+        transform: var(--topbar-breathe-base-transform, none) scale(1.33);
+      }
+    }
+
+    .site-link .texture-content {
+      --topbar-breathe-base-transform: scale(1.16, 1.24);
+    }
+
+    .ghost-label {
+      --topbar-breathe-base-transform: scale(1.25);
+    }
+
+    @media (max-width: 600px) {
+      .site-link .texture-content,
+      .ghost-label {
+        --topbar-breathe-base-transform: none;
+      }
+    }
+
+    .site-link .texture-content,
+    .spiral-icon .emoji-tint,
+    .index-nav-button .index-bracket,
+    .index-link .texture-content,
+    .ghost-glyph .emoji-tint,
+    .ghost-icon .emoji-tint,
+    .ghost-count,
+    .ghost-label,
+    .alien-glyph .emoji-tint,
+    .clock-text .clock-time,
+    .clock-text .clock-date,
+    .gear-icon .emoji-tint {
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .site-link:hover .texture-content,
+    .spiral-icon:hover .emoji-tint,
+    .index-nav-button:hover .index-bracket,
+    .index-link:hover .texture-content,
+    .ghost-glyph:hover .emoji-tint,
+    .ghost-icon:hover .emoji-tint,
+    .ghost-count:hover,
+    .ghost-label:hover,
+    .alien-glyph:hover .emoji-tint,
+    .clock-text:hover .clock-time,
+    .clock-text:hover .clock-date,
+    .gear-icon:hover .emoji-tint {
+      animation: topbar-hover-breathe-scale 1800ms ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .site-link:hover .texture-content,
+      .spiral-icon:hover .emoji-tint,
+      .index-nav-button:hover .index-bracket,
+      .index-link:hover .texture-content,
+      .ghost-glyph:hover .emoji-tint,
+      .ghost-icon:hover .emoji-tint,
+      .ghost-count:hover,
+      .ghost-label:hover,
+      .alien-glyph:hover .emoji-tint,
+      .clock-text:hover .clock-time,
+      .clock-text:hover .clock-date,
+      .gear-icon:hover .emoji-tint {
+        animation: none;
+        transform: var(--topbar-breathe-base-transform, none) scale(1.33);
+      }
+    }
+
+    /* Fix hover breathe on all requested top-bar internals: default transform must be valid.
+       `none scale(...)` is invalid CSS, so elements without a base transform were silently ignoring the animation.
+       Humanity's finest technology: one bad word makes the whole spell fail. */
+    .site-link .texture-content,
+    .spiral-icon .emoji-tint,
+    .index-nav-button .index-bracket,
+    .index-link .texture-content,
+    .ghost-glyph .emoji-tint,
+    .ghost-icon .emoji-tint,
+    .ghost-count,
+    .ghost-label,
+    .alien-glyph .emoji-tint,
+    .clock-text .clock-time,
+    .clock-text .clock-date,
+    .gear-icon .emoji-tint {
+      --topbar-breathe-base-transform: translateZ(0);
+      display: inline-block;
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .site-link .texture-content {
+      --topbar-breathe-base-transform: scale(1.16, 1.24);
+    }
+
+    .ghost-label {
+      --topbar-breathe-base-transform: scale(1.25);
+    }
+
+    @media (max-width: 600px) {
+      .site-link .texture-content,
+      .ghost-label {
+        --topbar-breathe-base-transform: translateZ(0);
+      }
+    }
+
+    @keyframes topbar-hover-breathe-scale-fixed {
+      0%,
+      100% {
+        transform: var(--topbar-breathe-base-transform) scale(1);
+      }
+
+      50% {
+        transform: var(--topbar-breathe-base-transform) scale(1.33);
+      }
+    }
+
+    .site-link:hover .texture-content,
+    .spiral-icon:hover .emoji-tint,
+    .index-nav-button:hover .index-bracket,
+    .index-link:hover .texture-content,
+    .ghost-glyph:hover .emoji-tint,
+    .ghost-icon:hover .emoji-tint,
+    .ghost-count:hover,
+    .ghost-label:hover,
+    .alien-glyph:hover .emoji-tint,
+    .clock-text:hover .clock-time,
+    .clock-text:hover .clock-date,
+    .gear-icon:hover .emoji-tint {
+      animation: topbar-hover-breathe-scale-fixed 1800ms ease-in-out infinite !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .site-link:hover .texture-content,
+      .spiral-icon:hover .emoji-tint,
+      .index-nav-button:hover .index-bracket,
+      .index-link:hover .texture-content,
+      .ghost-glyph:hover .emoji-tint,
+      .ghost-icon:hover .emoji-tint,
+      .ghost-count:hover,
+      .ghost-label:hover,
+      .alien-glyph:hover .emoji-tint,
+      .clock-text:hover .clock-time,
+      .clock-text:hover .clock-date,
+      .gear-icon:hover .emoji-tint {
+        animation: none !important;
+        transform: var(--topbar-breathe-base-transform) scale(1.33) !important;
+      }
+    }
+
+
+    /* Return arrow glyphs to their original vertical seat after hover-breathe made them sit too high.
+       Only the arrow glyph moves; the nav button/grid stays untouched. */
+    .index-nav-button .index-bracket {
+      --topbar-breathe-base-transform: translate3d(0, 0.11em, 0);
+      position: relative;
+      top: 0.04em;
+    }
+
+    @media (max-width: 600px) {
+      .index-nav-button .index-bracket {
+        --topbar-breathe-base-transform: translate3d(0, 0.08em, 0);
+        top: 0.03em;
+      }
+    }
+
+
+    /* Give index.html enough horizontal room for the 33% hover-breathe scale.
+       This widens the center label cell instead of letting the scaled text clip against the dividers. */
+    @media (min-width: 601px) {
+      .index-link-slot {
+        overflow: visible;
+        grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
+      }
+
+      .index-link-panel,
+      .index-link-stack,
+      .bar-content .index-link,
+      .bar-content .index-link .texture-content {
+        overflow: visible;
+        text-overflow: clip;
+      }
+
+      .index-link-stack {
+        padding-left: 32px;
+        padding-right: 32px;
+      }
+
+      .bar-content .index-link .texture-content {
+        max-width: none;
+        white-space: nowrap;
+      }
+    }
+
+
+    /* Align nav arrows with index.html: same visual size and same center line. */
+    .index-nav-button {
+      font-size: inherit !important;
+      line-height: 1 !important;
+      align-items: center !important;
+    }
+
+    .index-nav-button .index-bracket {
+      font-size: 2em !important;
+      line-height: 1 !important;
+      height: auto !important;
+      min-height: 0 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      position: relative !important;
+      top: 0 !important;
+      --topbar-breathe-base-transform: translateZ(0) !important;
+    }
+
+    .index-link-stack,
+    .bar-content .index-link,
+    .bar-content .index-link .texture-content {
+      line-height: 1 !important;
+      align-items: center !important;
+    }
+
 </style>
 </head>
 
