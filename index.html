@@ -819,6 +819,8 @@
     let siteSpeechActive = false;
     let modemSpeechTimer = null;
     let modemSpeechActive = false;
+    const TTS_VOLUME_SCALE = 0.5;
+    const MODEM_EFFECT_VOLUME_SCALE = 0.33;
 
     const refreshDavidVoice = () => {
       if (!window.speechSynthesis) return;
@@ -867,7 +869,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = options.rate || 1;
       utterance.pitch = options.pitch || 1;
-      utterance.volume = options.volume || 1;
+      utterance.volume = (options.volume || 1) * TTS_VOLUME_SCALE;
 
       window.speechSynthesis.speak(utterance);
     };
@@ -882,7 +884,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1;
       utterance.pitch = spiralRepeatCount % 2 === 0 ? 1.25 : 0.75;
-      utterance.volume = 1;
+      utterance.volume = TTS_VOLUME_SCALE;
 
       window.speechSynthesis.speak(utterance);
       spiralRepeatCount += 1;
@@ -897,7 +899,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1;
       utterance.pitch = 1;
-      utterance.volume = 1;
+      utterance.volume = TTS_VOLUME_SCALE;
 
       window.speechSynthesis.speak(utterance);
       skullRepeatTimer = window.setTimeout(speakSkullLoop, 500);
@@ -912,7 +914,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1.15;
       utterance.pitch = 0.78;
-      utterance.volume = 0.88;
+      utterance.volume = 0.88 * TTS_VOLUME_SCALE;
       utterance.addEventListener("end", () => {
         if (!siteSpeechActive || !desktopHeaderAudioQuery.matches) return;
         const elapsed = performance.now() - startedAt;
@@ -932,7 +934,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1.15;
       utterance.pitch = 0.78;
-      utterance.volume = 0.88;
+      utterance.volume = 0.88 * TTS_VOLUME_SCALE;
       utterance.addEventListener("end", () => {
         if (!modemSpeechActive || !desktopHeaderAudioQuery.matches) return;
         const elapsed = performance.now() - startedAt;
@@ -1016,7 +1018,7 @@
       const carrierB = modemContext.createOscillator();
       const carrierGain = modemContext.createGain();
 
-      masterGain.gain.value = 0.16;
+      masterGain.gain.value = 0.16 * MODEM_EFFECT_VOLUME_SCALE;
       noiseGainNode.gain.value = 0.24;
       highPass.type = "highpass";
       highPass.frequency.value = 650;
