@@ -1,0 +1,49 @@
+{
+  "messages": [
+    {
+      "id": "ghost_connection",
+      "text": "Ghost Connection",
+      "role": "start"
+    },
+    {
+      "id": "boo",
+      "text": "Boo!",
+      "role": "random"
+    },
+    {
+      "id": "two_spooky_four_you",
+      "text": "2 spooky 4 you",
+      "role": "random"
+    },
+    {
+      "id": "hello_world",
+      "text": "Hello world!",
+      "role": "random"
+    },
+    {
+      "id": "alas_poor_web",
+      "text": "Alas poor web.",
+      "role": "random"
+    },
+    {
+      "id": "goodbye_internet",
+      "text": "Goodbye internet!",
+      "role": "random"
+    },
+    {
+      "id": "welcome_to_die",
+      "text": "Welcome to die!",
+      "role": "random"
+    },
+    {
+      "id": "dont_come_here_at_3am",
+      "text": "Don't come here at 3am",
+      "role": "random"
+    },
+    {
+      "id": "grumble_grumble",
+      "text": "grumble grumble",
+      "role": "random"
+    }
+  ]
+}

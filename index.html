@@ -54,7 +54,28 @@
       justify-content: flex-start;
     }
 
+    .grave-sidebar {
+      position: fixed;
+      left: 0;
+      top: 53px;
+      z-index: 1;
+      width: var(--grave-sidebar-width, 25vw);
+      height: calc(100vh - 53px);
+      display: none;
+      background: rgb(59 0 102 / 50%);
+      border-right: 3px solid lime;
+      box-sizing: border-box;
+      pointer-events: auto;
+    }
+
+    .grave-sidebar.is-open {
+      display: block;
+    }
+
     .bar-content {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
       border: 0;
       padding: 0;
       width: 100%;
@@ -73,6 +94,50 @@
       box-sizing: border-box;
     }
 
+
+    @keyframes diagonal-header-texture-scan {
+      from {
+        background-position: 0 0;
+      }
+
+      to {
+        background-position: 24px 0;
+      }
+    }
+
+    .bar-content {
+      --header-diagonal-texture: repeating-linear-gradient(
+        135deg,
+        rgb(255 0 255 / 50%) 0 3px,
+        transparent 3px 8px
+      );
+      --header-texture-size: 12px 12px;
+      --header-texture-animation: diagonal-header-texture-scan 2s linear infinite;
+    }
+
+    .bar-content::after {
+      content: none;
+    }
+
+    .clock-text,
+    .emoji-icon,
+    .skull-icon,
+    .spiral-icon,
+    .recycle-icon,
+    .gear-icon,
+    .alien-icon,
+    .site-link,
+    .index-link-stack,
+    .index-nav-button,
+    .ghost-counter,
+    .mobile-ghost-icon {
+      background-size: var(--header-texture-size);
+      background-repeat: repeat;
+      background-position: 0 0;
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
+    }
+
     .bar-column {
       min-width: 0;
       height: 50px;
@@ -82,7 +147,7 @@
 
     .bar-column-left {
       display: grid;
-      grid-template-columns: 50px minmax(0, 1fr) 1px 50px;
+      grid-template-columns: 50px minmax(0, 1fr) 3px 50px;
     }
 
     .bar-column-center {
@@ -107,10 +172,13 @@
       align-items: center;
       justify-content: center;
       margin-right: 0;
-      border-left: 1px solid lime;
-      border-right: 1px solid lime;
+      border-left: 3px solid lime;
+      border-right: 3px solid lime;
       box-sizing: border-box;
-      background: rgb(0 0 0 / 65%);
+      background-color: rgb(0 0 0 / 65%);
+      background-image: var(--header-diagonal-texture);
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
       color: lime;
       font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
       font-weight: 900;
@@ -131,7 +199,10 @@
       flex: 0 0 50px;
       width: 50px;
       height: 50px;
-      background: rgb(0 0 0 / 65%);
+      background-color: rgb(0 0 0 / 65%);
+      background-image: var(--header-diagonal-texture);
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
       color: white;
 
       display: flex;
@@ -174,15 +245,21 @@
     }
 
     .skull-icon {
-      background: rgb(59 0 102 / 65%);
-      border-right: 1px solid lime;
+      background-color: rgb(59 0 102 / 65%);
+      background-image: var(--header-diagonal-texture);
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
+      border-right: 3px solid lime;
     }
 
     .skull-icon,
     .spiral-icon,
     .recycle-icon,
     .gear-icon {
-      background: rgb(59 0 102 / 65%);
+      background-color: rgb(59 0 102 / 65%);
+      background-image: var(--header-diagonal-texture);
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
     }
 
     .alien-icon {
@@ -190,8 +267,11 @@
       min-width: max-content;
       padding-left: 0;
       gap: 0;
-      border-left: 1px solid lime;
-      background: rgb(0 0 0 / 65%);
+      border-left: 3px solid lime;
+      background-color: rgb(0 0 0 / 65%);
+      background-image: var(--header-diagonal-texture);
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
       color: lime;
       font-size: 15px;
       font-weight: 700;
@@ -238,10 +318,12 @@
     .ghost-text {
       width: 15ch;
       min-width: 15ch;
+      padding-left: 0.45ch;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       white-space: nowrap;
+      box-sizing: border-box;
     }
 
     .ghost-counter.is-you-dummy .ghost-count,
@@ -272,7 +354,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgb(0 0 0 / 65%);
+      background-color: rgb(0 0 0 / 65%);
+      background-image: var(--header-diagonal-texture);
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
       color: lime;
       font-style: italic;
       font-weight: 700;
@@ -284,16 +369,16 @@
     }
 
     .bar-content .site-link.home-link {
-      color: lime;
-    }
-
-    .bar-content .site-link.home-link:hover {
       color: black;
     }
 
+    .bar-content .site-link.home-link:hover {
+      color: lime;
+    }
+
     .site-divider {
-      flex: 0 0 1px;
-      width: 1px;
+      flex: 0 0 3px;
+      width: 3px;
       height: 50px;
       background: lime;
     }
@@ -302,7 +387,7 @@
       min-width: 0;
       width: 100%;
       display: grid;
-      grid-template-columns: 72px minmax(0, 1fr) 72px;
+      grid-template-columns: minmax(72px, 1fr) max-content minmax(72px, 1fr);
       align-items: center;
       overflow: hidden;
       background: transparent;
@@ -324,23 +409,20 @@
       min-width: 0;
       padding: 0 14px;
       line-height: 1;
-      background: rgb(59 0 102 / 65%);
+      background-color: rgb(59 0 102 / 65%);
+      background-image: var(--header-diagonal-texture);
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
     }
 
     .index-link-panel {
       height: 50px;
-      width: 100%;
+      width: max-content;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       min-width: 0;
-      background:
-        linear-gradient(
-          to right,
-          rgb(0 0 0 / 65%) 0 calc(50% - 61px),
-          transparent calc(50% - 61px) calc(50% + 61px),
-          rgb(0 0 0 / 65%) calc(50% + 61px) 100%
-        );
+      background: transparent;
     }
 
     .index-link {
@@ -349,26 +431,53 @@
       white-space: nowrap;
     }
 
-    .index-bracket {
-      color: black;
+    .index-nav-button {
+      color: lime;
       font-size: 1.1em;
       line-height: 1;
-      width: 72px;
       height: 50px;
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35em;
+      background-color: rgb(0 0 0 / 65%);
+      background-image: var(--header-diagonal-texture);
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+
+    .index-nav-left,
+    .index-nav-right {
+      justify-self: stretch;
+    }
+
+    .index-bracket {
+      font-size: 2em;
+    }
+
+    .index-bracket,
+    .index-nav-label {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgb(0 0 0 / 65%);
+      min-width: 0;
+      height: 50px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .recycle-icon {
       color: lime;
-      border-left: 1px solid lime;
+      border-left: 3px solid lime;
     }
 
     .spiral-icon {
       color: lime;
-      border-right: 1px solid lime;
+      border-right: 3px solid lime;
     }
 
     .spiral-icon::after {
@@ -394,7 +503,7 @@
     .skull-icon,
     .site-link,
     .spiral-icon,
-    .index-bracket,
+    .index-nav-button,
     .bar-content .index-link,
     .recycle-icon,
     .ghost-glyph,
@@ -406,7 +515,7 @@
 
     .site-link,
     .bar-content .index-link,
-    .index-bracket,
+    .index-nav-button,
     .ghost-count,
     .ghost-label,
     .clock-text,
@@ -435,8 +544,7 @@
     .skull-icon:hover .emoji-tint,
     .site-link:hover,
     .bar-content .index-link:hover,
-    .index-bracket:hover,
-    .index-link-slot:hover .index-bracket,
+    .index-nav-button:hover,
     .spiral-icon:hover .emoji-tint,
     .recycle-icon:hover .emoji-tint,
     .ghost-glyph:hover .emoji-tint,
@@ -467,6 +575,61 @@
       content: none;
     }
 
+
+
+    /* Stable culled diagonal texture: no pseudo overlay, no z-index layer fight. */
+    @keyframes diagonal-header-texture-scan-stable {
+      from {
+        background-position: 0 0;
+      }
+
+      to {
+        background-position: 12px 0;
+      }
+    }
+
+    .bar-content {
+      --header-diagonal-texture: repeating-linear-gradient(
+        135deg,
+        rgb(255 0 255 / 50%) 0 3px,
+        transparent 3px 8px
+      );
+      --header-texture-size: 12px 12px;
+      --header-texture-animation: diagonal-header-texture-scan-stable 2s linear infinite;
+      isolation: auto;
+    }
+
+    .bar-content::after,
+    .bar-content::before {
+      content: none;
+    }
+
+    .clock-text,
+    .emoji-icon,
+    .site-link,
+    .index-link-stack,
+    .index-nav-button,
+    .ghost-counter,
+    .mobile-ghost-icon {
+      background-image: var(--header-diagonal-texture);
+      background-size: var(--header-texture-size);
+      background-repeat: repeat;
+      background-position: 0 0;
+      background-attachment: scroll;
+      animation: var(--header-texture-animation);
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      will-change: background-position;
+    }
+
+    .bar-content > *,
+    .bar-column,
+    .bar-column > *,
+    .index-link-slot > *,
+    .index-link-panel > *,
+    .ghost-counter > * {
+      z-index: auto;
+    }
     @media (max-width: 600px) {
       .background-frame {
         top: 0;
@@ -475,6 +638,14 @@
 
       .bottom-bar {
         height: 153px;
+      }
+
+
+      .grave-sidebar {
+        top: 153px;
+        width: 100vw;
+        height: calc(100vh - 153px);
+        border-right: 0;
       }
 
       .bar-content {
@@ -495,17 +666,48 @@
         display: contents;
       }
 
+
+      .bar-content {
+        background: transparent;
+      }
+
+      .skull-icon,
+      .site-link,
+      .clock-text,
+      .recycle-icon,
+      .ghost-counter,
+      .gear-icon,
+      .spiral-icon,
+      .index-link-slot,
+      .mobile-ghost-icon {
+        box-sizing: border-box;
+      }
+
+      .skull-icon,
+      .site-link,
+      .clock-text,
+      .recycle-icon,
+      .ghost-counter,
+      .gear-icon {
+        border-bottom: 3px solid lime;
+      }
+
+      .skull-icon,
+      .recycle-icon,
+      .spiral-icon,
+      .site-link,
+      .ghost-counter,
+      .index-link-slot {
+        border-right: 3px solid lime;
+      }
+
+      .bar-content::before,
+      .bar-content::after {
+        content: none;
+      }
+
       .bar-content::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-        background:
-          linear-gradient(lime, lime) 0 50px / 100% 1px no-repeat,
-          linear-gradient(lime, lime) 0 100px / 100% 1px no-repeat,
-          linear-gradient(lime, lime) 50px 0 / 1px 150px no-repeat,
-          linear-gradient(lime, lime) calc(100% - 88px) 0 / 1px 150px no-repeat;
-        pointer-events: none;
+        content: none;
       }
 
       .bar-content::after {
@@ -514,7 +716,6 @@
 
       .skull-icon {
         grid-area: skull;
-        border-right: 0;
       }
 
       .site-link {
@@ -548,10 +749,12 @@
         grid-area: clock;
         min-width: 0;
         width: 88px;
-        background: rgb(59 0 102 / 65%);
+        background-color: rgb(59 0 102 / 65%);
+        background-image: var(--header-diagonal-texture);
+        background-attachment: scroll;
+        animation: var(--header-texture-animation);
         color: lime;
         border-left: 0;
-        border-right: 0;
       }
 
       .clock-time,
@@ -572,7 +775,7 @@
       .index-link-slot {
         grid-area: index;
         grid-column: auto;
-        grid-template-columns: 64px minmax(0, 1fr) 64px;
+        grid-template-columns: minmax(64px, 1fr) max-content minmax(64px, 1fr);
         min-width: 0;
         height: 50px;
         color: lime;
@@ -584,9 +787,13 @@
         grid-column: auto;
       }
 
-      .index-bracket {
-        width: 64px;
+      .index-nav-button {
         font-size: 0.95em;
+      }
+
+      .index-nav-left,
+      .index-nav-right {
+        justify-self: stretch;
       }
 
       .ghost-counter {
@@ -595,7 +802,10 @@
         min-width: 0;
         overflow: hidden;
         border-left: 0;
-        background: rgb(59 0 102 / 65%);
+        background-color: rgb(59 0 102 / 65%);
+        background-image: var(--header-diagonal-texture);
+        background-attachment: scroll;
+        animation: var(--header-texture-animation);
         color: lime;
         font-size: 15px;
         font-weight: 700;
@@ -607,8 +817,11 @@
 
       .recycle-icon {
         grid-area: recycle;
-        background: rgb(0 0 0 / 65%);
-        border: 0;
+        background-color: rgb(0 0 0 / 65%);
+        background-image: var(--header-diagonal-texture);
+        background-attachment: scroll;
+        animation: var(--header-texture-animation);
+        border-left: 0;
       }
 
       .recycle-icon::after {
@@ -618,8 +831,6 @@
       .spiral-icon {
         grid-area: spiral;
         display: flex;
-        border-left: 0;
-        border-right: 0;
       }
 
       .spiral-icon::after {
@@ -630,8 +841,10 @@
         grid-area: gear;
         width: auto;
         flex-basis: auto;
-        background: rgb(0 0 0 / 65%);
-        border-left: 0;
+        background-color: rgb(0 0 0 / 65%);
+        background-image: var(--header-diagonal-texture);
+        background-attachment: scroll;
+        animation: var(--header-texture-animation);
         justify-self: stretch;
       }
 
@@ -658,6 +871,7 @@
         min-width: 0;
         height: 50px;
         flex: 0 1 15ch;
+        padding-left: 0;
         color: lime;
         font-size: 15px;
         font-weight: 700;
@@ -674,10 +888,355 @@
         display: flex;
         width: auto;
         flex-basis: auto;
-        background: rgb(59 0 102 / 65%);
+        background-color: rgb(59 0 102 / 65%);
+        background-image: var(--header-diagonal-texture);
+        background-attachment: scroll;
+        animation: var(--header-texture-animation);
       }
     }
-  </style>
+
+
+    /* Smooth culled diagonal texture: transform-based, paused until top-bar hover. */
+    @property --header-stripe-thickness {
+      syntax: "<length>";
+      inherits: false;
+      initial-value: 3px;
+    }
+
+    @keyframes header-texture-slide-smooth {
+      0% {
+        transform: translate3d(-24px, 0, 0) skewX(0deg) scaleY(1);
+      }
+
+      12.5% {
+        transform: translate3d(-21px, -0.65px, 0) skewX(-0.55deg) scaleY(1.018);
+      }
+
+      25% {
+        transform: translate3d(-18px, -1.05px, 0) skewX(-1deg) scaleY(1.045);
+      }
+
+      37.5% {
+        transform: translate3d(-15px, -0.45px, 0) skewX(-0.45deg) scaleY(1.02);
+      }
+
+      50% {
+        transform: translate3d(-12px, 0.85px, 0) skewX(0.75deg) scaleY(0.965);
+      }
+
+      62.5% {
+        transform: translate3d(-9px, 1.15px, 0) skewX(1.1deg) scaleY(0.94);
+      }
+
+      75% {
+        transform: translate3d(-6px, 0.35px, 0) skewX(0.5deg) scaleY(0.975);
+      }
+
+      87.5% {
+        transform: translate3d(-3px, -0.5px, 0) skewX(-0.35deg) scaleY(1.012);
+      }
+
+      100% {
+        transform: translate3d(0, 0, 0) skewX(0deg) scaleY(1);
+      }
+    }
+
+    @keyframes header-texture-thickness-pulse {
+      0%,
+      100% {
+        --header-stripe-thickness: 3px;
+      }
+
+      25% {
+        --header-stripe-thickness: 2.35px;
+      }
+
+      50% {
+        --header-stripe-thickness: 1px;
+      }
+
+      75% {
+        --header-stripe-thickness: 2.45px;
+      }
+    }
+
+    .clock-text,
+    .emoji-icon,
+    .site-link,
+    .index-link-stack,
+    .index-nav-button,
+    .ghost-counter,
+    .mobile-ghost-icon {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      background-image: none !important;
+      background-repeat: no-repeat !important;
+      background-position: 0 0 !important;
+      animation: none !important;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      contain: paint;
+    }
+
+    .clock-text::before,
+    .emoji-icon::before,
+    .site-link::before,
+    .index-link-stack::before,
+    .index-nav-button::before,
+    .ghost-counter::before,
+    .mobile-ghost-icon::before {
+      content: "";
+      position: absolute;
+      inset: 0 -24px 0 0;
+      z-index: 0;
+      pointer-events: none;
+      --header-stripe-thickness: 3px;
+      --header-stripe-color: rgb(255 0 255 / 50%);
+      background-image: repeating-linear-gradient(
+        135deg,
+        var(--header-stripe-color) 0 var(--header-stripe-thickness),
+        transparent var(--header-stripe-thickness) 8px
+      );
+      background-size: 12px 12px;
+      background-repeat: repeat;
+      transform-origin: center;
+      transform: translate3d(-24px, 0, 0) skewX(0deg) scaleY(1);
+      animation:
+        header-texture-slide-smooth 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite running,
+        header-texture-thickness-pulse 1.6s ease-in-out infinite running;
+      will-change: transform, --header-stripe-thickness;
+    }
+
+    @media (min-width: 601px) {
+      .bottom-bar:hover .clock-text::before,
+      .bottom-bar:hover .emoji-icon::before,
+      .bottom-bar:hover .site-link::before,
+      .bottom-bar:hover .index-link-stack::before,
+      .bottom-bar:hover .index-nav-button::before,
+      .bottom-bar:hover .ghost-counter::before,
+      .bottom-bar:hover .mobile-ghost-icon::before {
+        --header-stripe-color: rgb(0 255 0 / 50%);
+        animation-play-state: running;
+      }
+    }
+
+    .clock-text > *,
+    .emoji-icon > *,
+    .site-link > *,
+    .index-link-stack > *,
+    .index-nav-button > *,
+    .ghost-counter > *,
+    .mobile-ghost-icon > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .texture-content {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .site-link .texture-content {
+      display: inline-block;
+      transform: scale(1.16, 1.24);
+      transform-origin: center;
+      max-width: 86%;
+    }
+
+    @media (max-width: 600px) {
+      .clock-text::before,
+      .emoji-icon::before,
+      .site-link::before,
+      .index-link-stack::before,
+      .index-nav-button::before,
+      .ghost-counter::before,
+      .mobile-ghost-icon::before {
+        animation-play-state: running;
+      }
+
+      .bottom-bar:hover .clock-text::before,
+      .bottom-bar:hover .emoji-icon::before,
+      .bottom-bar:hover .site-link::before,
+      .bottom-bar:hover .index-link-stack::before,
+      .bottom-bar:hover .index-nav-button::before,
+      .bottom-bar:hover .ghost-counter::before,
+      .bottom-bar:hover .mobile-ghost-icon::before {
+        animation-play-state: running;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .clock-text::before,
+      .emoji-icon::before,
+      .site-link::before,
+      .index-link-stack::before,
+      .index-nav-button::before,
+      .ghost-counter::before,
+      .mobile-ghost-icon::before {
+        animation: none;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+
+    /* Inverted top-bar states: former hover look is now default, former default look is now hover. */
+    .skull-icon .emoji-tint,
+    .site-link,
+    .bar-content .index-link,
+    .index-nav-button,
+    .spiral-icon .emoji-tint,
+    .recycle-icon .emoji-tint,
+    .ghost-glyph .emoji-tint,
+    .ghost-icon .emoji-tint,
+    .alien-glyph .emoji-tint,
+    .gear-icon .emoji-tint,
+    .clock-text {
+      color: black;
+      -webkit-text-stroke: 1px #ff004c;
+      paint-order: stroke fill;
+      text-shadow:
+        -3px -3px 0 #ff004c,
+        0 -3px 0 #ff8c00,
+        3px -3px 0 #ffe600,
+        -3px 0 0 #00d26a,
+        3px 0 0 #00d9ff,
+        -3px 3px 0 #3b5bff,
+        0 3px 0 #8f00ff,
+        3px 3px 0 #ff00c8;
+    }
+
+    .alien-glyph .emoji-tint::after,
+    .spiral-icon .emoji-tint::after,
+    .recycle-icon .emoji-tint::after,
+    .ghost-glyph .emoji-tint::after,
+    .ghost-icon .emoji-tint::after,
+    .gear-icon .emoji-tint::after {
+      content: none;
+    }
+
+    .site-link:hover,
+    .bar-content .site-link.home-link:hover,
+    .bar-content .index-link:hover,
+    .index-nav-button:hover,
+    .clock-text:hover {
+      color: lime;
+      -webkit-text-stroke: 1px rgb(255 0 255 / 100%);
+      paint-order: stroke fill;
+      text-shadow:
+        0 0 1px rgb(255 0 255 / 100%),
+        0 0 2px rgb(255 0 255 / 67%),
+        0 0 3px rgb(255 0 255 / 33%),
+        -1px -1px 1px rgb(255 0 255 / 100%),
+        1px -1px 1px rgb(255 0 255 / 100%),
+        -1px 1px 1px rgb(255 0 255 / 100%),
+        1px 1px 1px rgb(255 0 255 / 100%),
+        -2px -2px 2px rgb(255 0 255 / 67%),
+        2px -2px 2px rgb(255 0 255 / 67%),
+        -2px 2px 2px rgb(255 0 255 / 67%),
+        2px 2px 2px rgb(255 0 255 / 67%),
+        -3px -3px 3px rgb(255 0 255 / 33%),
+        3px -3px 3px rgb(255 0 255 / 33%),
+        -3px 3px 3px rgb(255 0 255 / 33%),
+        3px 3px 3px rgb(255 0 255 / 33%);
+    }
+
+    .skull-icon:hover .emoji-tint,
+    .spiral-icon:hover .emoji-tint,
+    .recycle-icon:hover .emoji-tint,
+    .ghost-glyph:hover .emoji-tint,
+    .ghost-icon:hover .emoji-tint,
+    .alien-glyph:hover .emoji-tint,
+    .gear-icon:hover .emoji-tint {
+      color: lime;
+      -webkit-text-stroke: 1px rgb(255 0 255 / 100%);
+      paint-order: stroke fill;
+      text-shadow:
+        0 0 1px rgb(255 0 255 / 100%),
+        0 0 2px rgb(255 0 255 / 67%),
+        0 0 3px rgb(255 0 255 / 33%),
+        -1px -1px 1px rgb(255 0 255 / 100%),
+        1px -1px 1px rgb(255 0 255 / 100%),
+        -1px 1px 1px rgb(255 0 255 / 100%),
+        1px 1px 1px rgb(255 0 255 / 100%),
+        -2px -2px 2px rgb(255 0 255 / 67%),
+        2px -2px 2px rgb(255 0 255 / 67%),
+        -2px 2px 2px rgb(255 0 255 / 67%),
+        2px 2px 2px rgb(255 0 255 / 67%),
+        -3px -3px 3px rgb(255 0 255 / 33%),
+        3px -3px 3px rgb(255 0 255 / 33%),
+        -3px 3px 3px rgb(255 0 255 / 33%),
+        3px 3px 3px rgb(255 0 255 / 33%);
+    }
+
+    .gear-icon:hover .emoji-tint {
+      color: #8200e0;
+    }
+
+    @media (min-width: 601px) {
+      .clock-text::before,
+      .emoji-icon::before,
+      .site-link::before,
+      .index-link-stack::before,
+      .index-nav-button::before,
+      .ghost-counter::before,
+      .mobile-ghost-icon::before {
+        --header-stripe-color: rgb(0 255 0 / 50%);
+      }
+
+      .bottom-bar:hover .clock-text::before,
+      .bottom-bar:hover .emoji-icon::before,
+      .bottom-bar:hover .site-link::before,
+      .bottom-bar:hover .index-link-stack::before,
+      .bottom-bar:hover .index-nav-button::before,
+      .bottom-bar:hover .ghost-counter::before,
+      .bottom-bar:hover .mobile-ghost-icon::before {
+        --header-stripe-color: rgb(255 0 255 / 50%);
+      }
+    }
+
+  
+
+    /* Eye icon override: force text/symbol rendering so it can tint like recycle. */
+    .spiral-icon,
+    .spiral-icon .emoji-tint {
+      color: black;
+    }
+
+    .spiral-icon .emoji-tint {
+      font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "Noto Sans Symbols", "Arial Unicode MS", sans-serif;
+      font-variant-emoji: text;
+    }
+
+    .spiral-icon:hover,
+    .spiral-icon:hover .emoji-tint {
+      color: lime;
+    }
+
+
+    /* Ghost icon override: force text/symbol rendering so it can tint like the eye/recycle icons. */
+    .ghost-glyph,
+    .ghost-icon,
+    .ghost-glyph .emoji-tint,
+    .ghost-icon .emoji-tint {
+      color: black;
+    }
+
+    .ghost-glyph .emoji-tint,
+    .ghost-icon .emoji-tint {
+      font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "Noto Sans Symbols", "Arial Unicode MS", sans-serif;
+      font-variant-emoji: text;
+    }
+
+    .ghost-glyph:hover,
+    .ghost-icon:hover,
+    .ghost-glyph:hover .emoji-tint,
+    .ghost-icon:hover .emoji-tint {
+      color: lime;
+    }
+</style>
 </head>
 
 <body>
@@ -686,18 +1245,18 @@
   <div class="bottom-bar" aria-label="Static bookmark top bar preview">
     <div class="bar-content">
       <span class="bar-column bar-column-left">
-        <span class="emoji-icon skull-icon"><span class="emoji-tint is-screen is-skull" data-emoji="&#9760;">&#9760;</span></span>
-        <a class="site-link home-link" href="/">theinternetisdead.org</a>
+        <span class="emoji-icon skull-icon" role="button" tabindex="0" aria-expanded="false" aria-controls="grave-sidebar"><span class="emoji-tint is-screen is-skull" data-emoji="&#9760;">&#9760;</span></span>
+        <a class="site-link home-link" href="/"><span class="texture-content">the internet is dead . org</span></a>
         <span class="site-divider after-site" aria-hidden="true"></span>
-        <span class="emoji-icon spiral-icon"><span class="emoji-tint" data-emoji="&#127744;">&#127744;</span></span>
+        <span class="emoji-icon spiral-icon"><span class="emoji-tint" data-emoji="&#128065;&#65038;">&#128065;&#65038;</span></span>
       </span>
       <span class="bar-column bar-column-center">
-        <span class="index-link-slot"><span class="index-bracket index-bracket-left" aria-hidden="true">&lt; Left</span><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/">index.html</a></span><span class="site-divider" aria-hidden="true"></span></span><span class="index-bracket index-bracket-right" aria-hidden="true">Right &gt;</span></span>
+        <span class="index-link-slot"><a class="index-nav-button index-nav-left index-bracket-left" href="#left" aria-label="Left"><span class="index-bracket" aria-hidden="true">&lt;</span><span class="index-nav-label">Left</span></a><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/"><span class="texture-content">index.html</span></a></span><span class="site-divider" aria-hidden="true"></span></span><a class="index-nav-button index-nav-right index-bracket-right" href="#right" aria-label="Right"><span class="index-nav-label">Right</span><span class="index-bracket" aria-hidden="true">&gt;</span></a></span>
       </span>
       <span class="bar-column bar-column-right">
         <span class="emoji-icon recycle-icon"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
         <span class="emoji-icon alien-icon ghost-counter" id="ghost-counter" role="status" aria-label="? Ghosts Online">
-          <span class="ghost-glyph"><span class="emoji-tint" data-emoji="&#128123;">&#128123;</span></span>
+          <span class="ghost-glyph"><span class="emoji-tint" data-emoji="&#128123;&#65038;">&#128123;&#65038;</span></span>
           <span class="ghost-text">
             <span class="ghost-count" id="ghost-count">?</span><span class="ghost-label" id="ghost-label">Ghosts Online</span>
           </span>
@@ -708,10 +1267,13 @@
           <span class="clock-date" id="clock-date"></span>
         </span>
         <span class="emoji-icon gear-icon"><span class="emoji-tint" data-emoji="&#9881;&#65039;">&#9881;&#65039;</span></span>
-        <span class="emoji-icon ghost-icon mobile-ghost-icon"><span class="emoji-tint" data-emoji="&#128123;">&#128123;</span></span>
+        <span class="emoji-icon ghost-icon mobile-ghost-icon"><span class="emoji-tint" data-emoji="&#128123;&#65038;">&#128123;&#65038;</span></span>
       </span>
     </div>
   </div>
+
+  <aside class="grave-sidebar" id="grave-sidebar" aria-hidden="true"></aside>
+
   <script>
     const clockTime = document.getElementById("clock-time");
     const clockDate = document.getElementById("clock-date");
@@ -719,7 +1281,39 @@
     const ghostCount = document.getElementById("ghost-count");
     const ghostLabel = document.getElementById("ghost-label");
     const YOU_DUMMY_TEXT = "It's YOU dummy!";
+    const skullButton = document.querySelector(".skull-icon");
+    const graveSidebar = document.getElementById("grave-sidebar");
+    const desktopSidebarQuery = window.matchMedia("(min-width: 601px)");
     let ghostsOnlineCount = null;
+
+    const setGraveSidebarWidth = () => {
+      if (!graveSidebar) return;
+
+      if (!desktopSidebarQuery.matches) {
+        graveSidebar.style.removeProperty("--grave-sidebar-width");
+        return;
+      }
+
+      const leftColumn = document.querySelector(".bar-column-left");
+      const leftColumnWidth = leftColumn ? leftColumn.getBoundingClientRect().width : 0;
+      if (leftColumnWidth > 0) {
+        graveSidebar.style.setProperty("--grave-sidebar-width", `${leftColumnWidth / 2}px`);
+      }
+    };
+
+    const setGraveSidebarOpen = (isOpen) => {
+      if (!graveSidebar || !skullButton) return;
+
+      setGraveSidebarWidth();
+      graveSidebar.classList.toggle("is-open", isOpen);
+      graveSidebar.setAttribute("aria-hidden", isOpen ? "false" : "true");
+      skullButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    };
+
+    const toggleGraveSidebar = () => {
+      if (!graveSidebar) return;
+      setGraveSidebarOpen(!graveSidebar.classList.contains("is-open"));
+    };
 
     const updateClock = () => {
       const now = new Date();
@@ -817,6 +1411,7 @@
     let noiseContext = null;
     let noiseSource = null;
     let noiseGain = null;
+    let noiseFilter = null;
     let modemContext = null;
     let modemNodes = [];
     let modemPopTimer = null;
@@ -825,6 +1420,22 @@
     let siteSpeechActive = false;
     let modemSpeechTimer = null;
     let modemSpeechActive = false;
+    let ghostSpeechTimer = null;
+    let ghostSpeechActive = false;
+    let ghostSpeechMessages = [];
+    let ghostSpeechCount = 0;
+    const DEFAULT_GHOST_SPEECH_START = "Ghost Connection";
+    const DEFAULT_GHOST_SPEECH_MESSAGES = [
+      "Boo!",
+      "2 spooky 4 you",
+      "Hello world!",
+      "Alas poor web.",
+      "Goodbye internet!",
+      "Welcome to die!",
+      "Don't come here at 3am",
+      "grumble grumble"
+    ];
+    const GHOST_MESSAGES_URL = "/dead/messages/messages.json";
     const TTS_VOLUME_SCALE = 0.5;
     const MODEM_EFFECT_VOLUME_SCALE = 0.33;
 
@@ -846,6 +1457,7 @@
       skullHoverActive = false;
       siteSpeechActive = false;
       modemSpeechActive = false;
+      ghostSpeechActive = false;
       spiralRepeatCount = 0;
       if (spiralRepeatTimer) {
         window.clearTimeout(spiralRepeatTimer);
@@ -863,6 +1475,11 @@
         window.clearTimeout(skullRepeatTimer);
         skullRepeatTimer = null;
       }
+      if (ghostSpeechTimer) {
+        window.clearTimeout(ghostSpeechTimer);
+        ghostSpeechTimer = null;
+      }
+      ghostSpeechCount = 0;
     };
 
     const speakWithDavid = (text, options = {}) => {
@@ -886,7 +1503,8 @@
       refreshDavidVoice();
       spiralHoverActive = true;
 
-      const utterance = new SpeechSynthesisUtterance("Spiral");
+      const phrase = spiralRepeatCount % 2 === 0 ? "Watch" : "View";
+      const utterance = new SpeechSynthesisUtterance(phrase);
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1;
       utterance.pitch = spiralRepeatCount % 2 === 0 ? 1.25 : 0.75;
@@ -952,6 +1570,65 @@
       window.speechSynthesis.speak(utterance);
     };
 
+    const normalizeGhostSpeechMessages = (payload) => {
+      const source = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.messages)
+          ? payload.messages
+          : Array.isArray(payload?.random)
+            ? payload.random
+            : [];
+
+      return source
+        .map((entry) => (typeof entry === "string" ? entry : entry?.text))
+        .filter((message) => typeof message === "string" && message.trim())
+        .filter((message) => message !== DEFAULT_GHOST_SPEECH_START);
+    };
+
+    const loadGhostSpeechMessages = async () => {
+      try {
+        const response = await fetch(GHOST_MESSAGES_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Failed to load ${GHOST_MESSAGES_URL}`);
+        const payload = await response.json();
+        const messages = normalizeGhostSpeechMessages(payload);
+        ghostSpeechMessages = messages.length ? messages : DEFAULT_GHOST_SPEECH_MESSAGES;
+      } catch (error) {
+        ghostSpeechMessages = DEFAULT_GHOST_SPEECH_MESSAGES;
+      }
+    };
+
+    const getRandomGhostSpeechMessage = () => {
+      const messages = ghostSpeechMessages.length ? ghostSpeechMessages : DEFAULT_GHOST_SPEECH_MESSAGES;
+      return messages[Math.floor(Math.random() * messages.length)] || "Boo!";
+    };
+
+    const getNextGhostSpeechMessage = () => {
+      ghostSpeechCount += 1;
+      return ghostSpeechCount % 2 === 1
+        ? DEFAULT_GHOST_SPEECH_START
+        : getRandomGhostSpeechMessage();
+    };
+
+    const speakGhostPhraseLoop = () => {
+      if (!ghostSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+
+      refreshDavidVoice();
+      const startedAt = performance.now();
+      const text = getNextGhostSpeechMessage();
+      const utterance = new SpeechSynthesisUtterance(text);
+      if (davidVoice) utterance.voice = davidVoice;
+      utterance.rate = 1.05;
+      utterance.pitch = 0.9;
+      utterance.volume = 0.9 * TTS_VOLUME_SCALE;
+      utterance.addEventListener("end", () => {
+        if (!ghostSpeechActive || !desktopHeaderAudioQuery.matches) return;
+        const elapsed = performance.now() - startedAt;
+        ghostSpeechTimer = window.setTimeout(speakGhostPhraseLoop, Math.max(0, 1000 - elapsed));
+      });
+
+      window.speechSynthesis.speak(utterance);
+    };
+
     const makeNoiseBuffer = (audioContext, durationSeconds = 1) => {
       const sampleRate = audioContext.sampleRate;
       const buffer = audioContext.createBuffer(1, sampleRate * durationSeconds, sampleRate);
@@ -959,6 +1636,21 @@
 
       for (let i = 0; i < output.length; i += 1) {
         output[i] = Math.random() * 2 - 1;
+      }
+
+      return buffer;
+    };
+
+    const makeSoftNoiseBuffer = (audioContext, durationSeconds = 2) => {
+      const sampleRate = audioContext.sampleRate;
+      const buffer = audioContext.createBuffer(1, sampleRate * durationSeconds, sampleRate);
+      const output = buffer.getChannelData(0);
+      let lastValue = 0;
+
+      for (let i = 0; i < output.length; i += 1) {
+        const white = Math.random() * 2 - 1;
+        lastValue = (lastValue + 0.025 * white) / 1.025;
+        output[i] = lastValue * 3.5;
       }
 
       return buffer;
@@ -1006,7 +1698,7 @@
       }
     };
 
-    const startModemStatic = () => {
+    const startModemStatic = (effectScale = 1) => {
       if (!desktopHeaderAudioQuery.matches) return;
       stopModemStatic();
 
@@ -1024,7 +1716,7 @@
       const carrierB = modemContext.createOscillator();
       const carrierGain = modemContext.createGain();
 
-      masterGain.gain.value = 0.16 * MODEM_EFFECT_VOLUME_SCALE;
+      masterGain.gain.value = 0.16 * MODEM_EFFECT_VOLUME_SCALE * effectScale;
       noiseGainNode.gain.value = 0.24;
       highPass.type = "highpass";
       highPass.frequency.value = 650;
@@ -1100,10 +1792,14 @@
       noiseContext = new AudioContextCtor();
       noiseSource = noiseContext.createBufferSource();
       noiseGain = noiseContext.createGain();
-      noiseGain.gain.value = 0.12;
-      noiseSource.buffer = makeNoiseBuffer(noiseContext);
+      noiseFilter = noiseContext.createBiquadFilter();
+      noiseFilter.type = "lowpass";
+      noiseFilter.frequency.value = 900;
+      noiseFilter.Q.value = 0.35;
+      noiseGain.gain.value = 0.026;
+      noiseSource.buffer = makeSoftNoiseBuffer(noiseContext);
       noiseSource.loop = true;
-      noiseSource.connect(noiseGain).connect(noiseContext.destination);
+      noiseSource.connect(noiseFilter).connect(noiseGain).connect(noiseContext.destination);
       noiseSource.start();
     };
 
@@ -1120,6 +1816,7 @@
       }
 
       noiseGain = null;
+      noiseFilter = null;
     };
 
     const addDesktopSpeechHover = (selector, text, options) => {
@@ -1144,23 +1841,28 @@
       }
     }
 
-    const skullIcon = document.querySelector(".skull-icon");
-    if (skullIcon) {
-      skullIcon.addEventListener("mouseenter", () => {
+    if (skullButton) {
+      skullButton.addEventListener("mouseenter", () => {
         stopWhiteNoise();
         stopModemStatic();
         stopHeaderSpeech();
         skullHoverActive = true;
         speakSkullLoop();
       });
-      skullIcon.addEventListener("mouseleave", stopHeaderSpeech);
+      skullButton.addEventListener("mouseleave", stopHeaderSpeech);
+      skullButton.addEventListener("click", toggleGraveSidebar);
+      skullButton.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        toggleGraveSidebar();
+      });
     }
     const siteLink = document.querySelector(".site-link");
     if (siteLink) {
       siteLink.addEventListener("mouseenter", () => {
         stopWhiteNoise();
         stopHeaderSpeech();
-        startModemStatic();
+        startModemStatic(0.33);
         siteSpeechActive = true;
         speakSiteLinkLoop();
       });
@@ -1186,7 +1888,7 @@
       indexLinkPanel.addEventListener("mouseenter", () => {
         stopWhiteNoise();
         stopHeaderSpeech();
-        startModemStatic();
+        startModemStatic(0.33);
         modemSpeechActive = true;
         speakModemPhraseLoop("index.html of the internet is dead .org");
       });
@@ -1200,7 +1902,7 @@
       clockText.addEventListener("mouseenter", () => {
         stopWhiteNoise();
         stopHeaderSpeech();
-        startModemStatic();
+        startModemStatic(0.33);
         modemSpeechActive = true;
         speakModemPhraseLoop(() => `${clockTime.textContent} ${clockDate.textContent}`);
       });
@@ -1210,7 +1912,19 @@
       });
     }
     addDesktopSpeechHover(".recycle-icon", "Randomize Page");
-    addDesktopSpeechHover(".ghost-glyph", "Ghost Connection");
+
+    const ghostGlyph = document.querySelector(".ghost-glyph");
+    if (ghostGlyph) {
+      ghostGlyph.addEventListener("mouseenter", () => {
+        stopWhiteNoise();
+        stopModemStatic();
+        stopHeaderSpeech();
+        ghostSpeechActive = true;
+        ghostSpeechCount = 0;
+        speakGhostPhraseLoop();
+      });
+      ghostGlyph.addEventListener("mouseleave", stopHeaderSpeech);
+    }
 
     const globeGlyph = document.querySelector(".alien-glyph");
     if (globeGlyph) {
@@ -1230,6 +1944,15 @@
       desktopHeaderAudioQuery.addListener(stopHeaderAudio);
     }
 
+    window.addEventListener("resize", setGraveSidebarWidth);
+    if (typeof desktopSidebarQuery.addEventListener === "function") {
+      desktopSidebarQuery.addEventListener("change", setGraveSidebarWidth);
+    } else {
+      desktopSidebarQuery.addListener(setGraveSidebarWidth);
+    }
+    setGraveSidebarWidth();
+
+    loadGhostSpeechMessages();
     setGhostsOnline(null);
     connectGhostCounterSocket();
   </script>
