@@ -68,13 +68,6 @@
       box-sizing: border-box;
     }
 
-    .clock-group {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      height: 50px;
-    }
-
     .clock-text {
       flex: 0 0 96px;
       width: 96px;
@@ -151,11 +144,18 @@
       border-right: 1px solid lime;
     }
 
+    .skull-icon,
+    .spiral-icon,
+    .recycle-icon,
+    .gear-icon {
+      background: rgb(59 0 102);
+    }
+
     .alien-icon {
       flex: 0 0 auto;
       width: auto;
-      padding-left: 10px;
-      gap: 8px;
+      padding-left: 0;
+      gap: 0;
       border-left: 1px solid lime;
       color: lime;
       font-size: 15px;
@@ -193,26 +193,24 @@
       color: #8200e0;
     }
 
-    .emoji-label {
-      min-width: 0;
-      flex: 1 1 auto;
-      padding: 0 8px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-    }
-
-    .bar-content .emoji-label {
-      text-align: left;
-      color: lime;
-      font-weight: 700;
-    }
-
     .bar-content .home-link {
       color: inherit;
       text-decoration: none;
+    }
+
+    .site-link {
+      flex: 0 0 auto;
+      height: 50px;
+      min-width: 0;
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      color: lime;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      box-sizing: border-box;
     }
 
     .site-divider {
@@ -231,10 +229,6 @@
       gap: 8px;
     }
 
-    .site-divider.after-site {
-      margin-left: 8px;
-    }
-
     .bar-content .index-link {
       text-decoration: underline;
     }
@@ -244,7 +238,16 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      height: 50px;
+      padding: 0 8px;
       line-height: 1;
+    }
+
+    .index-link-panel {
+      height: 50px;
+      display: inline-flex;
+      align-items: center;
+      background: rgb(59 0 102);
     }
 
     .index-bracket {
@@ -258,10 +261,41 @@
       border-left: 1px solid lime;
     }
 
+    .spiral-icon {
+      color: lime;
+      border-right: 1px solid lime;
+    }
+
+    .spiral-icon::after {
+      content: none;
+    }
+
+    .ghost-glyph {
+      flex: 0 0 50px;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: lime;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .mobile-ghost-icon {
+      display: none;
+    }
+
     .ghost-counter.is-you-dummy,
     .skull-icon:hover .emoji-tint,
-    .bar-content .emoji-label > .home-link:hover,
+    .site-link:hover,
     .bar-content .index-link:hover,
+    .index-bracket:hover,
+    .index-link-slot:hover .index-bracket,
+    .spiral-icon:hover .emoji-tint,
+    .recycle-icon:hover .emoji-tint,
+    .ghost-glyph:hover .emoji-tint,
+    .ghost-icon:hover .emoji-tint,
     .alien-glyph:hover .emoji-tint,
     .gear-icon:hover .emoji-tint,
     .clock-text:hover {
@@ -280,6 +314,10 @@
     }
 
     .alien-glyph:hover .emoji-tint::after,
+    .spiral-icon:hover .emoji-tint::after,
+    .recycle-icon:hover .emoji-tint::after,
+    .ghost-glyph:hover .emoji-tint::after,
+    .ghost-icon:hover .emoji-tint::after,
     .gear-icon:hover .emoji-tint::after {
       content: none;
     }
@@ -300,44 +338,39 @@
         display: grid;
         grid-template-columns: 50px minmax(0, 1fr) 88px;
         grid-template-rows: 50px 50px 50px;
+        grid-template-areas:
+          "skull site clock"
+          "recycle ghost gear"
+          "spiral index empty";
         align-items: stretch;
-      }
-
-      .bar-content::before,
-      .bar-content::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background: lime;
-        pointer-events: none;
+        background: black;
       }
 
       .bar-content::before {
-        top: 49px;
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background:
+          linear-gradient(lime, lime) 0 50px / 100% 1px no-repeat,
+          linear-gradient(lime, lime) 0 100px / 100% 1px no-repeat,
+          linear-gradient(lime, lime) 50px 0 / 1px 150px no-repeat,
+          linear-gradient(lime, lime) calc(100% - 88px) 0 / 1px 150px no-repeat;
+        pointer-events: none;
       }
 
       .bar-content::after {
-        top: 99px;
-      }
-
-      .bar-content .emoji-label {
-        display: contents;
-      }
-
-      .clock-group {
-        display: contents;
+        content: none;
       }
 
       .skull-icon {
-        grid-column: 1;
-        grid-row: 1;
+        grid-area: skull;
+        border-right: 0;
       }
 
-      .bar-content .emoji-label > .home-link {
-        grid-column: 2;
-        grid-row: 1;
+      .site-link {
+        grid-area: site;
+        flex: 1 1 auto;
         min-width: 0;
         height: 50px;
         padding: 0 8px;
@@ -353,62 +386,79 @@
         display: none;
       }
 
+      .index-link-panel .site-divider {
+        display: block;
+      }
+
       .clock-text {
-        grid-column: 3;
-        grid-row: 1;
+        grid-area: clock;
         width: 88px;
+        background: rgb(59 0 102);
+        border-left: 0;
         border-right: 0;
       }
 
       .index-link-slot {
-        grid-column: 1 / -1;
-        grid-row: 3;
+        grid-area: index;
         min-width: 0;
         height: 50px;
+        box-sizing: border-box;
       }
 
       .ghost-counter {
-        grid-column: 2;
-        grid-row: 2;
+        grid-area: ghost;
         min-width: 0;
         overflow: hidden;
         border-left: 0;
+        background: rgb(59 0 102);
         justify-self: stretch;
         justify-content: center;
       }
 
       .recycle-icon {
-        grid-column: 1;
-        grid-row: 2;
-        position: relative;
+        grid-area: recycle;
+        background: black;
         border: 0;
       }
 
       .recycle-icon::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 1px;
-        height: 50px;
-        background: lime;
-        pointer-events: none;
+        content: none;
+      }
+
+      .spiral-icon {
+        grid-area: spiral;
+        display: flex;
+        border-left: 0;
+        border-right: 0;
+      }
+
+      .spiral-icon::after {
+        content: none;
       }
 
       .gear-icon {
-        grid-column: 3;
-        grid-row: 2;
+        grid-area: gear;
         width: auto;
         flex-basis: auto;
-        border-left: 1px solid lime;
+        background: black;
+        border-left: 0;
         justify-self: stretch;
       }
 
       .alien-icon {
         padding-left: 0;
-        gap: 4px;
+        gap: 0;
         border-left: 0;
         font-size: 13px;
+      }
+
+      .ghost-glyph {
+        display: none;
+      }
+
+      .alien-glyph {
+        flex: 0 0 50px;
+        width: 50px;
       }
 
       .ghost-text {
@@ -417,6 +467,14 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+
+      .mobile-ghost-icon {
+        grid-area: empty;
+        display: flex;
+        width: auto;
+        flex-basis: auto;
+        background: rgb(59 0 102);
       }
     }
   </style>
@@ -428,21 +486,24 @@
   <div class="bottom-bar" aria-label="Static bookmark top bar preview">
     <div class="bar-content">
       <span class="emoji-icon skull-icon"><span class="emoji-tint is-screen is-skull" data-emoji="&#9760;">&#9760;</span></span>
-      <span class="emoji-label"><a class="home-link" href="/">theinternetisdead.org</a><span class="site-divider after-site" aria-hidden="true"></span><span class="index-link-slot"><span class="index-bracket" aria-hidden="true">&lt;</span><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/">index.html</a></span><span class="site-divider" aria-hidden="true"></span><span class="index-bracket" aria-hidden="true">&gt;</span></span></span>
-      <span class="clock-group">
-        <span class="emoji-icon recycle-icon"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
-        <span class="emoji-icon alien-icon ghost-counter" id="ghost-counter" role="status" aria-label="? Ghosts Online">
-          <span class="ghost-text">
-            <span class="ghost-count" id="ghost-count">?</span><span class="ghost-label" id="ghost-label">Ghosts Online</span>
-          </span>
-          <span class="alien-glyph"><span class="emoji-tint" data-emoji="&#128125;">&#128125;</span></span>
+      <a class="site-link home-link" href="/">theinternetisdead.org</a>
+      <span class="site-divider after-site" aria-hidden="true"></span>
+      <span class="emoji-icon spiral-icon"><span class="emoji-tint" data-emoji="&#127744;">&#127744;</span></span>
+      <span class="index-link-slot"><span class="index-bracket" aria-hidden="true">&lt;</span><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/">index.html</a></span><span class="site-divider" aria-hidden="true"></span></span><span class="index-bracket" aria-hidden="true">&gt;</span></span>
+      <span class="emoji-icon recycle-icon"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
+      <span class="emoji-icon alien-icon ghost-counter" id="ghost-counter" role="status" aria-label="? Ghosts Online">
+        <span class="ghost-glyph"><span class="emoji-tint" data-emoji="&#128123;">&#128123;</span></span>
+        <span class="ghost-text">
+          <span class="ghost-count" id="ghost-count">?</span><span class="ghost-label" id="ghost-label">Ghosts Online</span>
         </span>
-        <span class="clock-text">
-          <span class="clock-time" id="clock-time"></span>
-          <span class="clock-date" id="clock-date"></span>
-        </span>
-        <span class="emoji-icon gear-icon"><span class="emoji-tint" data-emoji="&#9881;&#65039;">&#9881;&#65039;</span></span>
+        <span class="alien-glyph"><span class="emoji-tint" data-emoji="&#127760;">&#127760;</span></span>
       </span>
+      <span class="clock-text">
+        <span class="clock-time" id="clock-time"></span>
+        <span class="clock-date" id="clock-date"></span>
+      </span>
+      <span class="emoji-icon gear-icon"><span class="emoji-tint" data-emoji="&#9881;&#65039;">&#9881;&#65039;</span></span>
+      <span class="emoji-icon ghost-icon mobile-ghost-icon"><span class="emoji-tint" data-emoji="&#128123;">&#128123;</span></span>
     </div>
   </div>
   <script>
