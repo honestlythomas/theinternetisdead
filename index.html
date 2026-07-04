@@ -2391,6 +2391,21 @@
       }
     }
 
+
+    /* Mobile: compact the domain text to save space. */
+    @media (max-width: 600px) {
+      .site-link .texture-content {
+        font-size: 0;
+        transform: scale(1.08, 1.18);
+        max-width: 94%;
+      }
+
+      .site-link .texture-content::before {
+        content: "theinternetisdead.org";
+        font-size: 16px;
+      }
+    }
+
 </style>
 </head>
 
