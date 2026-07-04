@@ -184,7 +184,7 @@
 
     .ghost-counter {
       display: grid;
-      grid-template-columns: 50px max-content 50px;
+      grid-template-columns: 50px 15ch 50px;
       align-items: center;
       justify-content: center;
     }
@@ -210,6 +210,7 @@
       font-size: 2em;
       font-weight: 900;
       line-height: 1;
+      color: #ff00ff;
     }
 
     .ghost-label {
@@ -219,12 +220,22 @@
     }
 
     .ghost-text {
-      width: max-content;
-      min-width: max-content;
+      width: 15ch;
+      min-width: 15ch;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       white-space: nowrap;
+    }
+
+    .ghost-counter.is-you-dummy .ghost-count,
+    .ghost-counter.is-you-dummy .ghost-label {
+      font-family: "Creepster", "Courier New", Courier, monospace;
+      font-size: 1em;
+      font-weight: 700;
+      color: lime;
+      letter-spacing: 0.09em;
+      line-height: 1;
     }
 
     .gear-icon {
