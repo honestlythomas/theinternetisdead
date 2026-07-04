@@ -2406,6 +2406,201 @@
       }
     }
 
+
+    /* Mobile: center compact domain title in the middle column. */
+    @media (max-width: 600px) {
+      .site-link {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .site-link .texture-content {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+    }
+
+
+    /* Mobile: center the compact domain text inside the actual link button. */
+    @media (max-width: 600px) {
+      .site-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+        text-align: center;
+      }
+
+      .site-link .texture-content {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        text-align: center;
+        transform-origin: center center;
+      }
+
+      .site-link .texture-content::before {
+        display: block;
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+
+    /* Mobile: center compact domain text in the exact divider-to-divider button span. */
+    @media (max-width: 600px) {
+      .site-link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        text-align: center;
+      }
+
+      .site-link .texture-content {
+        position: absolute;
+        inset: 0;
+        width: auto;
+        max-width: none;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        transform: none;
+        transform-origin: center center;
+      }
+
+      .site-link .texture-content::before {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        text-align: center;
+        white-space: nowrap;
+        font-size: clamp(13px, 4.3vw, 16px);
+      }
+    }
+
+
+    /* Mobile domain title: actual centered text between the site-cell dividers. */
+    .domain-text-mobile {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .site-link.home-link {
+        display: grid !important;
+        place-items: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        text-align: center !important;
+      }
+
+      .site-link.home-link .texture-content {
+        position: relative !important;
+        inset: auto !important;
+        display: grid !important;
+        place-items: center !important;
+        width: 100% !important;
+        max-width: none !important;
+        height: 100% !important;
+        margin: 0 !important;
+        transform: none !important;
+        transform-origin: center center !important;
+        text-align: center !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: nowrap !important;
+        font-size: clamp(12px, 4vw, 16px) !important;
+      }
+
+      .site-link.home-link .texture-content::before {
+        content: none !important;
+      }
+
+      .site-link.home-link .domain-text-desktop {
+        display: none !important;
+      }
+
+      .site-link.home-link .domain-text-mobile {
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+      }
+    }
+
+
+
+    /* Mobile only: center the ghost counter text + globe as one group under the compact domain title. */
+    @media (max-width: 600px) {
+      .ghost-counter {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 1ch !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        overflow: visible !important;
+      }
+
+      .ghost-counter .ghost-glyph {
+        display: none !important;
+      }
+
+      .ghost-counter .ghost-text {
+        flex: 0 0 auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: auto !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        height: 50px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        gap: 0.35ch !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+      }
+
+      .ghost-counter .ghost-count,
+      .ghost-counter .ghost-label {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+      }
+
+      .ghost-counter .ghost-label {
+        transform: none !important;
+        line-height: 1 !important;
+      }
+
+      .ghost-counter .ghost-label br {
+        display: none !important;
+      }
+
+      .ghost-counter .alien-glyph {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        height: 50px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+    }
+
 </style>
 </head>
 
@@ -2416,7 +2611,7 @@
     <div class="bar-content">
       <span class="bar-column bar-column-left">
         <span class="emoji-icon skull-icon" role="button" tabindex="0" aria-expanded="false" aria-controls="grave-sidebar"><span class="emoji-tint is-screen is-skull" data-emoji="&#9760;">&#9760;</span></span>
-        <a class="site-link home-link" href="/"><span class="texture-content">the internet is dead . org</span></a>
+        <a class="site-link home-link" href="/"><span class="texture-content"><span class="domain-text domain-text-desktop">the internet is dead . org</span><span class="domain-text domain-text-mobile">theinternetisdead.org</span></span></a>
         <span class="site-divider after-site" aria-hidden="true"></span>
         <span class="emoji-icon spiral-icon"><span class="emoji-tint" data-emoji="&#128065;&#65038;">&#128065;&#65038;</span></span>
       </span>
