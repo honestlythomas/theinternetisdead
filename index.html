@@ -68,8 +68,29 @@
       pointer-events: auto;
     }
 
+    .grave-sidebar-right {
+      left: auto;
+      right: 0;
+      border-right: 0;
+      border-left: 3px solid lime;
+    }
+
     .grave-sidebar.is-open {
       display: block;
+    }
+
+    .static-viewport-image {
+      --static-image-inset: calc((100vh - 53px) * 0.025);
+      position: fixed;
+      left: var(--static-image-inset);
+      top: calc(53px + var(--static-image-inset));
+      z-index: 0;
+      width: calc(100vw - (var(--static-image-inset) * 2));
+      height: calc((100vh - 53px) * 0.95);
+      outline: 3px solid lime;
+      box-sizing: border-box;
+      object-fit: fill;
+      pointer-events: none;
     }
 
     .bar-content {
@@ -655,6 +676,12 @@
         width: 100vw;
         height: calc(100vh - 153px);
         border-right: 0;
+      }
+
+      .static-viewport-image {
+        --static-image-inset: calc((100vh - 153px) * 0.025);
+        top: calc(153px + var(--static-image-inset));
+        height: calc((100vh - 153px) * 0.95);
       }
 
       .bar-content {
@@ -2866,6 +2893,7 @@
 
 <body>
   <iframe class="background-frame" src="/dead/pages/background/" title="Background" aria-hidden="true"></iframe>
+  <img class="static-viewport-image" src="/dead/images/static.gif" alt="" aria-hidden="true">
 
   <div class="bottom-bar" aria-label="Static bookmark top bar preview">
     <div class="bar-content">
@@ -2891,13 +2919,14 @@
           <span class="clock-time" id="clock-time"></span>
           <span class="clock-date" id="clock-date"></span>
         </span>
-        <span class="emoji-icon gear-icon"><span class="emoji-tint" data-emoji="&#9881;&#65038;">&#9881;&#65038;</span></span>
+        <span class="emoji-icon gear-icon" role="button" tabindex="0" aria-expanded="false" aria-controls="gear-customization-sidebar"><span class="emoji-tint" data-emoji="&#9881;&#65038;">&#9881;&#65038;</span></span>
         <span class="emoji-icon ghost-icon mobile-ghost-icon"><span class="emoji-tint" data-emoji="&#128123;&#65038;">&#128123;&#65038;</span></span>
       </span>
     </div>
   </div>
 
   <aside class="grave-sidebar" id="grave-sidebar" aria-hidden="true"></aside>
+  <aside class="grave-sidebar grave-sidebar-right" id="gear-customization-sidebar" aria-hidden="true"></aside>
 
   <script>
     const clockTime = document.getElementById("clock-time");
@@ -2907,37 +2936,50 @@
     const ghostLabel = document.getElementById("ghost-label");
     const YOU_DUMMY_TEXT = "It's YOU dummy!";
     const skullButton = document.querySelector(".skull-icon");
+    const gearButton = document.querySelector(".gear-icon");
     const graveSidebar = document.getElementById("grave-sidebar");
+    const gearSidebar = document.getElementById("gear-customization-sidebar");
     const desktopSidebarQuery = window.matchMedia("(min-width: 601px)");
     let ghostsOnlineCount = null;
 
     const setGraveSidebarWidth = () => {
-      if (!graveSidebar) return;
+      const sidebars = [graveSidebar, gearSidebar].filter(Boolean);
+      if (!sidebars.length) return;
 
       if (!desktopSidebarQuery.matches) {
-        graveSidebar.style.removeProperty("--grave-sidebar-width");
+        sidebars.forEach((sidebar) => sidebar.style.removeProperty("--grave-sidebar-width"));
         return;
       }
 
       const leftColumn = document.querySelector(".bar-column-left");
       const leftColumnWidth = leftColumn ? leftColumn.getBoundingClientRect().width : 0;
       if (leftColumnWidth > 0) {
-        graveSidebar.style.setProperty("--grave-sidebar-width", `${leftColumnWidth / 2}px`);
+        sidebars.forEach((sidebar) => {
+          sidebar.style.setProperty("--grave-sidebar-width", `${leftColumnWidth / 2}px`);
+        });
       }
     };
 
-    const setGraveSidebarOpen = (isOpen) => {
-      if (!graveSidebar || !skullButton) return;
+    const setSidebarOpen = (sidebar, button, isOpen) => {
+      if (!sidebar || !button) return;
 
       setGraveSidebarWidth();
-      graveSidebar.classList.toggle("is-open", isOpen);
-      graveSidebar.setAttribute("aria-hidden", isOpen ? "false" : "true");
-      skullButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      sidebar.classList.toggle("is-open", isOpen);
+      sidebar.setAttribute("aria-hidden", isOpen ? "false" : "true");
+      button.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    };
+
+    const toggleSidebar = (sidebar, button) => {
+      if (!sidebar) return;
+      setSidebarOpen(sidebar, button, !sidebar.classList.contains("is-open"));
     };
 
     const toggleGraveSidebar = () => {
-      if (!graveSidebar) return;
-      setGraveSidebarOpen(!graveSidebar.classList.contains("is-open"));
+      toggleSidebar(graveSidebar, skullButton);
+    };
+
+    const toggleGearSidebar = () => {
+      toggleSidebar(gearSidebar, gearButton);
     };
 
     const updateClock = () => {
@@ -3538,6 +3580,14 @@
         if (event.key !== "Enter" && event.key !== " ") return;
         event.preventDefault();
         toggleGraveSidebar();
+      });
+    }
+    if (gearButton) {
+      gearButton.addEventListener("click", toggleGearSidebar);
+      gearButton.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        toggleGearSidebar();
       });
     }
     const siteLink = document.querySelector(".site-link");
