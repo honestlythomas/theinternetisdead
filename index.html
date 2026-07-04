@@ -2278,34 +2278,31 @@
     }
 
 
-    /* Mobile checkerboard background layout: purple/green/purple rows exactly as requested. */
+    /* Mobile backgrounds mirror the desktop top-bar controls. */
     @media (max-width: 600px) {
       .bar-content {
-        --mobile-bg-purple: rgb(59 0 102 / 60%);
-        --mobile-bg-green: rgb(0 255 0 / 60%);
+        --mobile-bg-purple: rgb(59 0 102 / 100%);
+        --mobile-bg-black: rgb(0 0 0 / 100%);
       }
 
-      /* Top row: purple, green, purple */
-      .skull-icon,
-      .clock-text {
+      .skull-icon {
         background-color: var(--mobile-bg-purple) !important;
       }
 
-      .site-link {
-        background-color: var(--mobile-bg-green) !important;
+      .site-link,
+      .clock-text {
+        background-color: var(--mobile-bg-black) !important;
       }
 
-      /* Middle row: green, purple, green */
       .recycle-icon,
       .gear-icon {
-        background-color: var(--mobile-bg-green) !important;
+        background-color: var(--mobile-bg-purple) !important;
       }
 
       .ghost-counter {
-        background-color: var(--mobile-bg-purple) !important;
+        background-color: var(--mobile-bg-black) !important;
       }
 
-      /* Bottom row: purple, green, purple, green, purple */
       .spiral-icon,
       .mobile-ghost-icon {
         background-color: var(--mobile-bg-purple) !important;
@@ -2317,7 +2314,7 @@
 
       .index-nav-left,
       .index-nav-right {
-        background-color: var(--mobile-bg-green) !important;
+        background-color: var(--mobile-bg-black) !important;
       }
 
       .index-link-panel,
