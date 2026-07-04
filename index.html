@@ -1613,6 +1613,10 @@
     .ghost-counter.is-you-dummy .ghost-text {
       grid-template-columns: minmax(0, 1fr);
       gap: 0;
+      width: max-content;
+      max-width: 100%;
+      justify-self: center;
+      justify-content: center;
     }
 
     .ghost-counter.is-you-dummy .ghost-count {
@@ -1620,10 +1624,14 @@
     }
 
     .ghost-counter.is-you-dummy .ghost-label {
-      font-family: "Creepster", "Courier New", Courier, monospace;
-      font-size: 1em;
-      line-height: 1;
-      white-space: nowrap;
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      font-size: 0.9em;
+      line-height: 0.92;
+      text-align: center;
+      white-space: normal;
     }
 
     @media (max-width: 600px) {
@@ -2511,7 +2519,13 @@
     const showYouDummyLabel = () => {
       if (ghostsOnlineCount !== 1) return;
       ghostCounter.classList.add("is-you-dummy");
-      setGhostCounterLabel(YOU_DUMMY_TEXT);
+      ghostCount.textContent = "";
+      ghostLabel.replaceChildren(
+        document.createTextNode("It's YOU"),
+        document.createElement("br"),
+        document.createTextNode("dummy!")
+      );
+      ghostCounter.setAttribute("aria-label", YOU_DUMMY_TEXT);
     };
 
     const setGhostsOnline = (count) => {
