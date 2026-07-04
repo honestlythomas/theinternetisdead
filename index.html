@@ -85,7 +85,7 @@
       cursor: default;
 
       display: grid;
-      grid-template-columns: minmax(130px, 1fr) minmax(190px, 1fr) max-content;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       align-items: center;
       justify-content: flex-start;
 
@@ -175,7 +175,7 @@
       border-left: 3px solid lime;
       border-right: 3px solid lime;
       box-sizing: border-box;
-      background-color: rgb(0 0 0 / 65%);
+      background-color: rgb(0 0 0 / 100%);
       background-image: var(--header-diagonal-texture);
       background-attachment: scroll;
       animation: var(--header-texture-animation);
@@ -199,7 +199,7 @@
       flex: 0 0 50px;
       width: 50px;
       height: 50px;
-      background-color: rgb(0 0 0 / 65%);
+      background-color: rgb(0 0 0 / 100%);
       background-image: var(--header-diagonal-texture);
       background-attachment: scroll;
       animation: var(--header-texture-animation);
@@ -245,7 +245,7 @@
     }
 
     .skull-icon {
-      background-color: rgb(59 0 102 / 65%);
+      background-color: rgb(59 0 102 / 100%);
       background-image: var(--header-diagonal-texture);
       background-attachment: scroll;
       animation: var(--header-texture-animation);
@@ -256,7 +256,7 @@
     .spiral-icon,
     .recycle-icon,
     .gear-icon {
-      background-color: rgb(59 0 102 / 65%);
+      background-color: rgb(59 0 102 / 100%);
       background-image: var(--header-diagonal-texture);
       background-attachment: scroll;
       animation: var(--header-texture-animation);
@@ -268,7 +268,7 @@
       padding-left: 0;
       gap: 0;
       border-left: 3px solid lime;
-      background-color: rgb(0 0 0 / 65%);
+      background-color: rgb(0 0 0 / 100%);
       background-image: var(--header-diagonal-texture);
       background-attachment: scroll;
       animation: var(--header-texture-animation);
@@ -321,7 +321,7 @@
       padding-left: 0.45ch;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       white-space: nowrap;
       box-sizing: border-box;
     }
@@ -354,7 +354,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: rgb(0 0 0 / 65%);
+      background-color: rgb(0 0 0 / 100%);
       background-image: var(--header-diagonal-texture);
       background-attachment: scroll;
       animation: var(--header-texture-animation);
@@ -387,7 +387,7 @@
       min-width: 0;
       width: 100%;
       display: grid;
-      grid-template-columns: minmax(72px, 1fr) max-content minmax(72px, 1fr);
+      grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
       align-items: center;
       overflow: hidden;
       background: transparent;
@@ -409,7 +409,7 @@
       min-width: 0;
       padding: 0 14px;
       line-height: 1;
-      background-color: rgb(59 0 102 / 65%);
+      background-color: rgb(59 0 102 / 100%);
       background-image: var(--header-diagonal-texture);
       background-attachment: scroll;
       animation: var(--header-texture-animation);
@@ -441,7 +441,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.35em;
-      background-color: rgb(0 0 0 / 65%);
+      background-color: rgb(0 0 0 / 100%);
       background-image: var(--header-diagonal-texture);
       background-attachment: scroll;
       animation: var(--header-texture-animation);
@@ -449,9 +449,18 @@
       box-sizing: border-box;
     }
 
-    .index-nav-left,
+    .index-nav-left {
+      justify-self: end;
+      justify-content: flex-end;
+      width: max-content;
+      padding-right: 0.35em;
+    }
+
     .index-nav-right {
-      justify-self: stretch;
+      justify-self: start;
+      justify-content: flex-start;
+      width: max-content;
+      padding-left: 0.35em;
     }
 
     .index-bracket {
@@ -749,7 +758,7 @@
         grid-area: clock;
         min-width: 0;
         width: 88px;
-        background-color: rgb(59 0 102 / 65%);
+        background-color: rgb(59 0 102 / 100%);
         background-image: var(--header-diagonal-texture);
         background-attachment: scroll;
         animation: var(--header-texture-animation);
@@ -775,7 +784,7 @@
       .index-link-slot {
         grid-area: index;
         grid-column: auto;
-        grid-template-columns: minmax(64px, 1fr) max-content minmax(64px, 1fr);
+        grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
         min-width: 0;
         height: 50px;
         color: lime;
@@ -791,9 +800,18 @@
         font-size: 0.95em;
       }
 
-      .index-nav-left,
+      .index-nav-left {
+        justify-self: end;
+        justify-content: flex-end;
+        width: max-content;
+        padding-right: 0.35em;
+      }
+
       .index-nav-right {
-        justify-self: stretch;
+        justify-self: start;
+        justify-content: flex-start;
+        width: max-content;
+        padding-left: 0.35em;
       }
 
       .ghost-counter {
@@ -802,7 +820,7 @@
         min-width: 0;
         overflow: hidden;
         border-left: 0;
-        background-color: rgb(59 0 102 / 65%);
+        background-color: rgb(59 0 102 / 100%);
         background-image: var(--header-diagonal-texture);
         background-attachment: scroll;
         animation: var(--header-texture-animation);
@@ -817,7 +835,7 @@
 
       .recycle-icon {
         grid-area: recycle;
-        background-color: rgb(0 0 0 / 65%);
+        background-color: rgb(0 0 0 / 100%);
         background-image: var(--header-diagonal-texture);
         background-attachment: scroll;
         animation: var(--header-texture-animation);
@@ -841,7 +859,7 @@
         grid-area: gear;
         width: auto;
         flex-basis: auto;
-        background-color: rgb(0 0 0 / 65%);
+        background-color: rgb(0 0 0 / 100%);
         background-image: var(--header-diagonal-texture);
         background-attachment: scroll;
         animation: var(--header-texture-animation);
@@ -888,7 +906,7 @@
         display: flex;
         width: auto;
         flex-basis: auto;
-        background-color: rgb(59 0 102 / 65%);
+        background-color: rgb(59 0 102 / 100%);
         background-image: var(--header-diagonal-texture);
         background-attachment: scroll;
         animation: var(--header-texture-animation);
@@ -896,7 +914,7 @@
     }
 
 
-    /* Smooth culled diagonal texture: transform-based, paused until top-bar hover. */
+    /* Smooth culled diagonal texture: pulse/ripple only; no horizontal travel. */
     @property --header-stripe-thickness {
       syntax: "<length>";
       inherits: false;
@@ -905,35 +923,35 @@
 
     @keyframes header-texture-slide-smooth {
       0% {
-        transform: translate3d(-24px, 0, 0) skewX(0deg) scaleY(1);
+        transform: translate3d(0, 0, 0) skewX(0deg) scaleY(1);
       }
 
       12.5% {
-        transform: translate3d(-21px, -0.65px, 0) skewX(-0.55deg) scaleY(1.018);
+        transform: translate3d(0, -0.65px, 0) skewX(-0.55deg) scaleY(1.018);
       }
 
       25% {
-        transform: translate3d(-18px, -1.05px, 0) skewX(-1deg) scaleY(1.045);
+        transform: translate3d(0, -1.05px, 0) skewX(-1deg) scaleY(1.045);
       }
 
       37.5% {
-        transform: translate3d(-15px, -0.45px, 0) skewX(-0.45deg) scaleY(1.02);
+        transform: translate3d(0, -0.45px, 0) skewX(-0.45deg) scaleY(1.02);
       }
 
       50% {
-        transform: translate3d(-12px, 0.85px, 0) skewX(0.75deg) scaleY(0.965);
+        transform: translate3d(0, 0.85px, 0) skewX(0.75deg) scaleY(0.965);
       }
 
       62.5% {
-        transform: translate3d(-9px, 1.15px, 0) skewX(1.1deg) scaleY(0.94);
+        transform: translate3d(0, 1.15px, 0) skewX(1.1deg) scaleY(0.94);
       }
 
       75% {
-        transform: translate3d(-6px, 0.35px, 0) skewX(0.5deg) scaleY(0.975);
+        transform: translate3d(0, 0.35px, 0) skewX(0.5deg) scaleY(0.975);
       }
 
       87.5% {
-        transform: translate3d(-3px, -0.5px, 0) skewX(-0.35deg) scaleY(1.012);
+        transform: translate3d(0, -0.5px, 0) skewX(-0.35deg) scaleY(1.012);
       }
 
       100% {
@@ -1001,7 +1019,7 @@
       background-size: 12px 12px;
       background-repeat: repeat;
       transform-origin: center;
-      transform: translate3d(-24px, 0, 0) skewX(0deg) scaleY(1);
+      transform: translate3d(0, 0, 0) skewX(0deg) scaleY(1);
       animation:
         header-texture-slide-smooth 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite running,
         header-texture-thickness-pulse 1.6s ease-in-out infinite running;
@@ -1171,10 +1189,6 @@
         3px 3px 3px rgb(255 0 255 / 33%);
     }
 
-    .gear-icon:hover .emoji-tint {
-      color: #8200e0;
-    }
-
     @media (min-width: 601px) {
       .clock-text::before,
       .emoji-icon::before,
@@ -1193,7 +1207,7 @@
       .bottom-bar:hover .index-nav-button::before,
       .bottom-bar:hover .ghost-counter::before,
       .bottom-bar:hover .mobile-ghost-icon::before {
-        --header-stripe-color: rgb(255 0 255 / 50%);
+        --header-stripe-color: rgb(0 128 0 / 100%);
       }
     }
 
@@ -1236,6 +1250,1139 @@
     .ghost-icon:hover .emoji-tint {
       color: lime;
     }
+
+    /* Globe and gear icon overrides: match the black-default / lime-hover symbol style. */
+    .alien-glyph,
+    .gear-icon,
+    .alien-glyph .emoji-tint,
+    .gear-icon .emoji-tint {
+      color: black;
+    }
+
+    .alien-glyph .emoji-tint,
+    .gear-icon .emoji-tint {
+      font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "Noto Sans Symbols", "Arial Unicode MS", sans-serif;
+      font-variant-emoji: text;
+    }
+
+    .alien-glyph:hover,
+    .gear-icon:hover,
+    .alien-glyph:hover .emoji-tint,
+    .gear-icon:hover .emoji-tint {
+      color: lime;
+    }
+
+
+    /* Keep texture color consistent; no stripe direction reversal on desktop bar hover. */
+    @media (min-width: 601px) {
+      .clock-text::before,
+      .emoji-icon::before,
+      .site-link::before,
+      .index-link-stack::before,
+      .index-nav-button::before,
+      .ghost-counter::before,
+      .mobile-ghost-icon::before {
+        --header-stripe-color: rgb(0 255 0 / 50%);
+        animation-direction: normal, normal;
+      }
+
+      .bottom-bar:hover .clock-text::before,
+      .bottom-bar:hover .emoji-icon::before,
+      .bottom-bar:hover .site-link::before,
+      .bottom-bar:hover .index-link-stack::before,
+      .bottom-bar:hover .index-nav-button::before,
+      .bottom-bar:hover .ghost-counter::before,
+      .bottom-bar:hover .mobile-ghost-icon::before {
+        --header-stripe-color: rgb(0 128 0 / 100%);
+        animation-direction: normal, normal;
+      }
+    }
+
+
+    /* Match the ghost label text treatment to the domain title link text. */
+    .ghost-label {
+      display: inline-block;
+      flex: 0 1 auto;
+      max-width: 9.5ch;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: "Creepster", "Courier New", Courier, monospace;
+      font-size: 0.72em;
+      font-style: italic;
+      font-weight: 700;
+      letter-spacing: 0.035em;
+      color: black;
+      transform: scale(1.04, 1.16);
+      transform-origin: center;
+      -webkit-text-stroke: 1px #ff004c;
+      paint-order: stroke fill;
+      text-shadow:
+        -3px -3px 0 #ff004c,
+        0 -3px 0 #ff8c00,
+        3px -3px 0 #ffe600,
+        -3px 0 0 #00d26a,
+        3px 0 0 #00d9ff,
+        -3px 3px 0 #3b5bff,
+        0 3px 0 #8f00ff,
+        3px 3px 0 #ff00c8;
+    }
+
+    .ghost-label:hover {
+      color: lime;
+      -webkit-text-stroke: 1px rgb(255 0 255 / 100%);
+      paint-order: stroke fill;
+      text-shadow:
+        0 0 1px rgb(255 0 255 / 100%),
+        0 0 2px rgb(255 0 255 / 67%),
+        0 0 3px rgb(255 0 255 / 33%),
+        -1px -1px 1px rgb(255 0 255 / 100%),
+        1px -1px 1px rgb(255 0 255 / 100%),
+        -1px 1px 1px rgb(255 0 255 / 100%),
+        1px 1px 1px rgb(255 0 255 / 100%),
+        -2px -2px 2px rgb(255 0 255 / 67%),
+        2px -2px 2px rgb(255 0 255 / 67%),
+        -2px 2px 2px rgb(255 0 255 / 67%),
+        2px 2px 2px rgb(255 0 255 / 67%),
+        -3px -3px 3px rgb(255 0 255 / 33%),
+        3px -3px 3px rgb(255 0 255 / 33%),
+        -3px 3px 3px rgb(255 0 255 / 33%),
+        3px 3px 3px rgb(255 0 255 / 33%);
+    }
+
+    /* Keep the whole "# Ghosts Online" group small enough to fit between the ghost and globe icons. */
+    .ghost-text {
+      width: 15ch;
+      min-width: 15ch;
+      padding-left: 0;
+      gap: 0.3ch;
+      justify-content: center;
+      overflow: hidden;
+      text-overflow: clip;
+    }
+
+    .ghost-count,
+    .ghost-label {
+      flex: 0 1 auto;
+      min-width: 0;
+      margin-right: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: "Creepster", "Courier New", Courier, monospace;
+      font-size: 0.72em;
+      font-style: italic;
+      font-weight: 700;
+      letter-spacing: 0.025em;
+      line-height: 1;
+      color: black;
+      transform: scale(1.02, 1.12);
+      transform-origin: center;
+      -webkit-text-stroke: 1px #ff004c;
+      paint-order: stroke fill;
+      text-shadow:
+        -3px -3px 0 #ff004c,
+        0 -3px 0 #ff8c00,
+        3px -3px 0 #ffe600,
+        -3px 0 0 #00d26a,
+        3px 0 0 #00d9ff,
+        -3px 3px 0 #3b5bff,
+        0 3px 0 #8f00ff,
+        3px 3px 0 #ff00c8;
+    }
+
+    .ghost-label {
+      max-width: none;
+    }
+
+    .ghost-count:hover,
+    .ghost-label:hover {
+      color: lime;
+      -webkit-text-stroke: 1px rgb(255 0 255 / 100%);
+      paint-order: stroke fill;
+      text-shadow:
+        0 0 1px rgb(255 0 255 / 100%),
+        0 0 2px rgb(255 0 255 / 67%),
+        0 0 3px rgb(255 0 255 / 33%),
+        -1px -1px 1px rgb(255 0 255 / 100%),
+        1px -1px 1px rgb(255 0 255 / 100%),
+        -1px 1px 1px rgb(255 0 255 / 100%),
+        1px 1px 1px rgb(255 0 255 / 100%),
+        -2px -2px 2px rgb(255 0 255 / 67%),
+        2px -2px 2px rgb(255 0 255 / 67%),
+        -2px 2px 2px rgb(255 0 255 / 67%),
+        2px 2px 2px rgb(255 0 255 / 67%),
+        -3px -3px 3px rgb(255 0 255 / 33%),
+        3px -3px 3px rgb(255 0 255 / 33%),
+        -3px 3px 3px rgb(255 0 255 / 33%),
+        3px 3px 3px rgb(255 0 255 / 33%);
+    }
+
+    @media (max-width: 600px) {
+      .ghost-text {
+        flex: 0 1 auto;
+        width: min(15ch, calc(100% - 50px));
+        min-width: 0;
+        justify-content: center;
+        gap: 0.25ch;
+      }
+
+      .ghost-count,
+      .ghost-label {
+        font-size: 0.68em;
+        transform: scale(1, 1.08);
+      }
+    }
+
+
+    /* Fill the available counter span while keeping the count 50% larger than the label. */
+    .ghost-counter {
+      grid-template-columns: 50px minmax(0, 15ch) 50px;
+    }
+
+    .ghost-text {
+      width: 100%;
+      min-width: 0;
+      max-width: 15ch;
+      justify-content: center;
+      gap: 0.28ch;
+    }
+
+    .ghost-count {
+      flex: 0 0 auto;
+      font-size: 1.08em;
+    }
+
+    .ghost-label {
+      flex: 1 1 auto;
+      font-size: 0.72em;
+      text-align: left;
+    }
+
+    @media (max-width: 600px) {
+      .ghost-text {
+        width: 100%;
+        max-width: none;
+        gap: 0.24ch;
+      }
+
+      .ghost-count {
+        font-size: 1.02em;
+      }
+
+      .ghost-label {
+        font-size: 0.68em;
+      }
+    }
+
+
+
+    /* Pin the count directly after the ghost icon, then let the label fill the remaining span to the globe. */
+    .ghost-counter {
+      grid-template-columns: 50px minmax(0, 15ch) 50px;
+    }
+
+    .ghost-text {
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      padding-left: 0.35ch;
+      gap: 0.35ch;
+      justify-content: flex-start;
+    }
+
+    .ghost-count {
+      flex: 0 0 auto;
+      margin-right: 0;
+      font-size: 2.16em;
+    }
+
+    .ghost-label {
+      flex: 1 1 auto;
+      min-width: 0;
+      text-align: center;
+      font-size: 1.44em;
+    }
+
+    @media (max-width: 600px) {
+      .ghost-text {
+        width: 100%;
+        max-width: none;
+        padding-left: 0.35ch;
+        gap: 0.3ch;
+        justify-content: flex-start;
+      }
+
+      .ghost-count {
+        font-size: 2.04em;
+      }
+
+      .ghost-label {
+        font-size: 1.36em;
+        text-align: center;
+      }
+    }
+
+
+
+    /* Ghost counter: count beside ghost, two-line clock-font label between count and globe. */
+    .ghost-counter {
+      grid-template-columns: 50px minmax(0, 15ch) 50px;
+    }
+
+    .ghost-text {
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      padding-left: 0.35ch;
+      gap: 0.35ch;
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      align-items: center;
+      justify-content: stretch;
+      box-sizing: border-box;
+      white-space: nowrap;
+    }
+
+    .ghost-count,
+    .ghost-label {
+      font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      font-style: normal;
+      font-weight: 900;
+      color: black;
+      transform: none;
+      -webkit-text-stroke: 1px #ff004c;
+      paint-order: stroke fill;
+      text-shadow:
+        -3px -3px 0 #ff004c,
+        0 -3px 0 #ff8c00,
+        3px -3px 0 #ffe600,
+        -3px 0 0 #00d26a,
+        3px 0 0 #00d9ff,
+        -3px 3px 0 #3b5bff,
+        0 3px 0 #8f00ff,
+        3px 3px 0 #ff00c8;
+    }
+
+    .ghost-count {
+      flex: none;
+      min-width: 0;
+      margin: 0;
+      font-size: 1.85em;
+      line-height: 1;
+      text-align: right;
+    }
+
+    .ghost-label {
+      flex: none;
+      min-width: 0;
+      max-width: none;
+      overflow: visible;
+      text-overflow: clip;
+      font-size: 0.9em;
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      text-align: center;
+      white-space: normal;
+      transform: scale(1.25);
+      transform-origin: center;
+    }
+
+    .ghost-count:hover,
+    .ghost-label:hover {
+      color: lime;
+      -webkit-text-stroke: 1px rgb(255 0 255 / 100%);
+      paint-order: stroke fill;
+      text-shadow:
+        0 0 1px rgb(255 0 255 / 100%),
+        0 0 2px rgb(255 0 255 / 67%),
+        0 0 3px rgb(255 0 255 / 33%),
+        -1px -1px 1px rgb(255 0 255 / 100%),
+        1px -1px 1px rgb(255 0 255 / 100%),
+        -1px 1px 1px rgb(255 0 255 / 100%),
+        1px 1px 1px rgb(255 0 255 / 100%),
+        -2px -2px 2px rgb(255 0 255 / 67%),
+        2px -2px 2px rgb(255 0 255 / 67%),
+        -2px 2px 2px rgb(255 0 255 / 67%),
+        2px 2px 2px rgb(255 0 255 / 67%),
+        -3px -3px 3px rgb(255 0 255 / 33%),
+        3px -3px 3px rgb(255 0 255 / 33%),
+        -3px 3px 3px rgb(255 0 255 / 33%),
+        3px 3px 3px rgb(255 0 255 / 33%);
+    }
+
+    .ghost-counter.is-you-dummy .ghost-text {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .ghost-counter.is-you-dummy .ghost-count {
+      display: none;
+    }
+
+    .ghost-counter.is-you-dummy .ghost-label {
+      font-family: "Creepster", "Courier New", Courier, monospace;
+      font-size: 1em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 600px) {
+      .ghost-counter {
+        grid-template-columns: 50px minmax(0, 1fr) 50px;
+      }
+
+      .ghost-text {
+        width: 100%;
+        max-width: none;
+        padding-left: 0.25ch;
+        gap: 0.25ch;
+      }
+
+      .ghost-count {
+        font-size: 1.7em;
+      }
+
+      .ghost-label {
+        font-size: 0.78em;
+        line-height: 0.9;
+      }
+    }
+
+    /* Center the combined count + two-line label between the ghost and globe icons. */
+    .ghost-text {
+      width: max-content;
+      min-width: 0;
+      max-width: 100%;
+      padding-left: 0;
+      justify-self: center;
+      justify-content: center;
+      grid-template-columns: max-content max-content;
+      gap: 0.45ch;
+    }
+
+    .ghost-label {
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .ghost-text {
+        width: max-content;
+        max-width: 100%;
+        padding-left: 0;
+        justify-self: center;
+        justify-content: center;
+        grid-template-columns: max-content max-content;
+        gap: 0.35ch;
+      }
+    }
+
+
+    /* Extend the Left/Right nav button backgrounds to the outer dividers while keeping the text tucked beside index.html. */
+    .index-nav-left,
+    .index-nav-right {
+      justify-self: stretch;
+      width: 100%;
+    }
+
+    .index-nav-left {
+      justify-content: flex-end;
+      padding-right: 0.35em;
+    }
+
+    .index-nav-right {
+      justify-content: flex-start;
+      padding-left: 0.35em;
+    }
+
+
+    /* Keep the Left/Right labels fully visible while their backgrounds still stretch to the outer dividers. */
+    .index-link-slot {
+      grid-template-columns: minmax(max-content, 1fr) max-content minmax(max-content, 1fr);
+      overflow: visible;
+    }
+
+    .index-nav-button {
+      min-width: max-content;
+      overflow: visible;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+
+    .index-nav-left {
+      padding-left: 0.35em;
+    }
+
+    .index-nav-right {
+      padding-right: 0.35em;
+    }
+
+    .index-bracket,
+    .index-nav-label {
+      flex: 0 0 auto;
+      min-width: max-content;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+
+    /* Mobile only: center the < Left and Right > text inside their available grid cells. */
+    @media (max-width: 600px) {
+      .index-link-slot {
+        grid-template-columns: minmax(max-content, 1fr) max-content minmax(max-content, 1fr);
+      }
+
+      .index-nav-left,
+      .index-nav-right {
+        justify-content: center;
+        justify-self: stretch;
+        width: 100%;
+        padding-left: 0.35em;
+        padding-right: 0.35em;
+        text-align: center;
+      }
+    }
+
+
+    /* Ghost label fit pass: desktop gets enough span, mobile becomes one-line beside globe. */
+    .ghost-counter {
+      grid-template-columns: 50px minmax(17ch, 19ch) 50px;
+    }
+
+    .ghost-text {
+      width: max-content;
+      max-width: none;
+      overflow: visible;
+      grid-template-columns: max-content max-content;
+    }
+
+    .ghost-label {
+      overflow: visible;
+      text-overflow: clip;
+      max-width: none;
+    }
+
+    @media (max-width: 600px) {
+      .ghost-counter {
+        grid-template-columns: minmax(0, 1fr) 50px;
+      }
+
+      .ghost-counter .ghost-glyph {
+        display: none;
+      }
+
+      .ghost-text {
+        grid-column: 1;
+        justify-self: end;
+        align-self: center;
+        width: max-content;
+        max-width: calc(100vw - 140px);
+        padding-left: 0;
+        padding-right: 0.45ch;
+        gap: 0.3ch;
+        grid-template-columns: max-content max-content;
+        white-space: nowrap;
+        overflow: visible;
+      }
+
+      .ghost-label {
+        font-size: 0.78em;
+        line-height: 1;
+        white-space: nowrap;
+        transform: none;
+      }
+
+      .ghost-label br {
+        display: none;
+      }
+
+      .ghost-counter .alien-glyph {
+        grid-column: 2;
+      }
+    }
+
+
+    /* Ghost counter alignment pass: keep # one space left of the two-line label and center that pair. */
+    @media (min-width: 601px) {
+      .ghost-counter {
+        grid-template-columns: 50px minmax(0, 1fr) 50px;
+      }
+
+      .ghost-text {
+        justify-self: center;
+        align-self: center;
+        display: inline-grid;
+        grid-template-columns: max-content max-content;
+        align-items: center;
+        justify-content: center;
+        width: max-content;
+        max-width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+        gap: 0.5ch;
+        overflow: visible;
+        white-space: nowrap;
+      }
+
+      .ghost-count {
+        grid-column: 1;
+        margin: 0;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .ghost-label {
+        grid-column: 2;
+        min-width: max-content;
+        max-width: none;
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+        line-height: 0.92;
+        text-align: center;
+        transform: scale(1.15);
+        transform-origin: left center;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .ghost-text {
+        gap: 0.5ch;
+      }
+    }
+
+
+
+    /* Desktop repair: make the Right > nav background fill its whole right-side container cleanly. */
+    @media (min-width: 601px) {
+      .bar-column-center {
+        overflow: hidden;
+      }
+
+      .index-link-slot {
+        grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
+        overflow: hidden;
+      }
+
+      .index-nav-left,
+      .index-nav-right {
+        align-self: stretch;
+        width: 100%;
+        min-width: 0;
+        height: 50px;
+      }
+
+      .index-nav-right {
+        justify-self: stretch;
+        justify-content: flex-start;
+        background-color: rgb(0 0 0 / 100%) !important;
+        background-clip: padding-box;
+      }
+
+      .index-nav-right::before {
+        inset: 0 !important;
+      }
+
+      .index-nav-right .index-nav-label,
+      .index-nav-right .index-bracket {
+        position: relative;
+        z-index: 1;
+        flex: 0 0 auto;
+      }
+    }
+
+
+    /* Desktop precision pass: the Right > container background fills from the divider beside index.html to the divider beside recycle. */
+    @media (min-width: 601px) {
+      .bar-column-center {
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .bar-column-center > .index-link-slot {
+        width: 100%;
+        min-width: 0;
+        height: 50px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
+        align-items: stretch;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      .index-nav-right {
+        grid-column: 3;
+        justify-self: stretch;
+        align-self: stretch;
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+        height: 50px;
+        padding-left: 0.35em;
+        padding-right: 0.35em;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        box-sizing: border-box;
+        overflow: hidden;
+        background-color: rgb(0 0 0 / 100%) !important;
+        background-clip: border-box;
+      }
+
+      .index-nav-right::before {
+        inset: 0 !important;
+        width: auto !important;
+      }
+
+      .index-nav-right .index-nav-label,
+      .index-nav-right .index-bracket {
+        position: relative;
+        z-index: 1;
+        flex: 0 0 auto;
+        min-width: max-content;
+        overflow: visible;
+        text-overflow: clip;
+        white-space: nowrap;
+      }
+    }
+
+
+
+    /* Final desktop gap fix: paint the entire Right > grid cell, not just the anchor text box. */
+    @media (min-width: 601px) {
+      .bar-column-center > .index-link-slot {
+        position: relative;
+        isolation: isolate;
+      }
+
+      .bar-column-center > .index-link-slot::after {
+        content: "";
+        grid-column: 3;
+        grid-row: 1;
+        align-self: stretch;
+        justify-self: stretch;
+        width: 100%;
+        height: 50px;
+        min-width: 0;
+        background-color: rgb(0 0 0 / 100%);
+        background-image: repeating-linear-gradient(
+          135deg,
+          var(--header-stripe-color, rgb(0 255 0 / 50%)) 0 3px,
+          transparent 3px 8px
+        );
+        background-size: 12px 12px;
+        background-repeat: repeat;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .bottom-bar:hover .bar-column-center > .index-link-slot::after {
+        --header-stripe-color: rgb(0 128 0 / 100%);
+      }
+
+      .index-nav-right {
+        position: relative;
+        z-index: 1;
+        justify-self: stretch;
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        background-color: transparent !important;
+      }
+
+      .index-nav-right::before {
+        content: none !important;
+      }
+    }
+
+
+    /* Uniform nav stripe repair: no special Right > paint layer, both side buttons use the same full-cell stripe system. */
+    @media (min-width: 601px) {
+      .bar-content {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .bar-column-center,
+      .bar-column-center > .index-link-slot {
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .bar-column-center > .index-link-slot {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
+        align-items: stretch;
+        width: 100%;
+        height: 50px;
+        background: transparent;
+      }
+
+      .bar-column-center > .index-link-slot::after {
+        content: none !important;
+      }
+
+      .index-nav-left,
+      .index-nav-right {
+        position: relative;
+        z-index: auto;
+        align-self: stretch;
+        justify-self: stretch;
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        overflow: hidden;
+        background-color: rgb(0 0 0 / 100%) !important;
+        background-image: none !important;
+      }
+
+      .index-nav-left {
+        justify-content: flex-end;
+        padding-left: 0.35em;
+        padding-right: 0.35em;
+      }
+
+      .index-nav-right {
+        justify-content: flex-start;
+        padding-left: 0.35em;
+        padding-right: 0.35em;
+      }
+
+      .index-nav-left::before,
+      .index-nav-right::before {
+        content: "" !important;
+        position: absolute;
+        inset: 0 -24px 0 0 !important;
+        z-index: 0;
+        pointer-events: none;
+        --header-stripe-thickness: 3px;
+        --header-stripe-color: rgb(0 255 0 / 50%);
+        background-image: repeating-linear-gradient(
+          135deg,
+          var(--header-stripe-color) 0 var(--header-stripe-thickness),
+          transparent var(--header-stripe-thickness) 8px
+        );
+        background-size: 12px 12px;
+        background-repeat: repeat;
+        transform-origin: center;
+        transform: translate3d(0, 0, 0) skewX(0deg) scaleY(1);
+        animation:
+          header-texture-slide-smooth 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite running,
+          header-texture-thickness-pulse 1.6s ease-in-out infinite running;
+        will-change: transform, --header-stripe-thickness;
+      }
+
+      .bottom-bar:hover .index-nav-left::before,
+      .bottom-bar:hover .index-nav-right::before {
+        --header-stripe-color: rgb(0 128 0 / 100%);
+        animation-direction: normal, normal;
+      }
+
+      .index-nav-left .index-bracket,
+      .index-nav-left .index-nav-label,
+      .index-nav-right .index-bracket,
+      .index-nav-right .index-nav-label {
+        position: relative;
+        z-index: 1;
+        flex: 0 0 auto;
+        min-width: max-content;
+        overflow: visible;
+        text-overflow: clip;
+        white-space: nowrap;
+      }
+    }
+
+
+    /* Final uniform top-bar background base: fill any empty column space with the same animated stripe layer. */
+    @media (min-width: 601px) {
+      .bar-column {
+        position: relative;
+        min-width: 0;
+        overflow: hidden;
+        background-color: rgb(0 0 0 / 100%);
+      }
+
+      .bar-column::before {
+        content: "";
+        position: absolute;
+        inset: 0 -24px 0 0;
+        z-index: 0;
+        pointer-events: none;
+        --header-stripe-thickness: 3px;
+        --header-stripe-color: rgb(0 255 0 / 50%);
+        background-image: repeating-linear-gradient(
+          135deg,
+          var(--header-stripe-color) 0 var(--header-stripe-thickness),
+          transparent var(--header-stripe-thickness) 8px
+        );
+        background-size: 12px 12px;
+        background-repeat: repeat;
+        transform-origin: center;
+        transform: translate3d(0, 0, 0) skewX(0deg) scaleY(1);
+        animation:
+          header-texture-slide-smooth 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite running,
+          header-texture-thickness-pulse 1.6s ease-in-out infinite running;
+        will-change: transform, --header-stripe-thickness;
+      }
+
+      .bottom-bar:hover .bar-column::before {
+        --header-stripe-color: rgb(0 128 0 / 100%);
+        animation-direction: normal, normal;
+      }
+
+      .bar-column > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .bar-column-right {
+        justify-content: flex-start;
+      }
+    }
+
+
+    /* Desktop allocation fix: shrink the right icon cluster to its real width and give the released space to the Right > nav cell. */
+    @media (min-width: 601px) {
+      .bar-content {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) max-content;
+      }
+
+      .bar-column-right {
+        width: max-content;
+        min-width: max-content;
+        justify-self: end;
+        justify-content: flex-end;
+        background-color: transparent;
+        overflow: visible;
+      }
+
+      .bar-column-right::before {
+        content: none;
+      }
+
+      .bar-column-center > .index-link-slot {
+        grid-template-columns: minmax(max-content, 1fr) max-content minmax(max-content, 2fr);
+      }
+
+      .index-nav-right {
+        justify-self: stretch;
+        width: 100%;
+        max-width: none;
+      }
+    }
+
+
+    /* Mobile color sync: use the same default colors as the desktop top bar. */
+    @media (max-width: 600px) {
+      .clock-text::before,
+      .emoji-icon::before,
+      .site-link::before,
+      .index-link-stack::before,
+      .index-nav-button::before,
+      .ghost-counter::before,
+      .mobile-ghost-icon::before {
+        --header-stripe-color: rgb(0 255 0 / 50%);
+      }
+
+      .skull-icon,
+      .spiral-icon,
+      .recycle-icon,
+      .gear-icon,
+      .mobile-ghost-icon,
+      .index-link-stack {
+        background-color: rgb(59 0 102 / 100%);
+      }
+
+      .site-link,
+      .clock-text,
+      .ghost-counter,
+      .index-nav-button {
+        background-color: rgb(0 0 0 / 100%);
+      }
+
+      .site-link,
+      .bar-content .site-link.home-link,
+      .bar-content .index-link,
+      .index-nav-button,
+      .clock-text,
+      .ghost-counter,
+      .ghost-count,
+      .ghost-label,
+      .skull-icon .emoji-tint,
+      .spiral-icon .emoji-tint,
+      .recycle-icon .emoji-tint,
+      .ghost-glyph .emoji-tint,
+      .ghost-icon .emoji-tint,
+      .alien-glyph .emoji-tint,
+      .gear-icon .emoji-tint {
+        color: black;
+        -webkit-text-stroke: 1px #ff004c;
+        paint-order: stroke fill;
+        text-shadow:
+          -3px -3px 0 #ff004c,
+          0 -3px 0 #ff8c00,
+          3px -3px 0 #ffe600,
+          -3px 0 0 #00d26a,
+          3px 0 0 #00d9ff,
+          -3px 3px 0 #3b5bff,
+          0 3px 0 #8f00ff,
+          3px 3px 0 #ff00c8;
+      }
+
+      .alien-glyph .emoji-tint::after,
+      .spiral-icon .emoji-tint::after,
+      .recycle-icon .emoji-tint::after,
+      .ghost-glyph .emoji-tint::after,
+      .ghost-icon .emoji-tint::after,
+      .gear-icon .emoji-tint::after {
+        content: none;
+      }
+    }
+
+
+    /* Mobile checkerboard background layout: purple/green/purple rows exactly as requested. */
+    @media (max-width: 600px) {
+      .bar-content {
+        --mobile-bg-purple: rgb(59 0 102 / 60%);
+        --mobile-bg-green: rgb(0 255 0 / 60%);
+      }
+
+      /* Top row: purple, green, purple */
+      .skull-icon,
+      .clock-text {
+        background-color: var(--mobile-bg-purple) !important;
+      }
+
+      .site-link {
+        background-color: var(--mobile-bg-green) !important;
+      }
+
+      /* Middle row: green, purple, green */
+      .recycle-icon,
+      .gear-icon {
+        background-color: var(--mobile-bg-green) !important;
+      }
+
+      .ghost-counter {
+        background-color: var(--mobile-bg-purple) !important;
+      }
+
+      /* Bottom row: purple, green, purple, green, purple */
+      .spiral-icon,
+      .mobile-ghost-icon {
+        background-color: var(--mobile-bg-purple) !important;
+      }
+
+      .index-link-slot {
+        background-color: transparent !important;
+      }
+
+      .index-nav-left,
+      .index-nav-right {
+        background-color: var(--mobile-bg-green) !important;
+      }
+
+      .index-link-panel,
+      .index-link-stack {
+        background-color: var(--mobile-bg-purple) !important;
+      }
+    }
+
+
+    /* Top bar boldness boost: make every visible top-bar element heavier without changing layout. */
+    .bottom-bar,
+    .bottom-bar * {
+      font-weight: 900 !important;
+      text-rendering: geometricPrecision;
+    }
+
+    .bottom-bar .site-link,
+    .bottom-bar .bar-content .index-link,
+    .bottom-bar .index-nav-button,
+    .bottom-bar .clock-text,
+    .bottom-bar .ghost-count,
+    .bottom-bar .ghost-label,
+    .bottom-bar .emoji-tint,
+    .bottom-bar .ghost-glyph,
+    .bottom-bar .alien-glyph,
+    .bottom-bar .gear-icon,
+    .bottom-bar .recycle-icon,
+    .bottom-bar .spiral-icon,
+    .bottom-bar .skull-icon,
+    .bottom-bar .mobile-ghost-icon {
+      -webkit-text-stroke-width: 1.5px;
+      filter: contrast(1.12) saturate(1.08);
+    }
+
+    .bottom-bar .emoji-icon,
+    .bottom-bar .emoji-tint,
+    .bottom-bar .index-bracket,
+    .bottom-bar .index-nav-label,
+    .bottom-bar .texture-content,
+    .bottom-bar .clock-time,
+    .bottom-bar .clock-date,
+    .bottom-bar .ghost-count,
+    .bottom-bar .ghost-label {
+      font-weight: 900 !important;
+    }
+
+
+    /* Nav font swap: side buttons match clock; index.html matches domain title. */
+    .index-nav-button,
+    .index-nav-button .index-bracket,
+    .index-nav-button .index-nav-label {
+      font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      font-weight: 900;
+    }
+
+    .bar-content .index-link,
+    .bar-content .index-link .texture-content {
+      font-family: "Creepster", "Courier New", Courier, monospace;
+      font-style: italic;
+      font-weight: 900;
+      letter-spacing: 0.09em;
+    }
+
+
+    /* Safe arrow-only nav labels: keep arrows visible and spaced beside the index dividers. */
+    .index-nav-left,
+    .index-nav-right {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .index-nav-left {
+      justify-content: flex-end;
+      padding-right: 1ch;
+    }
+
+    .index-nav-right {
+      justify-content: flex-start;
+      padding-left: 1ch;
+    }
+
+    .index-nav-left .index-bracket,
+    .index-nav-right .index-bracket {
+      flex: 0 0 auto;
+      min-width: max-content;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 600px) {
+      .index-nav-left,
+      .index-nav-right {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+
 </style>
 </head>
 
@@ -1251,7 +2398,7 @@
         <span class="emoji-icon spiral-icon"><span class="emoji-tint" data-emoji="&#128065;&#65038;">&#128065;&#65038;</span></span>
       </span>
       <span class="bar-column bar-column-center">
-        <span class="index-link-slot"><a class="index-nav-button index-nav-left index-bracket-left" href="#left" aria-label="Left"><span class="index-bracket" aria-hidden="true">&lt;</span><span class="index-nav-label">Left</span></a><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/"><span class="texture-content">index.html</span></a></span><span class="site-divider" aria-hidden="true"></span></span><a class="index-nav-button index-nav-right index-bracket-right" href="#right" aria-label="Right"><span class="index-nav-label">Right</span><span class="index-bracket" aria-hidden="true">&gt;</span></a></span>
+        <span class="index-link-slot"><a class="index-nav-button index-nav-left index-bracket-left" href="#left" aria-label="Go left"><span class="index-bracket" aria-hidden="true">&lt;-</span></a><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/"><span class="texture-content">index.html</span></a></span><span class="site-divider" aria-hidden="true"></span></span><a class="index-nav-button index-nav-right index-bracket-right" href="#right" aria-label="Go right"><span class="index-bracket" aria-hidden="true">-&gt;</span></a></span>
       </span>
       <span class="bar-column bar-column-right">
         <span class="emoji-icon recycle-icon"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
@@ -1260,13 +2407,13 @@
           <span class="ghost-text">
             <span class="ghost-count" id="ghost-count">?</span><span class="ghost-label" id="ghost-label">Ghosts Online</span>
           </span>
-          <span class="alien-glyph"><span class="emoji-tint" data-emoji="&#127760;">&#127760;</span></span>
+          <span class="alien-glyph"><span class="emoji-tint" data-emoji="&#127760;&#65038;">&#127760;&#65038;</span></span>
         </span>
         <span class="clock-text">
           <span class="clock-time" id="clock-time"></span>
           <span class="clock-date" id="clock-date"></span>
         </span>
-        <span class="emoji-icon gear-icon"><span class="emoji-tint" data-emoji="&#9881;&#65039;">&#9881;&#65039;</span></span>
+        <span class="emoji-icon gear-icon"><span class="emoji-tint" data-emoji="&#9881;&#65038;">&#9881;&#65038;</span></span>
         <span class="emoji-icon ghost-icon mobile-ghost-icon"><span class="emoji-tint" data-emoji="&#128123;&#65038;">&#128123;&#65038;</span></span>
       </span>
     </div>
@@ -1344,7 +2491,15 @@
       const suffixText = match ? match[2].trimStart() : "Ghosts Online";
 
       ghostCount.textContent = countText;
-      ghostLabel.textContent = suffixText;
+      if (suffixText === "Ghosts Online" || suffixText === "Ghost Online") {
+        ghostLabel.replaceChildren(
+          document.createTextNode("Ghosts"),
+          document.createElement("br"),
+          document.createTextNode("Online")
+        );
+      } else {
+        ghostLabel.textContent = suffixText;
+      }
       ghostCounter.setAttribute("aria-label", label);
     };
 
@@ -1398,8 +2553,11 @@
       });
     };
 
-    ghostCounter.addEventListener("mouseenter", showYouDummyLabel);
-    ghostCounter.addEventListener("mouseleave", restoreGhostCounterLabel);
+    const ghostLabelElement = document.getElementById("ghost-label");
+    if (ghostLabelElement) {
+      ghostLabelElement.addEventListener("mouseenter", showYouDummyLabel);
+      ghostLabelElement.addEventListener("mouseleave", restoreGhostCounterLabel);
+    }
 
     const desktopHeaderAudioQuery = window.matchMedia("(min-width: 601px)");
     let davidVoice = null;
@@ -1408,6 +2566,8 @@
     let spiralRepeatCount = 0;
     let skullHoverActive = false;
     let skullRepeatTimer = null;
+    let navRepeatActiveText = null;
+    let navRepeatTimer = null;
     let noiseContext = null;
     let noiseSource = null;
     let noiseGain = null;
@@ -1418,6 +2578,7 @@
     let modemWarbleTimer = null;
     let siteSpeechTimer = null;
     let siteSpeechActive = false;
+    let siteSpeechRepeatCount = 0;
     let modemSpeechTimer = null;
     let modemSpeechActive = false;
     let ghostSpeechTimer = null;
@@ -1455,6 +2616,7 @@
       }
       spiralHoverActive = false;
       skullHoverActive = false;
+      navRepeatActiveText = null;
       siteSpeechActive = false;
       modemSpeechActive = false;
       ghostSpeechActive = false;
@@ -1474,6 +2636,10 @@
       if (skullRepeatTimer) {
         window.clearTimeout(skullRepeatTimer);
         skullRepeatTimer = null;
+      }
+      if (navRepeatTimer) {
+        window.clearTimeout(navRepeatTimer);
+        navRepeatTimer = null;
       }
       if (ghostSpeechTimer) {
         window.clearTimeout(ghostSpeechTimer);
@@ -1529,6 +2695,38 @@
       skullRepeatTimer = window.setTimeout(speakSkullLoop, 500);
     };
 
+    const speakNavRepeatLoop = () => {
+      if (!navRepeatActiveText || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+
+      refreshDavidVoice();
+      const phrase = typeof navRepeatActiveText === "function"
+        ? navRepeatActiveText()
+        : navRepeatActiveText;
+      const utterance = new SpeechSynthesisUtterance(phrase);
+      if (davidVoice) utterance.voice = davidVoice;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = TTS_VOLUME_SCALE;
+
+      window.speechSynthesis.speak(utterance);
+      navRepeatTimer = window.setTimeout(speakNavRepeatLoop, 500);
+    };
+
+    const addDesktopSpeechRepeatHover = (selector, text) => {
+      const element = document.querySelector(selector);
+      if (!element) return;
+
+      element.addEventListener("mouseenter", () => {
+        stopWhiteNoise();
+        stopModemStatic();
+        stopHeaderSpeech();
+        navRepeatActiveText = text;
+        speakNavRepeatLoop();
+      });
+
+      element.addEventListener("mouseleave", stopHeaderSpeech);
+    };
+
     const speakSiteLinkLoop = () => {
       if (!siteSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
 
@@ -1537,8 +2735,9 @@
       const utterance = new SpeechSynthesisUtterance("the internet is dead .org");
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1.15;
-      utterance.pitch = 0.78;
+      utterance.pitch = siteSpeechRepeatCount % 2 === 0 ? 0.5 : 1.25;
       utterance.volume = 0.88 * TTS_VOLUME_SCALE;
+      siteSpeechRepeatCount += 1;
       utterance.addEventListener("end", () => {
         if (!siteSpeechActive || !desktopHeaderAudioQuery.matches) return;
         const elapsed = performance.now() - startedAt;
@@ -1863,6 +3062,7 @@
         stopWhiteNoise();
         stopHeaderSpeech();
         startModemStatic(0.33);
+        siteSpeechRepeatCount = 0;
         siteSpeechActive = true;
         speakSiteLinkLoop();
       });
@@ -1881,8 +3081,8 @@
       });
       spiralIcon.addEventListener("mouseleave", stopHeaderSpeech);
     }
-    addDesktopSpeechHover(".index-bracket-left", "Go Left");
-    addDesktopSpeechHover(".index-bracket-right", "Go Right");
+    addDesktopSpeechRepeatHover(".index-bracket-left", "Go Left");
+    addDesktopSpeechRepeatHover(".index-bracket-right", "Go Right");
     const indexLinkPanel = document.querySelector(".index-link-panel");
     if (indexLinkPanel) {
       indexLinkPanel.addEventListener("mouseenter", () => {
@@ -1911,7 +3111,12 @@
         stopModemStatic();
       });
     }
-    addDesktopSpeechHover(".recycle-icon", "Randomize Page");
+    addDesktopSpeechRepeatHover(".recycle-icon", "Randomize Page");
+    addDesktopSpeechRepeatHover(".gear-icon", "Customization");
+    addDesktopSpeechRepeatHover(".ghost-count", () => {
+      const countText = ghostCount.textContent.trim();
+      return countText === "?" ? "Question mark" : countText;
+    });
 
     const ghostGlyph = document.querySelector(".ghost-glyph");
     if (ghostGlyph) {
