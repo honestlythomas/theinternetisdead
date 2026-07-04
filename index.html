@@ -57,6 +57,7 @@
     }
 
     .grave-sidebar {
+      --static-image-inset: calc((100vh - 53px) * 0.025);
       position: fixed;
       left: 0;
       top: 53px;
@@ -79,6 +80,261 @@
 
     .grave-sidebar.is-open {
       display: block;
+    }
+
+    .gear-sidebar-panel {
+      appearance: none;
+      -webkit-appearance: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: calc(100% - (var(--static-image-inset) * 2));
+      height: 53px;
+      margin: var(--static-image-inset) auto 0;
+      padding: 0;
+      border: 0;
+      outline: 3px solid magenta;
+      background: black;
+      box-sizing: border-box;
+      color: white;
+      cursor: pointer;
+      font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      font-weight: 900;
+      -webkit-text-stroke: 0;
+      paint-order: normal;
+      text-shadow: none;
+    }
+
+    .gear-sidebar-panel .texture-content {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: scale(1.16, 1.24);
+      transform-origin: center;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .gear-sidebar-option {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: calc(100% - (var(--static-image-inset) * 2));
+      min-height: 24px;
+      margin: var(--static-image-inset) auto 0;
+      color: white;
+      font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .gear-sidebar-option input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: lime;
+      cursor: pointer;
+    }
+
+    .save-settings-button {
+      gap: 8px;
+    }
+
+    .save-settings-check {
+      position: relative;
+      display: block;
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      border: 2px solid lime;
+      background: black;
+      box-sizing: border-box;
+    }
+
+    .save-settings-button.is-checked .save-settings-check::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 5px;
+      height: 9px;
+      border: solid lime;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    #audio-toggle-button.is-checked .save-settings-check::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 5px;
+      height: 9px;
+      border: solid lime;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .save-settings-button .texture-content {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      flex-direction: row;
+      gap: 8px;
+      width: auto;
+      height: auto;
+    }
+
+    #audio-toggle-button .texture-content {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      flex-direction: row;
+      gap: 8px;
+      width: auto;
+      height: auto;
+    }
+
+    .color-filter-toggle .color-filter-title {
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .color-filter-panel {
+      position: relative;
+      height: 53px;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0;
+      cursor: default;
+      overflow: hidden;
+      transition: height 220ms ease;
+    }
+
+    .color-filter-panel.is-open {
+      height: 252px;
+    }
+
+    .color-filter-toggle {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 53px;
+      min-height: 53px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .color-filter-title {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: scale(1.16, 1.24);
+      transform-origin: center;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .color-filter-settings {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 10px 0;
+    }
+
+    .color-filter-picker {
+      width: min(78%, 160px);
+      height: 34px;
+      padding: 0;
+      border: 0;
+      outline: 3px solid lime;
+      background: black;
+      cursor: pointer;
+    }
+
+    .blend-mode-control {
+      display: grid;
+      gap: 5px;
+      justify-items: center;
+      width: min(82%, 170px);
+      color: white;
+      font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      -webkit-text-stroke: 0;
+      paint-order: normal;
+      text-shadow: none;
+    }
+
+    .blend-mode-select {
+      width: 100%;
+      min-width: 0;
+      height: 28px;
+      border: 0;
+      outline: 3px solid lime;
+      background: black;
+      color: white;
+      font: inherit;
+      font-size: 15px;
+      letter-spacing: 0;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    @keyframes page-color-filter-hueshift {
+      from {
+        filter: hue-rotate(0deg);
+        -webkit-backdrop-filter: hue-rotate(0deg);
+        backdrop-filter: hue-rotate(0deg);
+      }
+
+      to {
+        filter: hue-rotate(360deg);
+        -webkit-backdrop-filter: hue-rotate(360deg);
+        backdrop-filter: hue-rotate(360deg);
+      }
+    }
+
+    .page-color-filter {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      background: #ff00ff;
+      mix-blend-mode: color;
+      opacity: 0;
+      filter: hue-rotate(0deg);
+      pointer-events: none;
+    }
+
+    .page-color-filter.is-active {
+      opacity: 1;
+    }
+
+    .page-color-filter.is-hueshifting {
+      animation: page-color-filter-hueshift 4s linear infinite;
+    }
+
+    .page-color-filter.is-inverted {
+      -webkit-backdrop-filter: invert(1);
+      backdrop-filter: invert(1);
+    }
+
+    .gear-sidebar-panel:hover {
+      color: white;
     }
 
     .static-viewport-image {
@@ -686,6 +942,7 @@
 
 
       .grave-sidebar {
+        --static-image-inset: calc((100vh - 153px) * 0.025);
         top: 153px;
         width: 100vw;
         height: calc(100vh - 153px);
@@ -696,6 +953,14 @@
         left: 0;
         right: auto;
         border-left: 0;
+      }
+
+      .gear-sidebar-panel {
+        height: 153px;
+      }
+
+      .color-filter-panel {
+        height: 170px;
       }
 
       .static-viewport-image {
@@ -2743,7 +3008,9 @@
     .alien-glyph .emoji-tint,
     .clock-text .clock-time,
     .clock-text .clock-date,
-    .gear-icon .emoji-tint {
+    .gear-icon .emoji-tint,
+    .gear-sidebar-panel .texture-content,
+    .color-filter-toggle .color-filter-title {
       transform-origin: center center;
       will-change: transform;
     }
@@ -2759,7 +3026,9 @@
     .alien-glyph:hover .emoji-tint,
     .clock-text:hover .clock-time,
     .clock-text:hover .clock-date,
-    .gear-icon:hover .emoji-tint {
+    .gear-icon:hover .emoji-tint,
+    .gear-sidebar-panel:hover .texture-content,
+    .color-filter-toggle:hover .color-filter-title {
       animation: topbar-hover-breathe-scale 1800ms ease-in-out infinite;
     }
 
@@ -2775,7 +3044,9 @@
       .alien-glyph:hover .emoji-tint,
       .clock-text:hover .clock-time,
       .clock-text:hover .clock-date,
-      .gear-icon:hover .emoji-tint {
+      .gear-icon:hover .emoji-tint,
+      .gear-sidebar-panel:hover .texture-content,
+      .color-filter-toggle:hover .color-filter-title {
         animation: none;
         transform: var(--topbar-breathe-base-transform, none) scale(1.33);
       }
@@ -2795,7 +3066,9 @@
     .alien-glyph .emoji-tint,
     .clock-text .clock-time,
     .clock-text .clock-date,
-    .gear-icon .emoji-tint {
+    .gear-icon .emoji-tint,
+    .gear-sidebar-panel .texture-content,
+    .color-filter-toggle .color-filter-title {
       --topbar-breathe-base-transform: translateZ(0);
       display: inline-block;
       transform-origin: center center;
@@ -2839,7 +3112,9 @@
     .alien-glyph:hover .emoji-tint,
     .clock-text:hover .clock-time,
     .clock-text:hover .clock-date,
-    .gear-icon:hover .emoji-tint {
+    .gear-icon:hover .emoji-tint,
+    .gear-sidebar-panel:hover .texture-content,
+    .color-filter-toggle:hover .color-filter-title {
       animation: topbar-hover-breathe-scale-fixed 1800ms ease-in-out infinite !important;
     }
 
@@ -2855,12 +3130,13 @@
       .alien-glyph:hover .emoji-tint,
       .clock-text:hover .clock-time,
       .clock-text:hover .clock-date,
-      .gear-icon:hover .emoji-tint {
+      .gear-icon:hover .emoji-tint,
+      .gear-sidebar-panel:hover .texture-content,
+      .color-filter-toggle:hover .color-filter-title {
         animation: none !important;
         transform: var(--topbar-breathe-base-transform) scale(1.33) !important;
       }
     }
-
 
     /* Return arrow glyphs to their original vertical seat after hover-breathe made them sit too high.
        Only the arrow glyph moves; the nav button/grid stays untouched. */
@@ -2939,6 +3215,7 @@
 <body>
   <iframe class="background-frame" src="/dead/pages/background/" title="Background" aria-hidden="true"></iframe>
   <img class="static-viewport-image" src="/dead/images/static.gif" alt="" aria-hidden="true">
+  <div class="page-color-filter" id="page-color-filter" aria-hidden="true"></div>
 
   <div class="bottom-bar" aria-label="Static bookmark top bar preview">
     <div class="bar-content">
@@ -2971,7 +3248,48 @@
   </div>
 
   <aside class="grave-sidebar" id="grave-sidebar" aria-hidden="true"></aside>
-  <aside class="grave-sidebar grave-sidebar-right" id="gear-customization-sidebar" aria-hidden="true"></aside>
+  <aside class="grave-sidebar grave-sidebar-right" id="gear-customization-sidebar" aria-hidden="true">
+    <button class="gear-sidebar-panel save-settings-button" id="remember-settings-toggle" type="button" aria-pressed="false">
+      <span class="texture-content"><span id="remember-settings-label">Save Settings</span><span class="save-settings-check" id="remember-settings-check" aria-hidden="true"></span></span>
+    </button>
+    <button class="gear-sidebar-panel" id="audio-toggle-button" type="button" aria-pressed="false">
+      <span class="texture-content"><span id="audio-toggle-label">Mute</span><span class="save-settings-check" id="audio-toggle-check" aria-hidden="true"></span></span>
+    </button>
+    <div class="gear-sidebar-panel color-filter-panel" id="color-filter-panel" role="group" aria-label="Color filter">
+      <button class="color-filter-toggle" id="color-filter-toggle" type="button" aria-expanded="false" aria-controls="color-filter-settings">
+        <span class="color-filter-title">Color Filter</span>
+      </button>
+      <div class="color-filter-settings" id="color-filter-settings">
+        <input class="color-filter-picker" id="color-filter-picker" type="color" value="#ff00ff" aria-label="Color filter color">
+        <label class="blend-mode-control" for="blend-mode-select">
+          <span>Blend Mode</span>
+          <select class="blend-mode-select" id="blend-mode-select">
+            <option value="color" selected>color</option>
+            <option value="multiply">multiply</option>
+            <option value="screen">screen</option>
+            <option value="overlay">overlay</option>
+            <option value="darken">darken</option>
+            <option value="lighten">lighten</option>
+            <option value="hard-light">hard-light</option>
+            <option value="soft-light">soft-light</option>
+            <option value="difference">difference</option>
+            <option value="exclusion">exclusion</option>
+            <option value="hue">hue</option>
+            <option value="saturation">saturation</option>
+            <option value="luminosity">luminosity</option>
+          </select>
+        </label>
+        <label class="gear-sidebar-option" for="hueshift-toggle">
+          <span>Hueshift</span>
+          <input id="hueshift-toggle" type="checkbox">
+        </label>
+        <label class="gear-sidebar-option" for="invert-toggle">
+          <span>Inverted</span>
+          <input id="invert-toggle" type="checkbox">
+        </label>
+      </div>
+    </div>
+  </aside>
 
   <script>
     const clockTime = document.getElementById("clock-time");
@@ -2982,6 +3300,17 @@
     const YOU_DUMMY_TEXT = "It's YOU dummy!";
     const skullButton = document.querySelector(".skull-icon");
     const gearButton = document.querySelector(".gear-icon");
+    const audioToggleButton = document.getElementById("audio-toggle-button");
+    const audioToggleLabel = document.getElementById("audio-toggle-label");
+    const pageColorFilter = document.getElementById("page-color-filter");
+    const colorFilterPanel = document.getElementById("color-filter-panel");
+    const colorFilterToggle = document.getElementById("color-filter-toggle");
+    const colorFilterPicker = document.getElementById("color-filter-picker");
+    const blendModeSelect = document.getElementById("blend-mode-select");
+    const hueshiftToggle = document.getElementById("hueshift-toggle");
+    const invertToggle = document.getElementById("invert-toggle");
+    const rememberSettingsToggle = document.getElementById("remember-settings-toggle");
+    const rememberSettingsLabel = document.getElementById("remember-settings-label");
     const graveSidebar = document.getElementById("grave-sidebar");
     const gearSidebar = document.getElementById("gear-customization-sidebar");
     const desktopSidebarQuery = window.matchMedia("(min-width: 601px)");
@@ -3041,6 +3370,90 @@
     const toggleGearSidebar = () => {
       toggleSidebar(gearSidebar, gearButton);
     };
+
+    const CUSTOMIZATION_STORAGE_KEY = "theinternetisdead.customizationSettings";
+
+    const isRememberSettingsEnabled = () => rememberSettingsToggle?.getAttribute("aria-pressed") === "true";
+
+    const setRememberSettingsEnabled = (isEnabled) => {
+      if (!rememberSettingsToggle) return;
+      rememberSettingsToggle.setAttribute("aria-pressed", isEnabled ? "true" : "false");
+      rememberSettingsToggle.classList.toggle("is-checked", isEnabled);
+    };
+
+    const getCustomizationSettings = () => ({
+      remember: isRememberSettingsEnabled(),
+      audioMuted: isAudioMuted,
+      colorFilterActive: Boolean(pageColorFilter?.classList.contains("is-active")),
+      colorFilterOpen: Boolean(colorFilterPanel?.classList.contains("is-open")),
+      color: colorFilterPicker?.value || "#ff00ff",
+      blendMode: blendModeSelect?.value || "color",
+      hueshifting: Boolean(hueshiftToggle?.checked),
+      inverted: Boolean(invertToggle?.checked)
+    });
+
+    const updateRememberSettingsLabel = () => {
+      if (!rememberSettingsLabel || !rememberSettingsToggle) return;
+      rememberSettingsLabel.textContent = isRememberSettingsEnabled() ? "Settings Saved" : "Save Settings";
+    };
+
+    const saveCustomizationSettings = () => {
+      if (!isRememberSettingsEnabled()) return;
+      try {
+        localStorage.setItem(CUSTOMIZATION_STORAGE_KEY, JSON.stringify(getCustomizationSettings()));
+      } catch (error) {
+        // Saving is best-effort; keep the UI usable if storage is unavailable.
+      }
+      updateRememberSettingsLabel();
+    };
+
+    const clearCustomizationSettings = () => {
+      try {
+        localStorage.removeItem(CUSTOMIZATION_STORAGE_KEY);
+      } catch (error) {
+        // Storage may be unavailable in some embedded/browser modes.
+      }
+      updateRememberSettingsLabel();
+    };
+
+    const getSavedCustomizationSettings = () => {
+      try {
+        const rawSettings = localStorage.getItem(CUSTOMIZATION_STORAGE_KEY);
+        return rawSettings ? JSON.parse(rawSettings) : null;
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const updatePageColorFilter = (isActive = pageColorFilter?.classList.contains("is-active")) => {
+      if (!pageColorFilter || !colorFilterPicker || !blendModeSelect) return;
+      pageColorFilter.style.backgroundColor = colorFilterPicker.value;
+      pageColorFilter.style.mixBlendMode = blendModeSelect.value;
+      pageColorFilter.classList.toggle("is-active", Boolean(isActive));
+      pageColorFilter.classList.toggle("is-hueshifting", Boolean(hueshiftToggle?.checked));
+      pageColorFilter.classList.toggle("is-inverted", Boolean(invertToggle?.checked));
+      saveCustomizationSettings();
+    };
+
+    colorFilterPicker?.addEventListener("input", () => updatePageColorFilter(true));
+    blendModeSelect?.addEventListener("change", updatePageColorFilter);
+    hueshiftToggle?.addEventListener("change", () => updatePageColorFilter(hueshiftToggle.checked));
+    invertToggle?.addEventListener("change", () => updatePageColorFilter(invertToggle.checked || pageColorFilter.classList.contains("is-active")));
+    colorFilterToggle?.addEventListener("click", () => {
+      const isOpen = !colorFilterPanel.classList.contains("is-open");
+      colorFilterPanel.classList.toggle("is-open", isOpen);
+      colorFilterToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      saveCustomizationSettings();
+    });
+    rememberSettingsToggle?.addEventListener("click", () => {
+      setRememberSettingsEnabled(!isRememberSettingsEnabled());
+      updateRememberSettingsLabel();
+      if (isRememberSettingsEnabled()) {
+        saveCustomizationSettings();
+      } else {
+        clearCustomizationSettings();
+      }
+    });
 
     const updateClock = () => {
       const now = new Date();
@@ -3171,6 +3584,7 @@
     let ghostSpeechActive = false;
     let ghostSpeechMessages = [];
     let ghostSpeechCount = 0;
+    let isAudioMuted = false;
     const DEFAULT_GHOST_SPEECH_START = "Ghost Connection";
     const DEFAULT_GHOST_SPEECH_MESSAGES = [
       "Boo!",
@@ -3234,8 +3648,70 @@
       ghostSpeechCount = 0;
     };
 
+    const setMediaMutedInDocument = (doc, muted) => {
+      if (!doc) return;
+      doc.querySelectorAll("audio, video").forEach((media) => {
+        media.muted = muted;
+        if (muted && typeof media.pause === "function") {
+          media.pause();
+        }
+      });
+      doc.querySelectorAll("iframe").forEach((frame) => {
+        try {
+          setMediaMutedInDocument(frame.contentDocument, muted);
+        } catch (error) {
+          // Cross-origin frames cannot be inspected; ignore them.
+        }
+      });
+    };
+
+    const applyAudioMutedState = () => {
+      if (audioToggleButton) {
+        audioToggleButton.setAttribute("aria-pressed", isAudioMuted ? "true" : "false");
+        audioToggleButton.classList.toggle("is-checked", isAudioMuted);
+        if (audioToggleLabel) audioToggleLabel.textContent = isAudioMuted ? "Unmute" : "Mute";
+      }
+
+      setMediaMutedInDocument(document, isAudioMuted);
+      if (isAudioMuted) {
+        stopHeaderSpeech();
+        stopWhiteNoise();
+        stopModemStatic();
+      }
+      saveCustomizationSettings();
+    };
+
+    const toggleAudioMuted = () => {
+      isAudioMuted = !isAudioMuted;
+      applyAudioMutedState();
+    };
+
+    const restoreCustomizationSettings = () => {
+      const settings = getSavedCustomizationSettings();
+      if (!settings?.remember || !rememberSettingsToggle) {
+        updateRememberSettingsLabel();
+        updatePageColorFilter();
+        return;
+      }
+
+      setRememberSettingsEnabled(true);
+      if (colorFilterPicker && typeof settings.color === "string") colorFilterPicker.value = settings.color;
+      if (blendModeSelect && typeof settings.blendMode === "string") blendModeSelect.value = settings.blendMode;
+      if (hueshiftToggle) hueshiftToggle.checked = Boolean(settings.hueshifting);
+      if (invertToggle) invertToggle.checked = Boolean(settings.inverted);
+
+      const isColorFilterOpen = Boolean(settings.colorFilterOpen);
+      colorFilterPanel?.classList.toggle("is-open", isColorFilterOpen);
+      colorFilterToggle?.setAttribute("aria-expanded", isColorFilterOpen ? "true" : "false");
+
+      isAudioMuted = Boolean(settings.audioMuted);
+      updateRememberSettingsLabel();
+      updatePageColorFilter(Boolean(settings.colorFilterActive));
+      applyAudioMutedState();
+    };
+
     const speakWithDavid = (text, options = {}) => {
-      if (!desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+      if (isAudioMuted || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
 
       refreshDavidVoice();
       window.speechSynthesis.cancel();
@@ -3250,7 +3726,7 @@
     };
 
     const speakSpiralLoop = () => {
-      if (!desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+      if (isAudioMuted || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
 
       refreshDavidVoice();
       spiralHoverActive = true;
@@ -3268,7 +3744,7 @@
     };
 
     const speakSkullLoop = () => {
-      if (!skullHoverActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+      if (isAudioMuted || !skullHoverActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
 
       refreshDavidVoice();
       const utterance = new SpeechSynthesisUtterance("Open Grave Menu");
@@ -3282,7 +3758,7 @@
     };
 
     const speakNavRepeatLoop = () => {
-      if (!navRepeatActiveText || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+      if (isAudioMuted || !navRepeatActiveText || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
 
       refreshDavidVoice();
       const phrase = typeof navRepeatActiveText === "function"
@@ -3303,6 +3779,7 @@
       if (!element) return;
 
       element.addEventListener("mouseenter", () => {
+        if (isAudioMuted) return;
         stopWhiteNoise();
         stopModemStatic();
         stopHeaderSpeech();
@@ -3314,7 +3791,7 @@
     };
 
     const speakSiteLinkLoop = () => {
-      if (!siteSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+      if (isAudioMuted || !siteSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
 
       refreshDavidVoice();
       const startedAt = performance.now();
@@ -3334,7 +3811,7 @@
     };
 
     const speakModemPhraseLoop = (text) => {
-      if (!modemSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+      if (isAudioMuted || !modemSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
 
       refreshDavidVoice();
       const startedAt = performance.now();
@@ -3395,7 +3872,7 @@
     };
 
     const speakGhostPhraseLoop = () => {
-      if (!ghostSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+      if (isAudioMuted || !ghostSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
 
       refreshDavidVoice();
       const startedAt = performance.now();
@@ -3484,7 +3961,7 @@
     };
 
     const startModemStatic = (effectScale = 1) => {
-      if (!desktopHeaderAudioQuery.matches) return;
+      if (isAudioMuted || !desktopHeaderAudioQuery.matches) return;
       stopModemStatic();
 
       const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
@@ -3566,7 +4043,7 @@
     };
 
     const startWhiteNoise = () => {
-      if (!desktopHeaderAudioQuery.matches) return;
+      if (isAudioMuted || !desktopHeaderAudioQuery.matches) return;
       stopHeaderSpeech();
       stopModemStatic();
       stopWhiteNoise();
@@ -3617,6 +4094,8 @@
       element.addEventListener("mouseleave", stopHeaderSpeech);
     };
 
+    restoreCustomizationSettings();
+
     if (window.speechSynthesis) {
       refreshDavidVoice();
       if (typeof window.speechSynthesis.addEventListener === "function") {
@@ -3628,6 +4107,7 @@
 
     if (skullButton) {
       skullButton.addEventListener("mouseenter", () => {
+        if (isAudioMuted) return;
         stopWhiteNoise();
         stopModemStatic();
         stopHeaderSpeech();
@@ -3650,9 +4130,20 @@
         toggleGearSidebar();
       });
     }
+    if (audioToggleButton) {
+      audioToggleButton.addEventListener("click", toggleAudioMuted);
+    }
+    addDesktopSpeechRepeatHover("#remember-settings-toggle", () => (
+      rememberSettingsLabel?.textContent.trim() || "Save Settings"
+    ));
+    addDesktopSpeechRepeatHover("#audio-toggle-button", () => (
+      audioToggleLabel?.textContent.trim() || "Mute"
+    ));
+    addDesktopSpeechRepeatHover("#color-filter-toggle", "Color Filter");
     const siteLink = document.querySelector(".site-link");
     if (siteLink) {
       siteLink.addEventListener("mouseenter", () => {
+        if (isAudioMuted) return;
         stopWhiteNoise();
         stopHeaderSpeech();
         startModemStatic(0.33);
@@ -3668,6 +4159,7 @@
     const spiralIcon = document.querySelector(".spiral-icon");
     if (spiralIcon) {
       spiralIcon.addEventListener("mouseenter", () => {
+        if (isAudioMuted) return;
         stopWhiteNoise();
         stopHeaderSpeech();
         spiralRepeatCount = 0;
@@ -3680,6 +4172,7 @@
     const indexLinkPanel = document.querySelector(".index-link-panel");
     if (indexLinkPanel) {
       indexLinkPanel.addEventListener("mouseenter", () => {
+        if (isAudioMuted) return;
         stopWhiteNoise();
         stopHeaderSpeech();
         startModemStatic(0.33);
@@ -3694,6 +4187,7 @@
     const clockText = document.querySelector(".clock-text");
     if (clockText) {
       clockText.addEventListener("mouseenter", () => {
+        if (isAudioMuted) return;
         stopWhiteNoise();
         stopHeaderSpeech();
         startModemStatic(0.33);
@@ -3715,6 +4209,7 @@
     const ghostGlyph = document.querySelector(".ghost-glyph");
     if (ghostGlyph) {
       ghostGlyph.addEventListener("mouseenter", () => {
+        if (isAudioMuted) return;
         stopWhiteNoise();
         stopModemStatic();
         stopHeaderSpeech();
