@@ -64,22 +64,38 @@
       cursor: default;
 
       display: grid;
-      grid-template-columns:
-        50px
-        minmax(0, max-content)
-        1px
-        50px
-        minmax(170px, 1fr)
-        50px
-        max-content
-        96px
-        50px;
+      grid-template-columns: minmax(130px, 1fr) minmax(190px, 1fr) max-content;
       align-items: center;
       justify-content: flex-start;
 
       font-weight: 700;
       line-height: 1;
       box-sizing: border-box;
+    }
+
+    .bar-column {
+      min-width: 0;
+      height: 50px;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .bar-column-left {
+      display: grid;
+      grid-template-columns: 50px minmax(0, 1fr) 1px 50px;
+    }
+
+    .bar-column-center {
+      display: grid;
+      grid-template-columns: 50px minmax(0, 1fr) 50px;
+    }
+
+    .bar-column-center > .index-link-slot {
+      grid-column: 1 / -1;
+    }
+
+    .bar-column-right {
+      justify-content: flex-end;
     }
 
     .clock-text {
@@ -210,7 +226,7 @@
       font-size: 2em;
       font-weight: 900;
       line-height: 1;
-      color: #ff00ff;
+      color: white;
     }
 
     .ghost-label {
@@ -249,12 +265,13 @@
 
     .site-link {
       flex: 0 0 auto;
-      width: auto;
+      width: 100%;
       height: 50px;
       min-width: 0;
       padding: 0 8px;
       display: flex;
       align-items: center;
+      justify-content: center;
       background: rgb(0 0 0 / 65%);
       color: lime;
       font-style: italic;
@@ -270,6 +287,10 @@
       color: lime;
     }
 
+    .bar-content .site-link.home-link:hover {
+      color: black;
+    }
+
     .site-divider {
       flex: 0 0 1px;
       width: 1px;
@@ -280,12 +301,11 @@
     .index-link-slot {
       min-width: 0;
       width: 100%;
-      display: flex;
+      display: grid;
+      grid-template-columns: 50px minmax(0, 1fr) 50px;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
       overflow: hidden;
-      background: rgb(0 0 0 / 65%);
+      background: transparent;
     }
 
     .bar-content .index-link {
@@ -304,14 +324,23 @@
       min-width: 0;
       padding: 0 14px;
       line-height: 1;
+      background: rgb(59 0 102 / 65%);
     }
 
     .index-link-panel {
       height: 50px;
+      width: 100%;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       min-width: 0;
-      background: rgb(59 0 102 / 65%);
+      background:
+        linear-gradient(
+          to right,
+          rgb(0 0 0 / 65%) 0 calc(50% - 61px),
+          transparent calc(50% - 61px) calc(50% + 61px),
+          rgb(0 0 0 / 65%) calc(50% + 61px) 100%
+        );
     }
 
     .index-link {
@@ -321,9 +350,15 @@
     }
 
     .index-bracket {
-      color: #ff00ff;
+      color: black;
       font-size: 2em;
       line-height: 0.5;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgb(0 0 0 / 65%);
     }
 
     .recycle-icon {
@@ -356,6 +391,46 @@
       display: none;
     }
 
+    .skull-icon,
+    .site-link,
+    .spiral-icon,
+    .index-bracket,
+    .bar-content .index-link,
+    .recycle-icon,
+    .ghost-glyph,
+    .alien-glyph,
+    .gear-icon,
+    .clock-text {
+      cursor: pointer;
+    }
+
+    .site-link,
+    .bar-content .index-link,
+    .index-bracket,
+    .ghost-count,
+    .ghost-label,
+    .clock-text,
+    .emoji-tint {
+      -webkit-text-stroke: 1px rgb(255 0 255 / 100%);
+      paint-order: stroke fill;
+      text-shadow:
+        0 0 1px rgb(255 0 255 / 100%),
+        0 0 2px rgb(255 0 255 / 67%),
+        0 0 3px rgb(255 0 255 / 33%),
+        -1px -1px 1px rgb(255 0 255 / 100%),
+        1px -1px 1px rgb(255 0 255 / 100%),
+        -1px 1px 1px rgb(255 0 255 / 100%),
+        1px 1px 1px rgb(255 0 255 / 100%),
+        -2px -2px 2px rgb(255 0 255 / 67%),
+        2px -2px 2px rgb(255 0 255 / 67%),
+        -2px 2px 2px rgb(255 0 255 / 67%),
+        2px 2px 2px rgb(255 0 255 / 67%),
+        -3px -3px 3px rgb(255 0 255 / 33%),
+        3px -3px 3px rgb(255 0 255 / 33%),
+        -3px 3px 3px rgb(255 0 255 / 33%),
+        3px 3px 3px rgb(255 0 255 / 33%);
+    }
+
     .ghost-counter.is-you-dummy,
     .skull-icon:hover .emoji-tint,
     .site-link:hover,
@@ -369,7 +444,7 @@
     .alien-glyph:hover .emoji-tint,
     .gear-icon:hover .emoji-tint,
     .clock-text:hover {
-      color: lime;
+      color: black;
       -webkit-text-stroke: 1px #ff004c;
       paint-order: stroke fill;
       text-shadow:
@@ -414,6 +489,10 @@
           "spiral index empty";
         align-items: stretch;
         background: transparent;
+      }
+
+      .bar-column {
+        display: contents;
       }
 
       .bar-content::before {
@@ -492,10 +571,16 @@
 
       .index-link-slot {
         grid-area: index;
+        grid-column: auto;
         min-width: 0;
         height: 50px;
         color: lime;
         box-sizing: border-box;
+      }
+
+      .bar-column-center > .index-link-slot {
+        grid-area: index;
+        grid-column: auto;
       }
 
       .ghost-counter {
@@ -594,25 +679,31 @@
 
   <div class="bottom-bar" aria-label="Static bookmark top bar preview">
     <div class="bar-content">
-      <span class="emoji-icon skull-icon"><span class="emoji-tint is-screen is-skull" data-emoji="&#9760;">&#9760;</span></span>
-      <a class="site-link home-link" href="/">theinternetisdead.org</a>
-      <span class="site-divider after-site" aria-hidden="true"></span>
-      <span class="emoji-icon spiral-icon"><span class="emoji-tint" data-emoji="&#127744;">&#127744;</span></span>
-      <span class="index-link-slot"><span class="index-bracket" aria-hidden="true">&lt;</span><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/">index.html</a></span><span class="site-divider" aria-hidden="true"></span></span><span class="index-bracket" aria-hidden="true">&gt;</span></span>
-      <span class="emoji-icon recycle-icon"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
-      <span class="emoji-icon alien-icon ghost-counter" id="ghost-counter" role="status" aria-label="? Ghosts Online">
-        <span class="ghost-glyph"><span class="emoji-tint" data-emoji="&#128123;">&#128123;</span></span>
-        <span class="ghost-text">
-          <span class="ghost-count" id="ghost-count">?</span><span class="ghost-label" id="ghost-label">Ghosts Online</span>
+      <span class="bar-column bar-column-left">
+        <span class="emoji-icon skull-icon"><span class="emoji-tint is-screen is-skull" data-emoji="&#9760;">&#9760;</span></span>
+        <a class="site-link home-link" href="/">theinternetisdead.org</a>
+        <span class="site-divider after-site" aria-hidden="true"></span>
+        <span class="emoji-icon spiral-icon"><span class="emoji-tint" data-emoji="&#127744;">&#127744;</span></span>
+      </span>
+      <span class="bar-column bar-column-center">
+        <span class="index-link-slot"><span class="index-bracket index-bracket-left" aria-hidden="true">&lt;</span><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/">index.html</a></span><span class="site-divider" aria-hidden="true"></span></span><span class="index-bracket index-bracket-right" aria-hidden="true">&gt;</span></span>
+      </span>
+      <span class="bar-column bar-column-right">
+        <span class="emoji-icon recycle-icon"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
+        <span class="emoji-icon alien-icon ghost-counter" id="ghost-counter" role="status" aria-label="? Ghosts Online">
+          <span class="ghost-glyph"><span class="emoji-tint" data-emoji="&#128123;">&#128123;</span></span>
+          <span class="ghost-text">
+            <span class="ghost-count" id="ghost-count">?</span><span class="ghost-label" id="ghost-label">Ghosts Online</span>
+          </span>
+          <span class="alien-glyph"><span class="emoji-tint" data-emoji="&#127760;">&#127760;</span></span>
         </span>
-        <span class="alien-glyph"><span class="emoji-tint" data-emoji="&#127760;">&#127760;</span></span>
+        <span class="clock-text">
+          <span class="clock-time" id="clock-time"></span>
+          <span class="clock-date" id="clock-date"></span>
+        </span>
+        <span class="emoji-icon gear-icon"><span class="emoji-tint" data-emoji="&#9881;&#65039;">&#9881;&#65039;</span></span>
+        <span class="emoji-icon ghost-icon mobile-ghost-icon"><span class="emoji-tint" data-emoji="&#128123;">&#128123;</span></span>
       </span>
-      <span class="clock-text">
-        <span class="clock-time" id="clock-time"></span>
-        <span class="clock-date" id="clock-date"></span>
-      </span>
-      <span class="emoji-icon gear-icon"><span class="emoji-tint" data-emoji="&#9881;&#65039;">&#9881;&#65039;</span></span>
-      <span class="emoji-icon ghost-icon mobile-ghost-icon"><span class="emoji-tint" data-emoji="&#128123;">&#128123;</span></span>
     </div>
   </div>
   <script>
@@ -709,6 +800,427 @@
 
     ghostCounter.addEventListener("mouseenter", showYouDummyLabel);
     ghostCounter.addEventListener("mouseleave", restoreGhostCounterLabel);
+
+    const desktopHeaderAudioQuery = window.matchMedia("(min-width: 601px)");
+    let davidVoice = null;
+    let spiralHoverActive = false;
+    let spiralRepeatTimer = null;
+    let spiralRepeatCount = 0;
+    let skullHoverActive = false;
+    let skullRepeatTimer = null;
+    let noiseContext = null;
+    let noiseSource = null;
+    let noiseGain = null;
+    let modemContext = null;
+    let modemNodes = [];
+    let modemPopTimer = null;
+    let modemWarbleTimer = null;
+    let siteSpeechTimer = null;
+    let siteSpeechActive = false;
+    let modemSpeechTimer = null;
+    let modemSpeechActive = false;
+
+    const refreshDavidVoice = () => {
+      if (!window.speechSynthesis) return;
+      const voices = window.speechSynthesis.getVoices();
+      davidVoice = voices.find((voice) => /microsoft david/i.test(voice.name))
+        || voices.find((voice) => /david/i.test(voice.name))
+        || voices.find((voice) => /^en[-_]/i.test(voice.lang))
+        || voices[0]
+        || null;
+    };
+
+    const stopHeaderSpeech = () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      spiralHoverActive = false;
+      skullHoverActive = false;
+      siteSpeechActive = false;
+      modemSpeechActive = false;
+      spiralRepeatCount = 0;
+      if (spiralRepeatTimer) {
+        window.clearTimeout(spiralRepeatTimer);
+        spiralRepeatTimer = null;
+      }
+      if (siteSpeechTimer) {
+        window.clearTimeout(siteSpeechTimer);
+        siteSpeechTimer = null;
+      }
+      if (modemSpeechTimer) {
+        window.clearTimeout(modemSpeechTimer);
+        modemSpeechTimer = null;
+      }
+      if (skullRepeatTimer) {
+        window.clearTimeout(skullRepeatTimer);
+        skullRepeatTimer = null;
+      }
+    };
+
+    const speakWithDavid = (text, options = {}) => {
+      if (!desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+
+      refreshDavidVoice();
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      if (davidVoice) utterance.voice = davidVoice;
+      utterance.rate = options.rate || 1;
+      utterance.pitch = options.pitch || 1;
+      utterance.volume = options.volume || 1;
+
+      window.speechSynthesis.speak(utterance);
+    };
+
+    const speakSpiralLoop = () => {
+      if (!desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+
+      refreshDavidVoice();
+      spiralHoverActive = true;
+
+      const utterance = new SpeechSynthesisUtterance("Spiral");
+      if (davidVoice) utterance.voice = davidVoice;
+      utterance.rate = 1;
+      utterance.pitch = spiralRepeatCount % 2 === 0 ? 1.25 : 0.75;
+      utterance.volume = 1;
+
+      window.speechSynthesis.speak(utterance);
+      spiralRepeatCount += 1;
+      spiralRepeatTimer = window.setTimeout(speakSpiralLoop, 500);
+    };
+
+    const speakSkullLoop = () => {
+      if (!skullHoverActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+
+      refreshDavidVoice();
+      const utterance = new SpeechSynthesisUtterance("Open Grave Menu");
+      if (davidVoice) utterance.voice = davidVoice;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+
+      window.speechSynthesis.speak(utterance);
+      skullRepeatTimer = window.setTimeout(speakSkullLoop, 500);
+    };
+
+    const speakSiteLinkLoop = () => {
+      if (!siteSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+
+      refreshDavidVoice();
+      const startedAt = performance.now();
+      const utterance = new SpeechSynthesisUtterance("the internet is dead .org");
+      if (davidVoice) utterance.voice = davidVoice;
+      utterance.rate = 1.15;
+      utterance.pitch = 0.78;
+      utterance.volume = 0.88;
+      utterance.addEventListener("end", () => {
+        if (!siteSpeechActive || !desktopHeaderAudioQuery.matches) return;
+        const elapsed = performance.now() - startedAt;
+        siteSpeechTimer = window.setTimeout(speakSiteLinkLoop, Math.max(0, 1000 - elapsed));
+      });
+
+      window.speechSynthesis.speak(utterance);
+    };
+
+    const speakModemPhraseLoop = (text) => {
+      if (!modemSpeechActive || !desktopHeaderAudioQuery.matches || !window.speechSynthesis) return;
+
+      refreshDavidVoice();
+      const startedAt = performance.now();
+      const phrase = typeof text === "function" ? text() : text;
+      const utterance = new SpeechSynthesisUtterance(phrase);
+      if (davidVoice) utterance.voice = davidVoice;
+      utterance.rate = 1.15;
+      utterance.pitch = 0.78;
+      utterance.volume = 0.88;
+      utterance.addEventListener("end", () => {
+        if (!modemSpeechActive || !desktopHeaderAudioQuery.matches) return;
+        const elapsed = performance.now() - startedAt;
+        modemSpeechTimer = window.setTimeout(() => {
+          speakModemPhraseLoop(text);
+        }, Math.max(0, 1000 - elapsed));
+      });
+
+      window.speechSynthesis.speak(utterance);
+    };
+
+    const makeNoiseBuffer = (audioContext, durationSeconds = 1) => {
+      const sampleRate = audioContext.sampleRate;
+      const buffer = audioContext.createBuffer(1, sampleRate * durationSeconds, sampleRate);
+      const output = buffer.getChannelData(0);
+
+      for (let i = 0; i < output.length; i += 1) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      return buffer;
+    };
+
+    const makeCrunchCurve = (amount = 70) => {
+      const samples = 256;
+      const curve = new Float32Array(samples);
+      const deg = Math.PI / 180;
+
+      for (let i = 0; i < samples; i += 1) {
+        const x = (i * 2) / samples - 1;
+        curve[i] = ((3 + amount) * x * 20 * deg) / (Math.PI + amount * Math.abs(x));
+      }
+
+      return curve;
+    };
+
+    const stopModemStatic = () => {
+      if (modemPopTimer) {
+        window.clearInterval(modemPopTimer);
+        modemPopTimer = null;
+      }
+
+      if (modemWarbleTimer) {
+        window.clearInterval(modemWarbleTimer);
+        modemWarbleTimer = null;
+      }
+
+      modemNodes.forEach((node) => {
+        if (typeof node.stop === "function") {
+          try {
+            node.stop();
+          } catch (error) {
+            // Already stopped.
+          }
+        }
+        node.disconnect();
+      });
+      modemNodes = [];
+
+      if (modemContext) {
+        modemContext.close();
+        modemContext = null;
+      }
+    };
+
+    const startModemStatic = () => {
+      if (!desktopHeaderAudioQuery.matches) return;
+      stopModemStatic();
+
+      const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextCtor) return;
+
+      modemContext = new AudioContextCtor();
+      const masterGain = modemContext.createGain();
+      const noiseGainNode = modemContext.createGain();
+      const bandPass = modemContext.createBiquadFilter();
+      const highPass = modemContext.createBiquadFilter();
+      const crunch = modemContext.createWaveShaper();
+      const noiseSourceNode = modemContext.createBufferSource();
+      const carrierA = modemContext.createOscillator();
+      const carrierB = modemContext.createOscillator();
+      const carrierGain = modemContext.createGain();
+
+      masterGain.gain.value = 0.16;
+      noiseGainNode.gain.value = 0.24;
+      highPass.type = "highpass";
+      highPass.frequency.value = 650;
+      bandPass.type = "bandpass";
+      bandPass.frequency.value = 2100;
+      bandPass.Q.value = 1.4;
+      crunch.curve = makeCrunchCurve();
+      crunch.oversample = "4x";
+      noiseSourceNode.buffer = makeNoiseBuffer(modemContext);
+      noiseSourceNode.loop = true;
+
+      carrierA.type = "square";
+      carrierB.type = "sawtooth";
+      carrierA.frequency.value = 1200;
+      carrierB.frequency.value = 2400;
+      carrierGain.gain.value = 0.035;
+
+      noiseSourceNode
+        .connect(noiseGainNode)
+        .connect(highPass)
+        .connect(bandPass)
+        .connect(crunch)
+        .connect(masterGain)
+        .connect(modemContext.destination);
+      carrierA.connect(carrierGain).connect(masterGain);
+      carrierB.connect(carrierGain);
+
+      noiseSourceNode.start();
+      carrierA.start();
+      carrierB.start();
+      modemNodes = [noiseSourceNode, carrierA, carrierB, noiseGainNode, highPass, bandPass, crunch, carrierGain, masterGain];
+
+      modemWarbleTimer = window.setInterval(() => {
+        if (!modemContext) return;
+        const now = modemContext.currentTime;
+        bandPass.frequency.setTargetAtTime(1200 + Math.random() * 2600, now, 0.025);
+        carrierA.frequency.setTargetAtTime(650 + Math.random() * 2200, now, 0.015);
+        carrierB.frequency.setTargetAtTime(1600 + Math.random() * 3600, now, 0.015);
+        noiseGainNode.gain.setTargetAtTime(0.12 + Math.random() * 0.28, now, 0.02);
+      }, 90);
+
+      modemPopTimer = window.setInterval(() => {
+        if (!modemContext || Math.random() < 0.35) return;
+        const popOsc = modemContext.createOscillator();
+        const popGain = modemContext.createGain();
+        const now = modemContext.currentTime;
+        const duration = 0.018 + Math.random() * 0.045;
+
+        popOsc.type = Math.random() > 0.5 ? "square" : "sawtooth";
+        popOsc.frequency.value = 1800 + Math.random() * 5200;
+        popGain.gain.setValueAtTime(0, now);
+        popGain.gain.linearRampToValueAtTime(0.12 + Math.random() * 0.22, now + 0.004);
+        popGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        popOsc.connect(popGain).connect(masterGain);
+        popOsc.start(now);
+        popOsc.stop(now + duration);
+        popOsc.addEventListener("ended", () => {
+          popOsc.disconnect();
+          popGain.disconnect();
+        });
+      }, 70);
+    };
+
+    const startWhiteNoise = () => {
+      if (!desktopHeaderAudioQuery.matches) return;
+      stopHeaderSpeech();
+      stopModemStatic();
+      stopWhiteNoise();
+
+      const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextCtor) return;
+
+      noiseContext = new AudioContextCtor();
+      noiseSource = noiseContext.createBufferSource();
+      noiseGain = noiseContext.createGain();
+      noiseGain.gain.value = 0.12;
+      noiseSource.buffer = makeNoiseBuffer(noiseContext);
+      noiseSource.loop = true;
+      noiseSource.connect(noiseGain).connect(noiseContext.destination);
+      noiseSource.start();
+    };
+
+    const stopWhiteNoise = () => {
+      if (noiseSource) {
+        noiseSource.stop();
+        noiseSource.disconnect();
+        noiseSource = null;
+      }
+
+      if (noiseContext) {
+        noiseContext.close();
+        noiseContext = null;
+      }
+
+      noiseGain = null;
+    };
+
+    const addDesktopSpeechHover = (selector, text, options) => {
+      const element = document.querySelector(selector);
+      if (!element) return;
+
+      element.addEventListener("mouseenter", () => {
+        stopWhiteNoise();
+        stopModemStatic();
+        speakWithDavid(text, options);
+      });
+
+      element.addEventListener("mouseleave", stopHeaderSpeech);
+    };
+
+    if (window.speechSynthesis) {
+      refreshDavidVoice();
+      if (typeof window.speechSynthesis.addEventListener === "function") {
+        window.speechSynthesis.addEventListener("voiceschanged", refreshDavidVoice);
+      } else {
+        window.speechSynthesis.onvoiceschanged = refreshDavidVoice;
+      }
+    }
+
+    const skullIcon = document.querySelector(".skull-icon");
+    if (skullIcon) {
+      skullIcon.addEventListener("mouseenter", () => {
+        stopWhiteNoise();
+        stopModemStatic();
+        stopHeaderSpeech();
+        skullHoverActive = true;
+        speakSkullLoop();
+      });
+      skullIcon.addEventListener("mouseleave", stopHeaderSpeech);
+    }
+    const siteLink = document.querySelector(".site-link");
+    if (siteLink) {
+      siteLink.addEventListener("mouseenter", () => {
+        stopWhiteNoise();
+        stopHeaderSpeech();
+        startModemStatic();
+        siteSpeechActive = true;
+        speakSiteLinkLoop();
+      });
+      siteLink.addEventListener("mouseleave", () => {
+        stopHeaderSpeech();
+        stopModemStatic();
+      });
+    }
+    const spiralIcon = document.querySelector(".spiral-icon");
+    if (spiralIcon) {
+      spiralIcon.addEventListener("mouseenter", () => {
+        stopWhiteNoise();
+        stopHeaderSpeech();
+        spiralRepeatCount = 0;
+        speakSpiralLoop();
+      });
+      spiralIcon.addEventListener("mouseleave", stopHeaderSpeech);
+    }
+    addDesktopSpeechHover(".index-bracket-left", "Go Left");
+    addDesktopSpeechHover(".index-bracket-right", "Go Right");
+    const indexLinkPanel = document.querySelector(".index-link-panel");
+    if (indexLinkPanel) {
+      indexLinkPanel.addEventListener("mouseenter", () => {
+        stopWhiteNoise();
+        stopHeaderSpeech();
+        startModemStatic();
+        modemSpeechActive = true;
+        speakModemPhraseLoop("index.html of the internet is dead .org");
+      });
+      indexLinkPanel.addEventListener("mouseleave", () => {
+        stopHeaderSpeech();
+        stopModemStatic();
+      });
+    }
+    const clockText = document.querySelector(".clock-text");
+    if (clockText) {
+      clockText.addEventListener("mouseenter", () => {
+        stopWhiteNoise();
+        stopHeaderSpeech();
+        startModemStatic();
+        modemSpeechActive = true;
+        speakModemPhraseLoop(() => `${clockTime.textContent} ${clockDate.textContent}`);
+      });
+      clockText.addEventListener("mouseleave", () => {
+        stopHeaderSpeech();
+        stopModemStatic();
+      });
+    }
+    addDesktopSpeechHover(".recycle-icon", "Randomize Page");
+    addDesktopSpeechHover(".ghost-glyph", "Ghost Connection");
+
+    const globeGlyph = document.querySelector(".alien-glyph");
+    if (globeGlyph) {
+      globeGlyph.addEventListener("mouseenter", startWhiteNoise);
+      globeGlyph.addEventListener("mouseleave", stopWhiteNoise);
+    }
+
+    const stopHeaderAudio = () => {
+      stopHeaderSpeech();
+      stopWhiteNoise();
+      stopModemStatic();
+    };
+
+    if (typeof desktopHeaderAudioQuery.addEventListener === "function") {
+      desktopHeaderAudioQuery.addEventListener("change", stopHeaderAudio);
+    } else {
+      desktopHeaderAudioQuery.addListener(stopHeaderAudio);
+    }
 
     setGhostsOnline(null);
     connectGhostCounterSocket();
