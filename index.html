@@ -87,7 +87,7 @@
 
     .bar-column-center {
       display: grid;
-      grid-template-columns: 50px minmax(0, 1fr) 50px;
+      grid-template-columns: 72px minmax(0, 1fr) 72px;
     }
 
     .bar-column-center > .index-link-slot {
@@ -302,7 +302,7 @@
       min-width: 0;
       width: 100%;
       display: grid;
-      grid-template-columns: 50px minmax(0, 1fr) 50px;
+      grid-template-columns: 72px minmax(0, 1fr) 72px;
       align-items: center;
       overflow: hidden;
       background: transparent;
@@ -351,9 +351,9 @@
 
     .index-bracket {
       color: black;
-      font-size: 2em;
-      line-height: 0.5;
-      width: 50px;
+      font-size: 1.1em;
+      line-height: 1;
+      width: 72px;
       height: 50px;
       display: flex;
       align-items: center;
@@ -572,6 +572,7 @@
       .index-link-slot {
         grid-area: index;
         grid-column: auto;
+        grid-template-columns: 64px minmax(0, 1fr) 64px;
         min-width: 0;
         height: 50px;
         color: lime;
@@ -581,6 +582,11 @@
       .bar-column-center > .index-link-slot {
         grid-area: index;
         grid-column: auto;
+      }
+
+      .index-bracket {
+        width: 64px;
+        font-size: 0.95em;
       }
 
       .ghost-counter {
@@ -686,7 +692,7 @@
         <span class="emoji-icon spiral-icon"><span class="emoji-tint" data-emoji="&#127744;">&#127744;</span></span>
       </span>
       <span class="bar-column bar-column-center">
-        <span class="index-link-slot"><span class="index-bracket index-bracket-left" aria-hidden="true">&lt;</span><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/">index.html</a></span><span class="site-divider" aria-hidden="true"></span></span><span class="index-bracket index-bracket-right" aria-hidden="true">&gt;</span></span>
+        <span class="index-link-slot"><span class="index-bracket index-bracket-left" aria-hidden="true">&lt; Left</span><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/">index.html</a></span><span class="site-divider" aria-hidden="true"></span></span><span class="index-bracket index-bracket-right" aria-hidden="true">Right &gt;</span></span>
       </span>
       <span class="bar-column bar-column-right">
         <span class="emoji-icon recycle-icon"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
