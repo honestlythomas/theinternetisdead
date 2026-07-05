@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+  <script src="/dead/js/shell-route.js"></script><link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>/dead/games/shooter-game/assets/levels/shooter-game-level1.html</title>
@@ -4487,8 +4487,7 @@ html.sg-start-nickname-prepaint.sg-start-nickname-has-name #startMenu #startWelc
 
 <style id="startMenuPrepaintMatchesFinalLayoutAndNicknameButton">
   /* v2.XX: First-paint guard for the final Start Menu layout.
-     This lives in <head>
-, before the Start Menu exists, so the browser uses
+     This lives in <head>, before the Start Menu exists, so the browser uses
      the same proportional 16:9 layout during refresh that it uses after the
      runtime hydrates. No old-layout flash, no tiny nickname postage stamp. */
   :root{
@@ -4674,8 +4673,7 @@ html.sg-start-nickname-prepaint.sg-start-nickname-has-name #startMenu #startWelc
 </style>
 
 
-<!-- v2.XX: Moved final Start/Hub/menu CSS into <head>
- so refresh never paints the old layout first. -->
+<!-- v2.XX: Moved final Start/Hub/menu CSS into <head>so refresh never paints the old layout first. -->
 
 
 <style>
@@ -5191,8 +5189,7 @@ body.menu-hub-open #menuHubPanel{
 
 <style id="startMenuPrepaintNoOldLayoutFinalWinner">
   /* v2.XX: Final first-paint override.
-     This is deliberately the last Start Menu CSS in <head>
- so refresh never
+     This is deliberately the last Start Menu CSS in <head>so refresh never
      paints the old layout before the runtime hydrates. It only applies while
      the early html.sg-start-nickname-prepaint class is present. */
   html.sg-start-nickname-prepaint body #startMenu.panel.shooter-menu16x9Surface{

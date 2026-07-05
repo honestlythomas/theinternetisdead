@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/dead/js/shell-route.js"></script><meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Karaoke Machine v1.0</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
+  <style>
+    :root {
+      --bg: #050008;
+      --panel: #19002f;
+      --lime: #b7ff00;
+      --purple: #9b4dff;
+      --pink: #ff4fd8;
+      --cyan: #51f7ff;
+      --text: #ffffff;
+      --muted: #cbb7e8;
+      --black: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        linear-gradient(rgba(183, 255, 0, 0.055) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(183, 255, 0, 0.055) 2px, transparent 2px),
+        radial-gradient(circle at 20% 20%, rgba(155, 77, 255, 0.35), transparent 25%),
+        radial-gradient(circle at 80% 80%, rgba(81, 247, 255, 0.16), transparent 25%),
+        var(--bg);
+      background-size: 48px 48px, 48px 48px, auto, auto, auto;
+      color: var(--text);
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .machine {
+      width: min(1100px, 100%);
+      display: grid;
+      gap: 12px;
+    }
+
+    .top {
+      border: 5px solid var(--lime);
+      background: rgba(0, 0, 0, 0.72);
+      padding: 14px;
+      box-shadow: 8px 8px 0 rgba(155, 77, 255, 0.55);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 6vw, 5rem);
+      line-height: 0.85;
+      text-transform: uppercase;
+      letter-spacing: -0.08em;
+      text-shadow: 3px 0 var(--pink), -3px 0 var(--cyan);
+    }
+
+    .version {
+      text-transform: none;
+    }
+
+    .tagline {
+      margin: 0;
+      color: var(--muted);
+      font-weight: bold;
+    }
+
+    .setup {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr auto;
+      gap: 8px;
+      border: 5px solid var(--purple);
+      background: rgba(25, 0, 47, 0.9);
+      padding: 12px;
+      box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.72);
+    }
+
+    input,
+    button {
+      width: 100%;
+      min-height: 46px;
+      border: 3px solid var(--lime);
+      border-radius: 0;
+      background: var(--black);
+      color: var(--lime);
+      font: inherit;
+      font-weight: 900;
+      padding: 10px;
+      outline: none;
+    }
+
+    input::file-selector-button {
+      display: none;
+    }
+
+    input[type="file"] {
+      cursor: pointer;
+    }
+
+    button {
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 4px 4px 0 rgba(81, 247, 255, 0.42);
+    }
+
+    button:hover {
+      background: var(--lime);
+      color: var(--black);
+      border-color: white;
+    }
+
+    button:active {
+      translate: 3px 3px;
+      box-shadow: 1px 1px 0 rgba(81, 247, 255, 0.42);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .screen {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border: 7px solid var(--lime);
+      background:
+        linear-gradient(rgba(183, 255, 0, 0.08) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(183, 255, 0, 0.08) 2px, transparent 2px),
+        linear-gradient(135deg, #0a0018, #26004b 45%, #020005);
+      background-size: 32px 32px, 32px 32px, auto;
+      overflow: hidden;
+      box-shadow: 10px 10px 0 rgba(155, 77, 255, 0.55);
+      display: grid;
+      place-items: center;
+      padding: 6vw;
+      text-align: center;
+    }
+
+    .screen::before {
+      content: "KARAOKE MACHINE";
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      color: rgba(183, 255, 0, 0.68);
+      background: rgba(0, 0, 0, 0.68);
+      border: 2px solid rgba(183, 255, 0, 0.42);
+      padding: 4px 8px;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+    }
+
+    .screen::after {
+      content: "LRCLIB LINE SYNC";
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      color: rgba(81, 247, 255, 0.7);
+      background: rgba(0, 0, 0, 0.68);
+      border: 2px solid rgba(81, 247, 255, 0.42);
+      padding: 4px 8px;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+    }
+
+    .lyrics {
+      --music-bounce-y: 0px;
+      --music-scale: 1;
+      width: 100%;
+      display: grid;
+      gap: 22px;
+      align-items: center;
+      justify-items: center;
+      position: relative;
+      z-index: 2;
+      transform: translateY(var(--music-bounce-y)) scale(var(--music-scale));
+      transform-origin: center;
+      transition: transform 55ms linear;
+      will-change: transform;
+    }
+
+    .previous,
+    .next {
+      min-height: 1.4em;
+      color: rgba(183, 255, 0, 0.72);
+      font-size: clamp(1rem, 2.4vw, 2rem);
+      font-weight: 900;
+      text-shadow:
+        2px 2px 0 rgba(15, 55, 0, 0.95),
+        0 0 12px rgba(183, 255, 0, 0.35);
+      max-width: 100%;
+    }
+
+    .current {
+      min-height: 2em;
+      color: var(--lime);
+      font-size: clamp(2rem, 6vw, 5.8rem);
+      line-height: 0.95;
+      font-weight: 900;
+      text-transform: uppercase;
+      max-width: 100%;
+      text-shadow:
+        4px 4px 0 rgba(15, 55, 0, 0.98),
+        0 0 16px rgba(183, 255, 0, 0.72),
+        0 0 34px rgba(183, 255, 0, 0.38);
+    }
+
+    .karaoke-fill {
+      --fill: 0%;
+      display: inline;
+      color: var(--lime);
+      background:
+        linear-gradient(
+          90deg,
+          #f2ff8a 0%,
+          #f2ff8a var(--fill),
+          var(--lime) var(--fill),
+          var(--lime) 100%
+        );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter:
+        drop-shadow(4px 4px 0 rgba(15, 55, 0, 0.98))
+        drop-shadow(0 0 18px rgba(183, 255, 0, 0.55));
+    }
+
+    .status {
+      border: 4px solid var(--cyan);
+      background: rgba(0, 0, 0, 0.72);
+      color: var(--cyan);
+      padding: 10px;
+      min-height: 46px;
+      font-weight: bold;
+      box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.65);
+    }
+
+    audio {
+      width: 100%;
+      accent-color: var(--lime);
+      border: 4px solid var(--purple);
+      background: black;
+    }
+
+    /* Start simple: only show the title rectangle and setup rectangle. */
+    .status,
+    audio,
+    .screen {
+      display: none;
+    }
+
+    /* After Get Lyrics is pressed, the lyrics screen becomes the entire viewport. */
+    body.lyrics-mode {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      min-height: 100vh;
+      padding: 0;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    body.lyrics-mode .machine {
+      width: 100vw;
+      height: 100vh;
+      gap: 0;
+    }
+
+    body.lyrics-mode .top,
+    body.lyrics-mode .setup,
+    body.lyrics-mode .status,
+    body.lyrics-mode audio {
+      display: none;
+    }
+
+    body.lyrics-mode .screen {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      aspect-ratio: auto;
+      border: 0;
+      box-shadow: none;
+      display: grid;
+      padding: 7vw;
+      cursor: pointer;
+    }
+
+    /* Clean-screen mode: C hides the bottom controls and both corner overlays. */
+    body.clean-screen .player-controls,
+    body.clean-screen .screen::before,
+    body.clean-screen .screen::after {
+      display: none !important;
+    }
+
+    body.lyrics-mode .current {
+      /* Half-size fullscreen lyric text. Changed from clamp(3rem, 11vw, 12rem). */
+      font-size: clamp(1.5rem, 5.5vw, 6rem);
+    }
+
+    body.lyrics-mode .previous,
+    body.lyrics-mode .next {
+      /* Half-size previous/next lyric text. Changed from clamp(1.2rem, 3vw, 3rem). */
+      font-size: clamp(0.6rem, 1.5vw, 1.5rem);
+    }
+
+
+
+    .player-controls {
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      z-index: 10;
+      width: min(900px, calc(100vw - 28px));
+      display: none;
+      grid-template-columns: auto auto auto auto auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      border: 4px solid var(--lime);
+      background: rgba(0, 0, 0, 0.86);
+      padding: 10px;
+      box-shadow: 0 0 24px rgba(183, 255, 0, 0.34);
+      transform: translate(-50%, calc(100% + 28px));
+      opacity: 0;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    body.lyrics-mode .player-controls {
+      display: grid;
+    }
+
+    body.lyrics-mode .screen:hover .player-controls,
+    body.lyrics-mode .screen:focus-within .player-controls,
+    body.lyrics-mode .player-controls.is-visible {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+
+    .control-btn {
+      width: auto;
+      min-width: 86px;
+      min-height: 42px;
+      padding: 8px 12px;
+    }
+
+    .stop-btn {
+      border-color: var(--pink);
+      color: var(--pink);
+    }
+
+    .stop-btn:hover {
+      background: var(--pink);
+      color: var(--black);
+      border-color: white;
+    }
+
+    .vocal-btn {
+      min-width: 140px;
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .vocal-btn.is-on {
+      border-color: var(--lime);
+      color: var(--lime);
+      box-shadow: 4px 4px 0 rgba(183, 255, 0, 0.34);
+    }
+
+    .vocal-btn:hover {
+      background: var(--cyan);
+      color: var(--black);
+      border-color: white;
+    }
+
+    .vocal-btn.is-on:hover {
+      background: var(--lime);
+      color: var(--black);
+      border-color: white;
+    }
+
+    .mic-btn {
+      min-width: 116px;
+      border-color: var(--purple);
+      color: var(--purple);
+    }
+
+    .mic-btn.is-on {
+      border-color: var(--lime);
+      color: var(--lime);
+      box-shadow: 4px 4px 0 rgba(183, 255, 0, 0.34);
+    }
+
+    .mic-btn:hover {
+      background: var(--purple);
+      color: var(--black);
+      border-color: white;
+    }
+
+    .mic-btn.is-on:hover {
+      background: var(--lime);
+      color: var(--black);
+      border-color: white;
+    }
+
+    .scrub {
+      min-height: 42px;
+      border: 3px solid var(--lime);
+      background: var(--black);
+      accent-color: var(--lime);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .time-readout {
+      min-width: 122px;
+      color: var(--lime);
+      font-weight: 900;
+      text-align: right;
+      text-shadow: 0 0 10px rgba(183, 255, 0, 0.55);
+    }
+
+    @media (max-width: 760px) {
+      .setup {
+        grid-template-columns: 1fr;
+      }
+
+      .screen {
+        padding: 24px;
+      }
+
+      .screen::before,
+      .screen::after {
+        font-size: 10px;
+      }
+
+      .player-controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .scrub,
+      .time-readout {
+        grid-column: 1 / -1;
+      }
+
+      .time-readout {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="machine">
+    <section class="top">
+      <!-- AI editors: bump this visible version on every file edit (v1.0, v1.1, v1.2, etc.). -->
+      <h1>Karaoke<br>Machine <span class="version">v1.0</span></h1>
+      <p class="tagline">Upload song. Enter artist/title. Get synced lyrics. Sing at the glowing rectangle like civilization intended.</p>
+    </section>
+
+    <section class="setup">
+      <input id="songFile" type="file" accept="audio/*" title="Upload song" />
+      <input id="artist" type="text" placeholder="Artist" />
+      <input id="title" type="text" placeholder="Song title" />
+      <button id="getLyrics">Get Lyrics</button>
+    </section>
+
+    <div class="status" id="status">Upload an audio file to begin.</div>
+
+    <audio id="audio" controls></audio>
+
+    <section class="screen">
+      <div class="lyrics">
+        <div class="previous" id="previousLine"></div>
+        <div class="current" id="currentLine"><span class="karaoke-fill">KARAOKE READY</span></div>
+        <div class="next" id="nextLine"></div>
+      </div>
+
+      <div class="player-controls" id="playerControls" aria-label="Player controls">
+        <button class="control-btn" id="playPauseBtn" type="button">Play</button>
+        <button class="control-btn stop-btn" id="stopBtn" type="button">Stop</button>
+        <button class="control-btn vocal-btn is-on" id="vocalCutBtn" type="button" aria-pressed="true">Vocal Cut: On</button>
+        <button class="control-btn vocal-btn" id="downloadVocalCutBtn" type="button">Download Vocal Cut</button>
+        <button class="control-btn mic-btn" id="micBtn" type="button" aria-pressed="false">Mic: Off</button>
+        <input class="scrub" id="scrub" type="range" min="0" max="1000" value="0" aria-label="Song progress" />
+        <div class="time-readout" id="timeReadout">0:00 / 0:00</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const songFile = document.getElementById("songFile");
+    const artistInput = document.getElementById("artist");
+    const titleInput = document.getElementById("title");
+    const getLyricsBtn = document.getElementById("getLyrics");
+    const statusEl = document.getElementById("status");
+    const audio = document.getElementById("audio");
+    const previousLine = document.getElementById("previousLine");
+    const currentLine = document.getElementById("currentLine");
+    const nextLine = document.getElementById("nextLine");
+    const screen = document.querySelector(".screen");
+    const playerControls = document.getElementById("playerControls");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const vocalCutBtn = document.getElementById("vocalCutBtn");
+    const downloadVocalCutBtn = document.getElementById("downloadVocalCutBtn");
+    const micBtn = document.getElementById("micBtn");
+    const scrub = document.getElementById("scrub");
+    const timeReadout = document.getElementById("timeReadout");
+
+    let audioUrl = null;
+    let currentSongFile = null;
+    let vocalCutDownloadUrl = null;
+    let lyrics = [];
+    let duration = 0;
+    let lastRenderedIndex = null;
+    let animationFrame = null;
+    let audioContext = null;
+    let analyser = null;
+    let audioSource = null;
+    let splitter = null;
+    let normalGain = null;
+    let vocalCutGain = null;
+    let leftDifferenceGain = null;
+    let rightInvertGain = null;
+    let differenceMerger = null;
+    let vocalCutEnabled = true;
+    let micEnabled = false;
+    let micStream = null;
+    let micSource = null;
+    let micGain = null;
+    let frequencyData = null;
+    let bounceY = 0;
+    let bounceScale = 1;
+    let cleanScreenEnabled = false;
+
+    function setStatus(text) {
+      statusEl.textContent = text;
+    }
+
+    function enterLyricsMode() {
+      document.body.classList.add("lyrics-mode");
+    }
+
+    function updateCleanScreenState() {
+      document.body.classList.toggle("clean-screen", cleanScreenEnabled);
+      if (cleanScreenEnabled) playerControls.classList.remove("is-visible");
+    }
+
+    async function togglePageFullscreen() {
+      try {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch {
+        setStatus("Fullscreen failed. The browser has once again chosen bureaucracy over joy.");
+      }
+    }
+
+    function exitLyricsMode() {
+      document.body.classList.remove("lyrics-mode");
+      cleanScreenEnabled = false;
+      updateCleanScreenState();
+      audio.pause();
+      audio.currentTime = 0;
+      micEnabled = false;
+      updateMicState();
+      lastRenderedIndex = null;
+      renderLyrics(true);
+      updatePlayerControls();
+      updateLyricsBounce();
+      setStatus(audio.src ? "Stopped. Main screen restored." : "Upload an audio file to begin.");
+    }
+
+    function sanitizeFilename(value) {
+      return String(value || "song")
+        .replace(/\.[^.]+$/, "")
+        .replace(/[^a-z0-9_-]+/gi, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 90) || "song";
+    }
+
+    function resetVocalCutDownload() {
+      if (vocalCutDownloadUrl) URL.revokeObjectURL(vocalCutDownloadUrl);
+      vocalCutDownloadUrl = null;
+    }
+
+    function writeString(view, offset, string) {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    }
+
+    function encodeWavFromChannels(channels, sampleRate) {
+      const channelCount = channels.length;
+      const length = channels[0]?.length || 0;
+      const bytesPerSample = 2;
+      const blockAlign = channelCount * bytesPerSample;
+      const buffer = new ArrayBuffer(44 + length * blockAlign);
+      const view = new DataView(buffer);
+
+      writeString(view, 0, "RIFF");
+      view.setUint32(4, 36 + length * blockAlign, true);
+      writeString(view, 8, "WAVE");
+      writeString(view, 12, "fmt ");
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, channelCount, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * blockAlign, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, 16, true);
+      writeString(view, 36, "data");
+      view.setUint32(40, length * blockAlign, true);
+
+      let offset = 44;
+
+      for (let i = 0; i < length; i++) {
+        for (let channel = 0; channel < channelCount; channel++) {
+          const sample = Math.max(-1, Math.min(1, channels[channel][i] || 0));
+          view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+          offset += 2;
+        }
+      }
+
+      return new Blob([view], { type: "audio/wav" });
+    }
+
+    function createPinkNoiseGenerator() {
+      let b0 = 0;
+      let b1 = 0;
+      let b2 = 0;
+      let b3 = 0;
+      let b4 = 0;
+      let b5 = 0;
+      let b6 = 0;
+
+      return () => {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+
+        const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+        b6 = white * 0.115926;
+        return pink * 0.11;
+      };
+    }
+
+    async function renderVocalCutWav(file) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) throw new Error("This browser does not support Web Audio decoding.");
+
+      const arrayBuffer = await file.arrayBuffer();
+      const decodeContext = new AudioContextClass();
+      let decoded;
+
+      try {
+        decoded = await decodeContext.decodeAudioData(arrayBuffer.slice(0));
+      } finally {
+        await decodeContext.close().catch(() => {});
+      }
+
+      const length = decoded.length;
+      const sampleRate = decoded.sampleRate;
+      const left = decoded.getChannelData(0);
+      const right = decoded.numberOfChannels > 1 ? decoded.getChannelData(1) : decoded.getChannelData(0);
+      const monoDifference = new Float32Array(length);
+      const pinkNoise = createPinkNoiseGenerator();
+      const pinkNoiseMix = 0.012;
+
+      for (let i = 0; i < length; i++) {
+        // Same basic center-channel cancellation as the live Vocal Cut button:
+        // subtract right from left, then tame it slightly to reduce clipping.
+        const vocalCutSample = (left[i] - right[i]) * 0.92;
+        monoDifference[i] = Math.max(-1, Math.min(1, vocalCutSample + pinkNoise() * pinkNoiseMix));
+      }
+
+      return encodeWavFromChannels([monoDifference, monoDifference], sampleRate);
+    }
+
+    function formatTime(seconds) {
+      if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+      const whole = Math.floor(seconds);
+      const minutes = Math.floor(whole / 60);
+      const secs = String(whole % 60).padStart(2, "0");
+      return `${minutes}:${secs}`;
+    }
+
+    function updatePlayerControls() {
+      const total = Number.isFinite(audio.duration) ? audio.duration : 0;
+      const now = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+      scrub.value = total ? String(Math.round((now / total) * 1000)) : "0";
+      timeReadout.textContent = `${formatTime(now)} / ${formatTime(total)}`;
+      playPauseBtn.textContent = audio.paused ? "Play" : "Pause";
+    }
+
+    function updateVocalCutState() {
+      if (normalGain && vocalCutGain) {
+        normalGain.gain.value = vocalCutEnabled ? 0 : 1;
+        vocalCutGain.gain.value = vocalCutEnabled ? 1 : 0;
+      }
+
+      vocalCutBtn.textContent = vocalCutEnabled ? "Vocal Cut: On" : "Vocal Cut: Off";
+      vocalCutBtn.classList.toggle("is-on", vocalCutEnabled);
+      vocalCutBtn.setAttribute("aria-pressed", String(vocalCutEnabled));
+    }
+
+    function updateMicState() {
+      if (micGain) {
+        micGain.gain.value = micEnabled ? 1.15 : 0;
+      }
+
+      micBtn.textContent = micEnabled ? "Mic: On" : "Mic: Off";
+      micBtn.classList.toggle("is-on", micEnabled);
+      micBtn.setAttribute("aria-pressed", String(micEnabled));
+    }
+
+    function ensureAudioContext() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+      if (!audioContext) audioContext = new AudioContextClass();
+      return audioContext;
+    }
+
+    async function setupMicrophoneMonitor() {
+      const context = ensureAudioContext();
+      if (!context) {
+        setStatus("This browser does not support Web Audio mic monitoring. Naturally, the rectangle union filed a grievance.");
+        return false;
+      }
+
+      if (context.state === "suspended") {
+        try {
+          await context.resume();
+        } catch {
+          return false;
+        }
+      }
+
+      if (!micStream) {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          setStatus("Microphone access is not available in this browser/context. Try localhost or HTTPS.");
+          return false;
+        }
+
+        try {
+          micStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false
+            }
+          });
+        } catch {
+          setStatus("Microphone permission denied or unavailable. The mic remains silent, tragically unlike most comment sections.");
+          return false;
+        }
+
+        micSource = context.createMediaStreamSource(micStream);
+        micGain = context.createGain();
+        micSource.connect(micGain);
+        micGain.connect(context.destination);
+      }
+
+      return true;
+    }
+
+    function setupMusicReaction() {
+      if (analyser || !audio.src) return;
+
+      const context = ensureAudioContext();
+      if (!context) return;
+
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.68;
+      frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+      audioSource = audioContext.createMediaElementSource(audio);
+      normalGain = audioContext.createGain();
+      vocalCutGain = audioContext.createGain();
+      splitter = audioContext.createChannelSplitter(2);
+      leftDifferenceGain = audioContext.createGain();
+      rightInvertGain = audioContext.createGain();
+      differenceMerger = audioContext.createChannelMerger(2);
+
+      leftDifferenceGain.gain.value = 0.92;
+      rightInvertGain.gain.value = -0.92;
+
+      // Analysis branch for the bouncing lyric visuals. It does not feed the speakers.
+      audioSource.connect(analyser);
+
+      // Normal branch.
+      audioSource.connect(normalGain);
+      normalGain.connect(audioContext.destination);
+
+      // Vocal-cut branch: center-channel cancellation. This subtracts Right from Left
+      // and sends the result to both speakers. It can reduce centered vocals, but it
+      // will also chew up centered bass/snare like a tiny audio wood chipper.
+      audioSource.connect(splitter);
+      splitter.connect(leftDifferenceGain, 0);
+      splitter.connect(rightInvertGain, 1);
+      leftDifferenceGain.connect(differenceMerger, 0, 0);
+      rightInvertGain.connect(differenceMerger, 0, 0);
+      leftDifferenceGain.connect(differenceMerger, 0, 1);
+      rightInvertGain.connect(differenceMerger, 0, 1);
+      differenceMerger.connect(vocalCutGain);
+      vocalCutGain.connect(audioContext.destination);
+
+      updateVocalCutState();
+      updateMicState();
+    }
+
+    async function resumeMusicReaction() {
+      setupMusicReaction();
+
+      if (audioContext && audioContext.state === "suspended") {
+        try {
+          await audioContext.resume();
+        } catch {
+          // Browser said no. As browsers do, with all the warmth of a parking meter.
+        }
+      }
+    }
+
+    function updateLyricsBounce() {
+      const lyricsBox = document.querySelector(".lyrics");
+      if (!lyricsBox) return;
+
+      let targetY = 0;
+      let targetScale = 1;
+
+      if (document.body.classList.contains("lyrics-mode") && analyser && frequencyData && !audio.paused) {
+        analyser.getByteFrequencyData(frequencyData);
+
+        const lowEnd = frequencyData.slice(2, 28);
+        const average = lowEnd.reduce((sum, value) => sum + value, 0) / Math.max(1, lowEnd.length);
+        const energy = Math.max(0, Math.min(1, (average / 255 - 0.08) / 0.92));
+        const wobble = Math.sin(performance.now() / 78);
+
+        targetY = wobble * energy * 34;
+        targetScale = 1 + energy * 0.075;
+      }
+
+      bounceY = bounceY * 0.72 + targetY * 0.28;
+      bounceScale = bounceScale * 0.76 + targetScale * 0.24;
+
+      lyricsBox.style.setProperty("--music-bounce-y", `${bounceY.toFixed(2)}px`);
+      lyricsBox.style.setProperty("--music-scale", bounceScale.toFixed(3));
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function setCurrentText(text, fillPercent = 0) {
+      currentLine.innerHTML =
+        `<span class="karaoke-fill" style="--fill:${fillPercent}%">${escapeHtml(text || "♪ ♪ ♪")}</span>`;
+    }
+
+    function guessFromFilename(filename) {
+      const clean = filename
+        .replace(/\.[^.]+$/, "")
+        .replace(/[_]+/g, " ")
+        .trim();
+
+      const parts = clean.split(/\s+-\s+/);
+
+      if (parts.length >= 2) {
+        artistInput.value = artistInput.value || parts[0].trim();
+        titleInput.value = titleInput.value || parts.slice(1).join(" - ").trim();
+      } else {
+        titleInput.value = titleInput.value || clean;
+      }
+    }
+
+    function inferSongInfoFromMetadata(file) {
+      if (!window.jsmediatags || !file) {
+        return Promise.resolve(false);
+      }
+
+      return new Promise(resolve => {
+        window.jsmediatags.read(file, {
+          onSuccess: tag => {
+            const tags = tag?.tags || {};
+            const metadataArtist = String(tags.artist || tags.albumArtist || "").trim();
+            const metadataTitle = String(tags.title || "").trim();
+
+            if (metadataArtist) artistInput.value = metadataArtist;
+            if (metadataTitle) titleInput.value = metadataTitle;
+
+            resolve(Boolean(metadataArtist || metadataTitle));
+          },
+          onError: () => resolve(false)
+        });
+      });
+    }
+
+    function parseLrc(text) {
+      const parsed = [];
+      const lines = text.split(/\r?\n/);
+      const timeTag = /\[(\d{1,2}):(\d{1,2}(?:\.\d{1,3})?)\]/g;
+
+      for (const raw of lines) {
+        const tags = [...raw.matchAll(timeTag)];
+        if (!tags.length) continue;
+
+        const lyricText = raw.replace(timeTag, "").trim();
+        if (!lyricText) continue;
+
+        for (const tag of tags) {
+          parsed.push({
+            time: Number(tag[1]) * 60 + Number(tag[2]),
+            text: lyricText
+          });
+        }
+      }
+
+      return parsed
+        .filter(item => Number.isFinite(item.time) && item.text)
+        .sort((a, b) => a.time - b.time);
+    }
+
+    function findCurrentIndex() {
+      if (!lyrics.length) return -1;
+
+      let index = -1;
+      const now = audio.currentTime;
+
+      for (let i = 0; i < lyrics.length; i++) {
+        if (now >= lyrics[i].time) index = i;
+        else break;
+      }
+
+      return index;
+    }
+
+    function getLineProgress(index) {
+      if (index < 0 || !lyrics[index]) return 0;
+
+      const start = lyrics[index].time;
+      const nextStart = lyrics[index + 1]?.time ?? Math.min(audio.duration || start + 4, start + 4);
+      const span = Math.max(0.4, nextStart - start);
+      const raw = ((audio.currentTime - start) / span) * 100;
+
+      return Math.max(0, Math.min(100, raw));
+    }
+
+    function renderLyrics(force = false) {
+      const index = findCurrentIndex();
+
+      if (index < 0) {
+        previousLine.textContent = "";
+        setCurrentText(lyrics.length ? "♪ ♪ ♪" : "KARAOKE READY", 0);
+        nextLine.textContent = lyrics[0]?.text || "";
+        lastRenderedIndex = index;
+        return;
+      }
+
+      const fill = getLineProgress(index);
+
+      if (force || index !== lastRenderedIndex) {
+        previousLine.textContent = lyrics[index - 1]?.text || "";
+        nextLine.textContent = lyrics[index + 1]?.text || "";
+        lastRenderedIndex = index;
+      }
+
+      setCurrentText(lyrics[index]?.text || "♪ ♪ ♪", fill.toFixed(2));
+    }
+
+    function karaokeLoop() {
+      renderLyrics(false);
+      updatePlayerControls();
+      updateLyricsBounce();
+      animationFrame = requestAnimationFrame(karaokeLoop);
+    }
+
+    function startKaraokeLoop() {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(karaokeLoop);
+    }
+
+    async function fetchLyrics() {
+      const artist = artistInput.value.trim();
+      const title = titleInput.value.trim();
+
+      if (!title) {
+        setStatus("Enter a song title first. The machine is tacky, not psychic.");
+        return;
+      }
+
+      enterLyricsMode();
+      getLyricsBtn.disabled = true;
+      setCurrentText("SEARCHING LYRICS", 0);
+      previousLine.textContent = "";
+      nextLine.textContent = "";
+      setStatus("Searching LRCLIB for synced lyrics...");
+
+      try {
+        const params = new URLSearchParams();
+        params.set("track_name", title);
+        if (artist) params.set("artist_name", artist);
+        if (duration) params.set("duration", String(Math.round(duration)));
+
+        let response = await fetch(`https://lrclib.net/api/get?${params.toString()}`, {
+          headers: {
+            "Accept": "application/json",
+            "Lrclib-Client": "KaraokeMachine/1.1"
+          }
+        });
+
+        if (!response.ok) {
+          const searchParams = new URLSearchParams();
+          searchParams.set("q", artist ? `${artist} ${title}` : title);
+
+          response = await fetch(`https://lrclib.net/api/search?${searchParams.toString()}`, {
+            headers: {
+              "Accept": "application/json",
+              "Lrclib-Client": "KaraokeMachine/1.1"
+            }
+          });
+
+          if (!response.ok) throw new Error(`LRCLIB HTTP ${response.status}`);
+
+          const results = await response.json();
+          const match = Array.isArray(results)
+            ? results.find(item => item.syncedLyrics) || results[0]
+            : null;
+
+          if (!match) throw new Error("No LRCLIB match found.");
+
+          if (!match.syncedLyrics) {
+            throw new Error("Match found, but it has no synced lyrics.");
+          }
+
+          lyrics = parseLrc(match.syncedLyrics);
+          artistInput.value = match.artistName || artistInput.value;
+          titleInput.value = match.trackName || titleInput.value;
+          setStatus(`Loaded synced lyrics: ${match.artistName || "Unknown"} - ${match.trackName || "Unknown"}. Press play.`);
+        } else {
+          const data = await response.json();
+
+          if (!data.syncedLyrics) {
+            throw new Error("Track found, but it has no synced lyrics.");
+          }
+
+          lyrics = parseLrc(data.syncedLyrics);
+          setStatus(`Loaded synced lyrics: ${data.artistName || artist || "Unknown"} - ${data.trackName || title}. Press play.`);
+        }
+
+        if (!lyrics.length) throw new Error("Lyrics parsed empty. That should not happen, yet here we are.");
+
+        audio.currentTime = 0;
+        lastRenderedIndex = null;
+        renderLyrics(true);
+        startKaraokeLoop();
+        await resumeMusicReaction();
+        audio.play().catch(() => {
+          nextLine.textContent = "Click the screen or press Space to play";
+        });
+      } catch (error) {
+        lyrics = [];
+        previousLine.textContent = "";
+        setCurrentText("NO SYNCED LYRICS FOUND", 0);
+        nextLine.textContent = "";
+        setStatus(`${error.message} Try artist/title spelling or another song.`);
+      } finally {
+        getLyricsBtn.disabled = false;
+      }
+    }
+
+    songFile.addEventListener("change", async () => {
+      const file = songFile.files[0];
+      if (!file) return;
+
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+
+      currentSongFile = file;
+      resetVocalCutDownload();
+
+      audioUrl = URL.createObjectURL(file);
+      audio.src = audioUrl;
+      lyrics = [];
+      lastRenderedIndex = null;
+
+      artistInput.value = "";
+      titleInput.value = "";
+      guessFromFilename(file.name);
+
+      previousLine.textContent = "";
+      setCurrentText("SONG LOADED", 0);
+      nextLine.textContent = "Now get lyrics";
+      setStatus(`Loaded: ${file.name}. Checking embedded metadata...`);
+
+      const foundMetadata = await inferSongInfoFromMetadata(file);
+      if (foundMetadata) {
+        const artist = artistInput.value.trim() || "Unknown Artist";
+        const title = titleInput.value.trim() || "Unknown Title";
+        setStatus(`Loaded metadata: ${artist} - ${title}. Hit Get Lyrics.`);
+      } else {
+        setStatus(`Loaded: ${file.name}. I guessed from the filename because the file metadata brought nothing to the potluck.`);
+      }
+
+      updatePlayerControls();
+    });
+
+    audio.addEventListener("loadedmetadata", () => {
+      duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      if (duration) setStatus(`Song duration: ${Math.round(duration)}s. Enter artist/title, then hit Get Lyrics.`);
+      updatePlayerControls();
+    });
+
+    audio.addEventListener("play", () => {
+      resumeMusicReaction();
+      startKaraokeLoop();
+      updatePlayerControls();
+    });
+    audio.addEventListener("pause", () => {
+      renderLyrics(true);
+      updatePlayerControls();
+    });
+    audio.addEventListener("timeupdate", () => {
+      renderLyrics(false);
+      updatePlayerControls();
+    });
+    audio.addEventListener("seeked", () => {
+      renderLyrics(true);
+      updatePlayerControls();
+    });
+
+    screen.addEventListener("click", event => {
+      if (event.target.closest(".player-controls")) return;
+      if (!document.body.classList.contains("lyrics-mode") || !audio.src) return;
+      if (audio.paused) {
+        resumeMusicReaction();
+        audio.play().catch(() => {});
+      } else audio.pause();
+    });
+
+    playerControls.addEventListener("click", event => {
+      event.stopPropagation();
+    });
+
+    playPauseBtn.addEventListener("click", () => {
+      if (!audio.src) return;
+      if (audio.paused) {
+        resumeMusicReaction();
+        audio.play().catch(() => {});
+      } else audio.pause();
+      updatePlayerControls();
+    });
+
+    stopBtn.addEventListener("click", exitLyricsMode);
+
+    vocalCutBtn.addEventListener("click", () => {
+      vocalCutEnabled = !vocalCutEnabled;
+      updateVocalCutState();
+      setStatus(vocalCutEnabled
+        ? "Vocal Cut enabled: trying center-channel cancellation. It works best on stereo songs with vocals mixed dead center."
+        : "Vocal Cut disabled: normal audio restored.");
+    });
+
+    micBtn.addEventListener("click", async () => {
+      if (micEnabled) {
+        micEnabled = false;
+        updateMicState();
+        setStatus("Mic monitor disabled.");
+        return;
+      }
+
+      const ready = await setupMicrophoneMonitor();
+      if (!ready) return;
+
+      micEnabled = true;
+      updateMicState();
+      setStatus("Mic monitor enabled: your microphone is being played through the speakers. Headphones help prevent feedback, because physics remains annoying.");
+    });
+
+    scrub.addEventListener("input", () => {
+      const total = Number.isFinite(audio.duration) ? audio.duration : 0;
+      if (!total) return;
+      audio.currentTime = (Number(scrub.value) / 1000) * total;
+      renderLyrics(true);
+      updatePlayerControls();
+    });
+
+    window.addEventListener("keydown", event => {
+      if (event.target?.matches?.("input, textarea, select, button")) return;
+
+      if (event.code === "KeyF") {
+        event.preventDefault();
+        togglePageFullscreen();
+        return;
+      }
+
+      if (event.code === "KeyC") {
+        event.preventDefault();
+        cleanScreenEnabled = !cleanScreenEnabled;
+        updateCleanScreenState();
+        return;
+      }
+
+      if (!document.body.classList.contains("lyrics-mode") || event.code !== "Space") return;
+      event.preventDefault();
+      if (audio.paused) {
+        resumeMusicReaction();
+        audio.play().catch(() => {});
+      } else audio.pause();
+    });
+
+    downloadVocalCutBtn.addEventListener("click", async event => {
+      event.stopPropagation();
+
+      if (!currentSongFile) {
+        setStatus("Upload an audio file first. The vocal-removal goblin needs something to chew.");
+        return;
+      }
+
+      downloadVocalCutBtn.disabled = true;
+      const originalText = downloadVocalCutBtn.textContent;
+      downloadVocalCutBtn.textContent = "Rendering...";
+      setStatus("Rendering downloadable vocal cut WAV locally...");
+
+      try {
+        resetVocalCutDownload();
+        const blob = await renderVocalCutWav(currentSongFile);
+        vocalCutDownloadUrl = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        const baseName = sanitizeFilename(currentSongFile.name);
+        link.href = vocalCutDownloadUrl;
+        link.download = `${baseName}_vocal_cut.wav`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setStatus("Vocal cut WAV downloaded. It uses center-channel cancellation, so results depend heavily on the mix.");
+      } catch (error) {
+        setStatus(`Could not render vocal cut download: ${error.message || error}`);
+      } finally {
+        downloadVocalCutBtn.disabled = false;
+        downloadVocalCutBtn.textContent = originalText;
+      }
+    });
+
+    getLyricsBtn.addEventListener("click", fetchLyrics);
+
+    setCurrentText("KARAOKE READY", 0);
+    updatePlayerControls();
+    updateVocalCutState();
+    updateCleanScreenState();
+    startKaraokeLoop();
+  </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+  <script src="/dead/js/shell-route.js"></script><link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>/dead/games/shooter-game/</title>
@@ -9,7 +9,7 @@
     const standaloneParams = new URLSearchParams(window.location.search);
     const allowStandalone = standaloneParams.get('standalone') === 'true';
 
-    if (window.top === window.self && !allowStandalone) {
+    if (window.top === window.self && !allowStandalone && !window.__deadShellGuardActive) {
       const shellFramePath = '/dead/games/shooter-game/' + window.location.search + window.location.hash;
   window.sessionStorage.setItem('deadRootShellFramePath', shellFramePath);
   window.location.replace('/?frame=' + encodeURIComponent(shellFramePath));

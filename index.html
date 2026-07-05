@@ -82,6 +82,127 @@
       display: block;
     }
 
+    .grave-sidebar-content {
+      height: 100%;
+      overflow: hidden;
+      padding: var(--static-image-inset);
+      box-sizing: border-box;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      justify-items: center;
+      color: lime;
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(8px, 0.78vw, 11px);
+      font-weight: 700;
+      line-height: 1.18;
+      text-align: center;
+    }
+
+    .grave-sidebar-content a {
+      color: lime;
+    }
+
+    .grave-sidebar-content .sidebar-owner-avatar {
+      display: block;
+      width: min(64px, 42%);
+      aspect-ratio: 1;
+      height: auto;
+      margin: 0 auto 4px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .grave-sidebar-content .sidebar-footer-row,
+    .grave-sidebar-content .privacy-note,
+    .grave-sidebar-content .privacy-line,
+    .grave-sidebar-content .copyright-note,
+    .grave-sidebar-content .sidebar-owner-row,
+    .grave-sidebar-content .sidebar-radio-title {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .grave-sidebar-content .sidebar-info-top,
+    .grave-sidebar-content .sidebar-social-fill,
+    .grave-sidebar-content .sidebar-bottom {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .grave-sidebar-content .sidebar-social-fill,
+    .grave-sidebar-content .sidebar-bottom {
+      margin-top: 0;
+    }
+
+    .grave-sidebar-content .sidebar-tunein-player {
+      width: 100%;
+      height: clamp(52px, 15vh, 78px);
+      border: 0;
+    }
+
+    .grave-sidebar-content .sidebar-radio-caption {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .grave-sidebar-content .sidebar-radio-caret,
+    .grave-sidebar-content .sidebar-radio-current {
+      border: 1px solid darkgreen;
+      background: #000;
+      color: #ff00ff;
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .grave-sidebar-content .sidebar-radio-current {
+      max-width: min(100%, 11.5em);
+    }
+
+    .grave-sidebar-content .sidebar-info-top {
+      align-self: start;
+    }
+
+    .grave-sidebar-content .sidebar-social-fill {
+      align-self: center;
+    }
+
+    .grave-sidebar-content .sidebar-bottom {
+      align-self: end;
+    }
+
+    .grave-sidebar-content .sidebar-owner-avatar,
+    .grave-sidebar-content .sidebar-owner-row,
+    .grave-sidebar-content .sidebar-footer-row,
+    .grave-sidebar-content .privacy-note,
+    .grave-sidebar-content .privacy-line,
+    .grave-sidebar-content .copyright-note,
+    .grave-sidebar-content .sidebar-radio-title,
+    .grave-sidebar-content .sidebar-social-card,
+    .grave-sidebar-content .sidebar-radio-caret,
+    .grave-sidebar-content .sidebar-radio-current {
+      --topbar-breathe-base-transform: translateZ(0);
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .grave-sidebar-content .sidebar-owner-avatar:hover,
+    .grave-sidebar-content .sidebar-owner-row:hover,
+    .grave-sidebar-content .sidebar-footer-row:hover,
+    .grave-sidebar-content .privacy-note:hover,
+    .grave-sidebar-content .privacy-line:hover,
+    .grave-sidebar-content .copyright-note:hover,
+    .grave-sidebar-content .sidebar-radio-title:hover,
+    .grave-sidebar-content .sidebar-social-card:hover,
+    .grave-sidebar-content .sidebar-radio-caret:hover,
+    .grave-sidebar-content .sidebar-radio-current:hover {
+      animation: topbar-hover-breathe-scale-fixed 1800ms ease-in-out infinite !important;
+    }
+
     .gear-sidebar-panel {
       appearance: none;
       -webkit-appearance: none;
@@ -198,6 +319,34 @@
       gap: 8px;
       width: auto;
       height: auto;
+    }
+
+    .audio-panel {
+      height: 88px;
+      flex-direction: column;
+      gap: 10px;
+      cursor: default;
+    }
+
+    .site-volume-slider {
+      width: min(82%, 170px);
+      accent-color: lime;
+      cursor: pointer;
+    }
+
+    .audio-toggle-control {
+      appearance: none;
+      -webkit-appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
     }
 
     .color-filter-toggle .color-filter-title {
@@ -373,12 +522,96 @@
       pointer-events: none;
     }
 
+    body.has-shell-frame .static-viewport-image {
+      display: none;
+    }
+
+    .static-markdown-overlay {
+      --static-image-inset: calc((100vh - 53px) * 0.025);
+      --static-image-left-offset: 0px;
+      --static-image-right-offset: 0px;
+      position: fixed;
+      left: calc(var(--static-image-inset) + var(--static-image-left-offset));
+      top: calc(53px + var(--static-image-inset));
+      z-index: 1;
+      width: calc(100vw - (var(--static-image-inset) * 2) - var(--static-image-left-offset) - var(--static-image-right-offset));
+      height: calc((100vh - 53px) * 0.95);
+      display: grid;
+      place-items: center;
+      padding: min(5vw, 48px);
+      box-sizing: border-box;
+      color: white;
+      font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      font-weight: 900;
+      text-align: center;
+      pointer-events: none;
+      text-shadow:
+        0 0 2px #000,
+        0 0 6px #000,
+        0 0 12px #000;
+    }
+
+    .static-markdown-overlay h1 {
+      margin: 0 0 0.55em;
+      font-size: clamp(32px, 6vw, 82px);
+      line-height: 1;
+    }
+
+    .static-markdown-overlay p {
+      max-width: 18em;
+      margin: 0;
+      font-size: clamp(18px, 2.6vw, 36px);
+      line-height: 1.25;
+    }
+
+    .static-markdown-links {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: clamp(12px, 2vw, 28px);
+      margin-top: 1.35em;
+      font-size: clamp(14px, 1.8vw, 24px);
+      line-height: 1;
+      pointer-events: auto;
+    }
+
+    .static-markdown-links a {
+      color: lime;
+      text-decoration: underline;
+    }
+
+    .static-markdown-overlay.has-iframe {
+      display: block;
+      padding: 0;
+      text-shadow: none;
+      pointer-events: auto;
+    }
+
+    .static-markdown-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      outline: 3px solid lime;
+      outline-offset: -3px;
+      box-sizing: border-box;
+      background: transparent;
+    }
+
     @media (min-width: 601px) {
       body.has-left-sidebar-open .static-viewport-image {
         --static-image-left-offset: var(--grave-sidebar-width, 25vw);
       }
 
       body.has-right-sidebar-open .static-viewport-image {
+        --static-image-right-offset: var(--grave-sidebar-width, 25vw);
+      }
+
+      body.has-left-sidebar-open .static-markdown-overlay {
+        --static-image-left-offset: var(--grave-sidebar-width, 25vw);
+      }
+
+      body.has-right-sidebar-open .static-markdown-overlay {
         --static-image-right-offset: var(--grave-sidebar-width, 25vw);
       }
     }
@@ -416,6 +649,23 @@
       }
     }
 
+    @keyframes topbar-computer-thinking-blink {
+      0%, 77%, 79%, 81%, 83%, 100% {
+        color: black;
+        opacity: 1;
+      }
+
+      78%, 82% {
+        color: white;
+        opacity: 0.88;
+      }
+
+      80% {
+        color: black;
+        opacity: 0.62;
+      }
+    }
+
     .bar-content {
       --header-diagonal-texture: repeating-linear-gradient(
         135deg,
@@ -428,6 +678,90 @@
 
     .bar-content::after {
       content: none;
+    }
+
+    .bottom-bar .site-link,
+    .bottom-bar .site-link *,
+    .bottom-bar .bar-content .index-link,
+    .bottom-bar .bar-content .index-link *,
+    .bottom-bar .index-nav-button,
+    .bottom-bar .index-nav-button *,
+    .bottom-bar .clock-text,
+    .bottom-bar .clock-text *,
+    .bottom-bar .ghost-counter,
+    .bottom-bar .ghost-counter *,
+    .bottom-bar .ghost-count,
+    .bottom-bar .ghost-label,
+    .bottom-bar .emoji-icon,
+    .bottom-bar .emoji-icon *,
+    .bottom-bar .emoji-tint,
+    .bottom-bar .ghost-glyph,
+    .bottom-bar .alien-glyph,
+    .bottom-bar .index-link-stack,
+    .bottom-bar .index-link-stack * {
+      animation: topbar-computer-thinking-blink 5600ms steps(1, end) infinite;
+    }
+
+    .bottom-bar .skull-icon,
+    .bottom-bar .skull-icon * {
+      animation-duration: 5100ms;
+      animation-delay: -900ms;
+    }
+
+    .bottom-bar .site-link,
+    .bottom-bar .site-link * {
+      animation-duration: 6800ms;
+      animation-delay: -2700ms;
+    }
+
+    .bottom-bar .spiral-icon,
+    .bottom-bar .spiral-icon * {
+      animation-duration: 5900ms;
+      animation-delay: -4200ms;
+    }
+
+    .bottom-bar .recycle-icon,
+    .bottom-bar .recycle-icon * {
+      animation-duration: 7200ms;
+      animation-delay: -1300ms;
+    }
+
+    .bottom-bar .ghost-counter,
+    .bottom-bar .ghost-counter * {
+      animation-duration: 6400ms;
+      animation-delay: -3600ms;
+    }
+
+    .bottom-bar .clock-text,
+    .bottom-bar .clock-text * {
+      animation-duration: 7900ms;
+      animation-delay: -2100ms;
+    }
+
+    .bottom-bar .gear-icon,
+    .bottom-bar .gear-icon * {
+      animation-duration: 5400ms;
+      animation-delay: -4800ms;
+    }
+
+    .bottom-bar .index-link-stack,
+    .bottom-bar .index-link-stack *,
+    .bottom-bar .bar-content .index-link,
+    .bottom-bar .bar-content .index-link * {
+      animation-duration: 6100ms;
+      animation-delay: -1700ms;
+    }
+
+    .bottom-bar .index-nav-left,
+    .bottom-bar .index-nav-left * {
+      animation-duration: 8300ms;
+      animation-delay: -5200ms;
+    }
+
+    .bottom-bar .index-nav-right,
+    .bottom-bar .index-nav-right * {
+      animation-duration: 7000ms;
+      animation-delay: -3100ms;
     }
 
     .clock-text,
@@ -987,6 +1321,13 @@
         --static-image-inset: calc((100vh - 153px) * 0.025);
         top: calc(153px + var(--static-image-inset));
         height: calc((100vh - 153px) * 0.95);
+      }
+
+      .static-markdown-overlay {
+        --static-image-inset: calc((100vh - 153px) * 0.025);
+        top: calc(153px + var(--static-image-inset));
+        height: calc((100vh - 153px) * 0.95);
+        padding: 18px;
       }
 
       .bar-content {
@@ -3233,8 +3574,9 @@
 </head>
 
 <body>
-  <iframe class="background-frame" src="/dead/pages/background/" title="Background" aria-hidden="true"></iframe>
+  <iframe class="background-frame" src="/dead/experiments/background/" title="Background" aria-hidden="true"></iframe>
   <img class="static-viewport-image" src="/dead/images/static.gif" alt="" aria-hidden="true">
+  <main class="static-markdown-overlay" id="static-markdown-overlay" aria-live="polite"></main>
   <div class="page-color-filter" id="page-color-filter" aria-hidden="true"></div>
 
   <div class="bottom-bar" aria-label="Static bookmark top bar preview">
@@ -3267,7 +3609,52 @@
     </div>
   </div>
 
-  <aside class="grave-sidebar" id="grave-sidebar" aria-hidden="true"></aside>
+  <aside class="grave-sidebar" id="grave-sidebar" aria-hidden="true">
+    <div class="grave-sidebar-content">
+      <div class="sidebar-info-top" id="sidebar-info-top">
+        <img class="sidebar-owner-avatar" src="https://unavatar.io/youtube/UCn3WLZT7k8nO24XimlJVJVQ" alt="Thomas Harrison">
+        <span class="sidebar-owner-row">Thomas Harrison "Honestly Thomas" Tektite/Jinclops</span>
+        <span class="sidebar-footer-row youtube-footer-row">
+          Main YouTube: <a href="https://youtube.com/@Honestly_Thomas" class="youtube-link">@Honestly_Thomas</a>
+        </span>
+        <span class="sidebar-footer-row youtube-footer-row">
+          Alt YouTube: <a href="https://youtube.com/@Cryptid_Memes" class="youtube-link">@Cryptid_Memes</a>
+        </span>
+      </div>
+
+      <div class="sidebar-social-fill" id="sidebar-social-fill" aria-label="My Local Radio Stations">
+        <span class="sidebar-radio-title">My Local Radio Stations</span>
+        <div class="sidebar-social-card">
+          <iframe class="sidebar-tunein-player" id="sidebar-radio-player" src="https://tunein.com/embed/player/s31188/" style="width:100%; height:100px;" scrolling="no" frameborder="no" title="Q107 - Toronto's Rock"></iframe>
+        </div>
+        <span class="sidebar-radio-title sidebar-radio-caption" aria-label="Radio station selector">
+          <button class="sidebar-radio-caret" type="button" data-radio-direction="-1" aria-label="Previous radio station">&lt;</button>
+          <select class="sidebar-radio-current" id="sidebar-radio-current" aria-label="Select radio station">
+            <option value="0">Q107 - Toronto's Rock</option>
+            <option value="1">Country 102 Bracebridge</option>
+            <option value="2">Bounce 104.1 Midland</option>
+            <option value="3">BIG 101.1 Barrie</option>
+            <option value="4">Moose FM 99.5 Bracebridge</option>
+            <option value="5">Moose FM 105.5 Huntsville</option>
+          </select>
+          <button class="sidebar-radio-caret" type="button" data-radio-direction="1" aria-label="Next radio station">&gt;</button>
+        </span>
+      </div>
+
+      <div class="sidebar-bottom">
+        <span class="sidebar-footer-row sidebar-utility-row">
+          <a href="https://github.com/honestlythomas/theinternetisdead" class="github-link">Github</a>
+          <span class="sidebar-footer-separator" aria-hidden="true"> &bull; </span>
+          <a href="https://main.theinternetisdead.zip" class="download-site-link">Download Site</a>
+        </span>
+        <span class="privacy-note">
+          <span class="privacy-line">No accounts. No server saves.</span>
+          <span class="privacy-line">Your browser hoards the cursed data.</span>
+        </span>
+        <span class="copyright-note">Copyright - 2025 <a href="/">theinternetisdead.org</a></span>
+      </div>
+    </div>
+  </aside>
   <aside class="grave-sidebar grave-sidebar-right" id="gear-customization-sidebar" aria-hidden="true">
     <button class="gear-sidebar-panel save-settings-button" id="remember-settings-toggle" type="button" aria-pressed="false">
       <span class="texture-content"><span id="remember-settings-label">Save Settings</span><span class="save-settings-check" id="remember-settings-check" aria-hidden="true"></span></span>
@@ -3288,9 +3675,13 @@
         <option value="Australia/Sydney">Sydney</option>
       </select>
     </div>
-    <button class="gear-sidebar-panel" id="audio-toggle-button" type="button" aria-pressed="false">
-      <span class="texture-content"><span id="audio-toggle-label">Mute</span><span class="save-settings-check" id="audio-toggle-check" aria-hidden="true"></span></span>
-    </button>
+    <div class="gear-sidebar-panel audio-panel">
+      <span class="audio-volume-label" id="audio-volume-label">Volume 100%</span>
+      <input class="site-volume-slider" id="site-volume-slider" type="range" min="50" max="150" step="25" value="100" aria-label="Site volume">
+      <button class="audio-toggle-control" id="audio-toggle-button" type="button" aria-pressed="false">
+        <span class="texture-content"><span id="audio-toggle-label">Mute</span><span class="save-settings-check" id="audio-toggle-check" aria-hidden="true"></span></span>
+      </button>
+    </div>
     <div class="gear-sidebar-panel color-filter-panel" id="color-filter-panel" role="group" aria-label="Color filter">
       <button class="color-filter-toggle" id="color-filter-toggle" type="button" aria-expanded="false" aria-controls="color-filter-settings">
         <span class="color-filter-title">Color Filter</span>
@@ -3330,14 +3721,23 @@
   <script>
     const clockTime = document.getElementById("clock-time");
     const clockDate = document.getElementById("clock-date");
+    const staticMarkdownOverlay = document.getElementById("static-markdown-overlay");
+    const mainPageRouteLabel = document.querySelector(".index-link .texture-content");
     const ghostCounter = document.getElementById("ghost-counter");
     const ghostCount = document.getElementById("ghost-count");
     const ghostLabel = document.getElementById("ghost-label");
+    const sidebarRadioPlayer = document.getElementById("sidebar-radio-player");
+    const sidebarRadioCurrent = document.getElementById("sidebar-radio-current");
+    const sidebarRadioCarets = document.querySelectorAll(".sidebar-radio-caret");
     const YOU_DUMMY_TEXT = "It's YOU dummy!";
     const skullButton = document.querySelector(".skull-icon");
     const gearButton = document.querySelector(".gear-icon");
+    const shellCycleLeftButton = document.querySelector(".index-bracket-left");
+    const shellCycleRightButton = document.querySelector(".index-bracket-right");
     const audioToggleButton = document.getElementById("audio-toggle-button");
     const audioToggleLabel = document.getElementById("audio-toggle-label");
+    const audioVolumeLabel = document.getElementById("audio-volume-label");
+    const siteVolumeSlider = document.getElementById("site-volume-slider");
     const timezoneSelect = document.getElementById("timezone-select");
     const pageColorFilter = document.getElementById("page-color-filter");
     const colorFilterPanel = document.getElementById("color-filter-panel");
@@ -3352,6 +3752,252 @@
     const gearSidebar = document.getElementById("gear-customization-sidebar");
     const desktopSidebarQuery = window.matchMedia("(min-width: 601px)");
     let ghostsOnlineCount = null;
+
+    const renderSimpleMarkdown = (markdownText) => {
+      if (!staticMarkdownOverlay) return;
+      staticMarkdownOverlay.classList.remove("has-iframe");
+
+      const fragment = document.createDocumentFragment();
+      String(markdownText || "").split(/\n{2,}/).forEach((block) => {
+        const text = block.trim();
+        if (!text) return;
+
+        if (text.startsWith("# ")) {
+          const heading = document.createElement("h1");
+          heading.textContent = text.replace(/^#\s+/, "");
+          fragment.appendChild(heading);
+          return;
+        }
+
+        const paragraph = document.createElement("p");
+        paragraph.textContent = text.replace(/\n/g, " ");
+        fragment.appendChild(paragraph);
+      });
+
+      staticMarkdownOverlay.replaceChildren(fragment);
+
+      const linksRow = document.createElement("nav");
+      linksRow.className = "static-markdown-links";
+      linksRow.setAttribute("aria-label", "Main sections");
+      ["Games", "Chat", "Experiments"].forEach((label) => {
+        const link = document.createElement("a");
+        link.href = label === "Games" ? "/dead/games/" : label === "Experiments" ? "/dead/experiments/" : label === "Chat" ? "/dead/chat/" : "/";
+        link.textContent = label;
+        if (label === "Games" || label === "Experiments" || label === "Chat") {
+          link.addEventListener("click", (event) => {
+            event.preventDefault();
+            loadShellFrame(link.getAttribute("href"), { push: true });
+          });
+        }
+        linksRow.appendChild(link);
+      });
+      staticMarkdownOverlay.appendChild(linksRow);
+    };
+
+    const normalizeShellPath = (value) => {
+      const fallbackPath = "/";
+      let parsedUrl;
+
+      try {
+        parsedUrl = new URL(value || fallbackPath, window.location.origin);
+      } catch (error) {
+        parsedUrl = new URL(fallbackPath, window.location.origin);
+      }
+
+      if (parsedUrl.origin !== window.location.origin) return fallbackPath;
+      return `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+    };
+
+    const shellFrameTitle = (path) => {
+      const url = new URL(path, window.location.origin);
+      return `${url.pathname}${url.search}${url.hash}` || "/";
+    };
+
+    const setMainPageRouteLabel = (label) => {
+      if (!mainPageRouteLabel) return;
+      mainPageRouteLabel.textContent = label || "Main Page";
+    };
+
+    const loadShellFrame = (path, options = {}) => {
+      if (!staticMarkdownOverlay) return;
+
+      const normalizedPath = normalizeShellPath(path);
+      if (normalizedPath === "/" || normalizedPath === "/index.html") {
+        if (options.push) {
+          window.history.pushState({ overlayFrame: null }, "", "/");
+        } else if (options.replace) {
+          window.history.replaceState({ overlayFrame: null }, "", "/");
+        }
+        document.title = "theinternetisdead.org";
+        setMainPageRouteLabel("Main Page");
+        document.body.classList.remove("has-shell-frame");
+        staticMarkdownOverlay.classList.remove("has-iframe");
+        fetch("/dead/messages/hello-world.md", { cache: "no-store" })
+          .then((response) => {
+            if (!response.ok) throw new Error("Failed to load hello-world.md");
+            return response.text();
+          })
+          .then(renderSimpleMarkdown)
+          .catch(() => {
+            renderSimpleMarkdown("# Hello World!\n\nWelcome to theinternetisdead.org the vibecoding fever dream of sci-fi memes and caffeine dreams.");
+          });
+        return;
+      }
+
+      const frame = document.createElement("iframe");
+      frame.className = "static-markdown-frame";
+      frame.src = normalizedPath;
+      frame.title = shellFrameTitle(normalizedPath);
+
+      if (options.push && `${window.location.pathname}${window.location.search}${window.location.hash}` !== normalizedPath) {
+        window.history.pushState({ overlayFrame: normalizedPath }, "", normalizedPath);
+      } else if (options.replace) {
+        window.history.replaceState({ overlayFrame: normalizedPath }, "", normalizedPath);
+      }
+      document.title = shellFrameTitle(normalizedPath);
+      setMainPageRouteLabel(shellFrameTitle(normalizedPath));
+      document.body.classList.add("has-shell-frame");
+      staticMarkdownOverlay.classList.add("has-iframe");
+      staticMarkdownOverlay.replaceChildren(frame);
+    };
+
+    const shouldIgnoreShellShortcut = (event) => {
+      const target = event.target;
+      if (!target) return false;
+      const tagName = target.tagName ? target.tagName.toLowerCase() : "";
+      return tagName === "input" || tagName === "textarea" || tagName === "select" || target.isContentEditable;
+    };
+
+    const fullscreenShellFrame = () => {
+      const frame = staticMarkdownOverlay?.querySelector(".static-markdown-frame");
+      if (!frame || typeof frame.requestFullscreen !== "function") return;
+      frame.requestFullscreen().catch(() => {});
+    };
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key?.toLowerCase() !== "f" || event.ctrlKey || event.metaKey || event.altKey || shouldIgnoreShellShortcut(event)) return;
+      if (!staticMarkdownOverlay?.classList.contains("has-iframe")) return;
+
+      event.preventDefault();
+      fullscreenShellFrame();
+    });
+
+    const shellCycleRoutes = ["/", "/dead/games/", "/dead/experiments/"];
+    const getCurrentShellCycleIndex = () => {
+      const currentPath = normalizeShellPath(`${window.location.pathname}${window.location.search}${window.location.hash}`);
+      if (currentPath === "/" || currentPath === "/index.html") return 0;
+      if (currentPath.startsWith("/dead/games/")) return 1;
+      if (currentPath.startsWith("/dead/experiments/")) return 2;
+      return 0;
+    };
+
+    const cycleShellRoute = (direction) => {
+      const currentIndex = getCurrentShellCycleIndex();
+      const nextIndex = (currentIndex + direction + shellCycleRoutes.length) % shellCycleRoutes.length;
+      loadShellFrame(shellCycleRoutes[nextIndex], { push: true });
+    };
+
+    shellCycleLeftButton?.addEventListener("click", (event) => {
+      event.preventDefault();
+      cycleShellRoute(-1);
+    });
+
+    shellCycleRightButton?.addEventListener("click", (event) => {
+      event.preventDefault();
+      cycleShellRoute(1);
+    });
+
+    window.addEventListener("message", (event) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type === "dead-shell-navigate") {
+        loadShellFrame(event.data.href, { push: true });
+        return;
+      }
+      if (event.data?.type === "dead-shell-fullscreen-frame") {
+        fullscreenShellFrame();
+      }
+    });
+
+    window.addEventListener("popstate", () => {
+      const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      if (currentPath === "/" || currentPath === "/index.html") {
+        loadShellFrame("/", { replace: true });
+        return;
+      }
+
+      loadShellFrame(currentPath, { replace: true });
+    });
+
+    const startupFramePath = new URLSearchParams(window.location.search).get("frame") || window.sessionStorage.getItem("deadRootShellFramePath");
+    if (startupFramePath) {
+      window.sessionStorage.removeItem("deadRootShellFramePath");
+      loadShellFrame(startupFramePath, { replace: true });
+    } else if (window.location.pathname !== "/" && window.location.pathname !== "/index.html") {
+      loadShellFrame(`${window.location.pathname}${window.location.search}${window.location.hash}`, { replace: true });
+    } else {
+      fetch("/dead/messages/hello-world.md", { cache: "no-store" })
+        .then((response) => {
+          if (!response.ok) throw new Error("Failed to load hello-world.md");
+          return response.text();
+        })
+        .then(renderSimpleMarkdown)
+        .catch(() => {
+          renderSimpleMarkdown("# Hello World!\n\nWelcome to theinternetisdead.org the vibecoding fever dream of sci-fi memes and caffeine dreams.");
+        });
+    }
+
+    const sidebarRadioStations = [
+      {
+        title: "Q107 - Toronto's Rock",
+        src: "https://tunein.com/embed/player/s31188/"
+      },
+      {
+        title: "Country 102 Bracebridge",
+        src: "https://tunein.com/embed/player/s307771/"
+      },
+      {
+        title: "Bounce 104.1 Midland",
+        src: "https://tunein.com/embed/player/s2802/"
+      },
+      {
+        title: "BIG 101.1 Barrie",
+        src: "https://tunein.com/embed/player/s31196/"
+      },
+      {
+        title: "Moose FM 99.5 Bracebridge",
+        src: "https://tunein.com/embed/player/s12325/"
+      },
+      {
+        title: "Moose FM 105.5 Huntsville",
+        src: "https://tunein.com/embed/player/s12327/"
+      }
+    ];
+    let sidebarRadioStationIndex = 0;
+
+    const setSidebarRadioStation = (index) => {
+      if (!sidebarRadioPlayer || !sidebarRadioCurrent || !sidebarRadioStations.length) return;
+
+      const nextIndex = (index + sidebarRadioStations.length) % sidebarRadioStations.length;
+      const station = sidebarRadioStations[nextIndex];
+      sidebarRadioStationIndex = nextIndex;
+      sidebarRadioPlayer.src = station.src;
+      sidebarRadioPlayer.title = station.title;
+      sidebarRadioCurrent.value = String(nextIndex);
+    };
+
+    if (sidebarRadioCurrent && sidebarRadioStations.length) {
+      sidebarRadioCurrent.addEventListener("change", () => {
+        setSidebarRadioStation(Number(sidebarRadioCurrent.value) || 0);
+      });
+      setSidebarRadioStation(sidebarRadioStationIndex);
+    }
+
+    sidebarRadioCarets.forEach((button) => {
+      button.addEventListener("click", () => {
+        const direction = Number(button.dataset.radioDirection) || 1;
+        setSidebarRadioStation(sidebarRadioStationIndex + direction);
+      });
+    });
 
     const setGraveSidebarWidth = () => {
       const sidebars = [graveSidebar, gearSidebar].filter(Boolean);
@@ -3421,6 +4067,7 @@
     const getCustomizationSettings = () => ({
       remember: isRememberSettingsEnabled(),
       audioMuted: isAudioMuted,
+      volumePercent: Number(siteVolumeSlider?.value) || 100,
       colorFilterActive: Boolean(pageColorFilter?.classList.contains("is-active")),
       colorFilterOpen: Boolean(colorFilterPanel?.classList.contains("is-open")),
       color: colorFilterPicker?.value || "#ff00ff",
@@ -3496,7 +4143,6 @@
       updateClock();
       saveCustomizationSettings();
     });
-
     const updateClock = () => {
       const now = new Date();
       const selectedTimeZone = timezoneSelect?.value || undefined;
@@ -3618,6 +4264,7 @@
     let noiseFilter = null;
     let modemContext = null;
     let modemNodes = [];
+    let modemEffectScale = 1;
     let modemPopTimer = null;
     let modemWarbleTimer = null;
     let siteSpeechTimer = null;
@@ -3630,6 +4277,8 @@
     let ghostSpeechMessages = [];
     let ghostSpeechCount = 0;
     let isAudioMuted = false;
+    let siteVolumeScale = 1;
+    let modemMasterGain = null;
     const DEFAULT_GHOST_SPEECH_START = "Ghost Connection";
     const DEFAULT_GHOST_SPEECH_MESSAGES = [
       "Boo!",
@@ -3644,6 +4293,19 @@
     const GHOST_MESSAGES_URL = "/dead/messages/messages.json";
     const TTS_VOLUME_SCALE = 0.5;
     const MODEM_EFFECT_VOLUME_SCALE = 0.33;
+
+    const getSiteVolumeScale = () => (Number(siteVolumeSlider?.value) || 100) / 100;
+
+    const updateSiteVolume = () => {
+      siteVolumeScale = getSiteVolumeScale();
+      if (audioVolumeLabel) audioVolumeLabel.textContent = `Volume ${Number(siteVolumeSlider?.value) || 100}%`;
+      if (noiseGain) noiseGain.gain.value = 0.026 * siteVolumeScale;
+      if (modemMasterGain) modemMasterGain.gain.value = 0.16 * MODEM_EFFECT_VOLUME_SCALE * modemEffectScale * siteVolumeScale;
+      saveCustomizationSettings();
+    };
+
+    siteVolumeSlider?.addEventListener("input", updateSiteVolume);
+    updateSiteVolume();
 
     const refreshDavidVoice = () => {
       if (!window.speechSynthesis) return;
@@ -3743,6 +4405,8 @@
       if (colorFilterPicker && typeof settings.color === "string") colorFilterPicker.value = settings.color;
       if (blendModeSelect && typeof settings.blendMode === "string") blendModeSelect.value = settings.blendMode;
       if (timezoneSelect && typeof settings.timezone === "string") timezoneSelect.value = settings.timezone;
+      if (siteVolumeSlider && Number.isFinite(Number(settings.volumePercent))) siteVolumeSlider.value = String(settings.volumePercent);
+      updateSiteVolume();
       if (hueshiftToggle) hueshiftToggle.checked = Boolean(settings.hueshifting);
       if (invertToggle) invertToggle.checked = Boolean(settings.inverted);
       updateClock();
@@ -3767,7 +4431,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = options.rate || 1;
       utterance.pitch = options.pitch || 1;
-      utterance.volume = (options.volume || 1) * TTS_VOLUME_SCALE;
+      utterance.volume = (options.volume || 1) * TTS_VOLUME_SCALE * siteVolumeScale;
 
       window.speechSynthesis.speak(utterance);
     };
@@ -3783,7 +4447,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1;
       utterance.pitch = spiralRepeatCount % 2 === 0 ? 1.25 : 0.75;
-      utterance.volume = TTS_VOLUME_SCALE;
+      utterance.volume = TTS_VOLUME_SCALE * siteVolumeScale;
 
       window.speechSynthesis.speak(utterance);
       spiralRepeatCount += 1;
@@ -3798,7 +4462,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1;
       utterance.pitch = 1;
-      utterance.volume = TTS_VOLUME_SCALE;
+      utterance.volume = TTS_VOLUME_SCALE * siteVolumeScale;
 
       window.speechSynthesis.speak(utterance);
       skullRepeatTimer = window.setTimeout(speakSkullLoop, 500);
@@ -3815,7 +4479,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1;
       utterance.pitch = 1;
-      utterance.volume = TTS_VOLUME_SCALE;
+      utterance.volume = TTS_VOLUME_SCALE * siteVolumeScale;
 
       window.speechSynthesis.speak(utterance);
       navRepeatTimer = window.setTimeout(speakNavRepeatLoop, 500);
@@ -3846,7 +4510,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1.15;
       utterance.pitch = siteSpeechRepeatCount % 2 === 0 ? 0.5 : 1.25;
-      utterance.volume = 0.88 * TTS_VOLUME_SCALE;
+      utterance.volume = 0.88 * TTS_VOLUME_SCALE * siteVolumeScale;
       siteSpeechRepeatCount += 1;
       utterance.addEventListener("end", () => {
         if (!siteSpeechActive || !desktopHeaderAudioQuery.matches) return;
@@ -3867,7 +4531,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1.15;
       utterance.pitch = 0.78;
-      utterance.volume = 0.88 * TTS_VOLUME_SCALE;
+      utterance.volume = 0.88 * TTS_VOLUME_SCALE * siteVolumeScale;
       utterance.addEventListener("end", () => {
         if (!modemSpeechActive || !desktopHeaderAudioQuery.matches) return;
         const elapsed = performance.now() - startedAt;
@@ -3928,7 +4592,7 @@
       if (davidVoice) utterance.voice = davidVoice;
       utterance.rate = 1.05;
       utterance.pitch = 0.9;
-      utterance.volume = 0.9 * TTS_VOLUME_SCALE;
+      utterance.volume = 0.9 * TTS_VOLUME_SCALE * siteVolumeScale;
       utterance.addEventListener("end", () => {
         if (!ghostSpeechActive || !desktopHeaderAudioQuery.matches) return;
         const elapsed = performance.now() - startedAt;
@@ -4000,6 +4664,7 @@
         node.disconnect();
       });
       modemNodes = [];
+      modemMasterGain = null;
 
       if (modemContext) {
         modemContext.close();
@@ -4010,6 +4675,7 @@
     const startModemStatic = (effectScale = 1) => {
       if (isAudioMuted || !desktopHeaderAudioQuery.matches) return;
       stopModemStatic();
+      modemEffectScale = effectScale;
 
       const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
       if (!AudioContextCtor) return;
@@ -4025,7 +4691,8 @@
       const carrierB = modemContext.createOscillator();
       const carrierGain = modemContext.createGain();
 
-      masterGain.gain.value = 0.16 * MODEM_EFFECT_VOLUME_SCALE * effectScale;
+      modemMasterGain = masterGain;
+      masterGain.gain.value = 0.16 * MODEM_EFFECT_VOLUME_SCALE * modemEffectScale * siteVolumeScale;
       noiseGainNode.gain.value = 0.24;
       highPass.type = "highpass";
       highPass.frequency.value = 650;
@@ -4105,7 +4772,7 @@
       noiseFilter.type = "lowpass";
       noiseFilter.frequency.value = 900;
       noiseFilter.Q.value = 0.35;
-      noiseGain.gain.value = 0.026;
+      noiseGain.gain.value = 0.026 * siteVolumeScale;
       noiseSource.buffer = makeSoftNoiseBuffer(noiseContext);
       noiseSource.loop = true;
       noiseSource.connect(noiseFilter).connect(noiseGain).connect(noiseContext.destination);
@@ -4224,7 +4891,7 @@
         stopHeaderSpeech();
         startModemStatic(0.33);
         modemSpeechActive = true;
-        speakModemPhraseLoop("Main Page of the internet is dead .org");
+        speakModemPhraseLoop(() => mainPageRouteLabel?.textContent?.trim() || "Main Page");
       });
       indexLinkPanel.addEventListener("mouseleave", () => {
         stopHeaderSpeech();

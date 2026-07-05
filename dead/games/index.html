@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/dead/js/shell-route.js"></script><meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>/dead/games/</title>
+  <style>
+    html {
+      margin: 0;
+      min-height: 100%;
+      background: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: #00ff66;
+      font-family: "Courier New", monospace;
+    }
+
+    body {
+      box-sizing: border-box;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 24px;
+      background: rgb(59 0 102 / 50%);
+    }
+
+    main {
+      width: min(1400px, 100%);
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      color: #fff;
+      font-size: clamp(28px, 5vw, 54px);
+      line-height: 1;
+      text-align: center;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .game-link {
+      display: grid;
+      gap: 8px;
+      color: inherit;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .game-link img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border: 3px solid #00ff66;
+      box-sizing: border-box;
+      background: #111;
+    }
+
+    .game-link span {
+      color: #fff;
+      font-size: clamp(14px, 1.4vw, 20px);
+      font-weight: 700;
+    }
+
+    .game-link:hover img,
+    .game-link:focus-visible img {
+      border-color: #ff00ff;
+    }
+
+    .game-link:focus-visible {
+      outline: 2px solid #ff00ff;
+      outline-offset: 6px;
+    }
+
+    @media (max-width: 900px) {
+      .games-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Games</h1>
+    <nav class="games-grid" aria-label="Games">
+      <a class="game-link" href="/dead/games/inferno-trainer/">
+        <img src="/dead/games/thumbnails/inferno-trainer.png" alt="Inferno Trainer">
+        <span>Inferno Trainer</span>
+      </a>
+
+      <a class="game-link" href="/dead/games/shooter-game/">
+        <img src="/dead/games/thumbnails/shooter-game.png" alt="Shooter Game">
+        <span>Shooter Game</span>
+      </a>
+
+      <a class="game-link" href="/dead/games/tektite-3D-game/">
+        <img src="/dead/games/thumbnails/tektite-3D-game.png" alt="Tektite 3D Game">
+        <span>Tektite 3D Game</span>
+      </a>
+    </nav>
+  </main>
+</body>
+</html>
