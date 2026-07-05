@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="/dead/js/shell-route.js"></script>
   <link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -212,196 +213,6 @@
       pointer-events: none;
     }
 
-    .helpItem.commandNumberPickerOpen.controllerFocus,
-    .helpItem.commandNumberPickerOpen[data-tektite-controller-selected="true"],
-    .helpItem[data-number-picker-active="true"][data-tektite-controller-selected="true"],
-    .helpItem[data-color-picker-active="true"][data-tektite-controller-selected="true"],
-    .helpItem[data-choice-picker-active="true"][data-tektite-controller-selected="true"],
-    .helpItem[data-text-picker-active="true"][data-tektite-controller-selected="true"] {
-      padding-right: 34px;
-    }
-
-    .helpCommandName {
-      text-decoration: underline;
-      font-weight: 700;
-    }
-
-    .helpCommandDesc {
-      margin-left: 8px;
-      opacity: 0.9;
-    }
-
-    .helpItem:focus {
-      outline: none;
-    }
-
-    .helpItem:focus .helpCommandName {
-      text-decoration-thickness: 2px;
-    }
-
-    .helpItem.commandNumberPickerOpen .helpCommandName,
-    .helpItem.commandNumberPickerOpen .helpCommandDesc {
-      color: #d7ffd7;
-    }
-
-    .helpNumberPicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-left: 10px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      outline: 1px solid rgba(0,255,102,0.4);
-      background: rgba(0,0,0,0.55);
-      box-shadow: 0 0 0 2px rgba(0,255,102,0.12);
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-
-    .helpNumberPickerLabel {
-      opacity: 0.78;
-      font-size: 12px;
-      letter-spacing: 0.02em;
-    }
-
-    .helpNumberPickerValue {
-      min-width: 2ch;
-      font-weight: 700;
-      color: #baffc9;
-      text-align: right;
-    }
-
-    .helpColorPicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: 10px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      outline: 1px solid rgba(0,255,102,0.4);
-      background: rgba(0,0,0,0.55);
-      box-shadow: 0 0 0 2px rgba(0,255,102,0.12);
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-
-    .helpColorPickerSwatch {
-      width: 16px;
-      height: 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.45);
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
-      flex: 0 0 auto;
-    }
-
-    .helpColorPickerValue {
-      min-width: 8ch;
-      font-weight: 700;
-      color: #baffc9;
-      text-transform: lowercase;
-    }
-
-    .helpColorPickerHint {
-      opacity: 0.72;
-      font-size: 11px;
-      letter-spacing: 0.02em;
-    }
-
-    .helpChoicePicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: 10px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      outline: 1px solid rgba(0,255,102,0.4);
-      background: rgba(0,0,0,0.55);
-      box-shadow: 0 0 0 2px rgba(0,255,102,0.12);
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-
-    .helpChoicePickerLabel {
-      opacity: 0.78;
-      font-size: 12px;
-      letter-spacing: 0.02em;
-    }
-
-    .helpChoicePickerValue {
-      min-width: 9ch;
-      font-weight: 700;
-      color: #baffc9;
-      text-transform: lowercase;
-    }
-
-    .helpChoicePickerHint {
-      opacity: 0.72;
-      font-size: 11px;
-      letter-spacing: 0.02em;
-    }
-
-    .helpTextPicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-left: 8px;
-      padding: 3px 6px;
-      border-radius: 8px;
-      outline: 1px solid rgba(0,255,102,0.45);
-      background: rgba(0,0,0,0.55);
-      box-shadow: 0 0 0 2px rgba(0,255,102,0.10);
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-
-    .helpTextPickerInput {
-      width: 16ch;
-      max-width: 42vw;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: #00ff66;
-      font-family: inherit;
-      font-size: 12px;
-    }
-
-    .helpTextPickerInput::placeholder {
-      color: rgba(186,255,201,0.68);
-    }
-
-    .helpTextPickerHint {
-      opacity: 0.72;
-      font-size: 11px;
-      letter-spacing: 0.02em;
-    }
-
-    .helpTextPicker.controllerMode .helpTextPickerInput {
-      width: 24ch;
-      cursor: default;
-    }
-
-    .helpTextPicker.controllerMode .helpTextPickerHint {
-      color: #baffc9;
-      opacity: 0.9;
-    }
-
-    .helpTextPickerComboButton {
-      font-weight: 900;
-      text-shadow: 0 0 4px currentColor;
-    }
-
-    .helpTextPickerComboButton.comboNone { color: #ff3b3b; }
-    .helpTextPickerComboButton.comboPartial { color: #ffd84d; }
-    .helpTextPickerComboButton.comboBoth { color: #00ff66; }
-
-    .helpTextPickerCountdown {
-      display: inline-block;
-      min-width: 4ch;
-      text-align: left;
-      font-variant-numeric: tabular-nums;
-    }
-
-
     .overclockRefreshLink {
       color: #00ffff;
       text-decoration: underline;
@@ -557,7 +368,6 @@
 
     body.debug #chatBarWrap,
     body.debug .chatPrompt,
-    body.debug .chatClose,
     body.debug #chatBar {
       background: #000;
       color: #fff;
@@ -906,6 +716,8 @@
       bottom: 0;
       width: 100%;
       height: 56px;
+      border-top: 3px solid lime;
+      box-sizing: border-box;
       background: var(--chatbar-bg);
       display: none;
       align-items: center;
@@ -941,6 +753,7 @@
       display: none;
       max-height: min(220px, 38vh);
       overflow-y: auto;
+      scrollbar-width: none;
       padding: 6px;
       border: 2px solid rgba(0,255,102,0.82);
       border-radius: 12px;
@@ -977,6 +790,10 @@
       border-color: rgba(0,255,255,0.78);
       background: rgba(0,255,255,0.18);
       color: #00ffff;
+    }
+
+    #chatCommandSuggestionPopup::-webkit-scrollbar {
+      display: none;
     }
 
     #chatPrompt {
@@ -1150,27 +967,6 @@
     }
 
 
-    #chatClose {
-      flex: 0 0 auto;
-      width: 28px;
-      height: 28px;
-      border: none;
-      background: transparent;
-      color: var(--chatbar-text);
-      font-family: "Courier New", Courier, monospace;
-      font-size: calc(22px * var(--font-scale));
-      font-weight: 700;
-      line-height: 1;
-      padding: 0;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #chatClose:focus {
-      outline: none;
-    }
 
     .mediaCard {
       display: flex;
@@ -1525,11 +1321,6 @@
         padding: 6px 0 !important;
       }
 
-      #chatClose {
-        width: 24px;
-        height: 24px;
-        font-size: calc(18px * var(--font-scale));
-      }
     }
 
     .iframeCard {
@@ -1720,14 +1511,6 @@
 
   <input id="dvdImageUploadInput" type="file" accept="image/*" multiple hidden />
 
-  <input id="imageUploadInput" type="file" accept="image/*" hidden />
-  <input id="videoUploadInput" type="file" accept="video/*" hidden />
-  <input id="audioUploadInput" type="file" accept="audio/*" hidden />
-  <input id="imageFolderInput" type="file" accept="image/*" webkitdirectory directory multiple hidden />
-  <input id="videoFolderInput" type="file" accept="video/*" webkitdirectory directory multiple hidden />
-  <input id="audioFolderInput" type="file" accept="audio/*" webkitdirectory directory multiple hidden />
-  <input id="uploadFileInput" type="file" accept="image/*,video/*,audio/*" hidden />
-  <input id="uploadFolderInput" type="file" accept="image/*,video/*,audio/*" webkitdirectory directory multiple hidden />
   <input id="settingsLoadInput" type="file" accept="application/json,.json" hidden />
   <input id="scriptLoadInput" type="file" accept=".txt,text/plain" hidden />
 
@@ -1741,13 +1524,12 @@
       <input
         id="chatBar"
         type="text"
-        placeholder="Press here to chat or / for commands..."
+        placeholder="Enter a nickname to chat..."
         autocomplete="off"
         spellcheck="false"
       />
     </div>
     <div id="chatCommandSuggestionPopup" aria-hidden="true"></div>
-    <button id="chatClose" type="button" aria-label="Close chat">x</button>
   </div>
 
   <script>
@@ -1759,7 +1541,6 @@ const focusSink = document.getElementById('focusSink');
     const messages = document.getElementById('messages');
     const messagesWrap = document.getElementById('messagesWrap');
     const chatBarWrap = document.getElementById('chatBarWrap');
-    const chatClose = document.getElementById('chatClose');
     const chatCommandSuggestionPopup = document.getElementById('chatCommandSuggestionPopup');
     const iframeOverlay = document.getElementById('iframeOverlay');
     const iframeOverlayFrame = document.getElementById('iframeOverlayFrame');
@@ -1773,14 +1554,6 @@ const focusSink = document.getElementById('focusSink');
     const mediaOverlayClose = document.getElementById('mediaOverlayClose');
     const dvdOverlay = document.getElementById('dvdOverlay');
     const dvdImageUploadInput = document.getElementById('dvdImageUploadInput');
-    const imageUploadInput = document.getElementById('imageUploadInput');
-    const videoUploadInput = document.getElementById('videoUploadInput');
-    const audioUploadInput = document.getElementById('audioUploadInput');
-    const imageFolderInput = document.getElementById('imageFolderInput');
-    const videoFolderInput = document.getElementById('videoFolderInput');
-    const audioFolderInput = document.getElementById('audioFolderInput');
-    const uploadFileInput = document.getElementById('uploadFileInput');
-    const uploadFolderInput = document.getElementById('uploadFolderInput');
     const settingsLoadInput = document.getElementById('settingsLoadInput');
     const scriptLoadInput = document.getElementById('scriptLoadInput');
 
@@ -1804,11 +1577,13 @@ const focusSink = document.getElementById('focusSink');
 
     function loadSavedNickname() {
       try {
+        const isExplicit = window.localStorage.getItem(CHAT_NICKNAME_EXPLICIT_STORAGE_KEY) === 'true';
+        if (!isExplicit) return '';
         const savedNickname = window.localStorage.getItem(CHAT_NICKNAME_STORAGE_KEY);
         const normalized = normalizeNickname(savedNickname);
-        return normalized || generateAnonymousNickname();
+        return normalized;
       } catch (error) {
-        return generateAnonymousNickname();
+        return '';
       }
     }
 
@@ -1824,9 +1599,14 @@ const focusSink = document.getElementById('focusSink');
       } catch (error) {
         // Ignore localStorage write failures.
       }
+      updateChatBarVisualState();
     }
 
     let currentNickname = loadSavedNickname();
+
+    function hasCurrentNickname() {
+      return !!normalizeNickname(currentNickname);
+    }
     let showSystemPrefix = true;
     let debugMode = false;
     let scriptRunCounter = 0;
@@ -1915,41 +1695,13 @@ const focusSink = document.getElementById('focusSink');
     // ADDED: Single canonical built-in command registry so command execution, help output,
     // and tab-complete all point at the same source instead of drifting apart.
     const builtInCommands = [
-      { name: '/upload_file', value: '/upload_file', execute: true, desc: 'open a file picker to embed one file into chat' },
-      { name: '/upload_folder', value: '/upload_folder', execute: true, desc: 'open a folder picker to browse and embed local files' },
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
-      { name: '/clear_public', value: '/clear_public ', execute: false, desc: 'admin: clear public chat history through the server-side function', hidden: true },
-      { name: '/color', value: '/color', execute: true, desc: 'show only the color commands' },
-      { name: '/color_hueshift', value: '/color_hueshift', execute: true, desc: 'toggle a global hue shift and override local hue-shift effects while active' },
-      { name: '/color_invert', value: '/color_invert', execute: true, desc: 'toggle a global full-color invert on or off' },
-      { name: '/color_party', value: '/color_party', execute: true, desc: 'toggle hue shift plus auto-randomize and random invert flicker on or off' },
-      { name: '/customize', value: '/customize', execute: true, desc: 'open the customize panel for colors, opacity, font, and scale' },
-      { name: '/debug', value: '/debug', execute: true, desc: 'toggle debug mode and system label visibility' },
-      { name: '/dvd', value: '/dvd', execute: true, desc: 'show only the DVD commands' },
-      { name: '/dvd_spawn', value: '/dvd_spawn', execute: true, desc: 'spawn another bouncing hue-shifting DVD logo from the default SVG, up to 10 total' },
-      { name: '/dvd_image', value: '/dvd_image ', execute: false, desc: 'upload one or more images and immediately spawn them as bouncing images, or paste quoted image URLs', suggestions: ['"https://example.com/image.png"', '"https://example.com/image1.png, https://example.com/image2.png"'] },
-      { name: '/spawn', value: '/spawn ', execute: false, desc: 'upload and spawn one or more bouncing images, adding them to the active swarm', suggestions: ['"https://example.com/image.png"', '"https://example.com/image1.png, https://example.com/image2.png"'] },
-      { name: '/subscribe', value: '/subscribe', execute: true, desc: 'spawn a subscribe swarm linked to YouTube and immediately overclock it to infinite mode' },
-      { name: '/dvd_slideshow', value: '/dvd_slideshow', execute: true, desc: 'spawn every GIF from the shooter-game enemy GIF assets as its own bouncing slideshow swarm' },
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' },
-      { name: '/iframe', value: '/iframe ', execute: false, desc: 'paste a URL after it to embed a webpage preview', suggestions: ['https://example.com/'] },
-      { name: '/script_load', value: '/script_load', execute: true, desc: 'choose a .txt file and send each line into chat every 0.33 seconds' },
-      { name: '/settings_load', value: '/settings_load', execute: true, desc: 'choose a settings.json file and load saved settings' },
       { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User'] },
-      { name: '/nick', value: '/nick ', execute: false, desc: 'alias for /nickname', suggestions: ['Tektite', 'Guest', 'User'] },
-      { name: '/color_randomize', value: '/color_randomize', execute: true, desc: 'toggle the automatic random color shuffle on or off' },
-      { name: '/color_reset', value: '/color_reset', execute: true, desc: 'restore default appearance settings' },
-      { name: '/settings_save', value: '/settings_save', execute: true, desc: 'download a settings.json with the current command-configurable state' },
-      { name: '/screenshot', value: '/screenshot', execute: true, desc: 'save a PNG of the visible page, ignoring chat' },
-      { name: '/screenshot_animation', value: '/screenshot_animation', execute: true, desc: 'save 15 full-page PNG frames in a ZIP using the same timing as /color_randomize and /color_party' },
-      { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the current page' },
-      { name: '/stop', value: '/stop', execute: true, desc: 'stop auto color shuffle, script playback, hue shift, and invert effects' },
-      { name: '/clock', value: '/clock', execute: true, desc: 'show only the clock commands' }
+      { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the current page' }
     ];
     const builtInCommandList = builtInCommands.map((entry) => entry.name);
-    let pageCommandRegistry = [];
-    let pageCommandMeta = { pageOnly: false, pageId: '', title: '', sourceKey: '' };
     let pendingPageCommand = null;
     let commandCycleIndex = -1;
     let supabaseChatClient = null;
@@ -2163,12 +1915,11 @@ const focusSink = document.getElementById('focusSink');
     function handleOutsideChatPointerDown(event) {
       if (isScreenshotAnimationLocked()) return;
       if (!isChatVisible()) return;
-      if (isWithinChatUi(event.target)) return;
-      hideChatBar();
     }
 
     function updateChatBarVisualState() {
       const commandMode = chatBar.value.startsWith('/');
+      chatBar.placeholder = hasCurrentNickname() ? 'Press here to chat or / for commands...' : 'Enter a nickname to chat...';
       chatBar.classList.toggle('commandMode', commandMode);
       chatPrompt.classList.toggle('commandMode', commandMode);
       chatBarWrap.classList.toggle('commandMode', commandMode);
@@ -2511,97 +2262,6 @@ const focusSink = document.getElementById('focusSink');
       return;
     }
 
-    function addDvdOverclockSystemMessage() {
-      const line = addMessage('', 'user');
-      if (!line) return null;
-      const messageText = line.querySelector('.messageText');
-      if (!messageText) return line;
-      messageText.innerHTML = '';
-
-      line.dataset.rawContent = `System: OH GEEZ ${currentNickname} you've really done it now. You overclocked the /dvd_spawn command to (INFINITE) may god have mercy on your GPU. Click here to refresh dummy...`;
-
-      const refreshLink = document.createElement('a');
-      refreshLink.href = '#';
-      refreshLink.className = 'overclockRefreshLink';
-      refreshLink.style.display = 'inline';
-      refreshLink.style.margin = '0';
-      appendSpeakerPrefix(refreshLink, 'System:', 'speakerPrefixLabel');
-      refreshLink.appendChild(document.createTextNode(' OH GEEZ '));
-
-      const nicknameSpan = document.createElement('span');
-      nicknameSpan.className = 'nicknameLabel';
-      nicknameSpan.textContent = currentNickname;
-      refreshLink.appendChild(nicknameSpan);
-
-      refreshLink.appendChild(document.createTextNode(" you've really done it now. You overclocked the "));
-
-      const commandSpan = document.createElement('span');
-      commandSpan.className = 'systemCommandLabel';
-      commandSpan.textContent = '/dvd_spawn';
-      refreshLink.appendChild(commandSpan);
-
-      refreshLink.appendChild(document.createTextNode(' command to ('));
-
-      const infiniteSpan = document.createElement('span');
-      infiniteSpan.className = 'commandStyledText infiniteRepeatLabel';
-      infiniteSpan.textContent = 'INFINITE';
-      refreshLink.appendChild(infiniteSpan);
-
-      refreshLink.appendChild(document.createTextNode(') may god have mercy on your GPU. Click here to refresh dummy...'));
-      refreshLink.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        (window.parent && window.parent !== window ? window.parent.location.reload() : window.location.reload());
-      });
-      messageText.appendChild(refreshLink);
-
-      dvdOverclockAliasLine = line;
-      return line;
-    }
-
-    function addSubscribePromoMessage() {
-      const line = addMessage('', 'user');
-      if (!line) return null;
-      const messageText = line.querySelector('.messageText');
-      if (!messageText) return line;
-      messageText.innerHTML = '';
-      line.dataset.rawContent = `Tektite: Yo ${currentNickname}, it would be really cool if you could check out my YouTube channel or if you just want to refresh press here.`;
-
-      const wrapper = document.createElement('div');
-      wrapper.className = 'subscribePromoMessage';
-      wrapper.style.cursor = 'pointer';
-      wrapper.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        (window.parent && window.parent !== window ? window.parent.location.reload() : window.location.reload());
-      });
-
-      const tagSpan = document.createElement('span');
-      tagSpan.className = 'subscribePromoTag';
-      tagSpan.textContent = 'Tektite:';
-      wrapper.appendChild(tagSpan);
-
-      const bodySpan = document.createElement('span');
-      bodySpan.className = 'subscribePromoBody';
-      bodySpan.appendChild(document.createTextNode(`Yo ${currentNickname}, it would be really cool if you could `));
-
-      const channelLink = document.createElement('a');
-      channelLink.href = subscribeClickHref;
-      channelLink.className = 'subscribePromoChannelLink';
-      channelLink.target = '_blank';
-      channelLink.rel = 'noopener noreferrer';
-      channelLink.textContent = 'check out my YouTube channel';
-      channelLink.addEventListener('click', (event) => {
-        event.stopPropagation();
-      });
-      bodySpan.appendChild(channelLink);
-
-      bodySpan.appendChild(document.createTextNode(' or if you just want to refresh press here.'));
-      wrapper.appendChild(bodySpan);
-      messageText.appendChild(wrapper);
-      return line;
-    }
-
     function primeDvdOverclockCycle() {
       dvdOverclockPrimed = true;
     }
@@ -2912,39 +2572,7 @@ const focusSink = document.getElementById('focusSink');
       return screenshotAnimationActive;
     }
 
-    async function captureVisiblePageAnimation() {
-      addSystemMessage(formatCommandExecutionMessage('/screenshot_animation'));
-      await waitForNextPaint();
 
-      if (isEmbeddedInIndex()) {
-        const posted = postToParentPage({
-          type: 'pageScreenshotAnimationCapture',
-          frameCount: 15,
-          frameDelay: autoShuffleIntervalMs
-        });
-        if (!posted) {
-          throw new Error('Unable to ask the parent page to save animation frames.');
-        }
-        return;
-      }
-
-      throw new Error('Visible page animation capture is only available from index.html.');
-    }
-
-    async function captureVisiblePageScreenshot() {
-      addSystemMessage(formatCommandExecutionMessage('/screenshot'));
-      await waitForNextPaint();
-
-      if (isEmbeddedInIndex()) {
-        const posted = postToParentPage({ type: 'pageScreenshotCapture' });
-        if (!posted) {
-          throw new Error('Unable to ask the parent page to save a screenshot.');
-        }
-        return;
-      }
-
-      throw new Error('Visible page screenshot is only available from index.html.');
-    }
 
     function refreshSystemMessagePrefixes() {
       const systemMessages = messages.querySelectorAll('.message[data-role="system"]');
@@ -3362,9 +2990,13 @@ const focusSink = document.getElementById('focusSink');
         addSystemMessage('Message is too long. Keep public chat messages to 500 characters.');
         return false;
       }
+      if (!hasCurrentNickname()) {
+        addSystemMessage('Enter a nickname before sending public messages.');
+        updateChatBarVisualState();
+        return false;
+      }
 
-      const nickname = normalizeNickname(currentNickname) || generateAnonymousNickname();
-      currentNickname = nickname;
+      const nickname = normalizeNickname(currentNickname);
 
       try {
         const client = await initializeSupabaseLiveChat();
@@ -3413,33 +3045,6 @@ const focusSink = document.getElementById('focusSink');
       updateMessagesVisibility();
     }
 
-    async function clearSupabaseChatHistory(password) {
-      const adminPassword = String(password || '');
-      if (!adminPassword) {
-        addSystemMessage('Usage: /clear_public [admin password]');
-        return true;
-      }
-
-      try {
-        const client = await getSupabaseChatClient();
-        const { error } = await client.functions.invoke('clear-chat', {
-          body: {
-            password: adminPassword,
-            room: SUPABASE_CHAT_ROOM
-          }
-        });
-
-        if (error) throw error;
-        clearLocalNonPublicChatDisplay();
-        clearPublicChatDisplay();
-        addSystemMessage('Public chat history cleared.');
-        return true;
-      } catch (error) {
-        console.error('Unable to clear public chat history:', error);
-        addSystemMessage('Unable to clear public chat history.');
-        return false;
-      }
-    }
 
     function isSensitiveClearCommand(raw) {
       const trimmed = String(raw || '').trim();
@@ -3794,10 +3399,6 @@ const focusSink = document.getElementById('focusSink');
       window.setTimeout(() => URL.revokeObjectURL(url), 0);
     }
 
-    function triggerSettingsLoad() {
-      settingsLoadInput.value = '';
-      settingsLoadInput.click();
-    }
 
     function handleSettingsLoadSelection(event) {
       const [file] = Array.from(event.target.files || []);
@@ -3824,10 +3425,6 @@ const focusSink = document.getElementById('focusSink');
       return new Promise((resolve) => window.setTimeout(resolve, ms));
     }
 
-    function triggerScriptLoad() {
-      scriptLoadInput.value = '';
-      scriptLoadInput.click();
-    }
 
     function setScriptGroupVisibility(run, hidden) {
       if (!run) return;
@@ -4641,919 +4238,47 @@ function createHomepageCustomizeMessageNode(result = {}) {
       iframeOverlayOpen.href = '#';
     }
 
-    function createIframeMessageNode(url) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'iframeCard';
-
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'iframePreviewButton';
-      button.setAttribute('aria-label', `Expand iframe preview for ${url}`);
-
-      const label = document.createElement('span');
-      label.className = 'iframePreviewLabel';
-      label.textContent = 'Iframe preview window';
-
-      const urlText = document.createElement('span');
-      urlText.className = 'iframePreviewUrl';
-      urlText.textContent = url;
-
-      button.appendChild(label);
-      button.appendChild(urlText);
-      button.addEventListener('click', () => {
-        openIframeOverlay(url);
-      });
-
-      const frame = document.createElement('iframe');
-      frame.className = 'iframePreviewFrame';
-      frame.src = url;
-      frame.title = `Iframe preview for ${url}`;
-      frame.loading = 'lazy';
-      frame.referrerPolicy = 'no-referrer-when-downgrade';
-
-      wrapper.appendChild(button);
-      wrapper.appendChild(frame);
-      return wrapper;
-    }
 
     function getCommandCatalog() {
-      // Hidden page commands remain executable through the command handler, but they
-      // are intentionally excluded from inline autocomplete and Tab suggestions.
-      const pageCommands = pageCommandRegistry
-        .filter((entry) => entry.hidden !== true)
-        .map((entry) => entry.name);
-      if (document.body.classList.contains('embedded') && pageCommandMeta.pageOnly) {
-        return Array.from(new Set(['/help', ...pageCommands])).sort((a, b) => a.localeCompare(b));
-      }
-      return Array.from(new Set([...builtInCommandList, ...pageCommands])).sort((a, b) => a.localeCompare(b));
+      return builtInCommandList.slice().sort((a, b) => a.localeCompare(b));
     }
 
-    function setPageCommands(payload = []) {
-      const source = Array.isArray(payload) ? { commands: payload } : (payload && typeof payload === 'object' ? payload : {});
-      const commands = Array.isArray(source.commands) ? source.commands : [];
-      pageCommandRegistry = commands
-        .filter((entry) => entry && typeof entry.name === 'string' && entry.name.trim().startsWith('/'))
-        .map((entry) => ({
-          name: entry.name.trim().toLowerCase(),
-          desc: entry.desc ? String(entry.desc) : 'page command',
-          usage: entry.usage ? String(entry.usage) : entry.name.trim(),
-          execute: entry.execute !== false,
-          // ADDED: Parent pages can explicitly replace a built-in command instead of
-          // relying on a hardcoded list inside chat-sandbox.html.
-          replaceBuiltIn: entry.replaceBuiltIn === true,
-          passthroughBuiltIn: entry.passthroughBuiltIn === true,
-          hidden: entry.hidden === true,
-          suggestions: Array.isArray(entry.suggestions) ? entry.suggestions.map((value) => String(value || '').trim()).filter(Boolean) : []
-        }));
-      pageCommandMeta = {
-        pageOnly: !!source.pageOnly,
-        pageId: typeof source.pageId === 'string' ? source.pageId : '',
-        title: typeof source.title === 'string' ? source.title : '',
-        sourceKey: typeof source.sourceKey === 'string' ? source.sourceKey : ''
-      };
-      if (typeof source.inputMode === 'string') setExternalInputMode(source.inputMode);
+    function setPageCommands() {
+      // Page-provided slash commands are intentionally ignored.
     }
 
-    function getPageCommandDefinition(command) {
-      const normalized = String(command || '').trim().toLowerCase();
-      return pageCommandRegistry.find((entry) => entry.name === normalized) || null;
-    }
-
-    function dispatchPageCommand(command, raw, args) {
-      pendingPageCommand = { command, raw };
-      window.parent.postMessage({
-        type: 'pageChatExecute',
-        command,
-        raw,
-        args
-      }, '*');
-    }
 
     function getMergedHelpCommands() {
-      const showPageOnlyHelp = document.body.classList.contains('embedded') && pageCommandMeta.pageOnly && pageCommandRegistry.length > 0;
-      const pageCommands = pageCommandRegistry.map((entry) => ({
-        fromPage: true,
-        name: entry.name,
-        value: entry.usage || entry.name,
-        execute: entry.execute !== false,
-        desc: entry.desc || 'page command',
-        hidden: entry.hidden === true,
-        suggestions: Array.isArray(entry.suggestions) ? entry.suggestions.slice() : []
-      }));
-      const helpCommand = builtInCommands.find((entry) => entry.name === '/help');
-      const mergedCommands = showPageOnlyHelp ? [helpCommand, ...pageCommands].filter(Boolean) : [...builtInCommands, ...pageCommands];
-      return Array.from(mergedCommands.reduce((map, entry) => {
-        const key = String(entry.name || '').toLowerCase();
-        if (!key) return map;
-        if (!map.has(key) || entry.fromPage) map.set(key, entry);
-        return map;
-      }, new Map()).values()).sort((a, b) => a.name.localeCompare(b.name));
+      return builtInCommands.slice().sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    function shouldHideHelpCommandByDefault(commandName) {
-      const normalized = String(commandName || '').toLowerCase();
-      return normalized === '/clock_time' ||
-        normalized === '/clock_date' ||
-        normalized === '/clock_reset' ||
-        normalized === '/clock_zone' ||
-        normalized === '/dvd_spawn' ||
-        normalized === '/dvd_image' ||
-        normalized === '/dvd_slideshow' ||
-        normalized === '/color_hueshift' ||
-        normalized === '/color_invert' ||
-        normalized === '/color_party' ||
-        normalized === '/color_randomize' ||
-        normalized === '/color_reset' ||
-        normalized === '/color_element';
+    function shouldHideHelpCommandByDefault() {
+      return false;
+    }
+
+    function getVisibleHelpCommands(options = {}) {
+      const allowed = new Set((Array.isArray(options.commandNames) ? options.commandNames : []).map((name) => String(name || '').toLowerCase()));
+      return getMergedHelpCommands().filter((command) => !allowed.size || allowed.has(String(command.name || '').toLowerCase()));
     }
 
     let activeCommandPicker = null;
     let externalInputMode = 'keyboardMouse';
-    let cheatermodeControllerHoldStartedAt = 0;
-    let cheatermodeControllerHoldWasBothPressed = false;
-    let cheatermodeControllerHoldTickTimer = null;
 
-    function isShooterNumberPickerCommand(command = {}) {
-      if (!command || pageCommandMeta.sourceKey !== 'shooter-game') return false;
-      const normalized = String(command.name || '').trim().toLowerCase();
-      return normalized === '/bombs' ||
-        normalized === '/game_speed' ||
-        normalized === '/hearts' ||
-        normalized === '/lives' ||
-        normalized === '/shields';
-    }
-
-    function isShooterColorPickerCommand(command = {}) {
-      if (!command || pageCommandMeta.sourceKey !== 'shooter-game') return false;
-      return String(command.name || '').trim().toLowerCase() === '/background_color';
-    }
-
-    function isShooterChoicePickerCommand(command = {}) {
-      if (!command) return false;
-      const normalized = String(command.name || '').trim().toLowerCase();
-      return normalized === '/shoot';
-    }
-
-    function isShooterCheatermodeCommand(command = {}) {
-      if (!command || pageCommandMeta.sourceKey !== 'shooter-game') return false;
-      return String(command.name || '').trim().toLowerCase() === '/cheatermode';
+    function setExternalInputMode(mode = 'keyboardMouse') {
+      externalInputMode = mode === 'controller' ? 'controller' : 'keyboardMouse';
     }
 
     function isExternalControllerMode() {
       return externalInputMode === 'controller';
     }
 
-    function setExternalInputMode(mode) {
-      const nextMode = String(mode || '').trim() === 'controller' ? 'controller' : 'keyboardMouse';
-      if (externalInputMode === nextMode) return;
-      externalInputMode = nextMode;
-      document.body.classList.toggle('controller-active', externalInputMode === 'controller');
-      if (externalInputMode !== 'controller') stopCheatermodeControllerHoldTicker();
-      updateActiveTextPickerInputMode();
-    }
-
-    function getCheatermodeComboClass(xPressed = false, viewPressed = false) {
-      if (xPressed && viewPressed) return 'comboBoth';
-      if (xPressed || viewPressed) return 'comboPartial';
-      return 'comboNone';
-    }
-
-    function formatCheatermodeRemaining(remaining = 5, active = false) {
-      const numericRemaining = Number.isFinite(Number(remaining)) ? Number(remaining) : 5;
-      if (!active) return '5s';
-      const clamped = Math.max(1, Math.min(5, Math.ceil(numericRemaining)));
-      return `${clamped}s`;
-    }
-
-    function ensureCheatermodeComboNodes() {
-      if (!activeCommandPicker || !activeCommandPicker.hintNode) return null;
-      if (activeCommandPicker.comboNodes && activeCommandPicker.comboNodes.countdown) {
-        return activeCommandPicker.comboNodes;
-      }
-      const hintNode = activeCommandPicker.hintNode;
-      hintNode.textContent = '';
-
-      const holdText = document.createTextNode('Hold ');
-      const xNode = document.createElement('span');
-      xNode.className = 'helpTextPickerComboButton comboNone';
-      xNode.textContent = 'X';
-      const plusText = document.createTextNode(' + ');
-      const viewNode = document.createElement('span');
-      viewNode.className = 'helpTextPickerComboButton comboNone';
-      viewNode.textContent = 'View';
-      const spacerText = document.createTextNode(' ');
-      const countdownNode = document.createElement('span');
-      countdownNode.className = 'helpTextPickerCountdown';
-      countdownNode.textContent = '5s';
-
-      hintNode.appendChild(holdText);
-      hintNode.appendChild(xNode);
-      hintNode.appendChild(plusText);
-      hintNode.appendChild(viewNode);
-      hintNode.appendChild(spacerText);
-      hintNode.appendChild(countdownNode);
-
-      activeCommandPicker.comboNodes = { xNode, viewNode, countdownNode };
-      activeCommandPicker.comboVisualState = '';
-      return activeCommandPicker.comboNodes;
-    }
-
-    function resetCheatermodeControllerHoldTimer() {
-      cheatermodeControllerHoldStartedAt = 0;
-      cheatermodeControllerHoldWasBothPressed = false;
-    }
-
-    function getCheatermodeControllerButtons() {
-      try {
-        const pads = typeof navigator !== 'undefined' && typeof navigator.getGamepads === 'function'
-          ? Array.from(navigator.getGamepads() || [])
-          : [];
-        const gp = pads.find((pad) => pad && pad.connected && pad.buttons && pad.buttons.length);
-        if (!gp) return { xPressed: false, viewPressed: false };
-        return {
-          xPressed: !!(gp.buttons[2] && gp.buttons[2].pressed),
-          viewPressed: !!(gp.buttons[8] && gp.buttons[8].pressed)
-        };
-      } catch (error) {
-        return { xPressed: false, viewPressed: false };
-      }
-    }
-
-    function submitCheatermodeControllerUnlock() {
-      if (!activeCommandPicker || activeCommandPicker.kind !== 'text') return false;
-      if (String(activeCommandPicker.command || '').trim().toLowerCase() !== '/cheatermode') return false;
-      const itemToRefocus = activeCommandPicker.item || null;
-      closeActiveCommandPicker();
-      showChatBar();
-      chatBar.value = '/cheatermode cheatermode';
-      moveCursorToEnd();
-      submitMessage();
-      if (itemToRefocus && typeof itemToRefocus.focus === 'function') {
-        try { itemToRefocus.focus(); } catch (error) {}
-      }
-      return true;
-    }
-
-    function tickCheatermodeControllerHold() {
-      if (!activeCommandPicker || activeCommandPicker.kind !== 'text') return false;
-      if (String(activeCommandPicker.command || '').trim().toLowerCase() !== '/cheatermode') return false;
-      if (!isExternalControllerMode()) {
-        resetCheatermodeControllerHoldTimer();
-        return false;
-      }
-      const buttons = getCheatermodeControllerButtons();
-      const bothPressed = !!buttons.xPressed && !!buttons.viewPressed;
-      if (!bothPressed) {
-        resetCheatermodeControllerHoldTimer();
-        setCheatermodePickerDisplay({ remaining: 5, xPressed: buttons.xPressed, viewPressed: buttons.viewPressed, unlocked: false });
-        return false;
-      }
-      const now = (typeof performance !== 'undefined' && typeof performance.now === 'function') ? performance.now() : Date.now();
-      if (!cheatermodeControllerHoldStartedAt || !cheatermodeControllerHoldWasBothPressed) {
-        cheatermodeControllerHoldStartedAt = now;
-      }
-      cheatermodeControllerHoldWasBothPressed = true;
-      const elapsed = Math.max(0, now - cheatermodeControllerHoldStartedAt);
-      const remaining = Math.max(0, (5000 - elapsed) / 1000);
-      const unlocked = elapsed >= 5000 || remaining <= 0;
-      setCheatermodePickerDisplay({ remaining, xPressed: true, viewPressed: true, unlocked });
-      if (unlocked) {
-        submitCheatermodeControllerUnlock();
-        return true;
-      }
-      return false;
-    }
-
-    function ensureCheatermodeControllerHoldTicker() {
-      if (cheatermodeControllerHoldTickTimer) return;
-      cheatermodeControllerHoldTickTimer = window.setInterval(() => {
-        tickCheatermodeControllerHold();
-      }, 50);
-    }
-
-    function stopCheatermodeControllerHoldTicker() {
-      if (cheatermodeControllerHoldTickTimer) {
-        window.clearInterval(cheatermodeControllerHoldTickTimer);
-        cheatermodeControllerHoldTickTimer = null;
-      }
-      resetCheatermodeControllerHoldTimer();
-    }
-
-    function setCheatermodePickerDisplay({ remaining = 5, xPressed = false, viewPressed = false, unlocked = false } = {}) {
-      if (!activeCommandPicker || activeCommandPicker.kind !== 'text') return false;
-      if (String(activeCommandPicker.command || '').trim().toLowerCase() !== '/cheatermode') return false;
-
-      const bothPressed = !!xPressed && !!viewPressed;
-      const comboClass = getCheatermodeComboClass(!!xPressed, !!viewPressed);
-      const countdownText = unlocked ? '1s' : formatCheatermodeRemaining(remaining, bothPressed);
-      const plainText = unlocked ? 'Cheatermode unlocked' : `Hold X + View ${countdownText}`;
-
-      if (activeCommandPicker.input && activeCommandPicker.input.getAttribute('aria-label') !== plainText) {
-        activeCommandPicker.input.setAttribute('aria-label', plainText);
-      }
-
-      const nodes = ensureCheatermodeComboNodes();
-      if (!nodes) return false;
-
-      const visualState = `${comboClass}|${countdownText}|${unlocked ? '1' : '0'}`;
-      if (activeCommandPicker.comboVisualState === visualState) return true;
-      activeCommandPicker.comboVisualState = visualState;
-
-      nodes.xNode.className = `helpTextPickerComboButton ${comboClass}`;
-      nodes.viewNode.className = `helpTextPickerComboButton ${comboClass}`;
-      nodes.countdownNode.textContent = countdownText;
-      return true;
-    }
-
-    function updateActiveTextPickerInputMode() {
-      if (!activeCommandPicker || activeCommandPicker.kind !== 'text') return false;
-      const controllerMode = isExternalControllerMode();
-      const picker = activeCommandPicker.picker || null;
-      const input = activeCommandPicker.input || null;
-      const hintNode = activeCommandPicker.hintNode || null;
-      if (picker) picker.classList.toggle('controllerMode', controllerMode);
-      if (input) {
-        input.readOnly = controllerMode;
-        input.placeholder = controllerMode ? 'Hold X + View' : 'type cheatermode';
-        input.value = controllerMode ? '' : '';
-        input.setAttribute('aria-label', controllerMode
-          ? 'Controller active. Hold X plus View for five seconds to unlock cheat commands'
-          : 'Keyboard or mouse active. Type cheatermode to unlock cheat commands');
-        if (!controllerMode) {
-          try { input.focus(); } catch (error) {}
-        } else {
-          try { activeCommandPicker.item.focus(); } catch (error) {}
-        }
-      }
-      if (hintNode) {
-        if (controllerMode) {
-          resetCheatermodeControllerHoldTimer();
-          setCheatermodePickerDisplay({ remaining: 5, xPressed: false, viewPressed: false, unlocked: false });
-          ensureCheatermodeControllerHoldTicker();
-        } else {
-          stopCheatermodeControllerHoldTicker();
-          activeCommandPicker.comboNodes = null;
-          activeCommandPicker.comboVisualState = '';
-          hintNode.textContent = 'Enter';
-        }
-      }
-      notifyParentChatSandboxState();
-      return true;
-    }
-
-    function updateCheatermodeHoldCountdown(remaining, active = true, unlocked = false, xPressed = false, viewPressed = false) {
-      if (!activeCommandPicker || activeCommandPicker.kind !== 'text') return false;
-      if (String(activeCommandPicker.command || '').trim().toLowerCase() !== '/cheatermode') return false;
-      if (!isExternalControllerMode()) return false;
-      // While the chat picker is open, its own stable local ticker owns the visible countdown.
-      // External level broadcasts are intentionally ignored here so the text does not flicker
-      // between two different timer sources.
-      if (cheatermodeControllerHoldTickTimer) return true;
-      const bothPressed = !!xPressed && !!viewPressed;
-      const safeRemaining = active && bothPressed
-        ? Math.max(0, Number(remaining) || 0)
-        : 5;
-      setCheatermodePickerDisplay({
-        remaining: safeRemaining,
-        xPressed,
-        viewPressed,
-        unlocked: unlocked || safeRemaining <= 0
-      });
-      notifyParentChatSandboxState();
-      return true;
-    }
-
-    function getShooterChoicePickerOptions(command = {}) {
-      const suggestions = command && Array.isArray(command.suggestions) && command.suggestions.length
-        ? command.suggestions
-        : ['normal', 'big_bullets', 'glitch'];
-      return suggestions
-        .map((value) => String(value || '').trim())
-        .filter(Boolean);
-    }
-
-    function getShooterNumberPickerDefaultValue(commandName = '') {
-      const normalized = String(commandName || '').trim().toLowerCase();
-      if (normalized === '/hearts') return 4;
-      if (normalized === '/game_speed') return 1;
-      if (normalized === '/bombs') return 3;
-      if (normalized === '/lives') return 1;
-      if (normalized === '/shields') return 0;
-      return 0;
-    }
-
-    function getShooterNumberPickerConfig(commandName = '') {
-      const normalized = String(commandName || '').trim().toLowerCase();
-      if (normalized === '/hearts') {
-        return { min: 1, max: 100, step: 1, infiniteValue: 100 };
-      }
-      if (normalized === '/game_speed') {
-        return { min: -5, max: 20, step: 1, infiniteValue: null };
-      }
-      if (normalized === '/bombs' || normalized === '/lives' || normalized === '/shields') {
-        return { min: 0, max: 100, step: 1, infiniteValue: 100 };
-      }
-      return { min: 0, max: 999, step: 1, infiniteValue: null };
-    }
-
-    function formatShooterNumberPickerValue(commandName = '', value = 0) {
-      const config = getShooterNumberPickerConfig(commandName);
-      const safeValue = Math.max(config.min, Math.min(config.max, Number(value) || 0));
-      if (config.infiniteValue !== null && safeValue >= config.infiniteValue) {
-        return '8';
-      }
-      return String(safeValue);
-    }
-
-    function clampShooterColorValue(value, min, max) {
-      return Math.max(min, Math.min(max, Number(value)));
-    }
-
-    function normalizeShooterColorHex(value) {
-      const raw = String(value || '').trim();
-      if (/^#[0-9a-f]{6}$/i.test(raw)) return raw.toLowerCase();
-      if (/^#[0-9a-f]{3}$/i.test(raw)) {
-        return `#${raw[1]}${raw[1]}${raw[2]}${raw[2]}${raw[3]}${raw[3]}`.toLowerCase();
-      }
-      return '#512A67';
-    }
-
-    function rgbToHsl(r, g, b) {
-      const red = clampShooterColorValue(r, 0, 255) / 255;
-      const green = clampShooterColorValue(g, 0, 255) / 255;
-      const blue = clampShooterColorValue(b, 0, 255) / 255;
-      const max = Math.max(red, green, blue);
-      const min = Math.min(red, green, blue);
-      let hue = 0;
-      let saturation = 0;
-      const lightness = (max + min) / 2;
-
-      if (max !== min) {
-        const delta = max - min;
-        saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
-        switch (max) {
-          case red:
-            hue = ((green - blue) / delta) + (green < blue ? 6 : 0);
-            break;
-          case green:
-            hue = ((blue - red) / delta) + 2;
-            break;
-          default:
-            hue = ((red - green) / delta) + 4;
-            break;
-        }
-        hue *= 60;
-      }
-
-      return {
-        hue,
-        saturation,
-        lightness
-      };
-    }
-
-    function hexToHsl(hexValue) {
-      const safeHex = normalizeShooterColorHex(hexValue);
-      const red = parseInt(safeHex.slice(1, 3), 16);
-      const green = parseInt(safeHex.slice(3, 5), 16);
-      const blue = parseInt(safeHex.slice(5, 7), 16);
-      return rgbToHsl(red, green, blue);
-    }
-
-    function hslToHex(hue, saturation, lightness) {
-      let safeHue = Number(hue) % 360;
-      if (safeHue < 0) safeHue += 360;
-      const safeSaturation = clampShooterColorValue(saturation, 0, 1);
-      const safeLightness = clampShooterColorValue(lightness, 0, 1);
-
-      const chroma = (1 - Math.abs((2 * safeLightness) - 1)) * safeSaturation;
-      const huePrime = safeHue / 60;
-      const x = chroma * (1 - Math.abs((huePrime % 2) - 1));
-      let redPrime = 0;
-      let greenPrime = 0;
-      let bluePrime = 0;
-
-      if (huePrime >= 0 && huePrime < 1) {
-        redPrime = chroma; greenPrime = x;
-      } else if (huePrime < 2) {
-        redPrime = x; greenPrime = chroma;
-      } else if (huePrime < 3) {
-        greenPrime = chroma; bluePrime = x;
-      } else if (huePrime < 4) {
-        greenPrime = x; bluePrime = chroma;
-      } else if (huePrime < 5) {
-        redPrime = x; bluePrime = chroma;
-      } else {
-        redPrime = chroma; bluePrime = x;
-      }
-
-      const match = safeLightness - (chroma / 2);
-      const red = Math.round((redPrime + match) * 255);
-      const green = Math.round((greenPrime + match) * 255);
-      const blue = Math.round((bluePrime + match) * 255);
-      return `#${[red, green, blue].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
-    }
-
-    function getShooterBackgroundColorDefaultState() {
-      const parsed = hexToHsl('#512A67');
-      return {
-        hue: parsed.hue,
-        saturation: Math.max(0.7, parsed.saturation || 0.86),
-        lightness: Math.max(0.18, Math.min(0.82, parsed.lightness || 0.23))
-      };
-    }
-
     function closeActiveCommandPicker() {
-      if (!activeCommandPicker || !activeCommandPicker.item) {
-        stopCheatermodeControllerHoldTicker();
-        activeCommandPicker = null;
-        notifyParentChatSandboxState();
-        return;
-      }
-      const { item, picker } = activeCommandPicker;
-      item.classList.remove('commandNumberPickerOpen');
-      item.removeAttribute('data-number-picker-active');
-      item.removeAttribute('data-number-picker-command');
-      item.removeAttribute('data-color-picker-active');
-      item.removeAttribute('data-color-picker-command');
-      item.removeAttribute('data-choice-picker-active');
-      item.removeAttribute('data-choice-picker-command');
-      item.removeAttribute('data-text-picker-active');
-      item.removeAttribute('data-text-picker-command');
-      if (picker && picker.parentNode) picker.parentNode.removeChild(picker);
-      stopCheatermodeControllerHoldTicker();
       activeCommandPicker = null;
-      notifyParentChatSandboxState();
     }
 
-    function updateActiveCommandPicker(delta = 0) {
-      if (!activeCommandPicker) return false;
-      if (activeCommandPicker.kind === 'number') {
-        if (!activeCommandPicker.valueNode) return false;
-        const config = activeCommandPicker.config || getShooterNumberPickerConfig(activeCommandPicker.command);
-        if (delta) {
-          const stepAmount = Number(config.step || 1) * Number(delta);
-          const nextValue = Math.max(config.min, Math.min(config.max, Number(activeCommandPicker.value || 0) + stepAmount));
-          activeCommandPicker.value = nextValue;
-        }
-        activeCommandPicker.valueNode.textContent = formatShooterNumberPickerValue(activeCommandPicker.command, activeCommandPicker.value);
-        return true;
-      }
-      if (activeCommandPicker.kind === 'color') {
-        if (!activeCommandPicker.valueNode || !activeCommandPicker.swatchNode) return false;
-        const axis = activeCommandPicker.pendingAxis || 'x';
-        if (delta) {
-          if (axis === 'x') {
-            activeCommandPicker.hue = ((Number(activeCommandPicker.hue || 0) + (Number(delta) * 14)) % 360 + 360) % 360;
-          } else {
-            activeCommandPicker.lightness = clampShooterColorValue(Number(activeCommandPicker.lightness || 0.35) + (Number(delta) * 0.05), 0.08, 0.9);
-          }
-        }
-        activeCommandPicker.pendingAxis = null;
-        const hexValue = hslToHex(activeCommandPicker.hue, activeCommandPicker.saturation, activeCommandPicker.lightness);
-        activeCommandPicker.valueNode.textContent = hexValue;
-        activeCommandPicker.valueNode.dataset.hexValue = hexValue;
-        activeCommandPicker.swatchNode.style.background = hexValue;
-        if (activeCommandPicker.hintNode) {
-          const hueText = `${Math.round(activeCommandPicker.hue)}°`;
-          const lightText = `${Math.round(activeCommandPicker.lightness * 100)}%`;
-          activeCommandPicker.hintNode.textContent = `H ${hueText} • L ${lightText}`;
-        }
-        return true;
-      }
-      if (activeCommandPicker.kind === 'choice') {
-        if (!activeCommandPicker.valueNode) return false;
-        const options = Array.isArray(activeCommandPicker.options) ? activeCommandPicker.options : [];
-        if (!options.length) return false;
-        if (delta) {
-          activeCommandPicker.index = (Number(activeCommandPicker.index || 0) + Number(delta) + options.length) % options.length;
-        }
-        activeCommandPicker.valueNode.textContent = options[activeCommandPicker.index] || options[0];
-        return true;
-      }
+    function handleActiveCommandPickerKeydown() {
       return false;
     }
-
-    function submitActiveCommandPicker() {
-      if (!activeCommandPicker || !activeCommandPicker.command) return false;
-      let rawCommand = activeCommandPicker.command;
-      if (activeCommandPicker.kind === 'number') {
-        const config = activeCommandPicker.config || getShooterNumberPickerConfig(activeCommandPicker.command);
-        const submittedValue = (config.infiniteValue !== null && Number(activeCommandPicker.value || 0) >= config.infiniteValue)
-          ? config.infiniteValue
-          : activeCommandPicker.value;
-        rawCommand = `${activeCommandPicker.command} ${submittedValue}`;
-      } else if (activeCommandPicker.kind === 'color') {
-        const currentHex = activeCommandPicker.valueNode && activeCommandPicker.valueNode.dataset
-          ? activeCommandPicker.valueNode.dataset.hexValue
-          : hslToHex(activeCommandPicker.hue, activeCommandPicker.saturation, activeCommandPicker.lightness);
-        rawCommand = `${activeCommandPicker.command} ${currentHex || '#512A67'}`;
-      } else if (activeCommandPicker.kind === 'choice') {
-        const options = Array.isArray(activeCommandPicker.options) ? activeCommandPicker.options : [];
-        const selected = options[activeCommandPicker.index] || options[0] || '';
-        rawCommand = `${activeCommandPicker.command} ${selected}`.trim();
-      } else if (activeCommandPicker.kind === 'text') {
-        if (isExternalControllerMode()) {
-          const normalized = String(activeCommandPicker.command || '').trim().toLowerCase();
-          if (normalized === '/cheatermode') rawCommand = '/cheatermode cheatermode';
-          else return false;
-        } else {
-          const typed = activeCommandPicker.input ? String(activeCommandPicker.input.value || '').trim() : '';
-          rawCommand = `${activeCommandPicker.command} ${typed}`.trim();
-        }
-      }
-      const itemToRefocus = activeCommandPicker.item || null;
-      closeActiveCommandPicker();
-      showChatBar();
-      chatBar.value = rawCommand;
-      moveCursorToEnd();
-      submitMessage();
-      if (itemToRefocus && typeof itemToRefocus.focus === 'function') {
-        try { itemToRefocus.focus(); } catch (error) {}
-      }
-      return true;
-    }
-
-    function openCommandTextPicker(item, command = {}) {
-      if (!item || !command) return false;
-      const normalized = String(command.name || '').trim().toLowerCase();
-      closeActiveCommandPicker();
-
-      const picker = document.createElement('span');
-      picker.className = 'helpTextPicker';
-      picker.setAttribute('aria-hidden', 'false');
-
-      const input = document.createElement('input');
-      input.className = 'helpTextPickerInput';
-      input.type = 'text';
-      input.value = '';
-      input.placeholder = isExternalControllerMode() ? 'Hold X + View' : 'type cheatermode';
-      input.autocomplete = 'off';
-      input.spellcheck = false;
-      input.readOnly = isExternalControllerMode();
-      input.setAttribute('aria-label', isExternalControllerMode()
-        ? 'Controller active. Hold X plus View for five seconds to unlock cheat commands'
-        : 'Keyboard or mouse active. Type cheatermode to unlock cheat commands');
-
-      const hintNode = document.createElement('span');
-      hintNode.className = 'helpTextPickerHint';
-      if (isExternalControllerMode()) {
-        hintNode.textContent = '';
-      } else {
-        hintNode.textContent = 'Enter';
-      }
-
-      input.addEventListener('keydown', (event) => {
-        event.stopPropagation();
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          if (!isExternalControllerMode()) submitActiveCommandPicker();
-        }
-        if (event.key === 'Escape') {
-          event.preventDefault();
-          closeActiveCommandPicker();
-        }
-      });
-      input.addEventListener('click', (event) => {
-        event.stopPropagation();
-      });
-
-      picker.appendChild(input);
-      picker.appendChild(hintNode);
-      item.appendChild(picker);
-      item.classList.add('commandNumberPickerOpen');
-      item.dataset.textPickerActive = 'true';
-      item.dataset.textPickerCommand = normalized;
-
-      activeCommandPicker = {
-        kind: 'text',
-        item,
-        picker,
-        command: normalized,
-        input,
-        hintNode
-      };
-      updateActiveTextPickerInputMode();
-      if (normalized === '/cheatermode' && isExternalControllerMode()) {
-        resetCheatermodeControllerHoldTimer();
-        ensureCheatermodeControllerHoldTicker();
-        tickCheatermodeControllerHold();
-      }
-      notifyParentChatSandboxState();
-
-      if (!isExternalControllerMode()) {
-        try { input.focus(); } catch (error) {}
-      } else if (typeof item.focus === 'function') {
-        try { item.focus(); } catch (error) {}
-      }
-      return true;
-    }
-
-    function openCommandChoicePicker(item, command = {}) {
-      if (!item || !command) return false;
-      const normalized = String(command.name || '').trim().toLowerCase();
-      const options = getShooterChoicePickerOptions(command);
-      if (!options.length) return false;
-      closeActiveCommandPicker();
-
-      const picker = document.createElement('span');
-      picker.className = 'helpChoicePicker';
-      picker.setAttribute('aria-hidden', 'true');
-
-      const label = document.createElement('span');
-      label.className = 'helpChoicePickerLabel';
-      label.textContent = 'mode';
-
-      const valueNode = document.createElement('span');
-      valueNode.className = 'helpChoicePickerValue';
-
-      const hintNode = document.createElement('span');
-      hintNode.className = 'helpChoicePickerHint';
-      hintNode.textContent = '< >';
-
-      picker.appendChild(label);
-      picker.appendChild(valueNode);
-      picker.appendChild(hintNode);
-      item.appendChild(picker);
-      item.classList.add('commandNumberPickerOpen');
-      item.dataset.choicePickerActive = 'true';
-      item.dataset.choicePickerCommand = normalized;
-
-      activeCommandPicker = {
-        kind: 'choice',
-        item,
-        picker,
-        command: normalized,
-        options,
-        index: 0,
-        valueNode
-      };
-      updateActiveCommandPicker(0);
-      notifyParentChatSandboxState();
-
-      if (typeof item.focus === 'function') {
-        try { item.focus(); } catch (error) {}
-      }
-      return true;
-    }
-
-    function openCommandNumberPicker(item, command = {}) {
-      if (!item || !command) return false;
-      const normalized = String(command.name || '').trim().toLowerCase();
-      closeActiveCommandPicker();
-
-      const picker = document.createElement('span');
-      picker.className = 'helpNumberPicker';
-      picker.setAttribute('aria-hidden', 'true');
-
-      const label = document.createElement('span');
-      label.className = 'helpNumberPickerLabel';
-      label.textContent = '#';
-
-      const valueNode = document.createElement('span');
-      valueNode.className = 'helpNumberPickerValue';
-
-      picker.appendChild(label);
-      picker.appendChild(valueNode);
-      item.appendChild(picker);
-      item.classList.add('commandNumberPickerOpen');
-      item.dataset.numberPickerActive = 'true';
-      item.dataset.numberPickerCommand = normalized;
-
-      activeCommandPicker = {
-        kind: 'number',
-        item,
-        picker,
-        command: normalized,
-        value: getShooterNumberPickerDefaultValue(normalized),
-        config: getShooterNumberPickerConfig(normalized),
-        valueNode
-      };
-      updateActiveCommandPicker(0);
-      notifyParentChatSandboxState();
-
-      if (typeof item.focus === 'function') {
-        try { item.focus(); } catch (error) {}
-      }
-      return true;
-    }
-
-    function openCommandColorPicker(item, command = {}) {
-      if (!item || !command) return false;
-      const normalized = String(command.name || '').trim().toLowerCase();
-      closeActiveCommandPicker();
-
-      const picker = document.createElement('span');
-      picker.className = 'helpColorPicker';
-      picker.setAttribute('aria-hidden', 'true');
-
-      const swatchNode = document.createElement('span');
-      swatchNode.className = 'helpColorPickerSwatch';
-
-      const valueNode = document.createElement('span');
-      valueNode.className = 'helpColorPickerValue';
-
-      const hintNode = document.createElement('span');
-      hintNode.className = 'helpColorPickerHint';
-      hintNode.textContent = 'H 0° • L 0%';
-
-      picker.appendChild(swatchNode);
-      picker.appendChild(valueNode);
-      picker.appendChild(hintNode);
-      item.appendChild(picker);
-      item.classList.add('commandNumberPickerOpen');
-      item.dataset.colorPickerActive = 'true';
-      item.dataset.colorPickerCommand = normalized;
-
-      const defaultState = getShooterBackgroundColorDefaultState();
-      activeCommandPicker = {
-        kind: 'color',
-        item,
-        picker,
-        command: normalized,
-        hue: defaultState.hue,
-        saturation: defaultState.saturation,
-        lightness: defaultState.lightness,
-        swatchNode,
-        valueNode,
-        hintNode,
-        pendingAxis: null
-      };
-      updateActiveCommandPicker(0);
-      notifyParentChatSandboxState();
-
-      if (typeof item.focus === 'function') {
-        try { item.focus(); } catch (error) {}
-      }
-      return true;
-    }
-
-    function handleActiveCommandPickerKeydown(event) {
-      if (!activeCommandPicker || !activeCommandPicker.item) return false;
-      const target = event && event.target ? event.target : null;
-      if (target && target !== activeCommandPicker.item && !activeCommandPicker.item.contains(target)) {
-        return false;
-      }
-
-      if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        event.stopPropagation();
-        if (activeCommandPicker.kind === 'color') activeCommandPicker.pendingAxis = 'y';
-        return updateActiveCommandPicker(activeCommandPicker.kind === 'choice' ? -1 : 1);
-      }
-      if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        event.stopPropagation();
-        if (activeCommandPicker.kind === 'color') activeCommandPicker.pendingAxis = 'y';
-        return updateActiveCommandPicker(activeCommandPicker.kind === 'choice' ? 1 : -1);
-      }
-      if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        event.stopPropagation();
-        if (activeCommandPicker.kind === 'color') activeCommandPicker.pendingAxis = 'x';
-        return updateActiveCommandPicker(1);
-      }
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        event.stopPropagation();
-        if (activeCommandPicker.kind === 'color') activeCommandPicker.pendingAxis = 'x';
-        return updateActiveCommandPicker(-1);
-      }
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        event.stopPropagation();
-        if (activeCommandPicker.kind === 'text' && isExternalControllerMode()) {
-          updateActiveTextPickerInputMode();
-          return true;
-        }
-        return submitActiveCommandPicker();
-      }
-      if (event.key === 'Escape' || event.key === 'Backspace') {
-        event.preventDefault();
-        event.stopPropagation();
-        closeActiveCommandPicker();
-        return true;
-      }
-      return false;
-    }
-
-    document.addEventListener('pointerdown', (event) => {
-      if (event.isTrusted !== false) setExternalInputMode('keyboardMouse');
-    }, true);
-
-    document.addEventListener('keydown', (event) => {
-      if (event.isTrusted !== false) setExternalInputMode('keyboardMouse');
-      handleActiveCommandPickerKeydown(event);
-    }, true);
-
-    document.addEventListener('focusin', (event) => {
-      if (!activeCommandPicker || !activeCommandPicker.item) return;
-      const target = event && event.target ? event.target : null;
-      if (target && target !== activeCommandPicker.item && !activeCommandPicker.item.contains(target)) {
-        closeActiveCommandPicker();
-      }
-    });
-
     function createCommandListMessageNode(titleText, commandNames = [], options = {}) {
       const wrapper = document.createElement('div');
       if (options && typeof options.panelType === 'string' && options.panelType.trim()) {
@@ -5569,17 +4294,9 @@ function createHomepageCustomizeMessageNode(result = {}) {
       const helpList = document.createElement('div');
       helpList.className = 'helpList';
 
-      const allowed = new Set((Array.isArray(commandNames) ? commandNames : []).map((name) => String(name || '').toLowerCase()));
-      const showHiddenCommands = options.showHiddenCommands === true;
-      const commands = getMergedHelpCommands().filter((command) => {
-        const normalized = String(command.name || '').toLowerCase();
-        if (allowed.size && !allowed.has(normalized)) {
-          return false;
-        }
-        if (!allowed.size && !showHiddenCommands && (command.hidden === true || shouldHideHelpCommandByDefault(normalized))) {
-          return false;
-        }
-        return true;
+      const commands = getVisibleHelpCommands({
+        commandNames,
+        showHiddenCommands: options.showHiddenCommands === true
       });
 
       commands.forEach((command) => {
@@ -5601,40 +4318,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
 
         item.addEventListener('click', (event) => {
           event.preventDefault();
-          if (isShooterNumberPickerCommand(command)) {
-            if (activeCommandPicker && activeCommandPicker.item === item && activeCommandPicker.kind === 'number') {
-              submitActiveCommandPicker();
-            } else {
-              openCommandNumberPicker(item, command);
-            }
-            return;
-          }
-          if (isShooterColorPickerCommand(command)) {
-            if (activeCommandPicker && activeCommandPicker.item === item && activeCommandPicker.kind === 'color') {
-              submitActiveCommandPicker();
-            } else {
-              openCommandColorPicker(item, command);
-            }
-            return;
-          }
-          if (isShooterChoicePickerCommand(command)) {
-            if (activeCommandPicker && activeCommandPicker.item === item && activeCommandPicker.kind === 'choice') {
-              submitActiveCommandPicker();
-            } else {
-              openCommandChoicePicker(item, command);
-            }
-            return;
-          }
-          if (isShooterCheatermodeCommand(command)) {
-            if (activeCommandPicker && activeCommandPicker.item === item && activeCommandPicker.kind === 'text') {
-              submitActiveCommandPicker();
-            } else {
-              openCommandTextPicker(item, command);
-            }
-            return;
-          }
-
-          closeActiveCommandPicker();
           showChatBar();
 
           if (command.execute) {
@@ -5644,6 +4327,9 @@ function createHomepageCustomizeMessageNode(result = {}) {
           } else {
             chatBar.value = command.value;
             moveCursorToEnd();
+            updateChatBarVisualState();
+            renderInlineSuggestion();
+            renderCommandArgumentSuggestionPopup();
           }
         });
         helpList.appendChild(item);
@@ -5675,45 +4361,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
       });
     }
 
-    function createGotoFolderListMessageNode(folders = []) {
-      const wrapper = document.createElement('div');
-      wrapper.dataset.commandPanelType = 'gotoFolders';
-
-      const title = document.createElement('div');
-      const titleStrong = document.createElement('strong');
-      titleStrong.textContent = 'Go to folder...';
-      title.appendChild(titleStrong);
-      wrapper.appendChild(title);
-
-      const helpList = document.createElement('div');
-      helpList.className = 'helpList';
-
-      Array.from(new Set((Array.isArray(folders) ? folders : [])
-        .map((folder) => String(folder || '').trim())
-        .filter(Boolean)))
-        .forEach((folder) => {
-          const item = document.createElement('a');
-          item.className = 'helpItem';
-          item.href = folder === '/' ? '/index.html' : folder;
-          item.dataset.gotoFolder = folder;
-
-          const nameSpan = document.createElement('span');
-          nameSpan.className = 'helpCommandName';
-          nameSpan.textContent = folder;
-
-          item.appendChild(nameSpan);
-          item.addEventListener('click', (event) => {
-            event.preventDefault();
-            closeActiveCommandPicker();
-            dispatchPageCommand('/goto', `/goto ${folder}`, [folder]);
-          });
-
-          helpList.appendChild(item);
-        });
-
-      wrapper.appendChild(helpList);
-      return wrapper;
-    }
 
     function refreshVisibleHelpMessages() {
       const helpMessages = Array.from(messages.querySelectorAll('.message[data-role="system"][data-command-panel-type="help"]'));
@@ -5824,21 +4471,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
       return null;
     }
 
-    function getFolderUploadInput(type) {
-      const inputMap = {
-        image: imageFolderInput,
-        video: videoFolderInput,
-        audio: audioFolderInput
-      };
-      return inputMap[type] || null;
-    }
-
-    function triggerMediaFolderUpload(type) {
-      const input = getFolderUploadInput(type);
-      if (!input) return;
-      input.value = '';
-      input.click();
-    }
 
     function createMediaRecords(type, fileList) {
       const records = Array.from(fileList || [])
@@ -6096,78 +4728,10 @@ function createHomepageCustomizeMessageNode(result = {}) {
       mediaOverlay.setAttribute('aria-hidden', 'false');
     }
 
-    function handleMediaFolderSelection(type, event) {
-      const records = createMediaRecords(type, event.target.files || []);
-      if (!records.length) {
-        addSystemMessage(`No ${type} files found in selected folder.`);
-        event.target.value = '';
-        return;
-      }
 
-      addSystemMessage(formatCommandExecutionMessage('/upload_folder'));
-      addMessage(createMediaBrowserMessageNode(type, records), 'system');
-      event.target.value = '';
-    }
 
-    function triggerGenericUpload() {
-      uploadFileInput.value = '';
-      uploadFileInput.click();
-    }
 
-    function triggerGenericFolderUpload() {
-      uploadFolderInput.value = '';
-      uploadFolderInput.click();
-    }
 
-    function handleGenericMediaSelection(event) {
-      const file = event.target.files && event.target.files[0];
-      const type = inferMediaType(file);
-      if (!file || !type) {
-        addSystemMessage('Unsupported file type. Choose an image, video, or audio file.');
-        event.target.value = '';
-        return;
-      }
-
-      addSystemMessage(formatCommandExecutionMessage('/upload_file'));
-      addMessage(createMediaMessageNode(type, file), 'system');
-      event.target.value = '';
-    }
-
-    function handleGenericFolderSelection(event) {
-      const records = createMediaRecords('mixed', event.target.files || []);
-      if (!records.length) {
-        addSystemMessage('No image, video, or audio files found in selected folder.');
-        event.target.value = '';
-        return;
-      }
-
-      addSystemMessage(formatCommandExecutionMessage('/upload_folder'));
-      addMessage(createMediaBrowserMessageNode('mixed', records), 'system');
-      event.target.value = '';
-    }
-
-    function triggerMediaUpload(type) {
-      const inputMap = {
-        image: imageUploadInput,
-        video: videoUploadInput,
-        audio: audioUploadInput
-      };
-
-      const input = inputMap[type];
-      if (!input) return;
-
-      input.value = '';
-      input.click();
-    }
-
-    function handleMediaSelection(type, event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-
-      addSystemMessage(formatCommandExecutionMessage(`/${type}`));
-      addMessage(createMediaMessageNode(type, file), 'system');
-      event.target.value = '';
-    }
 
     function resetCommandCycle() {
       commandCycleIndex = -1;
@@ -6203,8 +4767,9 @@ function createHomepageCustomizeMessageNode(result = {}) {
 
     function getMatchingCommands(prefix) {
       const normalized = prefix.toLowerCase();
-      return getCommandCatalog()
-        .filter(command => command.startsWith(normalized))
+      return getVisibleHelpCommands({ showHiddenCommands: debugMode })
+        .map((command) => command.name)
+        .filter((command) => command.startsWith(normalized))
         .slice()
         .sort((a, b) => a.localeCompare(b));
     }
@@ -6259,12 +4824,10 @@ function createHomepageCustomizeMessageNode(result = {}) {
       }
 
       const commandToken = value.slice(slashIndex, firstSpaceAfterSlash).toLowerCase();
-      const pageCommand = getPageCommandDefinition(commandToken);
       const builtInCommand = builtInCommands.find((entry) => entry.name === commandToken) || null;
-      const suggestions = [
-        ...(pageCommand && Array.isArray(pageCommand.suggestions) ? pageCommand.suggestions : []),
-        ...(!pageCommand && builtInCommand && Array.isArray(builtInCommand.suggestions) ? builtInCommand.suggestions : [])
-      ].map((value) => String(value || '').trim()).filter(Boolean);
+      const suggestions = (builtInCommand && Array.isArray(builtInCommand.suggestions) ? builtInCommand.suggestions : [])
+        .map((value) => String(value || '').trim())
+        .filter(Boolean);
       if (!suggestions.length) {
         return null;
       }
@@ -6400,6 +4963,51 @@ function createHomepageCustomizeMessageNode(result = {}) {
       chatCommandSuggestionPopup.innerHTML = '';
     }
 
+    function getCommandSuggestionPopupState() {
+      if (!chatInputArmed || !chatBarWrap.classList.contains('visible')) {
+        return null;
+      }
+      const info = getCommandTokenInfo();
+      if (!info) {
+        return null;
+      }
+      const token = info.token || '/';
+      const normalizedToken = token.toLowerCase();
+      const matches = getVisibleHelpCommands({ showHiddenCommands: debugMode })
+        .filter((command) => String(command.name || '').toLowerCase().startsWith(normalizedToken));
+      if (!matches.length) {
+        return null;
+      }
+      let selectedIndex = 0;
+      if (commandCyclePrefix && normalizedToken.startsWith(commandCyclePrefix.toLowerCase()) && commandCycleIndex >= 0 && commandCycleIndex < matches.length) {
+        selectedIndex = commandCycleIndex;
+      } else {
+        const exactIndex = matches.findIndex((command) => String(command.name || '').toLowerCase() === normalizedToken);
+        selectedIndex = exactIndex !== -1 ? exactIndex : 0;
+      }
+      return { info, matches, selectedIndex };
+    }
+
+    function getCommandSuggestionCompletionValue(command) {
+      if (!command) return '';
+      return command.value || command.name || '';
+    }
+
+    function applyCommandSuggestion(commandName) {
+      const info = getCommandTokenInfo();
+      if (!info) return false;
+      const normalizedName = String(commandName || '').trim().toLowerCase();
+      const command = getVisibleHelpCommands({ showHiddenCommands: debugMode })
+        .find((entry) => String(entry.name || '').toLowerCase() === normalizedName);
+      if (!command) return false;
+      chatBar.value = info.value.slice(0, info.slashIndex) + getCommandSuggestionCompletionValue(command) + info.value.slice(info.tokenEnd);
+      moveCursorToEnd();
+      updateChatBarVisualState();
+      renderInlineSuggestion();
+      renderCommandArgumentSuggestionPopup();
+      return true;
+    }
+
     function getCommandArgumentSuggestionPopupState() {
       if (!chatInputArmed || !chatBarWrap.classList.contains('visible')) {
         return null;
@@ -6427,21 +5035,36 @@ function createHomepageCustomizeMessageNode(result = {}) {
 
     function renderCommandArgumentSuggestionPopup() {
       if (!chatCommandSuggestionPopup) return false;
-      const popupState = getCommandArgumentSuggestionPopupState();
+      const argumentPopupState = getCommandArgumentSuggestionPopupState();
+      const commandPopupState = argumentPopupState ? null : getCommandSuggestionPopupState();
+      const popupState = argumentPopupState || commandPopupState;
       if (!popupState) {
         hideCommandArgumentSuggestionPopup();
         return false;
       }
       chatCommandSuggestionPopup.innerHTML = '';
-      popupState.matches.forEach((suggestion, index) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.tabIndex = -1;
-        button.className = index === popupState.selectedIndex ? 'chatCommandSuggestionItem active' : 'chatCommandSuggestionItem';
-        button.textContent = suggestion;
-        button.setAttribute('data-command-argument-suggestion', suggestion);
-        chatCommandSuggestionPopup.appendChild(button);
-      });
+      if (argumentPopupState) {
+        popupState.matches.forEach((suggestion, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.tabIndex = -1;
+          button.className = index === popupState.selectedIndex ? 'chatCommandSuggestionItem active' : 'chatCommandSuggestionItem';
+          button.textContent = suggestion;
+          button.setAttribute('data-command-argument-suggestion', suggestion);
+          chatCommandSuggestionPopup.appendChild(button);
+        });
+      } else {
+        popupState.matches.forEach((command, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.tabIndex = -1;
+          button.className = index === popupState.selectedIndex ? 'chatCommandSuggestionItem active' : 'chatCommandSuggestionItem';
+          button.setAttribute('data-command-suggestion', command.name);
+
+          button.textContent = command.name;
+          chatCommandSuggestionPopup.appendChild(button);
+        });
+      }
       chatCommandSuggestionPopup.classList.add('visible');
       chatCommandSuggestionPopup.setAttribute('aria-hidden', 'false');
       return true;
@@ -7008,35 +5631,18 @@ function createHomepageCustomizeMessageNode(result = {}) {
       return true;
     }
 
-    async function openSpawnPicker() {
-      return openDvdLogoPicker();
-    }
 
     async function handleCommand(raw) {
       const trimmed = raw.trim();
       const parts = trimmed.split(/\s+/);
       const command = parts[0].toLowerCase();
-      const pageCommand = getPageCommandDefinition(command);
-      const builtInCommand = builtInCommands.find((entry) => entry.name === command) || null;
-      const embeddedPageOnly = document.body.classList.contains('embedded') && pageCommandMeta.pageOnly;
-      // MODIFIED: Only let the parent override a built-in when it explicitly says so.
-      const preferPageCommand = document.body.classList.contains('embedded') && !!pageCommand && !pageCommand.passthroughBuiltIn && (embeddedPageOnly || pageCommand.replaceBuiltIn === true);
 
-      if (preferPageCommand) {
-        dispatchPageCommand(command, trimmed, parts.slice(1));
-        return true;
-      }
-
-      if (embeddedPageOnly && trimmed.startsWith('/') && command !== '/help' && !(pageCommand && pageCommand.passthroughBuiltIn && builtInCommand)) {
-        return false;
-      }
-
-      if (command === '/nickname' || command === '/nick') {
+      if (command === '/nickname') {
         const rawNickname = trimmed.slice(parts[0].length).trim();
         if (rawNickname.toLowerCase() === 'reset') {
-          currentNickname = generateAnonymousNickname();
+          currentNickname = '';
           saveNickname('');
-          addSystemMessage(`${command} reset: ${currentNickname}`);
+          addSystemMessage(`${command} reset. Enter a nickname to chat.`);
           return true;
         }
 
@@ -7055,53 +5661,10 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return true;
       }
 
-      if (command === '/debug') {
-        if (debugMode) {
-          showSystemPrefix = true;
-          setDebugMode(false);
-          refreshVisibleHelpMessages();
-          addSystemMessage(formatCommandExecutionMessage('/debug', 'disabled'));
-        } else {
-          showSystemPrefix = true;
-          setDebugMode(true);
-          refreshVisibleHelpMessages();
-          addSystemMessage(formatCommandExecutionMessage('/debug', 'enabled'));
-        }
-        return true;
-      }
-
-      if (command === '/clock') {
-        addSystemMessage(formatCommandExecutionMessage('/clock'));
-        addMessage(createCommandListMessageNode('Clock commands...', [
-          '/clock_time',
-          '/clock_date',
-          '/clock_reset',
-          '/clock_zone'
-        ], {
-          panelType: 'clock'
-        }), 'system');
-        return true;
-      }
-
-      if (command === '/color') {
-        addSystemMessage(formatCommandExecutionMessage('/color'));
-        addMessage(createCommandListMessageNode('Color commands...', [
-          '/color_hueshift',
-          '/color_invert',
-          '/color_party',
-          '/color_randomize',
-          '/color_reset',
-          '/color_element'
-        ], {
-          panelType: 'color'
-        }), 'system');
-        return true;
-      }
-
       if (command === '/help') {
         addSystemMessage(formatCommandExecutionMessage('/help'));
         const existingHelpMessage = Array.from(messages.querySelectorAll('.message[data-role="system"][data-command-panel-type="help"]')).at(-1) || null;
-        if (existingHelpMessage && !debugMode) {
+        if (existingHelpMessage) {
           const messageText = existingHelpMessage.querySelector('.messageText');
           if (messageText) {
             existingHelpMessage.dataset.commandPanelType = 'help';
@@ -7114,123 +5677,41 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return true;
       }
 
-      if (command === '/dvd') {
-        addSystemMessage(formatCommandExecutionMessage('/dvd'));
-        addMessage(createCommandListMessageNode('DVD commands...', [
-          '/dvd_spawn',
-          '/dvd_image',
-          '/dvd_slideshow'
-        ], {
-          panelType: 'dvd'
-        }), 'system');
-        return true;
-      }
-
-      if (command === '/dvd_spawn') {
-        const currentAttempts = getDvdCommandAttemptCount();
-        const nextAttempt = currentAttempts + 1;
-        dvdCommandAttemptCount = nextAttempt;
-
-        if (nextAttempt >= 13 && !dvdOverclockMode) {
-          addDvdOverclockSystemMessage();
-          startDvdOverclockMode();
-          if (dvdInstances.length < dvdNormalMaxInstances) {
-            ensureDvdInstanceCount(dvdNormalMaxInstances);
-          }
-          setDvdEnabled(true);
-          return true;
-        }
-
-        if (dvdOverclockMode) {
-          return true;
-        }
-
-        if (nextAttempt === 12) {
-          primeDvdOverclockCycle();
-          addPersonalizedSystemWarningMessage(
-            'Really',
-            ", you don't want to see what happens if you spawn more than 10 of those... Fine, send it one more time, see what happens smartass."
-          );
-          return true;
-        }
-
-        if (nextAttempt === 11) {
-          addPersonalizedSystemWarningMessage('Why would you want more than 10 of those,', '?');
-          return true;
-        }
-
-        spawnDvdInstance();
-        addSystemMessage(formatCommandExecutionMessage('/dvd_spawn'), { repeatCount: nextAttempt, repeatLabel: nextAttempt >= dvdNormalMaxInstances ? 'MAX' : '' });
-        return true;
-      }
-
-      if (command === '/dvd_image') {
-        dvdUploadMode = 'dvd_image';
-        const urlArg = trimmed.slice(parts[0].length).trim();
-        if (urlArg) {
-          const sources = parseDvdLogoUrlList(urlArg);
-          const applied = addSpawnedDvdSources(sources);
-          addSystemMessage(formatCommandExecutionMessage('/dvd_image', applied ? 'executed' : 'failed'));
-          return true;
-        }
-        const opened = openDvdLogoPicker();
-        addSystemMessage(formatCommandExecutionMessage('/dvd_image', opened ? 'executed' : 'failed'));
-        return true;
-      }
-
-      if (command === '/subscribe') {
-        const applied = applySubscribeMode();
-        addSystemMessage(formatCommandExecutionMessage('/subscribe', applied ? 'executed' : 'failed'), { repeatLabel: applied ? 'INFINITE' : '' });
-        return true;
-      }
-
-      if (command === '/dvd_slideshow') {
-        const applied = applyDvdSlideshowMode();
-        addSystemMessage(formatCommandExecutionMessage('/dvd_slideshow', applied ? 'executed' : 'failed'), { repeatCount: dvdSlideshowSources.length });
-        return true;
-      }
-
-      if (command === '/spawn') {
-        const opened = await openSpawnPicker();
-        addSystemMessage(formatCommandExecutionMessage('/spawn', opened ? 'executed' : 'failed'));
-        return true;
-      }
-
       if (command === '/exit') {
         addSystemMessage(formatCommandExecutionMessage('/exit'));
         if (isEmbeddedInIndex()) {
           postToParentPage({ type: 'pageExit' });
         } else {
           const escaped = [
-            '            .ed\"\"\"\" \"\"\"$$$$be.',
-            '          -\"           ^\"\"**$$$e.',
-            '        .\"                   \'$$$c',
-            '       /                      \"4$$b',
-            '      d  3                      $$$$',
-            '      $  *                   .$$$$$$',
-            '     .$  ^c           $$$$$e$$$$$$$$.',
-            '     d$L  4.         4$$$$$$$$$$$$$$b',
-            '     $$$$b ^ceeeee.  4$$ECL.F*$$$$$$$',
-            '     $$$$P d$$$$F $ $$$$$$$$$- $$$$$$',
-            '     3$$$F \"$$$$b   $\"$$$$$$$  $$$$*\"',
-            '      $$P\"  \"$$b   .$ $$$$$...e$$',
-            '       *c    ..    $$ 3$$$$$$$$$$eF',
-            '         %ce\"    $$$  $$$$$$$$$$*',
-            '          *$e.    \"$  $$$$$$$$$P',
-            '           $$$      4J$$$$$$$\"',
-            '          $\"$   $\"*$$$$$$$$$B',
-            '          $  \"F\"   ^*$$$$$$$*',
-            '           $\"     .d$$$$$$$',
-            '           ^%ceeed$$$$$$$$$*',
-            '              \"\"\"*$$$$$$$$$*',
-            '                   ^\"\"\"\"\"',
-            '',
-            'BOOT STATUS: PAGE FATALITY',
-            'CAUSE: USER EXECUTED /exit',
-            'RESULT: you killed the page',
-            '',
-            'Manual reboot required.',
-            'Refresh the page like a peasant.'
+            "            .ed\"\"\"\" \"\"\"$$$$be.",
+            "          -\"           ^\"\"**$$$e.",
+            "        .\"                   '$$$c",
+            "       /                      \"4$$b",
+            "      d  3                      $$$$",
+            "      $  *                   .$$$$$$",
+            "     .$  ^c           $$$$$e$$$$$$$$.",
+            "     d$L  4.         4$$$$$$$$$$$$$$b",
+            "     $$$$b ^ceeeee.  4$$ECL.F*$$$$$$$",
+            "     $$$$P d$$$$F $ $$$$$$$$$- $$$$$$",
+            "     3$$$F \"$$$$b   $\"$$$$$$$  $$$$*\"",
+            "      $$P\"  \"$$b   .$ $$$$$...e$$",
+            "       *c    ..    $$ 3$$$$$$$$$$eF",
+            "         %ce\"    $$$  $$$$$$$$$$*",
+            "          *$e.    \"$  $$$$$$$$$P",
+            "           $$$      4J$$$$$$$\"",
+            "          $\"$   $\"*$$$$$$$$$B",
+            "          $  \"F\"   ^*$$$$$$$*",
+            "           $\"     .d$$$$$$$",
+            "           ^%ceeed$$$$$$$$$*",
+            "              \"\"\"*$$$$$$$$$*",
+            "                   ^\"\"\"\"\"",
+            "",
+            "BOOT STATUS: PAGE FATALITY",
+            "CAUSE: USER EXECUTED /exit",
+            "RESULT: you killed the page",
+            "",
+            "Manual reboot required.",
+            "Refresh the page like a peasant.",
           ].join('\n');
 
           document.documentElement.innerHTML = `
@@ -7253,183 +5734,8 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return true;
       }
 
-      if (command === '/color_invert') {
-        if (colorPartyEnabled) {
-          setColorPartyEnabled(false);
-        }
-        const enabled = isEmbeddedInIndex()
-          ? (postToParentPage({ type: 'pageGlobalColorInvertToggle' }), null)
-          : toggleGlobalColorInvert();
-        addSystemMessage(formatCommandExecutionMessage('/color_invert', (enabled === null ? 'toggled' : (enabled ? 'enabled' : 'disabled'))));
-        return true;
-      }
-
-      if (command === '/color_hueshift') {
-        if (colorPartyEnabled) {
-          setColorPartyEnabled(false);
-        }
-        const enabled = isEmbeddedInIndex()
-          ? (postToParentPage({ type: 'pageGlobalHueShiftToggle' }), null)
-          : toggleGlobalHueShift();
-        addSystemMessage(formatCommandExecutionMessage('/color_hueshift', (enabled === null ? 'toggled' : (enabled ? 'enabled' : 'disabled'))));
-        return true;
-      }
-
-      if (command === '/color_party') {
-        const enabled = setColorPartyEnabled(!colorPartyEnabled);
-        addSystemMessage(formatCommandExecutionMessage('/color_party', enabled ? 'enabled' : 'disabled'));
-        return true;
-      }
-
-      if (command === '/customize') {
-        addSystemMessage(formatCommandExecutionMessage('/customize'));
-        addMessage(createCustomizeMessageNode(), 'system');
-        return true;
-      }
-
-      if (command === '/stop') {
-        const wasShuffleRunning = autoShuffleIntervalId !== null;
-        const wasScriptRunning = !!(activeScriptRun && !activeScriptRun.done);
-        const wasHueShiftEnabled = globalHueShiftEnabled;
-        const wasColorInvertEnabled = globalColorInvertEnabled;
-        const wasColorPartyEnabled = colorPartyEnabled;
-        if (wasColorPartyEnabled) {
-          setColorPartyEnabled(false);
-        }
-        stopAutoShuffleColors();
-        if (wasHueShiftEnabled) {
-          freezeGlobalHueShiftAtCurrentAngle();
-        }
-        setGlobalColorInvert(false);
-        if (isEmbeddedInIndex()) {
-          postToParentPage({ type: 'pageGlobalColorInvertSet', enabled: false });
-          postToParentPage({ type: 'pageGlobalHueShiftSet', enabled: false });
-          postToParentPage({ type: 'pageCustomizeAutoShuffleSet', enabled: false });
-        }
-        if (wasScriptRunning && activeScriptRun) {
-          activeScriptRun.cancelled = true;
-        }
-        if (wasShuffleRunning || wasScriptRunning || wasHueShiftEnabled || wasColorInvertEnabled || wasColorPartyEnabled) {
-          addSystemMessage(formatCommandExecutionMessage('/stop'));
-        } else {
-          addSystemMessage('No auto color or script effects are currently running');
-        }
-        return true;
-      }
-
-      if (command === '/randomize' || command === '/color_randomize') {
-        if (colorPartyEnabled) {
-          setColorPartyEnabled(false);
-        }
-        const enableRandomize = autoShuffleIntervalId === null;
-        if (!enableRandomize) {
-          stopAutoShuffleColors();
-          // ADDED: Keep page-side randomization in sync with chat-side /randomize when embedded in index.html.
-          if (isEmbeddedInIndex()) {
-            postToParentPage({ type: 'pageCustomizeAutoShuffleSet', enabled: false });
-          }
-          addSystemMessage(formatCommandExecutionMessage('/color_randomize', 'disabled'));
-        } else {
-          startAutoShuffleColors();
-          // ADDED: Trigger the parent page's Customize Page auto-shuffle on the same interval without changing UI.
-          if (isEmbeddedInIndex()) {
-            postToParentPage({ type: 'pageCustomizeSetRandomizeTintOpacities' });
-            postToParentPage({ type: 'pageCustomizeAutoShuffleSet', enabled: true });
-          }
-          addSystemMessage(formatCommandExecutionMessage('/color_randomize', 'enabled'));
-        }
-        return true;
-      }
-
-      if (command === '/color_reset') {
-        setColorPartyEnabled(false);
-        applyCustomizeDefaults();
-        if (isEmbeddedInIndex()) {
-          postToParentPage({ type: 'pageGlobalEffectsReset' });
-        }
-        addSystemMessage(formatCommandExecutionMessage('/color_reset'));
-        return true;
-      }
-
-      if (command === '/settings_save') {
-        downloadSettingsFile();
-        addSystemMessage(formatCommandExecutionMessage('/settings_save'));
-        return true;
-      }
-
-      if (command === '/screenshot') {
-        try {
-          await captureVisiblePageScreenshot();
-        } catch (error) {
-          console.error(error);
-          addSystemMessage('Unable to save page screenshot');
-        }
-        return true;
-      }
-
-      if (command === '/screenshot_animation') {
-        try {
-          screenshotAnimationActive = true;
-          chatBar.value = '';
-          updateChatBarVisualState();
-          historyIndex = -1;
-          historyDraft = '';
-          resetCommandCycle();
-          chatBarWrap.classList.remove('visible');
-          document.body.classList.remove('chat-open');
-          disarmChatInput();
-          chatBar.blur();
-          notifyParentChatSandboxState();
-          await captureVisiblePageAnimation();
-        } catch (error) {
-          screenshotAnimationActive = false;
-          console.error(error);
-          addSystemMessage('Unable to save page animation frames');
-        }
-        return true;
-      }
-
-      if (command === '/settings_load') {
-        triggerSettingsLoad();
-        addSystemMessage(formatCommandExecutionMessage('/settings_load'));
-        return true;
-      }
-
-      if (command === '/script_load') {
-        triggerScriptLoad();
-        addSystemMessage(formatCommandExecutionMessage('/script_load'));
-        return true;
-      }
-
-      if (command === '/iframe') {
-        const rawUrl = trimmed.slice(parts[0].length).trim();
-        const sanitizedUrl = sanitizeUrl(rawUrl);
-        if (!sanitizedUrl) {
-          addSystemMessage('Invalid iframe URL. Use /iframe https://example.com/');
-          return true;
-        }
-        addSystemMessage(formatCommandExecutionMessage('/iframe'));
-        addMessage(createIframeMessageNode(sanitizedUrl), 'system');
-        return true;
-      }
-
-      if (command === '/upload_folder') {
-        triggerGenericFolderUpload();
-        return true;
-      }
-
-      if (command === '/upload_file') {
-        triggerGenericUpload();
-        return true;
-      }
-
       if (command === '/clear') {
         clearLocalChatCommand();
-        return true;
-      }
-
-      if (command === '/clear_public') {
-        await clearSupabaseChatHistory(trimmed.slice(parts[0].length).trim());
         return true;
       }
 
@@ -7448,11 +5754,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return true;
       }
 
-      if (pageCommand) {
-        dispatchPageCommand(command, raw, parts.slice(1));
-        return true;
-      }
-
       return false;
     }
 
@@ -7466,6 +5767,22 @@ function createHomepageCustomizeMessageNode(result = {}) {
       resetHistoryNavigation();
 
       const trimmed = raw.trim();
+      if (!trimmed.startsWith('/') && !hasCurrentNickname()) {
+        if (trimmed.length > 40) {
+          addSystemMessage('Nickname is too long. Keep it to 40 characters.');
+        } else {
+          const newNickname = normalizeNickname(trimmed);
+          currentNickname = newNickname;
+          saveNickname(newNickname);
+          addSystemMessage(`Nickname set: ${newNickname}`);
+        }
+        chatBar.value = '';
+        updateChatBarVisualState();
+        resetCommandCycle();
+        hideCommandArgumentSuggestionPopup();
+        return;
+      }
+
       const handled = await handleCommand(raw);
 
       if (!handled) {
@@ -7522,7 +5839,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
         event.preventDefault();
         const trimmedValue = chatBar.value.trim();
         if (!trimmedValue || trimmedValue === '/') {
-          hideChatBar();
           return;
         }
         submitMessage();
@@ -7592,10 +5908,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return;
       }
 
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        hideChatBar();
-      }
     });
 
     chatBar.addEventListener('click', () => {
@@ -7609,10 +5921,15 @@ function createHomepageCustomizeMessageNode(result = {}) {
 
     if (chatCommandSuggestionPopup) {
       chatCommandSuggestionPopup.addEventListener('mousedown', (event) => {
-        const button = event.target && event.target.closest ? event.target.closest('[data-command-argument-suggestion]') : null;
-        if (!button) return;
+        const argumentButton = event.target && event.target.closest ? event.target.closest('[data-command-argument-suggestion]') : null;
+        const commandButton = event.target && event.target.closest ? event.target.closest('[data-command-suggestion]') : null;
+        if (!argumentButton && !commandButton) return;
         event.preventDefault();
-        applyCommandArgumentSuggestion(button.getAttribute('data-command-argument-suggestion') || '');
+        if (argumentButton) {
+          applyCommandArgumentSuggestion(argumentButton.getAttribute('data-command-argument-suggestion') || '');
+        } else {
+          applyCommandSuggestion(commandButton.getAttribute('data-command-suggestion') || '');
+        }
       });
     }
 
@@ -7626,9 +5943,7 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return;
       }
 
-      if (event.target !== chatClose) {
-        armChatInput();
-      }
+      armChatInput();
     });
 
     document.addEventListener('pointermove', (event) => {
@@ -7650,10 +5965,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
       openChatFromPreview();
     }, true);
 
-    chatClose.addEventListener('click', (event) => {
-      event.stopPropagation();
-      hideChatBar();
-    });
 
     iframeOverlayClose.addEventListener('click', () => {
       closeIframeOverlay();
@@ -7663,45 +5974,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
       closeMediaOverlay();
     });
 
-    uploadFileInput.addEventListener('change', (event) => {
-      handleGenericMediaSelection(event);
-    });
-
-    uploadFolderInput.addEventListener('change', (event) => {
-      handleGenericFolderSelection(event);
-    });
-
-    settingsLoadInput.addEventListener('change', (event) => {
-      handleSettingsLoadSelection(event);
-    });
-
-    scriptLoadInput.addEventListener('change', (event) => {
-      handleScriptLoadSelection(event);
-    });
-
-    imageUploadInput.addEventListener('change', (event) => {
-      handleMediaSelection('image', event);
-    });
-
-    videoUploadInput.addEventListener('change', (event) => {
-      handleMediaSelection('video', event);
-    });
-
-    audioUploadInput.addEventListener('change', (event) => {
-      handleMediaSelection('audio', event);
-    });
-
-    imageFolderInput.addEventListener('change', (event) => {
-      handleMediaFolderSelection('image', event);
-    });
-
-    videoFolderInput.addEventListener('change', (event) => {
-      handleMediaFolderSelection('video', event);
-    });
-
-    audioFolderInput.addEventListener('change', (event) => {
-      handleMediaFolderSelection('audio', event);
-    });
 
 
 
@@ -7839,21 +6111,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return;
       }
 
-      if (event.data.type === 'pageScreenshotStatus') {
-        if (!event.data.ok) {
-          addSystemMessage(event.data.message || 'Unable to save page screenshot');
-        }
-        return;
-      }
-
-      if (event.data.type === 'pageScreenshotAnimationStatus') {
-        screenshotAnimationActive = false;
-        if (!event.data.ok) {
-          addSystemMessage(event.data.message || 'Unable to save page animation frames');
-        }
-        return;
-      }
-
       if (event.data.type === 'chatSandboxInputMode') {
         setExternalInputMode(event.data.mode || 'keyboardMouse');
         return;
@@ -7864,68 +6121,6 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return;
       }
 
-      if (event.data.type === 'pageChatRegister') {
-        setPageCommands({
-          commands: Array.isArray(event.data.commands) ? event.data.commands : [],
-          pageOnly: !!event.data.pageOnly,
-          pageId: event.data.pageId || '',
-          title: event.data.title || '',
-          sourceKey: event.data.sourceKey || '',
-          inputMode: event.data.inputMode || ''
-        });
-        refreshVisibleHelpMessages();
-        initialWelcomeMessage = normalizeWelcomeMessage(event.data.welcomeMessage || DEFAULT_WELCOME_MESSAGE);
-        if (chatBarWrap.classList.contains('visible')) {
-          ensureInitialWelcomeMessage();
-          requestAnimationFrame(scrollToBottom);
-        }
-        return;
-      }
-
-      if (event.data.type === 'pageChatClear') {
-        setPageCommands({ commands: [], pageOnly: false, pageId: '', title: '', sourceKey: '' });
-        initialWelcomeMessage = DEFAULT_WELCOME_MESSAGE;
-        if (chatBarWrap.classList.contains('visible')) {
-          ensureInitialWelcomeMessage();
-          requestAnimationFrame(scrollToBottom);
-        }
-        return;
-      }
-
-      if (event.data.type === 'pageChatResult') {
-        if (typeof event.data.nickname === 'string' && event.data.nickname.trim()) {
-          currentNickname = event.data.nickname.trim();
-          saveNickname(currentNickname);
-        }
-
-        const message = event.data.message || `${event.data.command || 'Page command'} executed`;
-        if (event.data.panel === 'homepageCustomize') {
-          const shouldAnnounce = event.data.announce !== false;
-          if (shouldAnnounce) {
-            homepageCustomizePanelVisible = true;
-            addSystemMessage(formatCommandExecutionMessage(event.data.command || '/customize'));
-            if (event.data.includeBaseCustomize) {
-              const existingChatPanel = messages.querySelector('.message .customizePanel[data-panel-type="chatCustomize"]')?.closest('.message');
-              if (!existingChatPanel) {
-                addMessage(createCustomizeMessageNode(), 'system');
-              }
-            }
-          }
-          if (homepageCustomizePanelVisible) {
-            upsertNamedPanelMessage('homepageCustomize', () => createHomepageCustomizeMessageNode(event.data));
-          }
-        } else if (event.data.panel === 'gotoFolders') {
-          addSystemMessage(formatCommandExecutionMessage(event.data.command || '/goto'));
-          addMessage(createGotoFolderListMessageNode(event.data.folders), 'system');
-        } else if (event.data.announce !== false) {
-          if (String(event.data.command || '').trim().toLowerCase() === '/log') {
-            addMessage(createLocalStorageLogMessageNode(message), 'system');
-          } else {
-            addSystemMessage(message);
-          }
-        }
-        pendingPageCommand = null;
-      }
     });
 
     if (window.parent && window.parent !== window) {

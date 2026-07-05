@@ -3722,6 +3722,7 @@
     const clockTime = document.getElementById("clock-time");
     const clockDate = document.getElementById("clock-date");
     const staticMarkdownOverlay = document.getElementById("static-markdown-overlay");
+    const mainPageRouteLink = document.querySelector(".index-link");
     const mainPageRouteLabel = document.querySelector(".index-link .texture-content");
     const ghostCounter = document.getElementById("ghost-counter");
     const ghostCount = document.getElementById("ghost-count");
@@ -3813,9 +3814,15 @@
       return `${url.pathname}${url.search}${url.hash}` || "/";
     };
 
-    const setMainPageRouteLabel = (label) => {
-      if (!mainPageRouteLabel) return;
-      mainPageRouteLabel.textContent = label || "Main Page";
+    const setMainPageRouteLabel = (label, path = "/") => {
+      const href = normalizeShellPath(path);
+      if (mainPageRouteLabel) {
+        mainPageRouteLabel.textContent = label || "Main Page";
+      }
+      if (mainPageRouteLink) {
+        mainPageRouteLink.dataset.shellPath = href;
+        mainPageRouteLink.href = href === "/" ? "/" : `/?frame=${encodeURIComponent(href)}`;
+      }
     };
 
     const loadShellFrame = (path, options = {}) => {
@@ -3829,7 +3836,7 @@
           window.history.replaceState({ overlayFrame: null }, "", "/");
         }
         document.title = "theinternetisdead.org";
-        setMainPageRouteLabel("Main Page");
+        setMainPageRouteLabel("Main Page", "/");
         document.body.classList.remove("has-shell-frame");
         staticMarkdownOverlay.classList.remove("has-iframe");
         fetch("/dead/messages/hello-world.md", { cache: "no-store" })
@@ -3855,7 +3862,7 @@
         window.history.replaceState({ overlayFrame: normalizedPath }, "", normalizedPath);
       }
       document.title = shellFrameTitle(normalizedPath);
-      setMainPageRouteLabel(shellFrameTitle(normalizedPath));
+      setMainPageRouteLabel(shellFrameTitle(normalizedPath), normalizedPath);
       document.body.classList.add("has-shell-frame");
       staticMarkdownOverlay.classList.add("has-iframe");
       staticMarkdownOverlay.replaceChildren(frame);
@@ -3882,12 +3889,13 @@
       fullscreenShellFrame();
     });
 
-    const shellCycleRoutes = ["/", "/dead/games/", "/dead/experiments/"];
+    const shellCycleRoutes = ["/", "/dead/games/", "/dead/chat/", "/dead/experiments/"];
     const getCurrentShellCycleIndex = () => {
       const currentPath = normalizeShellPath(`${window.location.pathname}${window.location.search}${window.location.hash}`);
       if (currentPath === "/" || currentPath === "/index.html") return 0;
       if (currentPath.startsWith("/dead/games/")) return 1;
-      if (currentPath.startsWith("/dead/experiments/")) return 2;
+      if (currentPath.startsWith("/dead/chat/")) return 2;
+      if (currentPath.startsWith("/dead/experiments/")) return 3;
       return 0;
     };
 
@@ -3907,8 +3915,68 @@
       cycleShellRoute(1);
     });
 
+    mainPageRouteLink?.addEventListener("click", (event) => {
+      event.preventDefault();
+      loadShellFrame(mainPageRouteLink.dataset.shellPath || "/", { push: true });
+    });
+
+    const renderFatalExitScreen = () => {
+      const escaped = [
+        '            .ed"""" """$$$$be.',
+        '          -"           ^""**$$$e.',
+        '        ."                   \'$$$c',
+        '       /                      "4$$b',
+        '      d  3                      $$$$',
+        '      $  *                   .$$$$$$',
+        '     .$  ^c           $$$$$e$$$$$$$$.',
+        '     d$L  4.         4$$$$$$$$$$$$$$b',
+        '     $$$$b ^ceeeee.  4$$ECL.F*$$$$$$$',
+        '     $$$$P d$$$$F $ $$$$$$$$$- $$$$$$',
+        '     3$$$F "$$$$b   $"$$$$$$$  $$$$*"',
+        '      $$P"  "$$b   .$ $$$$$...e$$',
+        '       *c    ..    $$ 3$$$$$$$$$$eF',
+        '         %ce"    $$$  $$$$$$$$$$*',
+        '          *$e.    "$  $$$$$$$$$P',
+        '           $$$      4J$$$$$$$"',
+        '          $"$   $"*$$$$$$$$$B',
+        '          $  "F"   ^*$$$$$$$*',
+        '           $"     .d$$$$$$$',
+        '           ^%ceeed$$$$$$$$$*',
+        '              """*$$$$$$$$$*',
+        '                   ^"""""',
+        '',
+        'BOOT STATUS: PAGE FATALITY',
+        'CAUSE: USER EXECUTED /exit',
+        'RESULT: you killed the page',
+        '',
+        'Manual reboot required.',
+        'Refresh the page like a peasant.'
+      ].join('\n');
+
+      document.documentElement.innerHTML = `
+        <head>
+          <meta charset="UTF-8" />
+          <title>/dead/chat/</title>
+          <style>
+            html, body { margin: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+            body { display: flex; align-items: flex-start; justify-content: flex-start; padding: 24px; color: #00ff66; font-family: "Courier New", Courier, monospace; background:
+              radial-gradient(circle at 20% 20%, rgba(255, 0, 80, 0.28), transparent 28%),
+              radial-gradient(circle at 80% 25%, rgba(0, 255, 120, 0.24), transparent 26%),
+              radial-gradient(circle at 50% 80%, rgba(0, 140, 255, 0.24), transparent 30%),
+              #000; }
+            pre { margin: 0; white-space: pre; font-size: clamp(10px, 1.35vw, 16px); line-height: 1.1; color: #00ff66; text-shadow: 0 0 8px rgba(0, 255, 102, 0.35); background: rgba(0, 0, 0, 0.38); padding: 18px 20px 30px 20px; box-shadow: 0 0 0 1px rgba(0, 255, 102, 0.18), inset 0 0 24px rgba(0, 0, 0, 0.45); }
+          </style>
+        </head>
+        <body><pre>${escaped}</pre></body>
+      `;
+    };
+
     window.addEventListener("message", (event) => {
       if (event.origin !== window.location.origin) return;
+      if (event.data?.type === "pageExit") {
+        renderFatalExitScreen();
+        return;
+      }
       if (event.data?.type === "dead-shell-navigate") {
         loadShellFrame(event.data.href, { push: true });
         return;
