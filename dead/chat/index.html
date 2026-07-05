@@ -1688,8 +1688,8 @@
 
   </style>
 </head>
-<body>
-  <div id="messagesWrap">
+<body class="chat-open">
+  <div id="messagesWrap" class="visible">
     <div id="messages"></div>
   </div>
 
@@ -1734,7 +1734,7 @@
 
   <button id="focusSink" type="button" aria-hidden="true" tabindex="-1"></button>
 
-  <div id="chatBarWrap">
+  <div id="chatBarWrap" class="visible">
     <div id="chatPrompt">&gt;</div>
     <div id="chatInputStack">
       <div id="chatGhost" aria-hidden="true"><span id="chatGhostTyped"></span><span id="chatGhostRemainder"></span></div>
@@ -7935,9 +7935,8 @@ function createHomepageCustomizeMessageNode(result = {}) {
 
     notifyParentChatSandboxState();
 
-    if (!isEmbeddedInIndex()) {
-      showChatBar();
-    }
+    // Open the chat by default in both standalone and embedded contexts.
+    showChatBar();
 
     window.addEventListener('keydown', (event) => {
       if (isScreenshotAnimationLocked()) {
