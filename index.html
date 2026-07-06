@@ -78,6 +78,20 @@
       border-left: 3px solid lime;
     }
 
+    #gear-customization-sidebar {
+      padding-bottom: calc(var(--static-image-inset) + 32px);
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-padding-bottom: calc(var(--static-image-inset) + 32px);
+    }
+
+    #gear-customization-sidebar::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
     .grave-sidebar.is-open {
       display: block;
     }
@@ -262,6 +276,10 @@
       cursor: pointer;
     }
 
+    .gear-sidebar-option:last-child {
+      padding-bottom: 32px;
+    }
+
     .save-settings-button {
       gap: 8px;
     }
@@ -321,6 +339,80 @@
       height: auto;
     }
 
+    .nickname-panel {
+      height: auto;
+      min-height: 126px;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px;
+      cursor: default;
+    }
+
+    .nickname-panel-label {
+      color: lime;
+      font-size: 14px;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .nickname-panel-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .nickname-panel-input {
+      width: min(100%, 150px);
+      min-width: 0;
+      height: 28px;
+      border: 2px solid lime;
+      background: black;
+      color: white;
+      box-sizing: border-box;
+      font: 700 12px "Courier New", Courier, monospace;
+      text-align: center;
+    }
+
+    .nickname-panel-input:focus {
+      outline: 2px solid magenta;
+      outline-offset: 1px;
+    }
+
+    .nickname-panel-button {
+      appearance: none;
+      -webkit-appearance: none;
+      height: 28px;
+      border: 2px solid magenta;
+      background: black;
+      color: white;
+      cursor: pointer;
+      font: 900 12px "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      line-height: 1;
+    }
+
+    .nickname-color-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      color: lime;
+      font: 900 12px "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      line-height: 1;
+    }
+
+    .nickname-color-picker {
+      width: 36px;
+      height: 28px;
+      padding: 0;
+      border: 2px solid lime;
+      background: black;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
     .audio-panel {
       height: 88px;
       flex-direction: column;
@@ -366,7 +458,7 @@
     }
 
     .color-filter-panel.is-open {
-      height: 252px;
+      height: 364px;
     }
 
     .color-filter-toggle {
@@ -401,7 +493,7 @@
       align-items: center;
       gap: 12px;
       width: 100%;
-      padding: 10px 0;
+      padding: 10px 0 32px;
     }
 
     .color-filter-picker {
@@ -500,6 +592,71 @@
     .page-color-filter.is-inverted {
       -webkit-backdrop-filter: invert(1);
       backdrop-filter: invert(1);
+    }
+
+    .rain-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483646;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 220ms ease;
+    }
+
+    .rain-canvas.is-active {
+      opacity: 1;
+    }
+
+    .melt-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483645;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      opacity: 0;
+      mix-blend-mode: color-dodge;
+      transition: opacity 260ms ease;
+    }
+
+    .melt-canvas.is-active {
+      opacity: 0.76;
+    }
+
+    body.is-melting .background-frame,
+    body.is-melting .static-viewport-image,
+    body.is-melting .static-markdown-overlay,
+    body.is-melting .bottom-bar,
+    body.is-melting .grave-sidebar {
+      animation: page-trip-breathe 2400ms ease-in-out infinite alternate;
+      filter:
+        url("#trip-ripple-filter")
+        saturate(1.95)
+        contrast(1.18)
+        hue-rotate(18deg)
+        drop-shadow(2px 0 0 rgba(255, 0, 96, 0.36))
+        drop-shadow(-2px 0 0 rgba(0, 229, 255, 0.34));
+      transform-origin: center center;
+    }
+
+    body.is-melting .bar-content,
+    body.is-melting .static-markdown-overlay {
+      text-shadow:
+        2px 0 rgba(255, 0, 96, 0.42),
+        -2px 0 rgba(0, 229, 255, 0.38),
+        0 0 8px rgba(255, 242, 0, 0.25);
+    }
+
+    @keyframes page-trip-breathe {
+      from {
+        transform: translate3d(-1px, 0, 0) scale(1.002, 1.004) skewX(-0.22deg);
+      }
+
+      to {
+        transform: translate3d(1px, 2px, 0) scale(1.014, 1.022) skewX(0.28deg);
+      }
     }
 
     .gear-sidebar-panel:hover {
@@ -3574,9 +3731,19 @@
 </head>
 
 <body>
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;left:-9999px;top:-9999px;">
+    <filter id="trip-ripple-filter" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB">
+      <feTurbulence id="trip-ripple-turbulence" type="fractalNoise" baseFrequency="0.009 0.022" numOctaves="2" seed="7" result="noise">
+        <animate attributeName="baseFrequency" dur="5.8s" values="0.007 0.018;0.018 0.034;0.010 0.026;0.007 0.018" repeatCount="indefinite" />
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
   <iframe class="background-frame" src="/dead/experiments/background/" title="Background" aria-hidden="true"></iframe>
   <img class="static-viewport-image" src="/dead/images/static.gif" alt="" aria-hidden="true">
   <main class="static-markdown-overlay" id="static-markdown-overlay" aria-live="polite"></main>
+  <canvas class="melt-canvas" id="melt-canvas" aria-hidden="true"></canvas>
+  <canvas class="rain-canvas" id="rain-canvas" aria-hidden="true"></canvas>
   <div class="page-color-filter" id="page-color-filter" aria-hidden="true"></div>
 
   <div class="bottom-bar" aria-label="Static bookmark top bar preview">
@@ -3656,6 +3823,17 @@
     </div>
   </aside>
   <aside class="grave-sidebar grave-sidebar-right" id="gear-customization-sidebar" aria-hidden="true">
+    <div class="gear-sidebar-panel nickname-panel" role="group" aria-label="Chat nickname">
+      <label class="nickname-panel-label" for="gear-nickname-input">Nickname</label>
+      <div class="nickname-panel-row">
+        <input class="nickname-panel-input" id="gear-nickname-input" type="text" maxlength="40" autocomplete="nickname" placeholder="nickname" aria-label="Chat nickname">
+        <button class="nickname-panel-button" id="gear-nickname-button" type="button">Update</button>
+      </div>
+      <label class="nickname-color-row" for="gear-nickname-color-picker">
+        Public Color
+        <input class="nickname-color-picker" id="gear-nickname-color-picker" type="color" value="#ffffff" aria-label="Public nickname color">
+      </label>
+    </div>
     <button class="gear-sidebar-panel save-settings-button" id="remember-settings-toggle" type="button" aria-pressed="false">
       <span class="texture-content"><span id="remember-settings-label">Save Settings</span><span class="save-settings-check" id="remember-settings-check" aria-hidden="true"></span></span>
     </button>
@@ -3714,6 +3892,14 @@
           <span>Inverted</span>
           <input id="invert-toggle" type="checkbox">
         </label>
+        <label class="gear-sidebar-option" for="rain-toggle">
+          <span>Raining</span>
+          <input id="rain-toggle" type="checkbox">
+        </label>
+        <label class="gear-sidebar-option" for="melt-toggle">
+          <span>Trip</span>
+          <input id="melt-toggle" type="checkbox">
+        </label>
       </div>
     </div>
   </aside>
@@ -3748,12 +3934,107 @@
     const blendModeSelect = document.getElementById("blend-mode-select");
     const hueshiftToggle = document.getElementById("hueshift-toggle");
     const invertToggle = document.getElementById("invert-toggle");
+    const rainToggle = document.getElementById("rain-toggle");
+    const rainCanvas = document.getElementById("rain-canvas");
+    const meltToggle = document.getElementById("melt-toggle");
+    const meltCanvas = document.getElementById("melt-canvas");
     const rememberSettingsToggle = document.getElementById("remember-settings-toggle");
     const rememberSettingsLabel = document.getElementById("remember-settings-label");
+    const gearNicknameInput = document.getElementById("gear-nickname-input");
+    const gearNicknameButton = document.getElementById("gear-nickname-button");
+    const gearNicknameColorPicker = document.getElementById("gear-nickname-color-picker");
     const graveSidebar = document.getElementById("grave-sidebar");
     const gearSidebar = document.getElementById("gear-customization-sidebar");
     const desktopSidebarQuery = window.matchMedia("(min-width: 601px)");
+    const chatNicknameStorageKey = "tektiteChatNickname";
+    const chatNicknameExplicitStorageKey = "tektiteChatNicknameExplicit";
+    const publicNicknameColorStorageKey = "tektiteChatPublicNicknameColor";
     let ghostsOnlineCount = null;
+
+    const normalizeChatNickname = (value) => String(value || "").trim().slice(0, 40);
+
+    const readChatNickname = () => {
+      try {
+        if (window.localStorage.getItem(chatNicknameExplicitStorageKey) !== "true") return "";
+        return normalizeChatNickname(window.localStorage.getItem(chatNicknameStorageKey));
+      } catch (error) {
+        return "";
+      }
+    };
+
+    const writeChatNickname = (value) => {
+      const nickname = normalizeChatNickname(value);
+      try {
+        if (nickname) {
+          window.localStorage.setItem(chatNicknameExplicitStorageKey, "true");
+          window.localStorage.setItem(chatNicknameStorageKey, nickname);
+        } else {
+          window.localStorage.removeItem(chatNicknameExplicitStorageKey);
+          window.localStorage.removeItem(chatNicknameStorageKey);
+        }
+      } catch (error) {}
+      return nickname;
+    };
+
+    const notifyChatNicknameUpdated = (nickname) => {
+      const frame = document.querySelector('iframe[title="/dead/chat/"]');
+      if (!frame || !frame.contentWindow) return;
+      frame.contentWindow.postMessage({
+        type: "setChatNickname",
+        nickname
+      }, window.location.origin);
+    };
+
+    const normalizeHexColor = (value, fallback = "#ffffff") => {
+      const color = String(value || "").trim();
+      return /^#[0-9a-fA-F]{6}$/.test(color) ? color.toLowerCase() : fallback;
+    };
+
+    const readPublicNicknameColor = () => {
+      try {
+        return normalizeHexColor(window.localStorage.getItem(publicNicknameColorStorageKey));
+      } catch (error) {
+        return "#ffffff";
+      }
+    };
+
+    const writePublicNicknameColor = (value) => {
+      const color = normalizeHexColor(value);
+      try {
+        window.localStorage.setItem(publicNicknameColorStorageKey, color);
+      } catch (error) {}
+      return color;
+    };
+
+    const notifyPublicNicknameColorUpdated = (color) => {
+      const frame = document.querySelector('iframe[title="/dead/chat/"]');
+      if (!frame || !frame.contentWindow) return;
+      frame.contentWindow.postMessage({
+        type: "setPublicNicknameColor",
+        color
+      }, window.location.origin);
+    };
+
+    const syncGearNicknameInput = () => {
+      if (gearNicknameInput) {
+        gearNicknameInput.value = readChatNickname();
+      }
+      if (gearNicknameColorPicker) {
+        gearNicknameColorPicker.value = readPublicNicknameColor();
+      }
+    };
+
+    const updateGearNickname = () => {
+      const nickname = writeChatNickname(gearNicknameInput ? gearNicknameInput.value : "");
+      if (gearNicknameInput) gearNicknameInput.value = nickname;
+      notifyChatNicknameUpdated(nickname);
+    };
+
+    const updatePublicNicknameColor = () => {
+      const color = writePublicNicknameColor(gearNicknameColorPicker ? gearNicknameColorPicker.value : "#ffffff");
+      if (gearNicknameColorPicker) gearNicknameColorPicker.value = color;
+      notifyPublicNicknameColorUpdated(color);
+    };
 
     const renderSimpleMarkdown = (markdownText) => {
       if (!staticMarkdownOverlay) return;
@@ -3823,12 +4104,25 @@
       return `${url.pathname}${url.search}${url.hash}` || "/";
     };
 
+    const appendShellFrameCacheBust = (path, versionKey) => {
+      const url = new URL(path || "/", window.location.origin);
+      url.searchParams.set("_shellv", versionKey);
+      return `${url.pathname}${url.search}${url.hash}`;
+    };
+
     const resolveShellFrameRoute = (path) => {
       const routePath = normalizeShellPath(path);
       if (routePath === "/dead/videos/" || routePath.startsWith("/dead/videos/?") || routePath.startsWith("/dead/videos/#")) {
         return {
           routePath,
           framePath: "/dead/pages/thumbnail-grid/",
+          labelPath: routePath
+        };
+      }
+      if (routePath === "/dead/chat/" || routePath.startsWith("/dead/chat/?") || routePath.startsWith("/dead/chat/#")) {
+        return {
+          routePath,
+          framePath: appendShellFrameCacheBust(routePath, "trip-command"),
           labelPath: routePath
         };
       }
@@ -3880,6 +4174,11 @@
       frame.className = "static-markdown-frame";
       frame.src = framePath;
       frame.title = shellFrameTitle(labelPath);
+      frame.addEventListener("load", () => {
+        if (labelPath === "/dead/chat/" || labelPath.startsWith("/dead/chat/?") || labelPath.startsWith("/dead/chat/#")) {
+          notifyPublicNicknameColorUpdated(readPublicNicknameColor());
+        }
+      });
 
       if (options.push && `${window.location.pathname}${window.location.search}${window.location.hash}` !== normalizedPath) {
         window.history.pushState({ overlayFrame: normalizedPath }, "", normalizedPath);
@@ -4048,6 +4347,18 @@
         renderFatalExitScreen();
         return;
       }
+      if (event.data?.type === "openGearSidebar") {
+        setSidebarOpen(gearSidebar, gearButton, true);
+        return;
+      }
+      if (event.data?.type === "toggleSaveSettings") {
+        toggleRememberSettings();
+        return;
+      }
+      if (event.data?.type === "enableGearEffect") {
+        enableGearEffect(event.data.effect);
+        return;
+      }
       if (event.data?.type === "dead-shell-navigate") {
         loadShellFrame(event.data.href, { push: true });
         return;
@@ -4138,6 +4449,24 @@
       });
     });
 
+    if (gearNicknameButton) {
+      gearNicknameButton.addEventListener("click", updateGearNickname);
+    }
+
+    if (gearNicknameInput) {
+      syncGearNicknameInput();
+      gearNicknameInput.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        updateGearNickname();
+      });
+    }
+
+    if (gearNicknameColorPicker) {
+      gearNicknameColorPicker.addEventListener("input", updatePublicNicknameColor);
+      gearNicknameColorPicker.addEventListener("change", updatePublicNicknameColor);
+    }
+
     const setGraveSidebarWidth = () => {
       const sidebars = [graveSidebar, gearSidebar].filter(Boolean);
       if (!sidebars.length) return;
@@ -4170,6 +4499,9 @@
       sidebar.classList.toggle("is-open", isOpen);
       sidebar.setAttribute("aria-hidden", isOpen ? "false" : "true");
       button.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      if (sidebar === gearSidebar && isOpen) {
+        syncGearNicknameInput();
+      }
       syncSidebarBodyState();
     };
 
@@ -4213,12 +4545,45 @@
       blendMode: blendModeSelect?.value || "color",
       timezone: timezoneSelect?.value || "",
       hueshifting: Boolean(hueshiftToggle?.checked),
-      inverted: Boolean(invertToggle?.checked)
+      inverted: Boolean(invertToggle?.checked),
+      raining: Boolean(rainToggle?.checked),
+      melting: Boolean(meltToggle?.checked)
     });
 
     const updateRememberSettingsLabel = () => {
       if (!rememberSettingsLabel || !rememberSettingsToggle) return;
       rememberSettingsLabel.textContent = isRememberSettingsEnabled() ? "Settings Saved" : "Save Settings";
+    };
+
+    const toggleRememberSettings = () => {
+      setRememberSettingsEnabled(!isRememberSettingsEnabled());
+      updateRememberSettingsLabel();
+      if (isRememberSettingsEnabled()) {
+        saveCustomizationSettings();
+      } else {
+        clearCustomizationSettings();
+      }
+    };
+
+    const enableGearEffect = (effect) => {
+      const effectName = String(effect || "").trim().toLowerCase();
+      if (effectName === "hueshift" && hueshiftToggle) {
+        hueshiftToggle.checked = true;
+        updatePageColorFilter(true);
+        return;
+      }
+      if (effectName === "invert" && invertToggle) {
+        invertToggle.checked = true;
+        updatePageColorFilter(true);
+        return;
+      }
+      if (effectName === "rain" && rainToggle) {
+        setRainEnabled(true);
+        return;
+      }
+      if (effectName === "melt" && meltToggle) {
+        setMeltEnabled(true);
+      }
     };
 
     const saveCustomizationSettings = () => {
@@ -4259,25 +4624,327 @@
       saveCustomizationSettings();
     };
 
+    const rainState = {
+      active: false,
+      animationId: null,
+      width: 0,
+      height: 0,
+      dpr: 1,
+      drops: [],
+      ripples: [],
+      lastTime: 0,
+      windPhase: Math.random() * Math.PI * 2
+    };
+
+    const resizeRainCanvas = () => {
+      if (!rainCanvas) return;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const width = Math.max(1, window.innerWidth);
+      const height = Math.max(1, window.innerHeight);
+      if (rainState.width === width && rainState.height === height && rainState.dpr === dpr) return;
+      rainState.width = width;
+      rainState.height = height;
+      rainState.dpr = dpr;
+      rainCanvas.width = Math.round(width * dpr);
+      rainCanvas.height = Math.round(height * dpr);
+      rainCanvas.style.width = `${width}px`;
+      rainCanvas.style.height = `${height}px`;
+      const ctx = rainCanvas.getContext("2d");
+      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seedRainDrops();
+    };
+
+    const createRainDrop = (initial = false) => {
+      const height = Math.max(1, rainState.height);
+      return {
+        x: Math.random() * Math.max(1, rainState.width),
+        y: initial ? Math.random() * height : -40 - Math.random() * 120,
+        length: 14 + Math.random() * 28,
+        speed: 520 + Math.random() * 560,
+        alpha: 0.24 + Math.random() * 0.34,
+        thickness: 0.7 + Math.random() * 1.1
+      };
+    };
+
+    function seedRainDrops() {
+      if (!rainCanvas) return;
+      const targetCount = Math.max(90, Math.min(260, Math.round((rainState.width * rainState.height) / 6500)));
+      rainState.drops = Array.from({ length: targetCount }, () => createRainDrop(true));
+      rainState.ripples = rainState.ripples.filter((ripple) => ripple.y <= rainState.height + 80);
+    }
+
+    const addRainRipple = (x, y, wind) => {
+      if (rainState.ripples.length > 90) rainState.ripples.shift();
+      rainState.ripples.push({
+        x,
+        y,
+        wind,
+        age: 0,
+        life: 520 + Math.random() * 280,
+        radius: 2 + Math.random() * 7
+      });
+    };
+
+    const renderRain = (timestamp = 0) => {
+      if (!rainCanvas || !rainState.active) return;
+      resizeRainCanvas();
+      const ctx = rainCanvas.getContext("2d");
+      if (!ctx) return;
+      const elapsed = rainState.lastTime ? Math.min(48, timestamp - rainState.lastTime) : 16;
+      rainState.lastTime = timestamp;
+      const seconds = elapsed / 1000;
+      const wind = Math.sin(timestamp / 1300 + rainState.windPhase) * 95 + Math.sin(timestamp / 470) * 28;
+
+      ctx.clearRect(0, 0, rainState.width, rainState.height);
+      ctx.lineCap = "round";
+
+      rainState.ripples = rainState.ripples.filter((ripple) => {
+        ripple.age += elapsed;
+        if (ripple.age >= ripple.life) return false;
+        const progress = ripple.age / ripple.life;
+        const alpha = (1 - progress) * 0.34;
+        const radius = ripple.radius + progress * 24;
+        ctx.strokeStyle = `rgba(165, 235, 255, ${alpha})`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.ellipse(
+          ripple.x + ripple.wind * progress * 0.08,
+          ripple.y,
+          radius * (1.65 + Math.abs(ripple.wind) / 180),
+          radius * 0.34,
+          0,
+          0,
+          Math.PI * 2
+        );
+        ctx.stroke();
+        return true;
+      });
+
+      rainState.drops.forEach((drop) => {
+        const drift = wind * seconds;
+        drop.x += drift;
+        drop.y += drop.speed * seconds;
+        const slant = wind * 0.05;
+        const tailX = drop.x - slant;
+        const tailY = drop.y - drop.length;
+        ctx.strokeStyle = `rgba(185, 235, 255, ${drop.alpha})`;
+        ctx.lineWidth = drop.thickness;
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(drop.x, drop.y);
+        ctx.stroke();
+
+        if (drop.y > rainState.height - 8 - Math.random() * 70) {
+          addRainRipple(drop.x, Math.min(rainState.height - 4, drop.y), wind);
+          Object.assign(drop, createRainDrop(false));
+          drop.x = (drop.x + rainState.width) % rainState.width;
+          return;
+        }
+        if (drop.x < -80) drop.x = rainState.width + 80;
+        if (drop.x > rainState.width + 80) drop.x = -80;
+      });
+
+      rainState.animationId = window.requestAnimationFrame(renderRain);
+    };
+
+    const setRainEnabled = (enabled) => {
+      if (!rainCanvas) return;
+      rainState.active = Boolean(enabled);
+      rainCanvas.classList.toggle("is-active", rainState.active);
+      if (rainToggle) rainToggle.checked = rainState.active;
+      saveCustomizationSettings();
+      if (rainState.active) {
+        resizeRainCanvas();
+        if (!rainState.animationId) {
+          rainState.lastTime = 0;
+          rainState.animationId = window.requestAnimationFrame(renderRain);
+        }
+      } else {
+        if (rainState.animationId) {
+          window.cancelAnimationFrame(rainState.animationId);
+          rainState.animationId = null;
+        }
+        const ctx = rainCanvas.getContext("2d");
+        if (ctx) ctx.clearRect(0, 0, rainState.width, rainState.height);
+      }
+    };
+
+    const meltState = {
+      active: false,
+      animationId: null,
+      width: 0,
+      height: 0,
+      dpr: 1,
+      gl: null,
+      program: null,
+      positionBuffer: null,
+      uniforms: null,
+      startedAt: 0,
+      webglReady: false
+    };
+
+    const createTripShader = (gl, type, source) => {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        const message = gl.getShaderInfoLog(shader) || "Trip shader failed";
+        gl.deleteShader(shader);
+        throw new Error(message);
+      }
+      return shader;
+    };
+
+    const initMeltShader = () => {
+      if (!meltCanvas || meltState.webglReady) return meltState.webglReady;
+      const gl = meltCanvas.getContext("webgl", { alpha: true, antialias: false, depth: false, stencil: false, preserveDrawingBuffer: false, premultipliedAlpha: true });
+      if (!gl) return false;
+      const vertexSource = [
+        "attribute vec2 a_position;",
+        "varying vec2 v_uv;",
+        "void main() {",
+        "  v_uv = a_position * 0.5 + 0.5;",
+        "  gl_Position = vec4(a_position, 0.0, 1.0);",
+        "}"
+      ].join("\n");
+      const fragmentSource = [
+        "precision mediump float;",
+        "varying vec2 v_uv;",
+        "uniform vec2 u_resolution;",
+        "uniform float u_time;",
+        "float wave(vec2 p, float speed, float scale) {",
+        "  return sin(p.x * scale + u_time * speed) + cos(p.y * (scale * 0.72) - u_time * (speed * 0.83));",
+        "}",
+        "void main() {",
+        "  vec2 uv = v_uv;",
+        "  vec2 aspect = vec2(u_resolution.x / max(u_resolution.y, 1.0), 1.0);",
+        "  vec2 p = (uv - 0.5) * aspect;",
+        "  float r = length(p);",
+        "  float angle = atan(p.y, p.x);",
+        "  float ripple = sin(r * 34.0 - u_time * 3.4 + sin(angle * 5.0 + u_time) * 1.7);",
+        "  float lava = wave(p + ripple * 0.018, 1.9, 8.2) + wave(p.yx * 1.35, 1.2, 12.5);",
+        "  float melt = sin((uv.y + lava * 0.035) * 18.0 - u_time * 2.1);",
+        "  vec3 acidA = vec3(1.0, 0.0, 0.86);",
+        "  vec3 acidB = vec3(0.0, 1.0, 0.42);",
+        "  vec3 acidC = vec3(0.0, 0.84, 1.0);",
+        "  vec3 acidD = vec3(1.0, 0.92, 0.0);",
+        "  vec3 color = mix(acidA, acidB, smoothstep(-1.4, 1.4, lava));",
+        "  color = mix(color, acidC, smoothstep(-0.2, 1.0, ripple));",
+        "  color = mix(color, acidD, smoothstep(0.35, 1.0, melt));",
+        "  float ring = smoothstep(0.95, 0.15, r) * (0.32 + 0.38 * abs(ripple));",
+        "  float alpha = ring * (0.30 + 0.22 * smoothstep(-0.1, 1.0, lava));",
+        "  gl_FragColor = vec4(color, alpha);",
+        "}"
+      ].join("\n");
+      const vertexShader = createTripShader(gl, gl.VERTEX_SHADER, vertexSource);
+      const fragmentShader = createTripShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
+      const program = gl.createProgram();
+      gl.attachShader(program, vertexShader);
+      gl.attachShader(program, fragmentShader);
+      gl.linkProgram(program);
+      gl.deleteShader(vertexShader);
+      gl.deleteShader(fragmentShader);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        const message = gl.getProgramInfoLog(program) || "Trip shader link failed";
+        gl.deleteProgram(program);
+        throw new Error(message);
+      }
+      const positionBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      meltState.gl = gl;
+      meltState.program = program;
+      meltState.positionBuffer = positionBuffer;
+      meltState.uniforms = {
+        position: gl.getAttribLocation(program, "a_position"),
+        resolution: gl.getUniformLocation(program, "u_resolution"),
+        time: gl.getUniformLocation(program, "u_time")
+      };
+      meltState.webglReady = true;
+      return true;
+    };
+
+    const resizeMeltCanvas = () => {
+      if (!meltCanvas) return;
+      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      const width = Math.max(1, window.innerWidth);
+      const height = Math.max(1, window.innerHeight);
+      if (meltState.width === width && meltState.height === height && meltState.dpr === dpr) return;
+      meltState.width = width;
+      meltState.height = height;
+      meltState.dpr = dpr;
+      meltCanvas.width = Math.round(width * dpr);
+      meltCanvas.height = Math.round(height * dpr);
+      meltCanvas.style.width = `${width}px`;
+      meltCanvas.style.height = `${height}px`;
+      if (meltState.gl) meltState.gl.viewport(0, 0, meltCanvas.width, meltCanvas.height);
+    };
+
+    const renderMelt = (timestamp = 0) => {
+      if (!meltCanvas || !meltState.active) return;
+      resizeMeltCanvas();
+      if (!meltState.webglReady) {
+        try { initMeltShader(); } catch (error) { console.warn("Trip shader unavailable", error); meltState.webglReady = false; }
+      }
+      const gl = meltState.gl;
+      if (gl && meltState.program) {
+        const time = (timestamp - meltState.startedAt) / 1000;
+        gl.viewport(0, 0, meltCanvas.width, meltCanvas.height);
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.useProgram(meltState.program);
+        gl.bindBuffer(gl.ARRAY_BUFFER, meltState.positionBuffer);
+        gl.enableVertexAttribArray(meltState.uniforms.position);
+        gl.vertexAttribPointer(meltState.uniforms.position, 2, gl.FLOAT, false, 0, 0);
+        gl.uniform2f(meltState.uniforms.resolution, meltCanvas.width, meltCanvas.height);
+        gl.uniform1f(meltState.uniforms.time, time);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+      meltState.animationId = window.requestAnimationFrame(renderMelt);
+    };
+
+    const setMeltEnabled = (enabled) => {
+      if (!meltCanvas) return;
+      meltState.active = Boolean(enabled);
+      meltCanvas.classList.toggle("is-active", meltState.active);
+      document.body.classList.toggle("is-melting", meltState.active);
+      if (meltToggle) meltToggle.checked = meltState.active;
+      saveCustomizationSettings();
+      if (meltState.active) {
+        resizeMeltCanvas();
+        if (!meltState.animationId) {
+          meltState.startedAt = performance.now();
+          meltState.animationId = window.requestAnimationFrame(renderMelt);
+        }
+      } else {
+        if (meltState.animationId) {
+          window.cancelAnimationFrame(meltState.animationId);
+          meltState.animationId = null;
+        }
+        if (meltState.gl) {
+          meltState.gl.clearColor(0, 0, 0, 0);
+          meltState.gl.clear(meltState.gl.COLOR_BUFFER_BIT);
+        }
+      }
+    };
+
     colorFilterPicker?.addEventListener("input", () => updatePageColorFilter(true));
     blendModeSelect?.addEventListener("change", updatePageColorFilter);
     hueshiftToggle?.addEventListener("change", () => updatePageColorFilter(hueshiftToggle.checked));
     invertToggle?.addEventListener("change", () => updatePageColorFilter(invertToggle.checked || pageColorFilter.classList.contains("is-active")));
+    rainToggle?.addEventListener("change", () => setRainEnabled(rainToggle.checked));
+    meltToggle?.addEventListener("change", () => setMeltEnabled(meltToggle.checked));
+    window.addEventListener("resize", resizeRainCanvas);
+    window.addEventListener("resize", resizeMeltCanvas);
     colorFilterToggle?.addEventListener("click", () => {
       const isOpen = !colorFilterPanel.classList.contains("is-open");
       colorFilterPanel.classList.toggle("is-open", isOpen);
       colorFilterToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
       saveCustomizationSettings();
     });
-    rememberSettingsToggle?.addEventListener("click", () => {
-      setRememberSettingsEnabled(!isRememberSettingsEnabled());
-      updateRememberSettingsLabel();
-      if (isRememberSettingsEnabled()) {
-        saveCustomizationSettings();
-      } else {
-        clearCustomizationSettings();
-      }
-    });
+    rememberSettingsToggle?.addEventListener("click", toggleRememberSettings);
     timezoneSelect?.addEventListener("change", () => {
       updateClock();
       saveCustomizationSettings();
@@ -4548,6 +5215,8 @@
       updateSiteVolume();
       if (hueshiftToggle) hueshiftToggle.checked = Boolean(settings.hueshifting);
       if (invertToggle) invertToggle.checked = Boolean(settings.inverted);
+      setRainEnabled(Boolean(settings.raining));
+      setMeltEnabled(Boolean(settings.melting));
       updateClock();
 
       const isColorFilterOpen = Boolean(settings.colorFilterOpen);

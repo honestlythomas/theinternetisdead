@@ -1559,6 +1559,7 @@ const focusSink = document.getElementById('focusSink');
 
     const CHAT_NICKNAME_STORAGE_KEY = 'tektiteChatNickname';
     const CHAT_NICKNAME_EXPLICIT_STORAGE_KEY = 'tektiteChatNicknameExplicit';
+    const PUBLIC_NICKNAME_COLOR_STORAGE_KEY = 'tektiteChatPublicNicknameColor';
     const SUPABASE_PROJECT_URL = 'https://fumidkcwrhzgfdmuakqj.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BcNJhaZkgo4r5VH1aJ_stQ_P-kEDY_r';
     const SUPABASE_CHAT_ROOM = 'index';
@@ -1696,10 +1697,16 @@ const focusSink = document.getElementById('focusSink');
     // and tab-complete all point at the same source instead of drifting apart.
     const builtInCommands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
+      { name: '/customize', value: '/customize', execute: true, desc: 'open the site customization sidebar' },
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' },
+      { name: '/hueshift', value: '/hueshift', execute: true, desc: 'enable Hueshift' },
+      { name: '/invert', value: '/invert', execute: true, desc: 'enable Inverted' },
+      { name: '/trip', value: '/trip', execute: true, desc: 'enable Melting' },
       { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User'] },
-      { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the current page' }
+      { name: '/rain', value: '/rain', execute: true, desc: 'enable Raining' },
+      { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the current page' },
+      { name: '/save', value: '/save', execute: true, desc: 'toggle Save Settings' }
     ];
     const builtInCommandList = builtInCommands.map((entry) => entry.name);
     let pendingPageCommand = null;
@@ -3272,6 +3279,30 @@ const focusSink = document.getElementById('focusSink');
         toRgbaString(parsed.r, parsed.g, parsed.b, clampAlpha((Number.isFinite(opacityPercent) ? opacityPercent : 100) / 100))
       );
     }
+
+    function normalizePublicNicknameHexColor(value, fallback = '#ffffff') {
+      const color = String(value || '').trim();
+      return /^#[0-9a-fA-F]{6}$/.test(color) ? color.toLowerCase() : fallback;
+    }
+
+    function applyPublicNicknameColor(color) {
+      const safeColor = normalizePublicNicknameHexColor(color);
+      try {
+        window.localStorage.setItem(PUBLIC_NICKNAME_COLOR_STORAGE_KEY, safeColor);
+      } catch (error) {}
+      applyCssVarColor('--nickname-color', safeColor, 100, customizeDefaults.colors['--nickname-color'].fallback);
+      syncAllCustomizePanels();
+      return safeColor;
+    }
+
+    function applySavedPublicNicknameColor() {
+      try {
+        const savedColor = window.localStorage.getItem(PUBLIC_NICKNAME_COLOR_STORAGE_KEY);
+        if (savedColor) applyPublicNicknameColor(savedColor);
+      } catch (error) {}
+    }
+
+    applySavedPublicNicknameColor();
 
 
     function syncCustomizePanelUi(bindingSet) {
@@ -5677,6 +5708,28 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return true;
       }
 
+      if (command === '/customize') {
+        addSystemMessage(formatCommandExecutionMessage('/customize'));
+        postToParentPage({ type: 'openGearSidebar' });
+        return true;
+      }
+
+      
+      if (command === '/save') {
+        addSystemMessage(formatCommandExecutionMessage('/save'));
+        postToParentPage({ type: 'toggleSaveSettings' });
+        return true;
+      }
+
+      if (command === '/hueshift' || command === '/invert' || command === '/rain' || command === '/trip') {
+        addSystemMessage(formatCommandExecutionMessage(command));
+        postToParentPage({
+          type: 'enableGearEffect',
+          effect: command === '/trip' ? 'melt' : command.slice(1)
+        });
+        return true;
+      }
+
       if (command === '/exit') {
         addSystemMessage(formatCommandExecutionMessage('/exit'));
         if (isEmbeddedInIndex()) {
@@ -6017,6 +6070,24 @@ function createHomepageCustomizeMessageNode(result = {}) {
 
     window.addEventListener('message', (event) => {
       if (!event.data) return;
+
+      if (event.data.type === 'setChatNickname') {
+        const newNickname = normalizeNickname(event.data.nickname);
+        currentNickname = newNickname;
+        saveNickname(newNickname);
+        updateChatBarVisualState();
+        if (newNickname) {
+          addSystemMessage(`Nickname set: ${newNickname}`);
+        } else {
+          addSystemMessage('Nickname cleared. Enter a nickname to chat.');
+        }
+        return;
+      }
+
+      if (event.data.type === 'setPublicNicknameColor') {
+        applyPublicNicknameColor(event.data.color);
+        return;
+      }
 
       if (event.data.type === 'chatSandboxOpen') {
         if (isScreenshotAnimationLocked()) return;
