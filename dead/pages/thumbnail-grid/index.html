@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>thumbnail-grid</title>
+  <style>
+    :root {
+      --page-bg: #000;
+      --page-text: #00ff00;
+      --panel-bg: rgba(0, 0, 0, 0.72);
+      --accent-color: #00ff00;
+      --font-family: "Courier New", monospace;
+      --header-height: 0px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--page-bg);
+      color: var(--page-text);
+      font-family: var(--font-family);
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    #wallCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      margin-top: 0;
+      background: #000;
+      cursor: default;
+    }
+
+    body.slideshow-mode #wallCanvas {
+      cursor: default;
+    }
+
+    body.full-grid-mode #wallCanvas {
+      cursor: crosshair;
+    }
+
+    body.full-grid-mode.tile-hover #wallCanvas {
+      cursor: pointer;
+    }
+
+    .grid-rotation-controls {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    body.slideshow-mode .grid-rotation-controls,
+    body.menu-open .grid-rotation-controls {
+      display: none;
+    }
+
+    .grid-rotation-button {
+      position: fixed;
+      display: grid;
+      place-items: center;
+      width: clamp(46px, 7vw, 86px);
+      height: clamp(46px, 7vw, 86px);
+      padding: 0;
+      border: 2px solid rgba(0, 255, 0, 0.62);
+      background: rgba(0, 0, 0, 0.36);
+      color: rgba(0, 255, 0, 0.82);
+      font-family: var(--font-family);
+      font-size: clamp(28px, 5.6vw, 62px);
+      font-weight: 700;
+      line-height: 1;
+      text-shadow: 0 0 12px rgba(0, 255, 0, 0.86);
+      pointer-events: auto;
+      user-select: none;
+      touch-action: none;
+      cursor: pointer;
+      opacity: 0.58;
+    }
+
+    .grid-rotation-button:hover,
+    .grid-rotation-button:focus-visible,
+    .grid-rotation-button.is-active {
+      background: rgba(0, 0, 0, 0.62);
+      border-color: rgba(0, 255, 0, 0.96);
+      color: #00ff00;
+      opacity: 0.9;
+      outline: 0;
+    }
+
+    .grid-rotation-button-up {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .grid-rotation-button-down {
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .grid-rotation-button-left {
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+    }
+
+    .grid-rotation-button-right {
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+    }
+
+    #slideshowFrame {
+      position: fixed;
+      left: 50%;
+      top: calc(var(--header-height) + ((100dvh - var(--header-height)) / 2));
+      z-index: 2;
+      width: min(calc(100vw - 180px), calc((100dvh - var(--header-height) - 132px) * 16 / 9));
+      max-width: calc(100vw - 180px);
+      height: auto;
+      aspect-ratio: 16 / 9;
+      transform: translate(-50%, -50%);
+      border: 3px solid rgba(0, 255, 0, 0.9);
+      background: #000;
+      box-shadow: 0 0 28px rgba(0, 255, 0, 0.24);
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    body.full-grid-mode #slideshowFrame {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(0.985);
+    }
+
+    body.empty-slideshow #slideshowFrame,
+    body.thumbnail-autoplay #slideshowFrame {
+      display: none;
+    }
+
+    #menuBackdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.68);
+    }
+
+    #sideMenu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 4;
+      width: min(420px, 86vw);
+      border-right: 3px solid lime;
+      background: rgba(81, 42, 103, 0.5);
+      transform: translateX(-100%);
+      transition: transform 180ms ease;
+      pointer-events: none;
+      overflow: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #sideMenu::-webkit-scrollbar {
+      display: none;
+    }
+
+    body.side-menu-open #sideMenu {
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .sideMenuInner {
+      min-height: 100%;
+      padding: clamp(12px, 1.6vw, 18px);
+      background: rgba(0, 0, 0, 0.58);
+      color: var(--page-text);
+      text-shadow: 0 0 6px rgba(0, 255, 0, 0.72);
+    }
+
+    .sideMenuInner h1 {
+      margin: 0 0 clamp(12px, 2vh, 20px);
+      font-size: clamp(22px, 3.3vw, 32px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .sideMenuInner .menuGroup {
+      gap: clamp(8px, 1.35vh, 13px);
+    }
+
+    .channelGroup {
+      display: grid;
+      gap: 8px;
+    }
+
+    .sidebarDivider {
+      width: 100%;
+      height: 1px;
+      margin: 0;
+      border: 0;
+      background: #512A67;
+      opacity: 1;
+    }
+
+    .sideMenuInner .menuLabel,
+    .sideMenuInner .checkboxLabel {
+      font-size: clamp(14px, 1.8vw, 19px);
+    }
+
+    .sideMenuInner select,
+    .sideMenuInner button,
+    .sideMenuInner input[type="search"] {
+      min-height: clamp(34px, 4.6vh, 42px);
+      font-size: clamp(13px, 1.65vw, 17px);
+      border-width: 3px;
+      padding: 5px 10px;
+    }
+
+    .sideMenuInner input[type="checkbox"] {
+      width: clamp(20px, 2.4vw, 26px);
+      height: clamp(20px, 2.4vw, 26px);
+    }
+
+    body.menu-open #menuBackdrop {
+      display: flex;
+    }
+
+    #menuPanel {
+      width: min(86vw, calc(86dvh * 16 / 9));
+      max-height: 86dvh;
+      aspect-ratio: 16 / 9;
+      border: 2px solid var(--accent-color);
+      background: rgba(0, 0, 0, 0.92);
+      color: var(--page-text);
+      box-shadow: 0 0 32px rgba(0, 255, 0, 0.24);
+      padding: clamp(16px, 3vw, 34px);
+      overflow: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #menuPanel::-webkit-scrollbar {
+      display: none;
+    }
+
+    #menuPanel h1 {
+      margin: 0 0 18px;
+      font-size: clamp(22px, 3vw, 42px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .menuGrid {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.95fr) minmax(220px, 1.05fr);
+      gap: clamp(16px, 3vw, 34px);
+      align-items: start;
+    }
+
+    .menuGroup {
+      display: grid;
+      gap: 12px;
+    }
+
+    .menuLabel,
+    .checkboxLabel {
+      font-size: clamp(14px, 1.65vw, 21px);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .menuLabel {
+      display: grid;
+      gap: 8px;
+    }
+
+    .menuLabelText {
+      text-decoration: underline;
+      text-underline-offset: 0.12em;
+    }
+
+    select,
+    input[type="search"] {
+      width: 100%;
+      min-height: 42px;
+      border: 2px solid var(--accent-color);
+      background: #000;
+      color: var(--page-text);
+      font-family: var(--font-family);
+      font-size: clamp(14px, 1.55vw, 20px);
+      font-weight: 700;
+      padding: 6px 10px;
+    }
+
+    input[type="search"]::placeholder {
+      color: rgba(0, 255, 0, 0.62);
+      opacity: 1;
+    }
+
+    button {
+      width: 100%;
+      min-height: 42px;
+      border: 2px solid var(--accent-color);
+      background: #000;
+      color: var(--page-text);
+      font-family: var(--font-family);
+      font-size: clamp(13px, 1.35vw, 18px);
+      font-weight: 700;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    button:hover,
+    button:focus-visible,
+    select:focus-visible,
+    input[type="search"]:focus-visible,
+    input[type="checkbox"]:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.64;
+    }
+
+    .checkboxLabel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      margin: 0;
+      accent-color: lime;
+      flex: 0 0 auto;
+    }
+
+    #menuHud,
+    #menuStatus {
+      margin: 0;
+      font-size: clamp(12px, 1.25vw, 16px);
+      line-height: 1.45;
+    }
+
+    #menuStatus {
+      color: #fff;
+    }
+
+    #menuPanel #menuStatus,
+    #menuPanel #menuHud {
+      font-size: clamp(13px, 1.45vw, 18px);
+      line-height: 1.35;
+    }
+
+    #menuHud .muted {
+      opacity: 0.72;
+    }
+
+    @media (max-width: 720px) {
+      #menuPanel {
+        width: min(94vw, calc(88dvh * 16 / 9));
+        max-height: 88dvh;
+        padding: 16px;
+      }
+
+      .menuGrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .slideNav {
+      position: fixed;
+      top: calc(var(--header-height) + ((100dvh - var(--header-height)) / 2));
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(44px, 5vw, 72px);
+      height: clamp(64px, 12vh, 132px);
+      transform: translateY(-50%);
+      border: 2px solid rgba(0, 255, 0, 0.72);
+      background: rgba(0, 0, 0, 0.58);
+      color: var(--page-text);
+      font-family: var(--font-family);
+      font-size: clamp(32px, 5vw, 72px);
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      text-shadow: 0 0 8px rgba(0, 255, 0, 0.76);
+    }
+
+    .slideNav:hover,
+    .slideNav:focus-visible {
+      background: rgba(0, 255, 0, 0.16);
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    .slideNav:disabled {
+      cursor: default;
+      opacity: 0.32;
+    }
+
+    #prevSlide {
+      left: 16px;
+    }
+
+    #nextSlide {
+      right: 16px;
+    }
+
+    body.full-grid-mode .slideNav {
+      display: none;
+    }
+
+    #slideshowCounter {
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      z-index: 3;
+      display: none;
+      min-width: min(180px, calc(100vw - 32px));
+      padding: 10px 14px;
+      transform: translateX(-50%);
+      border: 2px solid rgba(0, 255, 0, 0.78);
+      background: rgba(0, 0, 0, 0.72);
+      color: var(--page-text);
+      font-family: var(--font-family);
+      font-size: clamp(14px, 1.55vw, 20px);
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+      text-shadow: 0 0 8px rgba(0, 255, 0, 0.76);
+      pointer-events: none;
+    }
+
+    body.thumbnail-autoplay #slideshowCounter {
+      display: block;
+    }
+
+    body.full-grid-mode #slideshowCounter,
+    body.empty-slideshow #slideshowCounter {
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+  <canvas id="wallCanvas" aria-label="Canvas video wall"></canvas>
+  <div class="grid-rotation-controls" aria-label="Grid rotation controls">
+    <button class="grid-rotation-button grid-rotation-button-up" type="button" data-grid-rotate="up" aria-label="Rotate grid up">↑</button>
+    <button class="grid-rotation-button grid-rotation-button-down" type="button" data-grid-rotate="down" aria-label="Rotate grid down">↓</button>
+    <button class="grid-rotation-button grid-rotation-button-left" type="button" data-grid-rotate="left" aria-label="Rotate grid left">←</button>
+    <button class="grid-rotation-button grid-rotation-button-right" type="button" data-grid-rotate="right" aria-label="Rotate grid right">→</button>
+  </div>
+  <iframe id="slideshowFrame" title="Slideshow YouTube video" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <aside id="sideMenu" aria-hidden="true">
+    <div class="sideMenuInner">
+      <h1>Video Archive Viewer</h1>
+      <hr class="sidebarDivider">
+      <div class="menuGroup">
+        <label class="menuLabel" for="videoSearchInput">
+          <input id="videoSearchInput" type="search" placeholder="Search Videos..." autocomplete="off">
+        </label>
+        <hr class="sidebarDivider">
+        <div class="channelGroup">
+          <div class="menuLabel"><span class="menuLabelText">Selected Channels:</span></div>
+          <label class="checkboxLabel">
+            <input id="honestlyCheckbox" type="checkbox" checked>
+            @Honestly_Thomas
+          </label>
+          <label class="checkboxLabel">
+            <input id="cryptidCheckbox" type="checkbox" checked>
+            @Cryptid_Memes
+          </label>
+        </div>
+        <hr class="sidebarDivider">
+        <label class="menuLabel" for="sortSelect">
+          <span class="menuLabelText">Sort by:</span>
+          <select id="sortSelect">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="mostViewed">Most Viewed</option>
+            <option value="leastViewed">Least Viewed</option>
+          </select>
+        </label>
+        <hr class="sidebarDivider">
+        <button id="screenshotButton" type="button">Save Full Grid Screenshot</button>
+      </div>
+    </div>
+  </aside>
+  <button id="prevSlide" class="slideNav" type="button" aria-label="Previous video">&lt;</button>
+  <button id="nextSlide" class="slideNav" type="button" aria-label="Next video">&gt;</button>
+  <div id="slideshowCounter" aria-live="polite">1 Video</div>
+  <div id="menuBackdrop" aria-hidden="true">
+    <section id="menuPanel" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+      <h1 id="menuTitle">Archive Status</h1>
+      <div class="menuGrid">
+        <div class="menuGroup">
+          <p id="menuStatus">Loading feed...</p>
+          <p id="menuHud">Loading feed...</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+    const FEED_DATA_PATH = "/dead/pages/thumbnail-grid/feed-videos.json";
+    const HONESTLY_THOMAS_CHANNEL_ID = "UCn3WLZT7k8nO24XimlJVJVQ";
+    const CRYPTID_MEMES_CHANNEL_ID = "UCFiXf9C-DlE5d7LwXJf6_Mg";
+    const TILE_WIDTH = 240;
+    const TILE_HEIGHT = 135;
+    const TILE_GAP = 26;
+    const MAP_COLUMNS = 24;
+    const MIN_ZOOM = 0.12;
+    const MAX_ZOOM = 5.5;
+    const ZOOM_KEY_SPEED = 1.9;
+    const PAN_SPEED = 720;
+    const LAZY_LOAD_MARGIN = 420;
+    const THUMBNAIL_PRELOAD_CONCURRENCY = 48;
+    const HOVER_TILE_SCALE = 8;
+    const HOVER_TILE_ANIMATION_SPEED = 10;
+    const LOADING_GRID_IMAGE_PATH = "/dead/images/pngs/static.gif";
+    const GRID_PLANE_WIDTH = 11.8;
+    const GRID_TEXTURE_MAX_DIMENSION = 4096;
+    const GRID_TEXTURE_MAX_PIXELS = 14000000;
+    const HOVER_GRID_TEXTURE_SCALE = 0.5;
+    const GRID_AUTO_SPIN_SPEED = 0.38;
+    const GRID_ROTATION_CONTROL_SPEED = 1.7;
+
+    const canvas = document.getElementById("wallCanvas");
+    if (!window.THREE) throw new Error("Three.js failed to load.");
+    const textureCanvas = document.createElement("canvas");
+    const ctx = textureCanvas.getContext("2d");
+    const slideshowFrame = document.getElementById("slideshowFrame");
+    const menuBackdrop = document.getElementById("menuBackdrop");
+    const slideshowCounter = document.getElementById("slideshowCounter");
+    const sideMenu = document.getElementById("sideMenu");
+    const sortSelect = document.getElementById("sortSelect");
+    const gridRotationButtons = Array.from(document.querySelectorAll("[data-grid-rotate]"));
+    const videoSearchInput = document.getElementById("videoSearchInput");
+    const honestlyCheckbox = document.getElementById("honestlyCheckbox");
+    const cryptidCheckbox = document.getElementById("cryptidCheckbox");
+    const menuStatus = document.getElementById("menuStatus");
+    const menuHud = document.getElementById("menuHud");
+    const screenshotButton = document.getElementById("screenshotButton");
+    const prevSlideButton = document.getElementById("prevSlide");
+    const nextSlideButton = document.getElementById("nextSlide");
+    const keys = new Set();
+    const activeGridRotationControls = new Set();
+    const imageCache = new Map();
+    const loadingGridImage = new Image();
+    loadingGridImage.src = LOADING_GRID_IMAGE_PATH;
+
+    const threeScene = new THREE.Scene();
+    const threeCamera = new THREE.PerspectiveCamera(42, 1, 0.1, 120);
+    const threeRenderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    threeRenderer.outputColorSpace = THREE.SRGBColorSpace;
+    threeRenderer.setClearColor(0x000000, 1);
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    function makeCanvasTexture(sourceCanvas) {
+      const texture = new THREE.CanvasTexture(sourceCanvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.generateMipmaps = false;
+      return texture;
+    }
+
+    let gridTexture = makeCanvasTexture(textureCanvas);
+    const gridMaterial = new THREE.MeshBasicMaterial({
+      map: gridTexture,
+      side: THREE.DoubleSide,
+      transparent: true,
+      depthWrite: false
+    });
+    const gridPlane = new THREE.Mesh(new THREE.PlaneGeometry(GRID_PLANE_WIDTH, GRID_PLANE_WIDTH * 9 / 16), gridMaterial);
+    threeScene.add(gridPlane);
+
+    const starfieldSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(48, 96, 48),
+      new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        side: THREE.BackSide
+      })
+    );
+    threeScene.add(starfieldSphere);
+
+    const starfieldGroup = new THREE.Group();
+    threeScene.add(starfieldGroup);
+
+    let allVideos = [];
+    let videos = [];
+    let cameraX = 0;
+    let cameraY = 0;
+    let zoom = 0.72;
+    let lastFrameTime = performance.now();
+    let cssWidth = 0;
+    let cssHeight = 0;
+    let deviceScale = 1;
+    let statusText = "Loading feed...";
+    let currentSort = "newest";
+    let displayMode = "fullGrid";
+    let menuOpen = false;
+    let sideMenuOpen = false;
+    let hoveredTileIndex = -1;
+    let activeHoverTileIndex = -1;
+    let hoverTileAnimation = 0;
+    let slideshowIndex = 0;
+    let currentSlideshowEmbedId = "";
+    let routedSlideshowVideoId = "";
+    let hasOpenedVideoRoute = false;
+    let pendingOpenVideoId = "";
+    let thumbnailAutoplay = false;
+    let thumbnailAutoplayTimer = 0;
+    let thumbnailPreloadReady = false;
+    let thumbnailPreloadToken = 0;
+    let thumbnailPreloadLoaded = 0;
+    let thumbnailPreloadTotal = 0;
+    let gridTextureScale = 1;
+    let gridTextureNeedsRedraw = true;
+    let renderedHoverTileIndex = -1;
+    let renderedHoverTileProgress = -1;
+    let planeYaw = 0;
+    let planePitch = 0;
+    let targetPlaneYaw = 0;
+    let targetPlanePitch = 0;
+    let planeDistance = 13;
+    let targetPlaneDistance = 13;
+    let gridAutoSpin = false;
+    let isMiddleDragging = false;
+    let lastPointerX = 0;
+    let lastPointerY = 0;
+    let starfieldReady = false;
+    let starfieldTime = 0;
+    let stars = [];
+
+    function getHeaderHeight() {
+      return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 0;
+    }
+
+    async function fetchJson(path) {
+      const response = await fetch(path, { cache: "no-store" });
+      if (!response.ok) throw new Error(`${path} failed with ${response.status}`);
+      return response.json();
+    }
+
+    function formatUploadDate(uploadDate) {
+      const value = String(uploadDate || "").trim();
+      const match = value.match(/^(\d{4})(\d{2})(\d{2})$/);
+      if (!match) return value || "Unknown Date";
+
+      const year = Number(match[1]);
+      const monthIndex = Number(match[2]) - 1;
+      const day = Number(match[3]);
+      const date = new Date(Date.UTC(year, monthIndex, day));
+
+      if (
+        date.getUTCFullYear() !== year ||
+        date.getUTCMonth() !== monthIndex ||
+        date.getUTCDate() !== day
+      ) {
+        return value;
+      }
+
+      return date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC"
+      });
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    const starLayers = [
+      { count: 2160, speedZ: 9, sizeMin: 0.018, sizeMax: 0.052, opacity: 0.35 },
+      { count: 1440, speedZ: 15, sizeMin: 0.028, sizeMax: 0.082, opacity: 0.55 },
+      { count: 840, speedZ: 23, sizeMin: 0.04, sizeMax: 0.125, opacity: 0.85 }
+    ];
+
+    function randomizeStar(star, zMin = -46, zMax = 26) {
+      star.x = rand(-44, 44);
+      star.y = rand(-28, 28);
+      star.z = rand(zMin, zMax);
+      star.speedMul = rand(0.72, 1.28);
+    }
+
+    function getStarColor(index, count, size, layer) {
+      const bucket = index / Math.max(1, count);
+      const sizeRange = Math.max(0.001, layer.sizeMax - layer.sizeMin);
+      const sizeT = clamp((size - layer.sizeMin) / sizeRange, 0, 1);
+      const intensity = 0.42 + sizeT * 0.58;
+      const largeStarGlow = Math.max(0, (sizeT - 0.64) / 0.36) * 0.32;
+      let color;
+
+      if (bucket < 0.33) {
+        color = [1, 0.06, 0.03];
+      } else if (bucket < 0.66) {
+        color = [0.05, 1, 0.18];
+      } else if (bucket < 0.99) {
+        color = [0.12, 0.38, 1];
+      } else {
+        color = [1, 1, 1];
+      }
+
+      return color.map((channel) => clamp(channel * intensity + largeStarGlow, 0, 1));
+    }
+
+    function resetStarfield() {
+      stars.forEach((starLayer) => {
+        if (starLayer.points) {
+          starfieldGroup.remove(starLayer.points);
+          starLayer.points.geometry.dispose();
+          starLayer.points.material.dispose();
+        }
+      });
+
+      stars = starLayers.map((layer) => {
+        const positions = new Float32Array(layer.count * 3);
+        const sizes = new Float32Array(layer.count);
+        const colors = new Float32Array(layer.count * 3);
+        const meta = [];
+        for (let i = 0; i < layer.count; i += 1) {
+          const star = {};
+          randomizeStar(star);
+          const size = rand(layer.sizeMin, layer.sizeMax);
+          const color = getStarColor(i, layer.count, size, layer);
+          meta.push(star);
+          positions[i * 3] = star.x;
+          positions[i * 3 + 1] = star.y;
+          positions[i * 3 + 2] = star.z;
+          sizes[i] = size;
+          colors[i * 3] = color[0];
+          colors[i * 3 + 1] = color[1];
+          colors[i * 3 + 2] = color[2];
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute("starSize", new THREE.BufferAttribute(sizes, 1));
+        geometry.setAttribute("starColor", new THREE.BufferAttribute(colors, 3));
+        const material = new THREE.ShaderMaterial({
+          uniforms: {
+            opacity: { value: layer.opacity },
+            pixelRatio: { value: Math.min(2, deviceScale || 1) }
+          },
+          vertexShader: `
+            attribute float starSize;
+            attribute vec3 starColor;
+            uniform float pixelRatio;
+            varying vec3 vStarColor;
+            void main() {
+              vStarColor = starColor;
+              vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+              gl_PointSize = starSize * pixelRatio * 1800.0 / max(1.0, -mvPosition.z);
+              gl_Position = projectionMatrix * mvPosition;
+            }
+          `,
+          fragmentShader: `
+            uniform float opacity;
+            varying vec3 vStarColor;
+            void main() {
+              vec2 center = gl_PointCoord - vec2(0.5);
+              float d = length(center);
+              float alpha = smoothstep(0.5, 0.08, d) * opacity;
+              gl_FragColor = vec4(vStarColor, alpha);
+            }
+          `,
+          transparent: true,
+          depthWrite: false
+        });
+        const points = new THREE.Points(geometry, material);
+        starfieldGroup.add(points);
+        return { layer, meta, positions, points };
+      });
+      starfieldReady = true;
+    }
+
+    function updateStarfield(deltaSeconds) {
+      if (!starfieldReady) resetStarfield();
+
+      starfieldTime += deltaSeconds;
+
+      for (const starLayer of stars) {
+        const { layer, meta, positions, points } = starLayer;
+
+        for (let i = 0; i < meta.length; i += 1) {
+          const star = meta[i];
+          star.z -= layer.speedZ * star.speedMul * deltaSeconds;
+
+          if (star.z < -48) {
+            randomizeStar(star, 24, 34);
+          }
+
+          positions[i * 3] = star.x;
+          positions[i * 3 + 1] = star.y;
+          positions[i * 3 + 2] = star.z;
+        }
+        points.geometry.attributes.position.needsUpdate = true;
+      }
+    }
+
+    function worldTileWidth() {
+      return TILE_WIDTH + TILE_GAP;
+    }
+
+    function worldTileHeight() {
+      return TILE_HEIGHT + TILE_GAP;
+    }
+
+    function isMobileGridLayout() {
+      return cssWidth <= 760 && cssHeight > cssWidth;
+    }
+
+    function getMapColumns() {
+      if (!isMobileGridLayout()) return MAP_COLUMNS;
+      if (!videos.length) return 1;
+
+      const targetAspect = 9 / 16;
+      const responsiveColumns = Math.round(Math.sqrt(
+        videos.length * targetAspect * worldTileHeight() / worldTileWidth()
+      ));
+      return clamp(responsiveColumns, 1, Math.min(MAP_COLUMNS, videos.length));
+    }
+
+    function screenToWorld(screenX, screenY) {
+      return {
+        x: cameraX + (screenX - cssWidth / 2) / zoom,
+        y: cameraY + (screenY - cssHeight / 2) / zoom
+      };
+    }
+
+    function worldToScreen(worldX, worldY) {
+      return {
+        x: (worldX - cameraX) * zoom + cssWidth / 2,
+        y: (worldY - cameraY) * zoom + cssHeight / 2
+      };
+    }
+
+    function getThumbnailQualityRank(url) {
+      const cleanUrl = String(url || "").split("?")[0].toLowerCase();
+      const fileName = cleanUrl.slice(cleanUrl.lastIndexOf("/") + 1);
+      const ranks = {
+        "maxresdefault.jpg": 1000,
+        "maxresdefault.webp": 1000,
+        "hq720.jpg": 900,
+        "hq720.webp": 900,
+        "sddefault.jpg": 800,
+        "sddefault.webp": 800,
+        "hqdefault.jpg": 700,
+        "hqdefault.webp": 700,
+        "0.jpg": 650,
+        "0.webp": 650,
+        "mqdefault.jpg": 500,
+        "mqdefault.webp": 500,
+        "default.jpg": 300,
+        "default.webp": 300
+      };
+
+      if (fileName in ranks) return ranks[fileName];
+      if (fileName.startsWith("sd")) return 760;
+      if (fileName.startsWith("hq")) return 660;
+      if (fileName.startsWith("mq")) return 460;
+      return 0;
+    }
+
+    function pickThumbnailCandidates(entry) {
+      const candidates = [];
+      const thumbnails = Array.isArray(entry && entry.thumbnails) ? entry.thumbnails : [];
+
+      thumbnails
+        .map((thumbnail) => ({
+          url: String(thumbnail && thumbnail.url || "").trim(),
+          width: Number(thumbnail && thumbnail.width) || 0,
+          height: Number(thumbnail && thumbnail.height) || 0,
+          rank: getThumbnailQualityRank(thumbnail && thumbnail.url)
+        }))
+        .filter((thumbnail) => thumbnail.url)
+        .sort((a, b) => b.rank - a.rank || (b.width * b.height) - (a.width * a.height))
+        .forEach((thumbnail) => candidates.push(thumbnail.url));
+
+      return Array.from(new Set(candidates));
+    }
+
+    function getImageRecord(video) {
+      if (!video || !video.id) return null;
+      if (imageCache.has(video.id)) return imageCache.get(video.id);
+
+      const record = {
+        image: null,
+        status: "idle",
+        candidateIndex: 0
+      };
+
+      imageCache.set(video.id, record);
+      return record;
+    }
+
+    function shouldSkipLoadedThumbnail(src, image) {
+      if (!image) return true;
+      const rank = getThumbnailQualityRank(src);
+      return rank >= 650 && image.naturalWidth <= 320;
+    }
+
+    function loadThumbnail(video) {
+      const record = getImageRecord(video);
+      if (!record || record.status === "loading" || record.status === "loaded" || record.status === "failed") return;
+
+      const src = video.thumbnailCandidates[record.candidateIndex];
+      if (!src) {
+        record.status = "failed";
+        return;
+      }
+
+      record.status = "loading";
+
+      const image = new Image();
+      image.crossOrigin = "anonymous";
+      image.onload = () => {
+        if (shouldSkipLoadedThumbnail(src, image)) {
+          record.candidateIndex += 1;
+          record.status = "idle";
+          loadThumbnail(video);
+          return;
+        }
+
+        record.image = image;
+        record.status = "loaded";
+      };
+      image.onerror = () => {
+        record.candidateIndex += 1;
+        record.status = "idle";
+        loadThumbnail(video);
+      };
+      image.src = src;
+    }
+
+    function resizeCanvas() {
+      cssWidth = window.innerWidth;
+      cssHeight = Math.max(1, window.innerHeight - getHeaderHeight());
+      deviceScale = Math.max(1, window.devicePixelRatio || 1);
+      canvas.style.width = `${cssWidth}px`;
+      canvas.style.height = `${cssHeight}px`;
+      threeRenderer.setPixelRatio(Math.min(2, deviceScale));
+      threeRenderer.setSize(cssWidth, cssHeight, false);
+      threeCamera.aspect = cssWidth / Math.max(1, cssHeight);
+      threeCamera.updateProjectionMatrix();
+      stars.forEach((starLayer) => {
+        if (starLayer.points && starLayer.points.material.uniforms && starLayer.points.material.uniforms.pixelRatio) {
+          starLayer.points.material.uniforms.pixelRatio.value = Math.min(2, deviceScale);
+        }
+      });
+      if (displayMode === "fullGrid" && videos.length) {
+        fitFullGridToViewport();
+        centerCameraOnMap();
+      }
+      clampCameraToMap();
+      gridTextureNeedsRedraw = true;
+    }
+
+    function getTileRect(index) {
+      const columns = getMapColumns();
+      const col = index % columns;
+      const row = Math.floor(index / columns);
+      return {
+        x: col * worldTileWidth(),
+        y: row * worldTileHeight(),
+        width: TILE_WIDTH,
+        height: TILE_HEIGHT
+      };
+    }
+
+    function getMapBounds() {
+      if (!videos.length) {
+        return { width: 0, height: 0 };
+      }
+
+      const columns = getMapColumns();
+      const cols = Math.min(columns, videos.length);
+      const rows = Math.ceil(videos.length / columns);
+
+      return {
+        width: cols * worldTileWidth() - TILE_GAP,
+        height: rows * worldTileHeight() - TILE_GAP
+      };
+    }
+
+    function getThreeGridTextureScale(bounds) {
+      if (!bounds.width || !bounds.height) return 1;
+      return Math.min(1, Math.max(0.12, Math.min(
+        GRID_TEXTURE_MAX_DIMENSION / Math.max(1, bounds.width),
+        GRID_TEXTURE_MAX_DIMENSION / Math.max(1, bounds.height),
+        Math.sqrt(GRID_TEXTURE_MAX_PIXELS / Math.max(1, bounds.width * bounds.height))
+      )));
+    }
+
+    function setTextureCanvasSize(width, height) {
+      const nextWidth = Math.max(1, Math.floor(width));
+      const nextHeight = Math.max(1, Math.floor(height));
+      if (textureCanvas.width !== nextWidth || textureCanvas.height !== nextHeight) {
+        textureCanvas.width = nextWidth;
+        textureCanvas.height = nextHeight;
+        gridTexture.needsUpdate = true;
+        gridTextureNeedsRedraw = true;
+      }
+    }
+
+    function updateGridPlaneAspect() {
+      const textureAspect = textureCanvas.width / Math.max(1, textureCanvas.height);
+      const planeHeight = GRID_PLANE_WIDTH / Math.max(0.01, textureAspect);
+      gridPlane.geometry.dispose();
+      gridPlane.geometry = new THREE.PlaneGeometry(GRID_PLANE_WIDTH, planeHeight);
+    }
+
+    function redrawFullGridTexture() {
+      const bounds = getMapBounds();
+      if (!bounds.width || !bounds.height) return;
+
+      gridTextureScale = getThreeGridTextureScale(bounds);
+      setTextureCanvasSize(bounds.width * gridTextureScale, bounds.height * gridTextureScale);
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, textureCanvas.width, textureCanvas.height);
+
+      videos.forEach((video, index) => {
+        const record = getImageRecord(video);
+        drawExportTile(ctx, video, index, gridTextureScale, record && record.image);
+      });
+
+      drawHoverGridTexture(bounds);
+
+      updateGridPlaneAspect();
+      gridTexture.dispose();
+      gridTexture = makeCanvasTexture(textureCanvas);
+      gridMaterial.map = gridTexture;
+      gridMaterial.transparent = true;
+      gridMaterial.depthWrite = false;
+      gridMaterial.needsUpdate = true;
+      renderedHoverTileIndex = activeHoverTileIndex;
+      renderedHoverTileProgress = hoverTileAnimation;
+      gridTextureNeedsRedraw = false;
+    }
+
+    function drawHoverGridTexture(bounds) {
+      if (activeHoverTileIndex < 0 || hoverTileAnimation <= 0.001) return;
+
+      const video = videos[activeHoverTileIndex];
+      const record = getImageRecord(video);
+      if (!video || !record || record.status !== "loaded" || !record.image) return;
+
+      const progress = easeOutCubic(hoverTileAnimation);
+      const rect = getTileRect(activeHoverTileIndex);
+      const startX = rect.x * gridTextureScale;
+      const startY = rect.y * gridTextureScale;
+      const startWidth = rect.width * gridTextureScale;
+      const startHeight = rect.height * gridTextureScale;
+      const textureAspect = textureCanvas.width / Math.max(1, textureCanvas.height);
+      const tileAspect = TILE_WIDTH / TILE_HEIGHT;
+      let endWidth = bounds.width * gridTextureScale * HOVER_GRID_TEXTURE_SCALE;
+      let endHeight = bounds.height * gridTextureScale * HOVER_GRID_TEXTURE_SCALE;
+
+      if (textureAspect > tileAspect) {
+        endHeight = Math.max(startHeight, endHeight);
+        endWidth = endHeight * tileAspect;
+      } else {
+        endWidth = Math.max(startWidth, endWidth);
+        endHeight = endWidth / tileAspect;
+      }
+
+      endWidth = Math.min(textureCanvas.width, Math.max(startWidth, endWidth));
+      endHeight = Math.min(textureCanvas.height, Math.max(startHeight, endHeight));
+      const endX = (textureCanvas.width - endWidth) / 2;
+      const endY = (textureCanvas.height - endHeight) / 2;
+
+      const x = startX + (endX - startX) * progress;
+      const y = startY + (endY - startY) * progress;
+      const width = startWidth + (endWidth - startWidth) * progress;
+      const height = startHeight + (endHeight - startHeight) * progress;
+
+      drawExportImageContain(ctx, record.image, x, y, width, height);
+
+      if (progress < 0.98) {
+        ctx.strokeStyle = "rgba(0, 255, 0, 0.92)";
+        ctx.lineWidth = Math.max(1, 2 * gridTextureScale);
+        ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+      }
+    }
+
+    function clampCameraToMap() {
+      if (!cssWidth || !cssHeight || !zoom) return;
+
+      const bounds = getMapBounds();
+      if (!bounds.width || !bounds.height) {
+        cameraX = 0;
+        cameraY = 0;
+        return;
+      }
+
+      const halfViewWidth = cssWidth / (2 * zoom);
+      const halfViewHeight = cssHeight / (2 * zoom);
+
+      const minCameraX = Math.min(halfViewWidth, bounds.width - halfViewWidth);
+      const maxCameraX = Math.max(halfViewWidth, bounds.width - halfViewWidth);
+      const minCameraY = Math.min(halfViewHeight, bounds.height - halfViewHeight);
+      const maxCameraY = Math.max(halfViewHeight, bounds.height - halfViewHeight);
+
+      cameraX = clamp(cameraX, minCameraX, maxCameraX);
+      cameraY = clamp(cameraY, minCameraY, maxCameraY);
+    }
+
+    function getVisibleIndexRange(margin) {
+      const topLeft = screenToWorld(-margin, -margin);
+      const bottomRight = screenToWorld(cssWidth + margin, cssHeight + margin);
+      const columns = getMapColumns();
+      const minCol = clamp(Math.floor(topLeft.x / worldTileWidth()) - 1, 0, columns - 1);
+      const maxCol = clamp(Math.ceil(bottomRight.x / worldTileWidth()) + 1, 0, columns - 1);
+      const maxRows = Math.ceil(videos.length / columns);
+      const minRow = clamp(Math.floor(topLeft.y / worldTileHeight()) - 1, 0, Math.max(0, maxRows - 1));
+      const maxRow = clamp(Math.ceil(bottomRight.y / worldTileHeight()) + 1, 0, Math.max(0, maxRows - 1));
+
+      return { minCol, maxCol, minRow, maxRow };
+    }
+
+    function forEachVisibleTile(margin, callback) {
+      if (!videos.length) return;
+      const range = getVisibleIndexRange(margin);
+
+      for (let row = range.minRow; row <= range.maxRow; row += 1) {
+        for (let col = range.minCol; col <= range.maxCol; col += 1) {
+          const index = row * getMapColumns() + col;
+          if (index >= videos.length) continue;
+          callback(videos[index], index);
+        }
+      }
+    }
+
+    function getLoadingGridAspectRatio() {
+      const isMobilePortrait = cssWidth <= 760 && cssHeight > cssWidth;
+      return isMobilePortrait ? 9 / 16 : 16 / 9;
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, cssWidth, cssHeight);
+
+      const gridSize = Math.max(18, 88 * zoom);
+      const offsetX = ((-cameraX * zoom + cssWidth / 2) % gridSize + gridSize) % gridSize;
+      const offsetY = ((-cameraY * zoom + cssHeight / 2) % gridSize + gridSize) % gridSize;
+
+      ctx.save();
+      ctx.globalAlpha = 0.18;
+      ctx.strokeStyle = "#00ff00";
+      ctx.lineWidth = 1;
+
+      for (let x = offsetX; x < cssWidth; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, cssHeight);
+        ctx.stroke();
+      }
+
+      for (let y = offsetY; y < cssHeight; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(cssWidth, y);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawLoadingThumbnailGrid() {
+      setTextureCanvasSize(cssWidth, cssHeight);
+      gridMaterial.transparent = true;
+      gridMaterial.depthWrite = false;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, textureCanvas.width, textureCanvas.height);
+
+      const padding = 28;
+      const maxWidth = Math.max(180, cssWidth - padding * 2);
+      const maxHeight = Math.max(120, cssHeight - padding * 2);
+      const loadingAspect = getLoadingGridAspectRatio();
+      let width = Math.min(maxWidth, maxHeight * loadingAspect, 860);
+      let height = width / loadingAspect;
+
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = height * loadingAspect;
+      }
+
+      const x = (cssWidth - width) / 2;
+      const y = (cssHeight - height) / 2;
+
+      ctx.save();
+      ctx.fillStyle = "#030003";
+      ctx.fillRect(x, y, width, height);
+
+      if (loadingGridImage.complete && loadingGridImage.naturalWidth) {
+        drawImageCover(loadingGridImage, x, y, width, height);
+      }
+
+      ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+      ctx.fillRect(x, y, width, height);
+      drawLoadingThumbnailPreview(x, y, width, height);
+      ctx.strokeStyle = "rgba(0, 255, 0, 0.9)";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+
+      ctx.fillStyle = "#00ff00";
+      ctx.font = `${clamp(width * 0.055, 18, 42)}px "Courier New", monospace`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.shadowColor = "rgba(0, 255, 0, 0.8)";
+      ctx.shadowBlur = 10;
+      ctx.fillText("Loading Thumbnail Grid...", x + width / 2, y + height / 2);
+      ctx.restore();
+      updateGridPlaneAspect();
+      gridTexture.needsUpdate = true;
+    }
+
+    function drawLoadingThumbnailPreview(x, y, width, height) {
+      const bounds = getMapBounds();
+      if (!bounds.width || !bounds.height) return;
+
+      const padding = Math.max(8, Math.min(width, height) * 0.035);
+      const previewWidth = Math.max(1, width - padding * 2);
+      const previewHeight = Math.max(1, height - padding * 2);
+      const scale = Math.min(previewWidth / bounds.width, previewHeight / bounds.height);
+      const offsetX = x + (width - bounds.width * scale) / 2;
+      const offsetY = y + (height - bounds.height * scale) / 2;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x + padding, y + padding, previewWidth, previewHeight);
+      ctx.clip();
+      ctx.globalAlpha = 0.9;
+
+      videos.forEach((video, index) => {
+        const record = getImageRecord(video);
+        const rect = getTileRect(index);
+        const tileX = offsetX + rect.x * scale;
+        const tileY = offsetY + rect.y * scale;
+        const tileWidth = Math.max(1, rect.width * scale);
+        const tileHeight = Math.max(1, rect.height * scale);
+
+        if (record && record.status === "loaded" && record.image) {
+          drawImageCover(record.image, tileX, tileY, tileWidth, tileHeight);
+        } else if (record && record.status === "failed") {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.62)";
+          ctx.fillRect(tileX, tileY, tileWidth, tileHeight);
+        }
+      });
+
+      ctx.restore();
+    }
+
+    function drawImageCover(image, x, y, width, height) {
+      const imageRatio = image.width / image.height;
+      const targetRatio = width / height;
+      let sourceWidth = image.width;
+      let sourceHeight = image.height;
+      let sourceX = 0;
+      let sourceY = 0;
+
+      if (imageRatio > targetRatio) {
+        sourceWidth = image.height * targetRatio;
+        sourceX = (image.width - sourceWidth) / 2;
+      } else {
+        sourceHeight = image.width / targetRatio;
+        sourceY = (image.height - sourceHeight) / 2;
+      }
+
+      ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+    }
+
+    function easeOutCubic(value) {
+      return 1 - Math.pow(1 - clamp(value, 0, 1), 3);
+    }
+
+    function drawTile(video, index, hoverProgress = 0) {
+      const rect = getTileRect(index);
+      const topLeft = worldToScreen(rect.x, rect.y);
+      const baseWidth = rect.width * zoom;
+      const baseHeight = rect.height * zoom;
+      const drawScale = 1 + (HOVER_TILE_SCALE - 1) * easeOutCubic(hoverProgress);
+      const width = baseWidth * drawScale;
+      const height = baseHeight * drawScale;
+      const drawX = topLeft.x + baseWidth / 2 - width / 2;
+      const drawY = topLeft.y + baseHeight / 2 - height / 2;
+      const record = getImageRecord(video);
+
+      ctx.save();
+      ctx.translate(drawX, drawY);
+
+      ctx.fillStyle = "#030003";
+      ctx.fillRect(0, 0, width, height);
+
+      if (record && record.status === "loaded" && record.image) {
+        drawImageCover(record.image, 0, 0, width, height);
+      } else {
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(0, 0, width, height);
+        ctx.strokeStyle = "rgba(0, 255, 0, 0.22)";
+        ctx.lineWidth = Math.max(1, zoom * drawScale);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(width, height);
+        ctx.moveTo(width, 0);
+        ctx.lineTo(0, height);
+        ctx.stroke();
+
+        if (width > 60 && height > 24) {
+          ctx.fillStyle = "rgba(0, 255, 0, 0.72)";
+          ctx.font = `${clamp(10 * zoom * drawScale, 8, 24)}px "Courier New", monospace`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(record && record.status === "failed" ? "NO SIGNAL" : "LOADING", width / 2, height / 2);
+        }
+      }
+
+      ctx.strokeStyle = "rgba(0, 255, 0, 0.78)";
+      ctx.lineWidth = clamp(1.5 * zoom * drawScale, 1, 5);
+      ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
+
+      if (index === activeHoverTileIndex && hoverProgress > 0.08) {
+        drawHoverTitle(video, width, height);
+      }
+
+      ctx.restore();
+    }
+
+    function updateHoverTileAnimation(deltaSeconds) {
+      const hasActiveHover = displayMode === "fullGrid" && !menuOpen && hoveredTileIndex >= 0;
+      const previousActiveHoverTileIndex = activeHoverTileIndex;
+      const previousHoverTileAnimation = hoverTileAnimation;
+
+      if (hasActiveHover && activeHoverTileIndex !== hoveredTileIndex) {
+        activeHoverTileIndex = hoveredTileIndex;
+        hoverTileAnimation = 0;
+      }
+
+      const targetProgress = hasActiveHover ? 1 : 0;
+      hoverTileAnimation += (targetProgress - hoverTileAnimation) *
+        Math.min(1, deltaSeconds * HOVER_TILE_ANIMATION_SPEED);
+
+      if (!hasActiveHover && hoverTileAnimation < 0.01) {
+        hoverTileAnimation = 0;
+        activeHoverTileIndex = -1;
+      } else if (hasActiveHover && hoverTileAnimation > 0.99) {
+        hoverTileAnimation = 1;
+      }
+
+      if (
+        activeHoverTileIndex !== previousActiveHoverTileIndex ||
+        Math.abs(hoverTileAnimation - previousHoverTileAnimation) > 0.001 ||
+        renderedHoverTileIndex !== activeHoverTileIndex ||
+        Math.abs(renderedHoverTileProgress - hoverTileAnimation) > 0.001
+      ) {
+        gridTextureNeedsRedraw = true;
+      }
+    }
+
+    function getSlideshowVideo() {
+      if (!videos.length) return null;
+      slideshowIndex = clamp(slideshowIndex, 0, videos.length - 1);
+      return videos[slideshowIndex];
+    }
+
+    function drawSlideshow() {
+      drawBackground();
+
+      const video = getSlideshowVideo();
+      if (!video) {
+        updateSlideshowEmbed(null);
+        drawEmptySlideshow();
+        return;
+      }
+
+      updateSlideshowEmbed(video);
+
+      const { x, y, width, height } = getSlideshowFrameRect();
+      ctx.save();
+      if (thumbnailAutoplay) {
+        drawSlideshowThumbnail(video, x, y, width, height);
+      }
+      ctx.strokeStyle = "rgba(0, 255, 0, 0.9)";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+      ctx.restore();
+    }
+
+    function getSlideshowFrameRect() {
+      const maxWidth = Math.max(120, cssWidth - 180);
+      const maxHeight = Math.max(90, cssHeight - 132);
+      let width = Math.min(maxWidth, maxHeight * 16 / 9);
+      let height = width * 9 / 16;
+
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = height * 16 / 9;
+      }
+
+      const x = (cssWidth - width) / 2;
+      const y = (cssHeight - height) / 2;
+      return { x, y, width, height };
+    }
+
+    function updateSlideshowEmbed(video) {
+      const id = video && video.id ? video.id : "";
+
+      document.body.classList.toggle("empty-slideshow", !id);
+
+      if (thumbnailAutoplay || !id) {
+        if (currentSlideshowEmbedId || slideshowFrame.src) {
+          slideshowFrame.src = "about:blank";
+        }
+        currentSlideshowEmbedId = "";
+        return;
+      }
+
+      if (currentSlideshowEmbedId === id) {
+        if (displayMode === "slideshow") {
+          notifyVideoRouteOpen(video);
+        }
+        return;
+      }
+
+      currentSlideshowEmbedId = id;
+      slideshowFrame.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
+      if (displayMode === "slideshow") {
+        notifyVideoRouteOpen(video);
+      }
+    }
+
+    function notifyVideoRouteOpen(video) {
+      const videoId = String(video && video.id || "").trim();
+      if (!videoId || routedSlideshowVideoId === videoId) return;
+
+      routedSlideshowVideoId = videoId;
+      hasOpenedVideoRoute = true;
+      window.parent.postMessage({
+        type: "indexFrameVideoRoute",
+        action: "open",
+        videoId,
+        videoTitle: String(video && video.title || "").trim()
+      }, "*");
+    }
+
+    function notifyVideoRouteClose() {
+      if (!hasOpenedVideoRoute && !routedSlideshowVideoId) return;
+
+      routedSlideshowVideoId = "";
+      hasOpenedVideoRoute = false;
+      window.parent.postMessage({
+        type: "indexFrameVideoRoute",
+        action: "close"
+      }, "*");
+    }
+
+    function drawSlideshowThumbnail(video, x, y, width, height) {
+      const record = getImageRecord(video);
+      loadThumbnail(video);
+
+      ctx.fillStyle = "#030003";
+      ctx.fillRect(x, y, width, height);
+
+      if (record && record.status === "loaded" && record.image) {
+        drawImageCover(record.image, x, y, width, height);
+        return;
+      }
+
+      ctx.fillStyle = "#050505";
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = "rgba(0, 255, 0, 0.22)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + width, y + height);
+      ctx.moveTo(x + width, y);
+      ctx.lineTo(x, y + height);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(0, 255, 0, 0.72)";
+      ctx.font = `${clamp(width * 0.025, 14, 22)}px "Courier New", monospace`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(record && record.status === "failed" ? "NO SIGNAL" : "LOADING", x + width / 2, y + height / 2);
+    }
+
+    function drawEmptySlideshow() {
+      ctx.save();
+      ctx.fillStyle = "rgba(0, 255, 0, 0.82)";
+      ctx.font = `20px "Courier New", monospace`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("NO VIDEOS SELECTED", cssWidth / 2, cssHeight / 2);
+      ctx.restore();
+    }
+
+    function getWrappedLines(targetCtx, text, maxWidth) {
+      const words = String(text || "").split(/\s+/).filter(Boolean);
+      let line = "";
+      const lines = [];
+
+      for (let i = 0; i < words.length; i += 1) {
+        const testLine = line ? `${line} ${words[i]}` : words[i];
+        if (targetCtx.measureText(testLine).width > maxWidth && line) {
+          lines.push(line);
+          line = words[i];
+        } else {
+          line = testLine;
+        }
+      }
+
+      if (line) {
+        lines.push(line);
+      }
+
+      return lines;
+    }
+
+    function drawHoverTitle(video, width, height) {
+      if (zoom < 0.9 || width < 170 || height < 92) return;
+
+      const padding = 8 * zoom;
+      const fontSize = clamp(12 * zoom, 11, 18);
+      const lineHeight = fontSize * 1.22;
+      const maxWidth = width - padding * 2;
+      const maxLines = Math.floor((height - padding * 2) / lineHeight);
+
+      if (maxLines < 1) return;
+
+      ctx.font = `${fontSize}px "Courier New", monospace`;
+      const lines = getWrappedLines(ctx, video.title || video.id, maxWidth);
+      if (!lines.length || lines.length > maxLines) return;
+
+      const overlayHeight = lines.length * lineHeight + padding * 2;
+      ctx.fillStyle = "rgba(0, 0, 0, 0.84)";
+      ctx.fillRect(0, 0, width, overlayHeight);
+      ctx.strokeStyle = "rgba(0, 255, 0, 0.84)";
+      ctx.lineWidth = clamp(1.5 * zoom, 1, 3);
+      ctx.strokeRect(0.5, 0.5, width - 1, overlayHeight - 1);
+      ctx.fillStyle = "#00ff00";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+
+      lines.forEach((line, lineIndex) => {
+        ctx.fillText(line, padding, padding + lineIndex * lineHeight);
+      });
+    }
+
+    function updateHoveredTile(screenX, screenY) {
+      if (!cssWidth || !cssHeight || !thumbnailPreloadReady || displayMode !== "fullGrid") {
+        hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
+        return -1;
+      }
+
+      pointer.x = (screenX / cssWidth) * 2 - 1;
+      pointer.y = -(screenY / cssHeight) * 2 + 1;
+      raycaster.setFromCamera(pointer, threeCamera);
+      const hits = raycaster.intersectObject(gridPlane, false);
+      if (!hits.length || !hits[0].uv) {
+        hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
+        return -1;
+      }
+
+      const bounds = getMapBounds();
+      const world = {
+        x: hits[0].uv.x * bounds.width,
+        y: (1 - hits[0].uv.y) * bounds.height
+      };
+      const columns = getMapColumns();
+      const col = Math.floor(world.x / worldTileWidth());
+      const row = Math.floor(world.y / worldTileHeight());
+
+      if (col < 0 || col >= columns || row < 0) {
+        hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
+        return -1;
+      }
+
+      const index = row * columns + col;
+      if (index >= videos.length) {
+        hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
+        return -1;
+      }
+
+      const rect = getTileRect(index);
+      hoveredTileIndex = world.x >= rect.x &&
+        world.x <= rect.x + rect.width &&
+        world.y >= rect.y &&
+        world.y <= rect.y + rect.height
+        ? index
+        : -1;
+
+      updateTileHoverClass();
+      updateHeaderTitleForHover();
+      return hoveredTileIndex;
+    }
+
+    function handlePointerDown(event) {
+      if (event.button !== 1 || displayMode !== "fullGrid") return;
+      event.preventDefault();
+      gridAutoSpin = false;
+      isMiddleDragging = true;
+      lastPointerX = event.clientX;
+      lastPointerY = event.clientY;
+      keys.clear();
+    }
+
+    function handleMouseMove(event) {
+      if (isMiddleDragging) {
+        event.preventDefault();
+        const deltaX = event.clientX - lastPointerX;
+        const deltaY = event.clientY - lastPointerY;
+        lastPointerX = event.clientX;
+        lastPointerY = event.clientY;
+        targetPlaneYaw += deltaX * 0.009;
+        targetPlanePitch += deltaY * 0.009;
+        hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
+        return;
+      }
+
+      if (menuOpen || displayMode !== "fullGrid" || !thumbnailPreloadReady) {
+        hoveredTileIndex = -1;
+        updateTileHoverClass();
+        updateHeaderTitleForHover();
+        return;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      updateHoveredTile(event.clientX - rect.left, event.clientY - rect.top);
+    }
+
+    function handlePointerUp(event) {
+      if (event.button !== 1) return;
+      isMiddleDragging = false;
+    }
+
+    function handleMouseLeave() {
+      isMiddleDragging = false;
+      hoveredTileIndex = -1;
+      updateTileHoverClass();
+      updateHeaderTitleForHover();
+    }
+
+    function handleCanvasClick(event) {
+      if (menuOpen || displayMode !== "fullGrid" || !thumbnailPreloadReady) return;
+      if (event.target !== canvas && event.target.closest("button, select, input, label, #menuBackdrop")) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const clickedTileIndex = updateHoveredTile(event.clientX - rect.left, event.clientY - rect.top);
+      if (clickedTileIndex < 0) return;
+
+      slideshowIndex = clickedTileIndex;
+      setDisplayMode("slideshow");
+      updateSlideshowEmbed(getSlideshowVideo());
+    }
+
+    function setGridRotationControl(button, isActive) {
+      const direction = String(button && button.dataset.gridRotate || "").trim();
+      if (!direction) return;
+
+      button.classList.toggle("is-active", isActive);
+      if (isActive) {
+        gridAutoSpin = false;
+        keys.clear();
+        activeGridRotationControls.add(direction);
+        return;
+      }
+
+      activeGridRotationControls.delete(direction);
+    }
+
+    function clearGridRotationControls() {
+      activeGridRotationControls.clear();
+      gridRotationButtons.forEach((button) => {
+        button.classList.remove("is-active");
+      });
+    }
+
+    function updateHud() {
+      const loadedImages = Array.from(imageCache.values()).filter((record) => record.status === "loaded").length;
+      const slideshowStatus = getThumbnailAutoplayStatusText();
+      const gridSpinStatus = gridAutoSpin ? "auto spin on" : "auto spin off";
+      menuHud.innerHTML = [
+        `${statusText}`,
+        `videos ${videos.length} / ${allVideos.length} | thumbnails ${loadedImages}/${imageCache.size}`,
+        displayMode === "fullGrid"
+          ? `mode Full Grid | distance ${planeDistance.toFixed(1)} | rotation ${Math.round(planeYaw * 180 / Math.PI)}deg, ${Math.round(planePitch * 180 / Math.PI)}deg | ${gridSpinStatus}`
+          : `mode Slideshow | slide ${videos.length ? slideshowIndex + 1 : 0} / ${videos.length} | ${slideshowStatus}`,
+        `<span class="muted">Full Grid: Space auto spin | Middle mouse drag / WASD rotate | Mouse wheel zoom | Q / E zoom out/in | Slideshow: Space play/pause thumbnails | ArrowLeft / ArrowRight | Shift+Esc menu</span>`
+      ].join("<br>");
+    }
+
+    function getThumbnailAutoplayStatusText() {
+      if (displayMode !== "slideshow") return "";
+      if (videos.length < 2) return "thumbnail cycling unavailable";
+      if (thumbnailAutoplay) return "thumbnail cycling playing";
+      if (!thumbnailPreloadReady) return `preloading thumbnails ${thumbnailPreloadLoaded}/${thumbnailPreloadTotal}`;
+      return "thumbnail cycling paused";
+    }
+
+    function isTypingTarget(target) {
+      if (!target) return false;
+      const tagName = String(target.tagName || "").toLowerCase();
+      return tagName === "input" || tagName === "select" || tagName === "textarea" || target.isContentEditable;
+    }
+
+    function updateCamera(deltaSeconds) {
+      if (menuOpen) return;
+      const rotateAmount = 1.25 * deltaSeconds;
+      const controlRotateAmount = GRID_ROTATION_CONTROL_SPEED * deltaSeconds;
+      const zoomAmount = 7.5 * deltaSeconds;
+
+      if (gridAutoSpin) targetPlaneYaw += GRID_AUTO_SPIN_SPEED * deltaSeconds;
+
+      if (keys.has("w")) targetPlanePitch += rotateAmount;
+      if (keys.has("s")) targetPlanePitch -= rotateAmount;
+      if (keys.has("a")) targetPlaneYaw -= rotateAmount;
+      if (keys.has("d")) targetPlaneYaw += rotateAmount;
+      if (activeGridRotationControls.has("up")) targetPlanePitch += controlRotateAmount;
+      if (activeGridRotationControls.has("down")) targetPlanePitch -= controlRotateAmount;
+      if (activeGridRotationControls.has("left")) targetPlaneYaw -= controlRotateAmount;
+      if (activeGridRotationControls.has("right")) targetPlaneYaw += controlRotateAmount;
+
+      if (keys.has("q")) targetPlaneDistance += zoomAmount;
+      if (keys.has("e")) targetPlaneDistance -= zoomAmount;
+
+      targetPlaneDistance = clamp(targetPlaneDistance, 5.5, 48);
+    }
+
+    function zoomAt(screenX, screenY, factor) {
+      targetPlaneDistance = clamp(targetPlaneDistance / factor, 5.5, 48);
+    }
+
+    function updateThreeMotion(deltaSeconds) {
+      planeYaw += (targetPlaneYaw - planeYaw) * Math.min(1, deltaSeconds * 10);
+      planePitch += (targetPlanePitch - planePitch) * Math.min(1, deltaSeconds * 10);
+      planeDistance += (targetPlaneDistance - planeDistance) * Math.min(1, deltaSeconds * 10);
+
+      gridPlane.rotation.set(planePitch, planeYaw, 0);
+      threeCamera.position.set(0, 0, planeDistance);
+      threeCamera.lookAt(0, 0, 0);
+      starfieldSphere.rotation.set(0, 0, 0);
+      starfieldGroup.rotation.set(0, 0, 0);
+    }
+
+    function renderThreeScene(deltaSeconds) {
+      updateStarfield(deltaSeconds);
+      updateThreeMotion(deltaSeconds);
+      threeRenderer.render(threeScene, threeCamera);
+    }
+
+    function frame(now) {
+      const deltaSeconds = Math.min(0.05, (now - lastFrameTime) / 1000);
+      lastFrameTime = now;
+
+      gridPlane.visible = true;
+      if (!thumbnailPreloadReady) {
+        hoveredTileIndex = -1;
+        updateHoverTileAnimation(deltaSeconds);
+        drawLoadingThumbnailGrid();
+        updateHud();
+        renderThreeScene(deltaSeconds);
+        requestAnimationFrame(frame);
+        return;
+      }
+
+      if (displayMode === "fullGrid") {
+        updateCamera(deltaSeconds);
+      }
+      updateHoverTileAnimation(deltaSeconds);
+      if (gridTextureNeedsRedraw) {
+        redrawFullGridTexture();
+      }
+
+      forEachVisibleTile(LAZY_LOAD_MARGIN, loadThumbnail);
+      updateHud();
+      renderThreeScene(deltaSeconds);
+
+      requestAnimationFrame(frame);
+    }
+
+    function handleWheel(event) {
+      if (menuOpen || displayMode !== "fullGrid") return;
+      event.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const screenX = event.clientX - rect.left;
+      const screenY = event.clientY - rect.top;
+      const factor = Math.exp(-event.deltaY * 0.0012);
+      zoomAt(screenX, screenY, factor);
+    }
+
+    function handleKeydown(event) {
+      if (isTypingTarget(event.target)) {
+        keys.clear();
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+      if (key === "escape" && event.shiftKey) {
+        event.preventDefault();
+        setMenuOpen(!menuOpen);
+        return;
+      }
+
+      if (key === "escape") {
+        event.preventDefault();
+        setSideMenuOpen(!sideMenuOpen);
+        return;
+      }
+
+      if (event.shiftKey && key === "m") {
+        event.preventDefault();
+        cycleDisplayMode();
+        return;
+      }
+
+      if (event.shiftKey && key === "v") {
+        event.preventDefault();
+        cycleSortMode();
+        return;
+      }
+
+      if (menuOpen) return;
+
+      if (displayMode === "slideshow") {
+        if ((event.key === " " || event.code === "Space") && !isTypingTarget(event.target)) {
+          event.preventDefault();
+          setThumbnailAutoplay(!thumbnailAutoplay);
+          return;
+        }
+
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          moveSlideshow(-1);
+          return;
+        }
+
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          moveSlideshow(1);
+          return;
+        }
+
+        return;
+      }
+
+      if (event.key === " " || event.code === "Space") {
+        if (!thumbnailPreloadReady) return;
+        event.preventDefault();
+        gridAutoSpin = !gridAutoSpin;
+        keys.clear();
+        updateHud();
+        return;
+      }
+
+      if (!["w", "a", "s", "d", "q", "e"].includes(key)) return;
+      event.preventDefault();
+      keys.add(key);
+    }
+
+    function handleKeyup(event) {
+      keys.delete(event.key.toLowerCase());
+    }
+
+    function buildVideos(data) {
+      const entries = Array.isArray(data && data.entries) ? data.entries : [];
+      return entries
+        .map((entry, index) => {
+          const id = String(entry && entry.id || "").trim();
+          if (!id) return null;
+          const title = String(entry && entry.title || id).trim();
+          const channel = String(entry && entry.channel || "").trim();
+          const uploader = String(entry && entry.uploader || "").trim();
+          const uploadDate = String(entry && entry.upload_date || "").trim();
+          const channelId = String(entry && entry.channel_id || "").trim();
+          const channelUrl = String(entry && entry.channel_url || "").trim();
+          const uploaderUrl = String(entry && entry.uploader_url || "").trim();
+          const url = String(entry && entry.url || "").trim();
+          const description = String(entry && entry.description || "").trim();
+          const viewCount = Number(entry && entry.view_count) || 0;
+          const duration = Number(entry && entry.duration) || 0;
+          const searchText = [
+            id,
+            title,
+            description,
+            channel,
+            uploader,
+            channelId,
+            channelUrl,
+            uploaderUrl,
+            url,
+            uploadDate,
+            String(viewCount),
+            String(duration)
+          ].join(" ").toLowerCase();
+
+          return {
+            id,
+            title,
+            description,
+            sourceIndex: index,
+            uploadDate,
+            viewCount,
+            duration,
+            channel,
+            uploader,
+            channelId,
+            channelUrl,
+            uploaderUrl,
+            url,
+            searchText,
+            thumbnailCandidates: pickThumbnailCandidates(entry)
+          };
+        })
+        .filter(Boolean);
+    }
+
+    function getSelectedChannelIds() {
+      const selected = new Set();
+      if (honestlyCheckbox.checked) selected.add(HONESTLY_THOMAS_CHANNEL_ID);
+      if (cryptidCheckbox.checked) selected.add(CRYPTID_MEMES_CHANNEL_ID);
+      return selected;
+    }
+
+    function compareVideos(a, b) {
+      if (currentSort === "oldest") {
+        return a.uploadDate.localeCompare(b.uploadDate) || a.sourceIndex - b.sourceIndex;
+      }
+
+      if (currentSort === "mostViewed") {
+        return b.viewCount - a.viewCount || a.sourceIndex - b.sourceIndex;
+      }
+
+      if (currentSort === "leastViewed") {
+        return a.viewCount - b.viewCount || a.sourceIndex - b.sourceIndex;
+      }
+
+      return b.uploadDate.localeCompare(a.uploadDate) || a.sourceIndex - b.sourceIndex;
+    }
+
+    function videoMatchesSearch(video, query) {
+      if (!query) return true;
+      return String(video && video.searchText || "").includes(query);
+    }
+
+    function applyVideoView() {
+      const selectedChannelIds = getSelectedChannelIds();
+      const searchQuery = String(videoSearchInput.value || "").trim().toLowerCase();
+      videos = allVideos
+        .filter((video) => selectedChannelIds.has(video.channelId))
+        .filter((video) => videoMatchesSearch(video, searchQuery))
+        .slice()
+        .sort(compareVideos);
+
+      slideshowIndex = clamp(slideshowIndex, 0, Math.max(0, videos.length - 1));
+      startThumbnailPreload();
+      fitFullGridToViewport();
+      centerCameraOnMap();
+      updateSlideshowEmbed(getSlideshowVideo());
+      updateSlideshowCounter();
+      updateDisplayModeClass();
+      updateHeaderTitleForHover();
+      updateMenuStatus();
+    }
+
+    async function startThumbnailPreload() {
+      const token = thumbnailPreloadToken + 1;
+      thumbnailPreloadToken = token;
+      thumbnailPreloadReady = videos.length < 1;
+      thumbnailPreloadLoaded = 0;
+      thumbnailPreloadTotal = videos.length;
+      gridTextureNeedsRedraw = true;
+      gridAutoSpin = false;
+      setThumbnailAutoplay(false);
+      updateHud();
+
+      if (!videos.length) return;
+
+      const cachedRecords = videos.map(getImageRecord);
+      const cachedReady = cachedRecords.every((record) => (
+        record && (record.status === "loaded" || record.status === "failed")
+      ));
+
+      if (cachedReady) {
+        thumbnailPreloadReady = true;
+        thumbnailPreloadLoaded = thumbnailPreloadTotal;
+        redrawFullGridTexture();
+        updateDisplayModeClass();
+        updateHud();
+        return;
+      }
+
+      const preloadVideos = videos.slice();
+      let nextIndex = 0;
+
+      async function preloadWorker() {
+        while (nextIndex < preloadVideos.length && token === thumbnailPreloadToken) {
+          const video = preloadVideos[nextIndex];
+          nextIndex += 1;
+          await loadThumbnailForExport(video);
+
+          if (token !== thumbnailPreloadToken) return;
+          thumbnailPreloadLoaded += 1;
+          if (thumbnailPreloadLoaded % 12 === 0 || thumbnailPreloadLoaded === thumbnailPreloadTotal) {
+            updateHud();
+          }
+        }
+      }
+
+      const workerCount = Math.min(THUMBNAIL_PRELOAD_CONCURRENCY, preloadVideos.length);
+      await Promise.all(Array.from({ length: workerCount }, preloadWorker));
+
+      if (token !== thumbnailPreloadToken) return;
+
+      thumbnailPreloadReady = true;
+      thumbnailPreloadLoaded = thumbnailPreloadTotal;
+      gridTextureNeedsRedraw = true;
+      redrawFullGridTexture();
+      releaseTypingFocusForGridControls();
+      updateDisplayModeClass();
+      updateHud();
+    }
+
+    function releaseTypingFocusForGridControls() {
+      if (!isTypingTarget(document.activeElement)) return;
+      if (document.activeElement === videoSearchInput) return;
+      document.activeElement.blur();
+    }
+
+    function updateMenuStatus() {
+      const channelLabels = [];
+      if (honestlyCheckbox.checked) channelLabels.push("@Honestly_Thomas");
+      if (cryptidCheckbox.checked) channelLabels.push("@Cryptid_Memes");
+      const channels = channelLabels.length ? channelLabels.join(" + ") : "no channels selected";
+      const displayModeLabel = displayMode === "fullGrid" ? "Full Grid" : "Slideshow";
+      menuStatus.textContent = `${videos.length} / ${allVideos.length} videos | ${displayModeLabel} | ${sortSelect.options[sortSelect.selectedIndex].text} | ${channels}`;
+    }
+
+    function getExportScale(bounds) {
+      const maxDimension = 16384;
+      const maxPixels = 120000000;
+      return Math.max(0.1, Math.min(
+        maxDimension / Math.max(1, bounds.width),
+        maxDimension / Math.max(1, bounds.height),
+        Math.sqrt(maxPixels / Math.max(1, bounds.width * bounds.height))
+      ));
+    }
+
+    function blobFromCanvas(exportCanvas) {
+      return new Promise((resolve) => {
+        exportCanvas.toBlob(resolve, "image/png");
+      });
+    }
+
+    function loadThumbnailForExport(video) {
+      const record = getImageRecord(video);
+      if (!record) return Promise.resolve(null);
+      if (record.status === "loaded" && record.image) return Promise.resolve(record.image);
+      if (record.status === "failed") return Promise.resolve(null);
+
+      const src = video.thumbnailCandidates[record.candidateIndex];
+      if (!src) {
+        record.status = "failed";
+        return Promise.resolve(null);
+      }
+
+      record.status = "loading";
+
+      return new Promise((resolve) => {
+        const image = new Image();
+        image.crossOrigin = "anonymous";
+        image.decoding = "async";
+        image.onload = () => {
+          if (shouldSkipLoadedThumbnail(src, image)) {
+            record.candidateIndex += 1;
+            record.status = "idle";
+            loadThumbnailForExport(video).then(resolve);
+            return;
+          }
+
+          record.image = image;
+          record.status = "loaded";
+          gridTextureNeedsRedraw = true;
+          resolve(image);
+        };
+        image.onerror = () => {
+          record.candidateIndex += 1;
+          record.status = "idle";
+          loadThumbnailForExport(video).then(resolve);
+        };
+        image.src = src;
+      });
+    }
+
+    function drawExportImageCover(targetCtx, image, x, y, width, height) {
+      const imageRatio = image.width / image.height;
+      const targetRatio = width / height;
+      let sourceWidth = image.width;
+      let sourceHeight = image.height;
+      let sourceX = 0;
+      let sourceY = 0;
+
+      if (imageRatio > targetRatio) {
+        sourceWidth = image.height * targetRatio;
+        sourceX = (image.width - sourceWidth) / 2;
+      } else {
+        sourceHeight = image.width / targetRatio;
+        sourceY = (image.height - sourceHeight) / 2;
+      }
+
+      targetCtx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+    }
+
+    function drawExportImageContain(targetCtx, image, x, y, width, height) {
+      const imageRatio = image.width / image.height;
+      const targetRatio = width / height;
+      let drawWidth = width;
+      let drawHeight = height;
+
+      if (imageRatio > targetRatio) {
+        drawHeight = width / imageRatio;
+      } else {
+        drawWidth = height * imageRatio;
+      }
+
+      targetCtx.drawImage(
+        image,
+        x + (width - drawWidth) / 2,
+        y + (height - drawHeight) / 2,
+        drawWidth,
+        drawHeight
+      );
+    }
+
+    function drawExportTile(targetCtx, video, index, exportScale, image) {
+      const rect = getTileRect(index);
+      const x = rect.x * exportScale;
+      const y = rect.y * exportScale;
+      const width = TILE_WIDTH * exportScale;
+      const height = TILE_HEIGHT * exportScale;
+
+      targetCtx.fillStyle = "#030003";
+      targetCtx.fillRect(x, y, width, height);
+
+      if (image) {
+        drawExportImageCover(targetCtx, image, x, y, width, height);
+      } else {
+        targetCtx.fillStyle = "#050505";
+        targetCtx.fillRect(x, y, width, height);
+        targetCtx.strokeStyle = "rgba(0, 255, 0, 0.28)";
+        targetCtx.lineWidth = Math.max(1, exportScale);
+        targetCtx.beginPath();
+        targetCtx.moveTo(x, y);
+        targetCtx.lineTo(x + width, y + height);
+        targetCtx.moveTo(x + width, y);
+        targetCtx.lineTo(x, y + height);
+        targetCtx.stroke();
+        targetCtx.fillStyle = "rgba(0, 255, 0, 0.72)";
+        targetCtx.font = `${Math.max(10, 10 * exportScale)}px "Courier New", monospace`;
+        targetCtx.textAlign = "center";
+        targetCtx.textBaseline = "middle";
+        targetCtx.fillText("NO SIGNAL", x + width / 2, y + height / 2);
+      }
+
+      targetCtx.strokeStyle = "rgba(0, 255, 0, 0.86)";
+      targetCtx.lineWidth = Math.max(1, 1.5 * exportScale);
+      targetCtx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    async function saveFullGridScreenshot() {
+      if (!videos.length || screenshotButton.disabled) return;
+
+      screenshotButton.disabled = true;
+      const previousStatus = menuStatus.textContent;
+      menuStatus.textContent = `Preparing screenshot for ${videos.length} videos...`;
+
+      try {
+        const bounds = getMapBounds();
+        let exportScale = getExportScale(bounds);
+
+        await Promise.all(videos.map(loadThumbnailForExport));
+
+        while (exportScale >= 0.1) {
+          const exportCanvas = document.createElement("canvas");
+          exportCanvas.width = Math.max(1, Math.floor(bounds.width * exportScale));
+          exportCanvas.height = Math.max(1, Math.floor(bounds.height * exportScale));
+
+          const exportCtx = exportCanvas.getContext("2d");
+          if (!exportCtx) {
+            exportScale *= 0.75;
+            continue;
+          }
+
+          exportCtx.fillStyle = "#000";
+          exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+          videos.forEach((video, index) => {
+            const record = getImageRecord(video);
+            drawExportTile(exportCtx, video, index, exportScale, record && record.image);
+          });
+
+          const blob = await blobFromCanvas(exportCanvas);
+          if (blob) {
+            const date = new Date().toISOString().replace(/[:.]/g, "-");
+            downloadBlob(blob, `thumbnail-grid-${date}.png`);
+            menuStatus.textContent = `Saved screenshot ${exportCanvas.width} x ${exportCanvas.height}`;
+            window.setTimeout(updateMenuStatus, 2400);
+            return;
+          }
+
+          exportScale *= 0.75;
+        }
+
+        throw new Error("Browser could not export a canvas screenshot.");
+      } catch (error) {
+        console.error(error);
+        menuStatus.textContent = `Screenshot failed: ${error.message}`;
+        window.setTimeout(() => {
+          menuStatus.textContent = previousStatus;
+        }, 3600);
+      } finally {
+        screenshotButton.disabled = false;
+      }
+    }
+
+    function setMenuOpen(nextOpen) {
+      menuOpen = Boolean(nextOpen);
+      document.body.classList.toggle("menu-open", menuOpen);
+      menuBackdrop.setAttribute("aria-hidden", menuOpen ? "false" : "true");
+      keys.clear();
+      if (menuOpen) clearGridRotationControls();
+      if (menuOpen) hoveredTileIndex = -1;
+      updateTileHoverClass();
+      updateHeaderTitleForHover();
+    }
+
+    function setSideMenuOpen(nextOpen) {
+      sideMenuOpen = Boolean(nextOpen);
+      document.body.classList.toggle("side-menu-open", sideMenuOpen);
+      sideMenu.setAttribute("aria-hidden", sideMenuOpen ? "false" : "true");
+    }
+
+    function updateDisplayModeClass() {
+      document.body.classList.toggle("full-grid-mode", displayMode === "fullGrid");
+      document.body.classList.toggle("slideshow-mode", displayMode === "slideshow");
+      document.body.classList.toggle("empty-slideshow", displayMode === "slideshow" && !videos.length);
+      document.body.classList.toggle("thumbnail-autoplay", thumbnailAutoplay);
+      prevSlideButton.disabled = displayMode !== "slideshow" || videos.length < 2;
+      nextSlideButton.disabled = displayMode !== "slideshow" || videos.length < 2;
+      if (thumbnailAutoplay && videos.length < 2) {
+        setThumbnailAutoplay(false);
+      }
+      if (displayMode !== "slideshow") {
+        setThumbnailAutoplay(false);
+      } else {
+        gridAutoSpin = false;
+        updateSlideshowEmbed(getSlideshowVideo());
+      }
+      updateTileHoverClass();
+    }
+
+    function canUseThumbnailAutoplay() {
+      return displayMode === "slideshow" && videos.length > 1 && thumbnailPreloadReady;
+    }
+
+    function updateTileHoverClass() {
+      document.body.classList.toggle("tile-hover", displayMode === "fullGrid" && hoveredTileIndex >= 0 && !menuOpen);
+    }
+
+    function updateHeaderTitleForHover() {
+      let hoverTitle = "";
+      if (displayMode === "fullGrid" && hoveredTileIndex >= 0 && videos[hoveredTileIndex] && !menuOpen) {
+        const video = videos[hoveredTileIndex];
+        hoverTitle = String(video.title || video.id || "").trim();
+      }
+
+      postNavHoverTitle(hoverTitle);
+    }
+
+    function formatVideoHeaderTitle(video) {
+      const channelName = String(video && (video.channel || video.uploader) || "").trim() || "Unknown Channel";
+      return `${channelName} \u2022 ${formatUploadDate(video && video.uploadDate)}`;
+    }
+
+    function postNavHoverTitle(title) {
+      window.parent.postMessage({
+        type: "feedGridHoverTitle",
+        title: String(title || "").trim()
+      }, "*");
+    }
+
+    function setDisplayMode(nextMode) {
+      const previousMode = displayMode;
+      displayMode = nextMode === "fullGrid" ? "fullGrid" : "slideshow";
+      keys.clear();
+      if (displayMode !== "fullGrid") gridAutoSpin = false;
+      if (displayMode !== "fullGrid") clearGridRotationControls();
+      hoveredTileIndex = -1;
+      updateDisplayModeClass();
+      updateHeaderTitleForHover();
+      updateMenuStatus();
+      if (previousMode === "slideshow" && displayMode === "fullGrid") {
+        notifyVideoRouteClose();
+      }
+    }
+
+    function cycleDisplayMode() {
+      setDisplayMode(displayMode === "fullGrid" ? "slideshow" : "fullGrid");
+    }
+
+    function cycleSortMode() {
+      const options = Array.from(sortSelect.options);
+      const currentIndex = Math.max(0, options.findIndex((option) => option.value === currentSort));
+      const nextOption = options[(currentIndex + 1) % options.length];
+      currentSort = nextOption.value;
+      sortSelect.value = currentSort;
+      applyVideoView();
+    }
+
+    function moveSlideshow(direction) {
+      if (!videos.length) return;
+      slideshowIndex = (slideshowIndex + direction + videos.length) % videos.length;
+      updateSlideshowEmbed(getSlideshowVideo());
+      updateHeaderTitleForHover();
+      updateSlideshowCounter();
+      updateMenuStatus();
+    }
+
+    function updateSlideshowCounter() {
+      const count = slideshowIndex + 1;
+      slideshowCounter.textContent = `${count} ${count === 1 ? "Video" : "Videos"}`;
+    }
+
+    function setThumbnailAutoplay(nextAutoplay) {
+      thumbnailAutoplay = Boolean(nextAutoplay) && canUseThumbnailAutoplay();
+
+      if (thumbnailAutoplayTimer) {
+        window.clearInterval(thumbnailAutoplayTimer);
+        thumbnailAutoplayTimer = 0;
+      }
+
+      if (thumbnailAutoplay) {
+        slideshowIndex = 0;
+        updateSlideshowEmbed(null);
+        updateHeaderTitleForHover();
+        updateSlideshowCounter();
+        updateMenuStatus();
+        thumbnailAutoplayTimer = window.setInterval(() => {
+          moveSlideshow(1);
+        }, 1800);
+      } else if (displayMode === "slideshow") {
+        updateSlideshowEmbed(getSlideshowVideo());
+        updateHeaderTitleForHover();
+      }
+
+      document.body.classList.toggle("thumbnail-autoplay", thumbnailAutoplay);
+      updateHud();
+    }
+
+    function fitFullGridToViewport() {
+      const bounds = getMapBounds();
+      if (!bounds.width || !bounds.height || !cssWidth || !cssHeight) return;
+      const aspect = bounds.width / bounds.height;
+      const verticalFov = THREE.MathUtils.degToRad(threeCamera.fov);
+      const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * threeCamera.aspect);
+      const planeHeight = GRID_PLANE_WIDTH / aspect;
+      const distanceForWidth = (GRID_PLANE_WIDTH / 2) / Math.tan(horizontalFov / 2);
+      const distanceForHeight = (planeHeight / 2) / Math.tan(verticalFov / 2);
+      targetPlaneDistance = clamp(Math.max(distanceForWidth, distanceForHeight) * 1.16, 5.5, 48);
+      planeDistance = targetPlaneDistance;
+    }
+
+    function centerCameraOnMap() {
+      const bounds = getMapBounds();
+      cameraX = bounds.width / 2;
+      cameraY = bounds.height / 2;
+      clampCameraToMap();
+      targetPlaneYaw = 0;
+      targetPlanePitch = 0;
+      planeYaw = 0;
+      planePitch = 0;
+    }
+
+    async function loadVideos() {
+      statusText = "Loading feed...";
+
+      try {
+        const data = await fetchJson(FEED_DATA_PATH);
+        allVideos = buildVideos(data);
+
+        if (!allVideos.length) {
+          throw new Error("No video IDs found in feed entries.");
+        }
+
+        applyVideoView();
+        openPendingVideoFromShell();
+        statusText = "Feed loaded";
+      } catch (error) {
+        console.error(error);
+        allVideos = [];
+        videos = [];
+        imageCache.clear();
+        updateMenuStatus();
+        statusText = `Error loading feed: ${error.message}`;
+      }
+    }
+
+    function openVideoById(videoId) {
+      const requestedId = String(videoId || "").trim();
+      if (!requestedId) return false;
+
+      const videoIndex = videos.findIndex((video) => video && video.id === requestedId);
+      if (videoIndex < 0) return false;
+
+      slideshowIndex = videoIndex;
+      setDisplayMode("slideshow");
+      updateSlideshowEmbed(getSlideshowVideo());
+      updateSlideshowCounter();
+      updateMenuStatus();
+      return true;
+    }
+
+    function openPendingVideoFromShell() {
+      if (!pendingOpenVideoId) return;
+      if (openVideoById(pendingOpenVideoId)) {
+        pendingOpenVideoId = "";
+      }
+    }
+
+    window.addEventListener("message", (event) => {
+      const data = event.data || {};
+      if (data.type !== "feedGridOpenVideo") return;
+
+      pendingOpenVideoId = String(data.videoId || "").trim();
+      openPendingVideoFromShell();
+    });
+
+    window.addEventListener("resize", resizeCanvas);
+    canvas.addEventListener("wheel", handleWheel, { passive: false });
+    canvas.addEventListener("mousedown", handlePointerDown);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseup", handlePointerUp);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
+    canvas.addEventListener("auxclick", (event) => {
+      if (event.button === 1) event.preventDefault();
+    });
+    window.addEventListener("mouseup", handlePointerUp);
+    canvas.addEventListener("click", handleCanvasClick);
+    document.addEventListener("click", handleCanvasClick);
+    document.addEventListener("keydown", handleKeydown);
+    document.addEventListener("keyup", handleKeyup);
+    sortSelect.addEventListener("change", () => {
+      currentSort = sortSelect.value;
+      applyVideoView();
+    });
+    honestlyCheckbox.addEventListener("change", applyVideoView);
+    cryptidCheckbox.addEventListener("change", applyVideoView);
+    videoSearchInput.addEventListener("input", applyVideoView);
+    screenshotButton.addEventListener("click", saveFullGridScreenshot);
+    prevSlideButton.addEventListener("click", () => moveSlideshow(-1));
+    nextSlideButton.addEventListener("click", () => moveSlideshow(1));
+    gridRotationButtons.forEach((button) => {
+      button.addEventListener("pointerdown", (event) => {
+        if (displayMode !== "fullGrid" || menuOpen) return;
+        event.preventDefault();
+        button.setPointerCapture(event.pointerId);
+        setGridRotationControl(button, true);
+      });
+
+      button.addEventListener("pointerup", (event) => {
+        event.preventDefault();
+        setGridRotationControl(button, false);
+      });
+
+      button.addEventListener("pointercancel", () => {
+        setGridRotationControl(button, false);
+      });
+
+      button.addEventListener("lostpointercapture", () => {
+        setGridRotationControl(button, false);
+      });
+    });
+    window.addEventListener("blur", clearGridRotationControls);
+
+    resizeCanvas();
+    updateDisplayModeClass();
+    loadVideos();
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

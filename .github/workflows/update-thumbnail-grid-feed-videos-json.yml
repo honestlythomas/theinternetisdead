@@ -1,0 +1,85 @@
+name: Update thumbnail-grid feed-videos.json
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      full_metadata_refresh:
+        description: 'Re-fetch every existing video page to refresh edited titles and metadata. Slower, use when YouTube titles were changed.'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-thumbnail-grid-feed-videos-json
+  cancel-in-progress: false
+
+jobs:
+  update-thumbnail-grid-feed-videos-json:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install yt-dlp
+        run: python -m pip install --upgrade yt-dlp
+
+      - name: Prepare YouTube cookies
+        shell: bash
+        env:
+          YT_DLP_COOKIES_TXT_B64: ${{ secrets.YT_DLP_COOKIES_TXT_B64 }}
+          YT_DLP_COOKIES_TXT: ${{ secrets.YT_DLP_COOKIES_TXT }}
+        run: |
+          if [ -n "$YT_DLP_COOKIES_TXT_B64" ]; then
+            cookie_file="$(mktemp)"
+            printf '%s' "$YT_DLP_COOKIES_TXT_B64" | base64 -d > "$cookie_file"
+            echo "YT_DLP_COOKIES_PATH=$cookie_file" >> "$GITHUB_ENV"
+            echo "YT_DLP_TEMP_COOKIES_PATH=$cookie_file" >> "$GITHUB_ENV"
+            echo "Prepared temporary YouTube cookies from base64 secret."
+          elif [ -n "$YT_DLP_COOKIES_TXT" ]; then
+            cookie_file="$(mktemp)"
+            printf '%s' "$YT_DLP_COOKIES_TXT" > "$cookie_file"
+            echo "YT_DLP_COOKIES_PATH=$cookie_file" >> "$GITHUB_ENV"
+            echo "YT_DLP_TEMP_COOKIES_PATH=$cookie_file" >> "$GITHUB_ENV"
+            echo "Prepared temporary YouTube cookies from text secret."
+          else
+            echo "No YouTube cookies secret configured; running unauthenticated."
+          fi
+
+      - name: Build thumbnail-grid feed-videos.json
+        env:
+          YT_DLP_TIMEOUT_SECONDS: ${{ inputs.full_metadata_refresh && '90' || '60' }}
+          FEED_FULL_METADATA_REFRESH: ${{ inputs.full_metadata_refresh && 'true' || 'false' }}
+        run: python dead/pages/thumbnail-grid/build-feed-videos.py
+
+      - name: Remove temporary YouTube cookies
+        if: always()
+        shell: bash
+        run: |
+          if [ -n "${YT_DLP_TEMP_COOKIES_PATH:-}" ] && [ -f "$YT_DLP_TEMP_COOKIES_PATH" ]; then
+            rm -f "$YT_DLP_TEMP_COOKIES_PATH"
+          fi
+
+      - name: Commit updated thumbnail-grid feed-videos.json
+        shell: bash
+        run: |
+          if git diff --quiet -- dead/pages/thumbnail-grid/feed-videos.json; then
+            echo "feed-videos.json is already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dead/pages/thumbnail-grid/feed-videos.json
+          git commit -m "Update feed video data [DEAD_COMMIT]"
+          git push

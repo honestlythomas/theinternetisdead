@@ -3585,13 +3585,13 @@
         <span class="emoji-icon skull-icon" role="button" tabindex="0" aria-expanded="false" aria-controls="grave-sidebar"><span class="emoji-tint is-screen is-skull" data-emoji="&#9760;">&#9760;</span></span>
         <a class="site-link home-link" href="/"><span class="texture-content"><span class="domain-text domain-text-desktop">the internet is dead . org</span><span class="domain-text domain-text-mobile">theinternetisdead.org</span></span></a>
         <span class="site-divider after-site" aria-hidden="true"></span>
-        <span class="emoji-icon spiral-icon"><span class="emoji-tint" data-emoji="&#128065;&#65038;">&#128065;&#65038;</span></span>
+        <span class="emoji-icon spiral-icon" role="button" tabindex="0" aria-label="Open videos"><span class="emoji-tint" data-emoji="&#128065;&#65038;">&#128065;&#65038;</span></span>
       </span>
       <span class="bar-column bar-column-center">
         <span class="index-link-slot"><a class="index-nav-button index-nav-left index-bracket-left" href="#left" aria-label="Go left"><span class="index-bracket" aria-hidden="true">&lt;-</span></a><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/"><span class="texture-content">Main Page</span></a></span><span class="site-divider" aria-hidden="true"></span></span><a class="index-nav-button index-nav-right index-bracket-right" href="#right" aria-label="Go right"><span class="index-bracket" aria-hidden="true">-&gt;</span></a></span>
       </span>
       <span class="bar-column bar-column-right">
-        <span class="emoji-icon recycle-icon"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
+        <span class="emoji-icon recycle-icon" role="button" tabindex="0" aria-label="Randomize page"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
         <span class="emoji-icon alien-icon ghost-counter" id="ghost-counter" role="status" aria-label="? Ghosts Online">
           <span class="ghost-glyph"><span class="emoji-tint" data-emoji="&#128123;&#65038;">&#128123;&#65038;</span></span>
           <span class="ghost-text">
@@ -3733,6 +3733,7 @@
     const YOU_DUMMY_TEXT = "It's YOU dummy!";
     const skullButton = document.querySelector(".skull-icon");
     const gearButton = document.querySelector(".gear-icon");
+    const recycleButton = document.querySelector(".recycle-icon");
     const shellCycleLeftButton = document.querySelector(".index-bracket-left");
     const shellCycleRightButton = document.querySelector(".index-bracket-right");
     const audioToggleButton = document.getElementById("audio-toggle-button");
@@ -3780,11 +3781,19 @@
       const linksRow = document.createElement("nav");
       linksRow.className = "static-markdown-links";
       linksRow.setAttribute("aria-label", "Main sections");
-      ["Games", "Chat", "Experiments"].forEach((label) => {
+      ["Games", "Chat", "Experiments", "Videos"].forEach((label) => {
         const link = document.createElement("a");
-        link.href = label === "Games" ? "/dead/games/" : label === "Experiments" ? "/dead/experiments/" : label === "Chat" ? "/dead/chat/" : "/";
+        link.href = label === "Games"
+          ? "/dead/games/"
+          : label === "Experiments"
+            ? "/dead/experiments/"
+            : label === "Chat"
+              ? "/dead/chat/"
+              : label === "Videos"
+                ? "/dead/videos/"
+                : "/";
         link.textContent = label;
-        if (label === "Games" || label === "Experiments" || label === "Chat") {
+        if (label === "Games" || label === "Experiments" || label === "Chat" || label === "Videos") {
           link.addEventListener("click", (event) => {
             event.preventDefault();
             loadShellFrame(link.getAttribute("href"), { push: true });
@@ -3814,6 +3823,22 @@
       return `${url.pathname}${url.search}${url.hash}` || "/";
     };
 
+    const resolveShellFrameRoute = (path) => {
+      const routePath = normalizeShellPath(path);
+      if (routePath === "/dead/videos/" || routePath.startsWith("/dead/videos/?") || routePath.startsWith("/dead/videos/#")) {
+        return {
+          routePath,
+          framePath: "/dead/pages/thumbnail-grid/",
+          labelPath: routePath
+        };
+      }
+      return {
+        routePath,
+        framePath: routePath,
+        labelPath: routePath
+      };
+    };
+
     const setMainPageRouteLabel = (label, path = "/") => {
       const href = normalizeShellPath(path);
       if (mainPageRouteLabel) {
@@ -3828,7 +3853,7 @@
     const loadShellFrame = (path, options = {}) => {
       if (!staticMarkdownOverlay) return;
 
-      const normalizedPath = normalizeShellPath(path);
+      const { routePath: normalizedPath, framePath, labelPath } = resolveShellFrameRoute(path);
       if (normalizedPath === "/" || normalizedPath === "/index.html") {
         if (options.push) {
           window.history.pushState({ overlayFrame: null }, "", "/");
@@ -3853,16 +3878,16 @@
 
       const frame = document.createElement("iframe");
       frame.className = "static-markdown-frame";
-      frame.src = normalizedPath;
-      frame.title = shellFrameTitle(normalizedPath);
+      frame.src = framePath;
+      frame.title = shellFrameTitle(labelPath);
 
       if (options.push && `${window.location.pathname}${window.location.search}${window.location.hash}` !== normalizedPath) {
         window.history.pushState({ overlayFrame: normalizedPath }, "", normalizedPath);
       } else if (options.replace) {
         window.history.replaceState({ overlayFrame: normalizedPath }, "", normalizedPath);
       }
-      document.title = shellFrameTitle(normalizedPath);
-      setMainPageRouteLabel(shellFrameTitle(normalizedPath), normalizedPath);
+      document.title = shellFrameTitle(labelPath);
+      setMainPageRouteLabel(shellFrameTitle(labelPath), labelPath);
       document.body.classList.add("has-shell-frame");
       staticMarkdownOverlay.classList.add("has-iframe");
       staticMarkdownOverlay.replaceChildren(frame);
@@ -3889,13 +3914,40 @@
       fullscreenShellFrame();
     });
 
-    const shellCycleRoutes = ["/", "/dead/games/", "/dead/chat/", "/dead/experiments/"];
+    const shellCycleRoutes = ["/", "/dead/games/", "/dead/chat/", "/dead/experiments/", "/dead/videos/"];
+    const shellRandomRoutes = [
+      ...shellCycleRoutes,
+      "/dead/games/inferno-trainer/",
+      "/dead/games/shooter-game/",
+      "/dead/games/tektite-3D-game/",
+      "/dead/experiments/background/",
+      "/dead/experiments/blotter-visualizer/",
+      "/dead/experiments/bookmark-manager/",
+      "/dead/experiments/camera-studio/",
+      "/dead/experiments/canvas-backgrounds/",
+      "/dead/experiments/dead-tv/",
+      "/dead/experiments/gods-eye/",
+      "/dead/experiments/habisky-mofo/",
+      "/dead/experiments/karaoke-machine/",
+      "/dead/experiments/mandala-visuals/",
+      "/dead/experiments/multimedia-editor/",
+      "/dead/experiments/music-crunchifier/",
+      "/dead/experiments/music-player/",
+      "/dead/experiments/pdf-viewer/",
+      "/dead/experiments/photosphere/",
+      "/dead/experiments/sound-machine/",
+      "/dead/experiments/stacks/",
+      "/dead/experiments/weird-secret/",
+      "/dead/videos/"
+    ];
+
     const getCurrentShellCycleIndex = () => {
       const currentPath = normalizeShellPath(`${window.location.pathname}${window.location.search}${window.location.hash}`);
       if (currentPath === "/" || currentPath === "/index.html") return 0;
       if (currentPath.startsWith("/dead/games/")) return 1;
       if (currentPath.startsWith("/dead/chat/")) return 2;
       if (currentPath.startsWith("/dead/experiments/")) return 3;
+      if (currentPath.startsWith("/dead/videos/")) return 4;
       return 0;
     };
 
@@ -3903,6 +3955,14 @@
       const currentIndex = getCurrentShellCycleIndex();
       const nextIndex = (currentIndex + direction + shellCycleRoutes.length) % shellCycleRoutes.length;
       loadShellFrame(shellCycleRoutes[nextIndex], { push: true });
+    };
+
+    const randomizeShellRoute = () => {
+      const currentPath = normalizeShellPath(`${window.location.pathname}${window.location.search}${window.location.hash}`);
+      const candidates = shellRandomRoutes.filter((route) => normalizeShellPath(route) !== currentPath);
+      const routePool = candidates.length ? candidates : shellRandomRoutes;
+      const nextRoute = routePool[Math.floor(Math.random() * routePool.length)] || "/";
+      loadShellFrame(nextRoute, { push: true });
     };
 
     shellCycleLeftButton?.addEventListener("click", (event) => {
@@ -3913,6 +3973,17 @@
     shellCycleRightButton?.addEventListener("click", (event) => {
       event.preventDefault();
       cycleShellRoute(1);
+    });
+
+    recycleButton?.addEventListener("click", (event) => {
+      event.preventDefault();
+      randomizeShellRoute();
+    });
+
+    recycleButton?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      randomizeShellRoute();
     });
 
     mainPageRouteLink?.addEventListener("click", (event) => {
@@ -4948,6 +5019,15 @@
         speakSpiralLoop();
       });
       spiralIcon.addEventListener("mouseleave", stopHeaderSpeech);
+      spiralIcon.addEventListener("click", (event) => {
+        event.preventDefault();
+        loadShellFrame("/dead/videos/", { push: true });
+      });
+      spiralIcon.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        loadShellFrame("/dead/videos/", { push: true });
+      });
     }
     addDesktopSpeechRepeatHover(".index-bracket-left", "Go Left");
     addDesktopSpeechRepeatHover(".index-bracket-right", "Go Right");
