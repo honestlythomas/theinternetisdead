@@ -1034,7 +1034,7 @@
     }
 
     .emoji-tint.is-screen::after {
-      mix-blend-mode: screen;
+      mix-blend-mode: normal;
     }
 
     .emoji-tint.is-skull {
@@ -3727,6 +3727,31 @@
       align-items: center !important;
     }
 
+    .gif-party-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      overflow: hidden;
+      pointer-events: none;
+      mix-blend-mode: normal;
+    }
+
+    .gif-party-image {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: clamp(64px, 10vw, 180px);
+      height: auto;
+      max-height: 24vh;
+      object-fit: contain;
+      opacity: 0.96;
+      user-select: none;
+      -webkit-user-drag: none;
+      filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.45));
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+    }
+
 </style>
 </head>
 
@@ -4290,6 +4315,187 @@
       loadShellFrame(mainPageRouteLink.dataset.shellPath || "/", { push: true });
     });
 
+    const gifPartyFallbackSources = [
+      "/dead/images/static.gif",
+      "/dead/images/pngs/dead-favicon.png",
+      "/dead/images/pngs/subscribe.png"
+    ];
+    const gifPartyManifestCandidates = [
+      "/dead/images/gif-party.json",
+      "/dead/images/manifest.json",
+      "/dead/images/index.json"
+    ];
+    const gifPartyImageExtensions = /\.(?:apng|avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i;
+    let gifPartyOverlay = null;
+    let gifPartyAnimationFrameId = null;
+    let gifPartyLastFrameTime = 0;
+    let gifPartyItems = [];
+
+    const normalizeGifPartySource = (source) => {
+      const value = String(source || "").trim();
+      if (!value || value.startsWith("data:") || value.startsWith("javascript:")) return "";
+      if (/^https?:\/\//i.test(value)) return "";
+      if (value.startsWith("/dead/images/")) return value;
+      return `/dead/images/${value.replace(/^\/+/, "")}`;
+    };
+
+    const uniqGifPartySources = (sources) => {
+      const seen = new Set();
+      return (Array.isArray(sources) ? sources : [])
+        .map(normalizeGifPartySource)
+        .filter((source) => source && gifPartyImageExtensions.test(source))
+        .filter((source) => {
+          if (seen.has(source)) return false;
+          seen.add(source);
+          return true;
+        });
+    };
+
+    const extractGifPartySourcesFromManifest = (payload) => {
+      if (Array.isArray(payload)) return payload;
+      if (payload && Array.isArray(payload.images)) return payload.images;
+      if (payload && Array.isArray(payload.files)) return payload.files;
+      if (payload && Array.isArray(payload.sources)) return payload.sources;
+      return [];
+    };
+
+    const fetchGifPartyManifestSources = async () => {
+      for (const url of gifPartyManifestCandidates) {
+        try {
+          const response = await fetch(url, { cache: "no-store" });
+          if (!response.ok) continue;
+          const payload = await response.json();
+          const sources = uniqGifPartySources(extractGifPartySourcesFromManifest(payload));
+          if (sources.length) return sources;
+        } catch (error) {
+        }
+      }
+      return [];
+    };
+
+    const fetchGifPartyDirectorySources = async () => {
+      try {
+        const response = await fetch("/dead/images/", { cache: "no-store" });
+        if (!response.ok) return [];
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const directSources = Array.from(doc.querySelectorAll("a[href]"))
+          .map((link) => link.getAttribute("href") || "")
+          .filter((href) => href && !href.includes("../"));
+        return uniqGifPartySources(directSources);
+      } catch (error) {
+        return [];
+      }
+    };
+
+    const getGifPartySources = async () => {
+      const manifestSources = await fetchGifPartyManifestSources();
+      if (manifestSources.length) return manifestSources;
+      const directorySources = await fetchGifPartyDirectorySources();
+      if (directorySources.length) return directorySources;
+      return uniqGifPartySources(gifPartyFallbackSources);
+    };
+
+    const stopGifParty = () => {
+      if (gifPartyAnimationFrameId !== null) {
+        cancelAnimationFrame(gifPartyAnimationFrameId);
+        gifPartyAnimationFrameId = null;
+      }
+      gifPartyLastFrameTime = 0;
+      gifPartyItems = [];
+      if (gifPartyOverlay) {
+        gifPartyOverlay.remove();
+        gifPartyOverlay = null;
+      }
+    };
+
+    const positionGifPartyItem = (item) => {
+      if (!item?.el) return;
+      item.el.style.transform = `translate3d(${item.x}px, ${item.y}px, 0)`;
+    };
+
+    const stepGifParty = (now) => {
+      if (!gifPartyOverlay || !gifPartyItems.length) {
+        gifPartyAnimationFrameId = null;
+        return;
+      }
+
+      if (!gifPartyLastFrameTime) gifPartyLastFrameTime = now;
+      const deltaMs = Math.min(32, Math.max(0, now - gifPartyLastFrameTime));
+      gifPartyLastFrameTime = now;
+      const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0, 1);
+      const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, 1);
+
+      gifPartyItems.forEach((item) => {
+        const rect = item.el.getBoundingClientRect();
+        const width = Math.max(rect.width || item.el.offsetWidth || 96, 1);
+        const height = Math.max(rect.height || item.el.offsetHeight || 96, 1);
+        const maxX = Math.max(0, viewportWidth - width);
+        const maxY = Math.max(0, viewportHeight - height);
+
+        item.x += item.vx * deltaMs;
+        item.y += item.vy * deltaMs;
+        if (item.x <= 0) {
+          item.x = 0;
+          item.vx = Math.abs(item.vx);
+        } else if (item.x >= maxX) {
+          item.x = maxX;
+          item.vx = -Math.abs(item.vx);
+        }
+
+        if (item.y <= 0) {
+          item.y = 0;
+          item.vy = Math.abs(item.vy);
+        } else if (item.y >= maxY) {
+          item.y = maxY;
+          item.vy = -Math.abs(item.vy);
+        }
+
+        positionGifPartyItem(item);
+      });
+
+      gifPartyAnimationFrameId = requestAnimationFrame(stepGifParty);
+    };
+
+    const spawnGifParty = async () => {
+      const sources = await getGifPartySources();
+      stopGifParty();
+
+      gifPartyOverlay = document.createElement("div");
+      gifPartyOverlay.className = "gif-party-overlay";
+      gifPartyOverlay.setAttribute("aria-hidden", "true");
+      document.body.appendChild(gifPartyOverlay);
+
+      const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0, 1);
+      const viewportHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0, 1);
+
+      gifPartyItems = sources.map((source, index) => {
+        const img = document.createElement("img");
+        img.className = "gif-party-image";
+        img.alt = "";
+        img.decoding = "async";
+        img.referrerPolicy = "no-referrer";
+        img.src = source;
+
+        const item = {
+          el: img,
+          x: (24 + index * 47) % Math.max(96, viewportWidth - 96),
+          y: (53 + index * 31) % Math.max(96, viewportHeight - 96),
+          vx: (index % 2 === 0 ? 1 : -1) * (0.09 + (index % 11) * 0.012),
+          vy: (index % 3 === 0 ? -1 : 1) * (0.08 + (index % 9) * 0.011)
+        };
+
+        img.addEventListener("load", () => positionGifPartyItem(item), { once: true });
+        gifPartyOverlay.appendChild(img);
+        positionGifPartyItem(item);
+        return item;
+      });
+
+      if (gifPartyItems.length) {
+        gifPartyAnimationFrameId = requestAnimationFrame(stepGifParty);
+      }
+    };
+
     const renderFatalExitScreen = () => {
       const escaped = [
         '            .ed"""" """$$$$be.',
@@ -4357,6 +4563,10 @@
       }
       if (event.data?.type === "enableGearEffect") {
         enableGearEffect(event.data.effect);
+        return;
+      }
+      if (event.data?.type === "gifPartySpawnAllImages") {
+        spawnGifParty();
         return;
       }
       if (event.data?.type === "dead-shell-navigate") {

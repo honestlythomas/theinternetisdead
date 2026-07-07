@@ -1698,8 +1698,10 @@ const focusSink = document.getElementById('focusSink');
     const builtInCommands = [
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
       { name: '/customize', value: '/customize', execute: true, desc: 'open the site customization sidebar' },
+      { name: '/dead', value: '/dead', execute: true, desc: 'show the /dead/ page directory' },
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
       { name: '/help', value: '/help', execute: true, desc: 'show this help message with command links' },
+      { name: '/gif_party', value: '/gif_party', execute: true, desc: 'spawn /dead/images/ as bouncing DVD-logo chaos on index.html' },
       { name: '/hueshift', value: '/hueshift', execute: true, desc: 'enable Hueshift' },
       { name: '/invert', value: '/invert', execute: true, desc: 'enable Inverted' },
       { name: '/trip', value: '/trip', execute: true, desc: 'enable Melting' },
@@ -4385,6 +4387,84 @@ function createHomepageCustomizeMessageNode(result = {}) {
       }
     }
 
+    const deadPageDirectoryEntries = [
+      { path: '/dead/games/', desc: 'games index' },
+      { path: '/dead/chat/', desc: 'public chat room' },
+      { path: '/dead/experiments/', desc: 'experiment index' },
+      { path: '/dead/videos/', desc: 'video grid' },
+      { path: '/dead/messages/', desc: 'message archive' },
+      { path: '/dead/images/', desc: 'image folder' },
+      { path: '/dead/games/inferno-trainer/', desc: 'Inferno trainer' },
+      { path: '/dead/games/shooter-game/', desc: 'shooter game' },
+      { path: '/dead/games/tektite-3D-game/', desc: 'Tektite 3D game' },
+      { path: '/dead/experiments/background/', desc: 'canvas background' },
+      { path: '/dead/experiments/blotter-visualizer/', desc: 'blotter visualizer' },
+      { path: '/dead/experiments/bookmark-manager/', desc: 'bookmark manager' },
+      { path: '/dead/experiments/camera-studio/', desc: 'camera studio' },
+      { path: '/dead/experiments/canvas-backgrounds/', desc: 'canvas backgrounds' },
+      { path: '/dead/experiments/dead-tv/', desc: 'dead TV' },
+      { path: '/dead/experiments/gods-eye/', desc: "god's eye" },
+      { path: '/dead/experiments/habisky-mofo/', desc: 'Habisky Mofo' },
+      { path: '/dead/experiments/karaoke-machine/', desc: 'karaoke machine' },
+      { path: '/dead/experiments/mandala-visuals/', desc: 'mandala visuals' },
+      { path: '/dead/experiments/multimedia-editor/', desc: 'multimedia editor' },
+      { path: '/dead/experiments/music-crunchifier/', desc: 'music crunchifier' },
+      { path: '/dead/experiments/music-player/', desc: 'music player' },
+      { path: '/dead/experiments/pdf-viewer/', desc: 'PDF viewer' },
+      { path: '/dead/experiments/photosphere/', desc: 'photosphere' },
+      { path: '/dead/experiments/sound-machine/', desc: 'sound machine' },
+      { path: '/dead/experiments/stacks/', desc: 'stacks' },
+      { path: '/dead/experiments/weird-secret/', desc: 'weird secret' }
+    ];
+
+    function openDeadPageFromDirectory(path) {
+      const href = String(path || '').trim();
+      if (!href) return;
+      if (!postToParentPage({ type: 'dead-shell-navigate', href })) {
+        window.location.href = href;
+      }
+    }
+
+    function createDeadPagesMessageNode() {
+      const wrapper = document.createElement('div');
+      wrapper.dataset.commandPanelType = 'dead';
+
+      const title = document.createElement('div');
+      const titleStrong = document.createElement('strong');
+      titleStrong.textContent = '/dead/ pages...';
+      title.appendChild(titleStrong);
+      wrapper.appendChild(title);
+
+      const helpList = document.createElement('div');
+      helpList.className = 'helpList';
+
+      deadPageDirectoryEntries.forEach((entry) => {
+        const item = document.createElement('a');
+        item.className = 'helpItem';
+        item.href = entry.path;
+        item.dataset.deadPage = entry.path;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'helpCommandName';
+        nameSpan.textContent = entry.path;
+
+        const descSpan = document.createElement('span');
+        descSpan.className = 'helpCommandDesc';
+        descSpan.textContent = `- ${entry.desc}`;
+
+        item.appendChild(nameSpan);
+        item.appendChild(descSpan);
+        item.addEventListener('click', (event) => {
+          event.preventDefault();
+          openDeadPageFromDirectory(entry.path);
+        });
+        helpList.appendChild(item);
+      });
+
+      wrapper.appendChild(helpList);
+      return wrapper;
+    }
+
     function createHelpMessageNode() {
       return createCommandListMessageNode('Help with commands...', [], {
         showHiddenCommands: debugMode,
@@ -4549,7 +4629,7 @@ function createHomepageCustomizeMessageNode(result = {}) {
       const meta = document.createElement('span');
       meta.className = 'mediaBrowserMeta';
       const folderTitle = getFolderBrowserTitle(records, type);
-      meta.textContent = `${folderTitle} • ${records.length} file${records.length === 1 ? '' : 's'}`;
+      meta.textContent = `${folderTitle} â€¢ ${records.length} file${records.length === 1 ? '' : 's'}`;
 
       button.appendChild(label);
       button.appendChild(meta);
@@ -5708,9 +5788,33 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return true;
       }
 
+      if (command === '/dead') {
+        addSystemMessage(formatCommandExecutionMessage('/dead'));
+        const existingDeadMessage = Array.from(messages.querySelectorAll('.message[data-role="system"][data-command-panel-type="dead"]')).at(-1) || null;
+        if (existingDeadMessage) {
+          const messageText = existingDeadMessage.querySelector('.messageText');
+          if (messageText) {
+            existingDeadMessage.dataset.commandPanelType = 'dead';
+            messageText.innerHTML = '';
+            messageText.appendChild(createDeadPagesMessageNode());
+          }
+        } else {
+          addMessage(createDeadPagesMessageNode(), 'system');
+        }
+        return true;
+      }
+
       if (command === '/customize') {
         addSystemMessage(formatCommandExecutionMessage('/customize'));
         postToParentPage({ type: 'openGearSidebar' });
+        return true;
+      }
+
+      if (command === '/gif_party') {
+        addSystemMessage(formatCommandExecutionMessage('/gif_party'));
+        if (!postToParentPage({ type: 'gifPartySpawnAllImages' })) {
+          applyDvdSlideshowMode();
+        }
         return true;
       }
 
