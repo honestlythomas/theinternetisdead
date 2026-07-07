@@ -1369,6 +1369,22 @@
       background: #000;
     }
 
+    .youtubeEmbedCard {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: min(100%, 560px);
+      margin: 6px 0 2px;
+    }
+
+    .youtubeEmbedFrame {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      min-height: 180px;
+      border: 1px solid #666;
+      background: #000;
+    }
+
     #iframeOverlay,
     #mediaOverlay {
       position: absolute;
@@ -2615,6 +2631,126 @@ const focusSink = document.getElementById('focusSink');
       void submitMessage();
     }
 
+    function splitTrailingUrlPunctuation(rawUrl) {
+      let url = String(rawUrl || '');
+      let trailing = '';
+
+      while (/[.,!?;:]$/.test(url)) {
+        trailing = url.slice(-1) + trailing;
+        url = url.slice(0, -1);
+      }
+
+      while (url.endsWith(')') && (url.match(/\)/g) || []).length > (url.match(/\(/g) || []).length) {
+        trailing = ')' + trailing;
+        url = url.slice(0, -1);
+      }
+
+      return { url, trailing };
+    }
+
+    function parseHttpUrl(rawUrl) {
+      try {
+        const parsed = new URL(String(rawUrl || '').trim());
+        return ['http:', 'https:'].includes(parsed.protocol) ? parsed : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function isClickableDeadSiteUrl(rawUrl) {
+      const parsed = parseHttpUrl(rawUrl);
+      if (!parsed) return false;
+      const host = parsed.hostname.toLowerCase();
+      return host === 'theinternetisdead.org' || host === 'www.theinternetisdead.org';
+    }
+
+    function getYouTubeEmbedUrl(rawUrl) {
+      const parsed = parseHttpUrl(rawUrl);
+      if (!parsed) return '';
+
+      const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+      let videoId = '';
+
+      if (host === 'youtu.be') {
+        videoId = parsed.pathname.split('/').filter(Boolean)[0] || '';
+      } else if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'music.youtube.com') {
+        const pathParts = parsed.pathname.split('/').filter(Boolean);
+        if (parsed.pathname === '/watch') {
+          videoId = parsed.searchParams.get('v') || '';
+        } else if (['shorts', 'embed', 'live', 'v'].includes(pathParts[0])) {
+          videoId = pathParts[1] || '';
+        }
+      }
+
+      videoId = String(videoId || '').trim();
+      if (!/^[A-Za-z0-9_-]{6,}$/.test(videoId)) return '';
+      return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`;
+    }
+
+    function appendChatLink(parentNode, url, label = url) {
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = label;
+      parentNode.appendChild(link);
+      return link;
+    }
+
+    function appendYouTubeEmbed(parentNode, embedUrl, sourceUrl) {
+      if (!embedUrl) return;
+      parentNode.appendChild(document.createElement('br'));
+      const card = document.createElement('div');
+      card.className = 'youtubeEmbedCard';
+      const iframe = document.createElement('iframe');
+      iframe.className = 'youtubeEmbedFrame';
+      iframe.src = embedUrl;
+      iframe.title = 'YouTube video player';
+      iframe.loading = 'lazy';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      iframe.setAttribute('data-source-url', sourceUrl);
+      card.appendChild(iframe);
+      parentNode.appendChild(card);
+    }
+
+    function appendPlainTextWithChatLinks(parentNode, text) {
+      const source = String(text || '');
+      const urlPattern = /https?:\/\/[^\s<>"'`]+/gi;
+      let lastIndex = 0;
+      let match = null;
+
+      while ((match = urlPattern.exec(source)) !== null) {
+        const rawMatch = match[0];
+        const { url, trailing } = splitTrailingUrlPunctuation(rawMatch);
+        const embedUrl = getYouTubeEmbedUrl(url);
+        const canLink = !!embedUrl || isClickableDeadSiteUrl(url);
+
+        if (!canLink) {
+          continue;
+        }
+
+        if (match.index > lastIndex) {
+          parentNode.appendChild(document.createTextNode(source.slice(lastIndex, match.index)));
+        }
+
+        appendChatLink(parentNode, url);
+        if (embedUrl) {
+          appendYouTubeEmbed(parentNode, embedUrl, url);
+        }
+        if (trailing) {
+          parentNode.appendChild(document.createTextNode(trailing));
+        }
+
+        lastIndex = match.index + rawMatch.length;
+      }
+
+      if (lastIndex < source.length) {
+        parentNode.appendChild(document.createTextNode(source.slice(lastIndex)));
+      }
+    }
+
     function appendMarkdownText(parentNode, sourceText) {
       if (!parentNode) return;
       const source = String(sourceText || '');
@@ -2623,7 +2759,7 @@ const focusSink = document.getElementById('focusSink');
       let match = null;
 
       const appendPlainText = (text) => {
-        if (text) parentNode.appendChild(document.createTextNode(text));
+        if (text) appendPlainTextWithChatLinks(parentNode, text);
       };
 
       while ((match = markdownPattern.exec(source)) !== null) {
@@ -2646,12 +2782,21 @@ const focusSink = document.getElementById('focusSink');
               submitMarkdownCommandLink(command);
             });
           } else {
-            link.href = rawHref;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
+            const parsedHref = parseHttpUrl(rawHref);
+            if (parsedHref) {
+              link.href = parsedHref.toString();
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
+            } else {
+              link.href = '#';
+            }
           }
 
           parentNode.appendChild(link);
+          const markdownEmbedUrl = getYouTubeEmbedUrl(link.href);
+          if (markdownEmbedUrl) {
+            appendYouTubeEmbed(parentNode, markdownEmbedUrl, link.href);
+          }
         } else if (match[4] !== undefined) {
           const strong = document.createElement('strong');
           appendMarkdownText(strong, match[4]);
@@ -2872,7 +3017,10 @@ const focusSink = document.getElementById('focusSink');
       const messageText = document.createElement('div');
       messageText.className = 'messageText';
       appendSpeakerPrefix(messageText, `${nickname}:`, 'nicknameLabel');
-      messageText.appendChild(document.createTextNode(` ${body}`));
+      if (body) {
+        messageText.appendChild(document.createTextNode(' '));
+        appendMarkdownText(messageText, body);
+      }
 
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'messageDelete';
