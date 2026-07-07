@@ -4230,6 +4230,35 @@
       frame.requestFullscreen().catch(() => {});
     };
 
+    const postOpenChatShellMessage = (frame, seedSlash = true) => {
+      if (!frame?.contentWindow) return;
+      try {
+        frame.contentWindow.focus();
+      } catch (error) {}
+      frame.contentWindow.postMessage({
+        type: "chatSandboxOpen",
+        focus: true,
+        seedSlash
+      }, window.location.origin);
+    };
+
+    const openChatShellFromSlashShortcut = () => {
+      loadShellFrame("/dead/chat/", { push: true });
+      const frame = staticMarkdownOverlay?.querySelector('iframe[title="/dead/chat/"]');
+      if (!frame) return;
+
+      const openChat = () => postOpenChatShellMessage(frame, true);
+      frame.addEventListener("load", openChat, { once: true });
+      window.setTimeout(openChat, 80);
+      window.setTimeout(openChat, 250);
+    };
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "/" || event.ctrlKey || event.metaKey || event.altKey || shouldIgnoreShellShortcut(event)) return;
+      event.preventDefault();
+      openChatShellFromSlashShortcut();
+    });
+
     document.addEventListener("keydown", (event) => {
       if (event.key?.toLowerCase() !== "f" || event.ctrlKey || event.metaKey || event.altKey || shouldIgnoreShellShortcut(event)) return;
       if (!staticMarkdownOverlay?.classList.contains("has-iframe")) return;
