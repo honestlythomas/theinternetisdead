@@ -5136,6 +5136,7 @@
       positionBuffer: null,
       uniforms: null,
       startedAt: 0,
+      needsResize: true,
       webglReady: false
     };
 
@@ -5153,7 +5154,16 @@
 
     const initMeltShader = () => {
       if (!meltCanvas || meltState.webglReady) return meltState.webglReady;
-      const gl = meltCanvas.getContext("webgl", { alpha: true, antialias: false, depth: false, stencil: false, preserveDrawingBuffer: false, premultipliedAlpha: true });
+      const gl = meltCanvas.getContext("webgl", {
+        alpha: true,
+        antialias: false,
+        depth: false,
+        stencil: false,
+        preserveDrawingBuffer: false,
+        premultipliedAlpha: true,
+        desynchronized: true,
+        powerPreference: "high-performance"
+      });
       if (!gl) return false;
       const vertexSource = [
         "attribute vec2 a_position;",
@@ -5216,6 +5226,14 @@
         resolution: gl.getUniformLocation(program, "u_resolution"),
         time: gl.getUniformLocation(program, "u_time")
       };
+      gl.disable(gl.DEPTH_TEST);
+      gl.disable(gl.STENCIL_TEST);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+      gl.useProgram(program);
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      gl.enableVertexAttribArray(meltState.uniforms.position);
+      gl.vertexAttribPointer(meltState.uniforms.position, 2, gl.FLOAT, false, 0, 0);
       meltState.webglReady = true;
       return true;
     };
@@ -5225,7 +5243,10 @@
       const dpr = Math.min(1.5, window.devicePixelRatio || 1);
       const width = Math.max(1, window.innerWidth);
       const height = Math.max(1, window.innerHeight);
-      if (meltState.width === width && meltState.height === height && meltState.dpr === dpr) return;
+      if (meltState.width === width && meltState.height === height && meltState.dpr === dpr) {
+        meltState.needsResize = false;
+        return;
+      }
       meltState.width = width;
       meltState.height = height;
       meltState.dpr = dpr;
@@ -5234,11 +5255,17 @@
       meltCanvas.style.width = `${width}px`;
       meltCanvas.style.height = `${height}px`;
       if (meltState.gl) meltState.gl.viewport(0, 0, meltCanvas.width, meltCanvas.height);
+      meltState.needsResize = false;
+    };
+
+    const queueMeltResize = () => {
+      meltState.needsResize = true;
+      if (meltState.active) resizeMeltCanvas();
     };
 
     const renderMelt = (timestamp = 0) => {
       if (!meltCanvas || !meltState.active) return;
-      resizeMeltCanvas();
+      if (meltState.needsResize) resizeMeltCanvas();
       if (!meltState.webglReady) {
         try { initMeltShader(); } catch (error) { console.warn("Trip shader unavailable", error); meltState.webglReady = false; }
       }
@@ -5248,12 +5275,7 @@
         gl.viewport(0, 0, meltCanvas.width, meltCanvas.height);
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         gl.useProgram(meltState.program);
-        gl.bindBuffer(gl.ARRAY_BUFFER, meltState.positionBuffer);
-        gl.enableVertexAttribArray(meltState.uniforms.position);
-        gl.vertexAttribPointer(meltState.uniforms.position, 2, gl.FLOAT, false, 0, 0);
         gl.uniform2f(meltState.uniforms.resolution, meltCanvas.width, meltCanvas.height);
         gl.uniform1f(meltState.uniforms.time, time);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -5293,7 +5315,7 @@
     rainToggle?.addEventListener("change", () => setRainEnabled(rainToggle.checked));
     meltToggle?.addEventListener("change", () => setMeltEnabled(meltToggle.checked));
     window.addEventListener("resize", resizeRainCanvas);
-    window.addEventListener("resize", resizeMeltCanvas);
+    window.addEventListener("resize", queueMeltResize);
     colorFilterToggle?.addEventListener("click", () => {
       const isOpen = !colorFilterPanel.classList.contains("is-open");
       colorFilterPanel.classList.toggle("is-open", isOpen);
