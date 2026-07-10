@@ -4285,6 +4285,15 @@
       }, window.location.origin);
     };
 
+    const notifyChatTimeZoneUpdated = () => {
+      const frame = document.querySelector('iframe[title="/dead/chat/"]');
+      if (!frame || !frame.contentWindow) return;
+      frame.contentWindow.postMessage({
+        type: "setChatTimeZone",
+        timeZone: timezoneSelect?.value || ""
+      }, window.location.origin);
+    };
+
     const syncGearNicknameInput = () => {
       if (gearNicknameInput) {
         gearNicknameInput.value = readChatNickname();
@@ -4483,6 +4492,7 @@
       frame.addEventListener("load", () => {
         if (labelPath === "/dead/chat/" || labelPath.startsWith("/dead/chat/?") || labelPath.startsWith("/dead/chat/#")) {
           notifyPublicNicknameColorUpdated(readPublicNicknameColor());
+          notifyChatTimeZoneUpdated();
         }
       });
 
@@ -5818,6 +5828,7 @@
     timezoneSelect?.addEventListener("change", () => {
       updateClock();
       saveCustomizationSettings();
+      notifyChatTimeZoneUpdated();
     });
     const updateClock = () => {
       const now = new Date();

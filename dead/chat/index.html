@@ -139,16 +139,20 @@
     }
 
     .timestamp {
+      flex: 0 0 auto;
       font-size: calc(12px * var(--font-scale));
       line-height: 1.2;
       color: #aaa;
       white-space: nowrap;
+      cursor: help;
+      user-select: none;
+      padding-top: calc(4px * var(--font-scale));
     }
 
     .messageRow {
       display: flex;
       align-items: flex-start;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 12px;
     }
 
@@ -384,6 +388,13 @@
     .nicknameLabel {
       color: var(--nickname-color);
       font-weight: 700;
+    }
+
+    .anonymousGhostNumber {
+      display: inline-block;
+      min-width: 3ch;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
     }
 
     .speakerPrefixLabel {
@@ -1540,7 +1551,7 @@
       <input
         id="chatBar"
         type="text"
-        placeholder="Enter a nickname to chat..."
+        placeholder="Press here to chat or / for commands..."
         autocomplete="off"
         spellcheck="false"
       />
@@ -1551,6 +1562,7 @@
   <script>
 const focusSink = document.getElementById('focusSink');
     const chatBar = document.getElementById('chatBar');
+    const chatPrompt = document.getElementById('chatPrompt');
     const chatGhost = document.getElementById('chatGhost');
     const chatGhostTyped = document.getElementById('chatGhostTyped');
     const chatGhostRemainder = document.getElementById('chatGhostRemainder');
@@ -1585,7 +1597,7 @@ const focusSink = document.getElementById('focusSink');
     const SUPABASE_CHAT_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
 
     function generateAnonymousNickname() {
-      return `Anonymous Ghost ${Math.floor(Math.random() * 900) + 100}`;
+      return 'Anonymous Ghost';
     }
 
     function normalizeNickname(value) {
@@ -1623,6 +1635,31 @@ const focusSink = document.getElementById('focusSink');
 
     function hasCurrentNickname() {
       return !!normalizeNickname(currentNickname);
+    }
+
+    function getOutgoingNickname() {
+      return normalizeNickname(currentNickname) || generateAnonymousNickname();
+    }
+
+    function isAnonymousGhostNickname(value) {
+      return /^Anonymous Ghost(?:\s*#?\d{1,3})?$/i.test(String(value || '').trim());
+    }
+
+    function randomAnonymousGhostNumber() {
+      return String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
+    }
+
+    function refreshAnonymousGhostNumbers() {
+      document.querySelectorAll('.anonymousGhostNumber').forEach((node) => {
+        node.textContent = randomAnonymousGhostNumber();
+      });
+    }
+
+    let anonymousGhostTickerId = null;
+
+    function ensureAnonymousGhostTicker() {
+      if (anonymousGhostTickerId !== null) return;
+      anonymousGhostTickerId = window.setInterval(refreshAnonymousGhostNumbers, 85);
     }
     let showSystemPrefix = true;
     let debugMode = false;
@@ -1714,6 +1751,7 @@ const focusSink = document.getElementById('focusSink');
     const builtInCommands = [
       { name: '/3am', value: '/3am', execute: true, desc: 'trigger the 3:00am easter egg' },
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
+      { name: '/clear_public', value: '/clear_public', execute: true, desc: 'clear public chat messages with password' },
       { name: '/customize', value: '/customize', execute: true, desc: 'open the site customization sidebar' },
       { name: '/dead', value: '/dead', execute: true, desc: 'show the /dead/ page directory' },
       { name: '/exit', value: '/exit', execute: true, desc: 'kill the page and trigger the fatal exit screen' },
@@ -1725,6 +1763,7 @@ const focusSink = document.getElementById('focusSink');
       { name: '/nickname', value: '/nickname ', execute: false, desc: 'set the displayed username used by system messages', suggestions: ['Tektite', 'Guest', 'User'] },
       { name: '/rain', value: '/rain', execute: true, desc: 'enable Raining' },
       { name: '/refresh', value: '/refresh', execute: true, desc: 'refresh the current page' },
+      { name: '/reset', value: '/reset', execute: true, desc: 'clear browser site data and refresh the page' },
       { name: '/save', value: '/save', execute: true, desc: 'toggle Save Settings' }
     ];
     const builtInCommandList = builtInCommands.map((entry) => entry.name);
@@ -1945,7 +1984,7 @@ const focusSink = document.getElementById('focusSink');
 
     function updateChatBarVisualState() {
       const commandMode = chatBar.value.startsWith('/');
-      chatBar.placeholder = hasCurrentNickname() ? 'Press here to chat or / for commands...' : 'Enter a nickname to chat...';
+      chatBar.placeholder = 'Press here to chat or / for commands...';
       chatBar.classList.toggle('commandMode', commandMode);
       chatPrompt.classList.toggle('commandMode', commandMode);
       chatBarWrap.classList.toggle('commandMode', commandMode);
@@ -2564,6 +2603,128 @@ const focusSink = document.getElementById('focusSink');
       return true;
     }
 
+    function getSameOriginWindows() {
+      const candidates = [window, window.parent, window.top];
+      return candidates.filter((candidate, index, list) => {
+        if (!candidate || list.indexOf(candidate) !== index) return false;
+        try {
+          void candidate.location.href;
+          return true;
+        } catch (error) {
+          return false;
+        }
+      });
+    }
+
+    function clearStorageArea(storage) {
+      try {
+        storage?.clear();
+      } catch (error) {
+      }
+    }
+
+    function clearCookieJar(targetDocument = document) {
+      let cookieNames = [];
+      try {
+        cookieNames = targetDocument.cookie
+          .split(';')
+          .map((cookie) => cookie.split('=')[0].trim())
+          .filter(Boolean);
+      } catch (error) {
+        return;
+      }
+
+      if (!cookieNames.length) return;
+
+      const hostname = targetDocument.location?.hostname || window.location.hostname;
+      const domainParts = hostname.split('.').filter(Boolean);
+      const domains = [''];
+      for (let index = 0; index < domainParts.length - 1; index += 1) {
+        domains.push(`.${domainParts.slice(index).join('.')}`);
+      }
+
+      const pathParts = (targetDocument.location?.pathname || '/').split('/').filter(Boolean);
+      const paths = ['/'];
+      let pathAccumulator = '';
+      pathParts.forEach((part) => {
+        pathAccumulator += `/${part}`;
+        paths.push(pathAccumulator);
+      });
+
+      cookieNames.forEach((name) => {
+        domains.forEach((domain) => {
+          paths.forEach((path) => {
+            try {
+              targetDocument.cookie = `${encodeURIComponent(name)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0; path=${path}${domain ? `; domain=${domain}` : ''}`;
+            } catch (error) {
+            }
+          });
+        });
+      });
+    }
+
+    async function clearIndexedDatabases() {
+      if (!window.indexedDB) return;
+      if (typeof indexedDB.databases === 'function') {
+        try {
+          const databases = await indexedDB.databases();
+          await Promise.all((databases || [])
+            .map((database) => database && database.name)
+            .filter(Boolean)
+            .map((name) => new Promise((resolve) => {
+              const request = indexedDB.deleteDatabase(name);
+              request.onsuccess = request.onerror = request.onblocked = () => resolve();
+            })));
+        } catch (error) {
+        }
+      }
+    }
+
+    async function clearCacheStorage() {
+      if (!window.caches || typeof caches.keys !== 'function') return;
+      try {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((key) => caches.delete(key)));
+      } catch (error) {
+      }
+    }
+
+    async function clearServiceWorkers() {
+      if (!navigator.serviceWorker || typeof navigator.serviceWorker.getRegistrations !== 'function') return;
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      } catch (error) {
+      }
+    }
+
+    async function resetSiteDataAndRefresh() {
+      addSystemMessage(formatCommandExecutionMessage('/reset'));
+
+      getSameOriginWindows().forEach((targetWindow) => {
+        clearStorageArea(targetWindow.localStorage);
+        clearStorageArea(targetWindow.sessionStorage);
+        clearCookieJar(targetWindow.document);
+      });
+
+      await Promise.all([
+        clearCacheStorage(),
+        clearIndexedDatabases(),
+        clearServiceWorkers()
+      ]);
+
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.location.reload();
+          return true;
+        }
+      } catch (error) {
+      }
+
+      triggerIndexRefresh();
+      return true;
+    }
+
     function createLocalStorageLogMessageNode(message) {
       const wrapper = document.createElement('span');
       const link = document.createElement('a');
@@ -2619,6 +2780,27 @@ const focusSink = document.getElementById('focusSink');
       prefixSpan.className = className;
       prefixSpan.textContent = prefixText;
       parentNode.appendChild(prefixSpan);
+      return prefixSpan;
+    }
+
+    function appendChatNicknamePrefix(parentNode, nickname) {
+      if (!parentNode) return null;
+      const cleanNickname = normalizeNickname(nickname) || generateAnonymousNickname();
+      if (!isAnonymousGhostNickname(cleanNickname)) {
+        return appendSpeakerPrefix(parentNode, `${cleanNickname}:`, 'nicknameLabel');
+      }
+
+      const prefixSpan = document.createElement('span');
+      prefixSpan.className = 'nicknameLabel';
+      prefixSpan.appendChild(document.createTextNode('Anonymous Ghost #'));
+
+      const numberSpan = document.createElement('span');
+      numberSpan.className = 'anonymousGhostNumber';
+      numberSpan.textContent = randomAnonymousGhostNumber();
+      prefixSpan.appendChild(numberSpan);
+      prefixSpan.appendChild(document.createTextNode(':'));
+      parentNode.appendChild(prefixSpan);
+      ensureAnonymousGhostTicker();
       return prefixSpan;
     }
 
@@ -2833,19 +3015,111 @@ const focusSink = document.getElementById('focusSink');
       const nickname = rawContent.slice(0, separatorIndex).trim();
       const bodyText = rawContent.slice(separatorIndex + 1).replace(/^\s*/, '');
       messageText.innerHTML = '';
-      appendSpeakerPrefix(messageText, `${nickname}:`, 'nicknameLabel');
+      appendChatNicknamePrefix(messageText, nickname);
       if (bodyText) {
         messageText.appendChild(document.createTextNode(' '));
         appendMarkdownText(messageText, bodyText);
       }
     }
 
+    function getSavedChatTimeZone() {
+      try {
+        const rawSettings = localStorage.getItem('theinternetisdead.customizationSettings');
+        const settings = rawSettings ? JSON.parse(rawSettings) : null;
+        return typeof settings?.timezone === 'string' ? settings.timezone : '';
+      } catch (error) {
+        return '';
+      }
+    }
+
+    let currentChatTimeZone = getSavedChatTimeZone();
+
+    function getTimestampFormatOptions(extraOptions = {}) {
+      const selectedTimeZone = String(currentChatTimeZone || '').trim();
+      return {
+        ...(selectedTimeZone ? { timeZone: selectedTimeZone } : {}),
+        ...extraOptions
+      };
+    }
+
     function formatTimestamp(date = new Date()) {
-      return date.toLocaleTimeString([], {
-        hour: 'numeric',
-        minute: '2-digit',
-        second: '2-digit'
+      try {
+        return date.toLocaleTimeString([], getTimestampFormatOptions({
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit'
+        }));
+      } catch (error) {
+        return date.toLocaleTimeString([], {
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      }
+    }
+
+    function formatTimestampTooltip(date = new Date()) {
+      try {
+        return `Sent ${date.toLocaleDateString([], getTimestampFormatOptions({
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        }))} at ${date.toLocaleTimeString([], getTimestampFormatOptions({
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit',
+          timeZoneName: 'short'
+        }))}`;
+      } catch (error) {
+        return `Sent ${date.toLocaleString([], {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit'
+        })}`;
+      }
+    }
+
+    function getMessageSentDate(line) {
+      const sentAt = line?.dataset?.sentAt;
+      const date = sentAt ? new Date(sentAt) : new Date();
+      return Number.isNaN(date.getTime()) ? new Date() : date;
+    }
+
+    function updateTimestampElement(timestamp, date = new Date()) {
+      if (!timestamp) return;
+      timestamp.textContent = formatTimestamp(date);
+      timestamp.title = formatTimestampTooltip(date);
+      timestamp.setAttribute('aria-label', timestamp.title);
+    }
+
+    function createTimestampElement(date = new Date()) {
+      const timestamp = document.createElement('time');
+      timestamp.className = 'timestamp';
+      const safeDate = Number.isNaN(date.getTime()) ? new Date() : date;
+      timestamp.dateTime = safeDate.toISOString();
+      updateTimestampElement(timestamp, safeDate);
+      return timestamp;
+    }
+
+    function refreshMessageTimestamps() {
+      messages.querySelectorAll('.message').forEach((line) => {
+        const timestamp = line.querySelector('.timestamp');
+        const date = getMessageSentDate(line);
+        if (timestamp) {
+          timestamp.dateTime = date.toISOString();
+          updateTimestampElement(timestamp, date);
+        }
       });
+    }
+
+    function setChatTimeZone(timeZone) {
+      currentChatTimeZone = String(timeZone || '').trim();
+      refreshMessageTimestamps();
     }
 
     async function copyMessageWithTimestamp(line) {
@@ -2880,23 +3154,18 @@ const focusSink = document.getElementById('focusSink');
 
     function addMessage(content, role = 'user', isHtml = false) {
       const wasPinnedToBottom = isNearBottom();
+      const sentDate = new Date();
       const line = document.createElement('div');
       line.className = 'message';
       line.dataset.role = role;
+      line.dataset.sentAt = sentDate.toISOString();
       line.addEventListener('click', async (event) => {
         if (!document.body.classList.contains('debug')) return;
         if (event.target.closest('.messageDelete')) return;
         await copyMessageWithTimestamp(line);
       });
 
-      const meta = document.createElement('div');
-      meta.className = 'messageMeta';
-
-      const timestamp = document.createElement('div');
-      timestamp.className = 'timestamp';
-      timestamp.textContent = formatTimestamp();
-
-      meta.appendChild(timestamp);
+      const timestamp = createTimestampElement(sentDate);
 
       const row = document.createElement('div');
       row.className = 'messageRow';
@@ -2950,10 +3219,10 @@ const focusSink = document.getElementById('focusSink');
         }
       });
 
+      row.appendChild(timestamp);
       row.appendChild(messageText);
       row.appendChild(deleteBtn);
 
-      line.appendChild(meta);
       line.appendChild(row);
       messages.appendChild(line);
       updateMessagesVisibility();
@@ -2992,32 +3261,28 @@ const focusSink = document.getElementById('focusSink');
       renderedSupabaseMessageKeys.add(messageKey);
 
       const wasPinnedToBottom = isNearBottom();
+      const createdAt = record.created_at ? new Date(record.created_at) : new Date();
+      const sentDate = Number.isNaN(createdAt.getTime()) ? new Date() : createdAt;
       const line = document.createElement('div');
       line.className = 'message';
       line.dataset.role = 'user';
       line.dataset.liveChatMessage = 'true';
       line.dataset.rawContent = `${nickname}: ${body}`;
+      line.dataset.sentAt = sentDate.toISOString();
       line.addEventListener('click', async (event) => {
         if (!document.body.classList.contains('debug')) return;
         if (event.target.closest('.messageDelete')) return;
         await copyMessageWithTimestamp(line);
       });
 
-      const meta = document.createElement('div');
-      meta.className = 'messageMeta';
-
-      const timestamp = document.createElement('div');
-      timestamp.className = 'timestamp';
-      const createdAt = record.created_at ? new Date(record.created_at) : new Date();
-      timestamp.textContent = Number.isNaN(createdAt.getTime()) ? formatTimestamp() : formatTimestamp(createdAt);
-      meta.appendChild(timestamp);
+      const timestamp = createTimestampElement(sentDate);
 
       const row = document.createElement('div');
       row.className = 'messageRow';
 
       const messageText = document.createElement('div');
       messageText.className = 'messageText';
-      appendSpeakerPrefix(messageText, `${nickname}:`, 'nicknameLabel');
+      appendChatNicknamePrefix(messageText, nickname);
       if (body) {
         messageText.appendChild(document.createTextNode(' '));
         appendMarkdownText(messageText, body);
@@ -3033,9 +3298,9 @@ const focusSink = document.getElementById('focusSink');
         updateMessagesVisibility();
       });
 
+      row.appendChild(timestamp);
       row.appendChild(messageText);
       row.appendChild(deleteBtn);
-      line.appendChild(meta);
       line.appendChild(row);
       messages.appendChild(line);
       pruneSupabaseMessages();
@@ -3148,13 +3413,7 @@ const focusSink = document.getElementById('focusSink');
         addSystemMessage('Message is too long. Keep public chat messages to 500 characters.');
         return false;
       }
-      if (!hasCurrentNickname()) {
-        addSystemMessage('Enter a nickname before sending public messages.');
-        updateChatBarVisualState();
-        return false;
-      }
-
-      const nickname = normalizeNickname(currentNickname);
+      const nickname = getOutgoingNickname();
 
       try {
         const client = await initializeSupabaseLiveChat();
@@ -3201,6 +3460,59 @@ const focusSink = document.getElementById('focusSink');
       });
       renderedSupabaseMessageKeys.clear();
       updateMessagesVisibility();
+    }
+
+    function isMissingSupabaseRpcError(error) {
+      const message = String(error?.message || error?.details || error?.hint || '').toLowerCase();
+      const code = String(error?.code || '').toUpperCase();
+      return code === 'PGRST202' || message.includes('could not find the function');
+    }
+
+    async function tryClearPublicChatRpc(client, password) {
+      const candidates = [
+        { name: 'clear_public_chat_messages', args: { password, room: SUPABASE_CHAT_ROOM } },
+        { name: 'clear_public_chat_messages', args: { p_password: password, p_room: SUPABASE_CHAT_ROOM } },
+        { name: 'clear_public_chat_messages', args: { clear_password: password, room_name: SUPABASE_CHAT_ROOM } },
+        { name: 'clear_public_chat_messages', args: { passphrase: password, room_name: SUPABASE_CHAT_ROOM } },
+        { name: 'clear_site_chat_messages', args: { password, room: SUPABASE_CHAT_ROOM } },
+        { name: 'clear_site_chat_messages', args: { p_password: password, p_room: SUPABASE_CHAT_ROOM } },
+        { name: 'clear_site_chat_messages', args: { clear_password: password, room_name: SUPABASE_CHAT_ROOM } },
+      ];
+
+      let lastError = null;
+      for (const candidate of candidates) {
+        const { data, error } = await client.rpc(candidate.name, candidate.args);
+        if (!error) return { data, rpcName: candidate.name };
+        lastError = error;
+        if (!isMissingSupabaseRpcError(error)) break;
+      }
+
+      throw lastError || new Error('Unable to clear public chat messages.');
+    }
+
+    async function clearPublicChatCommand() {
+      const password = window.prompt('Password to clear public chat messages:');
+      if (password === null) {
+        addSystemMessage('/clear_public cancelled.');
+        return true;
+      }
+
+      if (!String(password).trim()) {
+        addSystemMessage('/clear_public needs a password.');
+        return true;
+      }
+
+      try {
+        const client = await initializeSupabaseLiveChat();
+        await tryClearPublicChatRpc(client, password);
+        clearPublicChatDisplay();
+        await loadRecentSupabaseMessages(client);
+        addSystemMessage('Public chat messages cleared.');
+      } catch (error) {
+        console.error('Unable to clear public chat messages:', error);
+        addSystemMessage(`Unable to clear public chat messages: ${error?.message || 'Supabase rejected the request.'}`);
+      }
+      return true;
     }
 
 
@@ -3688,7 +4000,7 @@ const focusSink = document.getElementById('focusSink');
         if (run.cancelled) break;
         const lineText = run.lines[index];
         if (lineText.trim()) {
-          const line = addMessage(`${currentNickname}: ${lineText}`, 'user');
+          const line = addMessage(`${getOutgoingNickname()}: ${lineText}`, 'user');
           line.dataset.scriptRunId = String(run.id);
           line.dataset.scriptMessageId = `${run.id}-${run.messageIds.length + 1}`;
           run.messageIds.push(line.dataset.scriptMessageId);
@@ -5902,7 +6214,7 @@ function createHomepageCustomizeMessageNode(result = {}) {
         if (rawNickname.toLowerCase() === 'reset') {
           currentNickname = '';
           saveNickname('');
-          addSystemMessage(`${command} reset. Enter a nickname to chat.`);
+          addSystemMessage(`${command} reset. You will chat as Anonymous Ghost.`);
           return true;
         }
 
@@ -6053,6 +6365,11 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return true;
       }
 
+      if (command === '/clear_public') {
+        await clearPublicChatCommand();
+        return true;
+      }
+
       if (command === '/refresh') {
         try {
           if (window.parent && window.parent !== window) {
@@ -6068,34 +6385,23 @@ function createHomepageCustomizeMessageNode(result = {}) {
         return true;
       }
 
+      if (command === '/reset') {
+        await resetSiteDataAndRefresh();
+        return true;
+      }
+
       return false;
     }
 
     async function submitMessage() {
       const raw = chatBar.value;
       if (!raw.trim()) return;
+      const trimmed = raw.trim();
 
       if (!isSensitiveClearCommand(raw)) {
         inputHistory.push(raw);
       }
       resetHistoryNavigation();
-
-      const trimmed = raw.trim();
-      if (!trimmed.startsWith('/') && !hasCurrentNickname()) {
-        if (trimmed.length > 40) {
-          addSystemMessage('Nickname is too long. Keep it to 40 characters.');
-        } else {
-          const newNickname = normalizeNickname(trimmed);
-          currentNickname = newNickname;
-          saveNickname(newNickname);
-          addSystemMessage(`Nickname set: ${newNickname}`);
-        }
-        chatBar.value = '';
-        updateChatBarVisualState();
-        resetCommandCycle();
-        hideCommandArgumentSuggestionPopup();
-        return;
-      }
 
       const handled = await handleCommand(raw);
 
@@ -6340,13 +6646,18 @@ function createHomepageCustomizeMessageNode(result = {}) {
         if (newNickname) {
           addSystemMessage(`Nickname set: ${newNickname}`);
         } else {
-          addSystemMessage('Nickname cleared. Enter a nickname to chat.');
+          addSystemMessage('Nickname cleared. You will chat as Anonymous Ghost.');
         }
         return;
       }
 
       if (event.data.type === 'setPublicNicknameColor') {
         applyPublicNicknameColor(event.data.color);
+        return;
+      }
+
+      if (event.data.type === 'setChatTimeZone') {
+        setChatTimeZone(event.data.timeZone);
         return;
       }
 
