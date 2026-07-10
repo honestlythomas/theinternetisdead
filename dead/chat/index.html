@@ -1772,6 +1772,9 @@ const focusSink = document.getElementById('focusSink');
     let supabaseChatClient = null;
     let supabaseChatChannel = null;
     let supabaseChatReadyPromise = null;
+    let publicChatConnectionEnabled = true;
+    let lastPublicPresenceKey = '';
+    let lastPublicPresenceAt = 0;
     const renderedSupabaseMessageKeys = new Set();
     let commandCyclePrefix = '';
 
@@ -3357,11 +3360,43 @@ const focusSink = document.getElementById('focusSink');
       (Array.isArray(data) ? data.slice().reverse() : []).forEach(addPublicChatMessage);
     }
 
+    async function disconnectSupabaseLiveChat() {
+      supabaseChatReadyPromise = null;
+      const channel = supabaseChatChannel;
+      supabaseChatChannel = null;
+      if (!channel) return;
+
+      try {
+        await channel.unsubscribe();
+      } catch (error) {}
+
+      try {
+        if (supabaseChatClient && typeof supabaseChatClient.removeChannel === 'function') {
+          await supabaseChatClient.removeChannel(channel);
+        }
+      } catch (error) {}
+    }
+
+    function setPublicChatConnectionEnabled(enabled) {
+      const nextEnabled = Boolean(enabled);
+      if (publicChatConnectionEnabled === nextEnabled) return;
+      publicChatConnectionEnabled = nextEnabled;
+
+      if (!publicChatConnectionEnabled) {
+        void disconnectSupabaseLiveChat();
+        return;
+      }
+
+      void initializeSupabaseLiveChat();
+    }
+
     async function initializeSupabaseLiveChat() {
+      if (!publicChatConnectionEnabled) return null;
       if (supabaseChatReadyPromise) return supabaseChatReadyPromise;
 
       supabaseChatReadyPromise = (async () => {
         const client = await getSupabaseChatClient();
+        if (!publicChatConnectionEnabled) return null;
 
         if (!supabaseChatChannel) {
           supabaseChatChannel = client
@@ -3390,6 +3425,7 @@ const focusSink = document.getElementById('focusSink');
           });
         }
 
+        if (!publicChatConnectionEnabled) return client;
         await loadRecentSupabaseMessages(client);
 
         return client;
@@ -3407,6 +3443,10 @@ const focusSink = document.getElementById('focusSink');
       const body = String(rawBody || '').trim();
       if (!body) {
         addSystemMessage('Message is empty.');
+        return false;
+      }
+      if (!publicChatConnectionEnabled) {
+        addSystemMessage('Public chat is offline. Click the ghost emoji to reconnect.');
         return false;
       }
       if (body.length > 500) {
@@ -3433,6 +3473,40 @@ const focusSink = document.getElementById('focusSink');
       } catch (error) {
         console.error('Unable to send live chat message:', error);
         addSystemMessage('Unable to send live chat message. Try again in a moment.');
+        return false;
+      }
+    }
+
+    async function sendPublicPresenceMessage(action, rawNickname) {
+      const normalizedAction = action === 'part' ? 'part' : 'join';
+      const nickname = normalizeNickname(rawNickname) || generateAnonymousNickname();
+      const now = Date.now();
+      const presenceKey = `${normalizedAction}:${nickname}`;
+      if (presenceKey === lastPublicPresenceKey && now - lastPublicPresenceAt < 3000) return false;
+      lastPublicPresenceKey = presenceKey;
+      lastPublicPresenceAt = now;
+
+      try {
+        const client = await initializeSupabaseLiveChat();
+        if (!client) return false;
+        const body = normalizedAction === 'part'
+          ? `${nickname} left the ghost counter.`
+          : `${nickname} joined the ghost counter.`;
+        const { data, error } = await client
+          .from(SUPABASE_CHAT_TABLE)
+          .insert({
+            room: SUPABASE_CHAT_ROOM,
+            nickname: 'Ghost Counter',
+            body
+          })
+          .select('id, room, nickname, body, created_at')
+          .single();
+
+        if (error) throw error;
+        if (data) addPublicChatMessage(data);
+        return true;
+      } catch (error) {
+        console.error('Unable to send public presence message:', error);
         return false;
       }
     }
@@ -6658,6 +6732,19 @@ function createHomepageCustomizeMessageNode(result = {}) {
 
       if (event.data.type === 'setChatTimeZone') {
         setChatTimeZone(event.data.timeZone);
+        return;
+      }
+
+      if (event.data.type === 'setPublicChatConnection') {
+        if (event.data.announce) {
+          void sendPublicPresenceMessage(event.data.online === false ? 'part' : 'join', event.data.nickname);
+        }
+        setPublicChatConnectionEnabled(event.data.online !== false);
+        return;
+      }
+
+      if (event.data.type === 'publicChatPresence') {
+        void sendPublicPresenceMessage(event.data.action, event.data.nickname);
         return;
       }
 

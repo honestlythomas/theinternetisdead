@@ -1382,6 +1382,24 @@
       line-height: 1;
     }
 
+    .ghost-counter.is-public-offline .ghost-text {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      justify-content: center;
+    }
+
+    .ghost-counter.is-public-offline .ghost-count {
+      display: none;
+    }
+
+    .ghost-counter.is-public-offline .ghost-label {
+      color: #ff0000;
+      font-size: 0.9em;
+      line-height: 0.92;
+      text-align: center;
+      white-space: nowrap;
+    }
+
     .gear-icon {
       color: #8200e0;
     }
@@ -2708,6 +2726,36 @@
       white-space: normal;
     }
 
+    .ghost-counter.is-public-offline .ghost-text {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      width: max-content;
+      max-width: 100%;
+      justify-self: center;
+      justify-content: center;
+    }
+
+    .ghost-counter.is-public-offline .ghost-count {
+      display: none;
+    }
+
+    .ghost-counter.is-public-offline .ghost-label {
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      font-family: "Rye", "Playbill", "Rockwell Extra Bold", "Clarendon", Georgia, serif;
+      font-size: 0.9em;
+      line-height: 0.92;
+      color: #ff0000;
+      text-align: center;
+      white-space: nowrap;
+      -webkit-text-stroke: 1px #000000;
+      text-shadow:
+        0 0 1px #000,
+        0 0 4px rgba(255, 0, 0, 0.95),
+        0 0 8px rgba(255, 0, 0, 0.7);
+    }
+
     @media (max-width: 600px) {
       .ghost-counter {
         grid-template-columns: 50px minmax(0, 1fr) 50px;
@@ -4021,7 +4069,7 @@
         <span class="emoji-icon skull-icon" role="button" tabindex="0" aria-expanded="false" aria-controls="grave-sidebar"><span class="emoji-tint is-screen is-skull" data-emoji="&#9760;">&#9760;</span></span>
         <a class="site-link home-link" href="/"><span class="texture-content"><span class="domain-text domain-text-desktop">the internet is dead . org</span><span class="domain-text domain-text-mobile">theinternetisdead.org</span></span></a>
         <span class="site-divider after-site" aria-hidden="true"></span>
-        <span class="emoji-icon spiral-icon" role="button" tabindex="0" aria-label="Open videos"><span class="emoji-tint" data-emoji="&#128065;&#65038;">&#128065;&#65038;</span></span>
+        <span class="emoji-icon spiral-icon" role="button" tabindex="0" aria-label="Pin This Page"><span class="emoji-tint" data-emoji="&#11088;">&#11088;</span></span>
       </span>
       <span class="bar-column bar-column-center">
         <span class="index-link-slot"><a class="index-nav-button index-nav-left index-bracket-left" href="#left" aria-label="Go left"><span class="index-bracket" aria-hidden="true">&lt;-</span></a><span class="index-link-panel"><span class="site-divider" aria-hidden="true"></span><span class="index-link-stack"><a class="home-link index-link" href="/"><span class="texture-content">Main Page</span></a></span><span class="site-divider" aria-hidden="true"></span></span><a class="index-nav-button index-nav-right index-bracket-right" href="#right" aria-label="Go right"><span class="index-bracket" aria-hidden="true">-&gt;</span></a></span>
@@ -4029,7 +4077,7 @@
       <span class="bar-column bar-column-right">
         <span class="emoji-icon recycle-icon" role="button" tabindex="0" aria-label="Randomize page"><span class="emoji-tint" data-emoji="&#9851;">&#9851;</span></span>
         <span class="emoji-icon alien-icon ghost-counter" id="ghost-counter" role="status" aria-label="? Ghosts Online">
-          <span class="ghost-glyph"><span class="emoji-tint" data-emoji="&#128123;&#65038;">&#128123;&#65038;</span></span>
+          <span class="ghost-glyph" role="button" tabindex="0" aria-label="Go offline"><span class="emoji-tint" data-emoji="&#128123;&#65038;">&#128123;&#65038;</span></span>
           <span class="ghost-text">
             <span class="ghost-count" id="ghost-count">?</span><span class="ghost-label" id="ghost-label">Ghosts Online</span>
           </span>
@@ -4040,7 +4088,7 @@
           <span class="clock-date" id="clock-date"></span>
         </span>
         <span class="emoji-icon gear-icon" role="button" tabindex="0" aria-expanded="false" aria-controls="gear-customization-sidebar"><span class="emoji-tint" data-emoji="&#9881;&#65038;">&#9881;&#65038;</span></span>
-        <span class="emoji-icon ghost-icon mobile-ghost-icon"><span class="emoji-tint" data-emoji="&#128123;&#65038;">&#128123;&#65038;</span></span>
+        <span class="emoji-icon ghost-icon mobile-ghost-icon" role="button" tabindex="0" aria-label="Go offline"><span class="emoji-tint" data-emoji="&#128123;&#65038;">&#128123;&#65038;</span></span>
       </span>
     </div>
   </div>
@@ -4218,7 +4266,12 @@
     const chatNicknameStorageKey = "tektiteChatNickname";
     const chatNicknameExplicitStorageKey = "tektiteChatNicknameExplicit";
     const publicNicknameColorStorageKey = "tektiteChatPublicNicknameColor";
+    const pinnedShellDefaultStorageKey = "deadPinnedShellDefaultPath";
     let ghostsOnlineCount = null;
+    let publicConnectionEnabled = true;
+    let ghostCounterSocket = null;
+    let ghostCounterReconnectTimer = null;
+    let ghostPresenceAnnounced = false;
     let suppressCustomizationSave = false;
 
     const normalizeChatNickname = (value) => String(value || "").trim().slice(0, 40);
@@ -4292,6 +4345,27 @@
         type: "setChatTimeZone",
         timeZone: timezoneSelect?.value || ""
       }, window.location.origin);
+    };
+
+    const notifyPublicChatConnectionUpdated = (options = {}) => {
+      const frame = document.querySelector('iframe[title="/dead/chat/"]');
+      if (!frame || !frame.contentWindow) return;
+      frame.contentWindow.postMessage({
+        type: "setPublicChatConnection",
+        online: publicConnectionEnabled,
+        announce: Boolean(options.announce)
+      }, window.location.origin);
+    };
+
+    const notifyPublicChatPresence = (action) => {
+      const frame = document.querySelector('iframe[title="/dead/chat/"]');
+      if (!frame || !frame.contentWindow) return false;
+      frame.contentWindow.postMessage({
+        type: "publicChatPresence",
+        action,
+        nickname: readChatNickname()
+      }, window.location.origin);
+      return true;
     };
 
     const syncGearNicknameInput = () => {
@@ -4422,6 +4496,23 @@
       return `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
     };
 
+    const readPinnedShellDefaultPath = () => {
+      try {
+        const pinnedPath = normalizeShellPath(window.localStorage.getItem(pinnedShellDefaultStorageKey));
+        return pinnedPath === "/index.html" ? "/" : pinnedPath;
+      } catch (error) {
+        return "/";
+      }
+    };
+
+    const writePinnedShellDefaultPath = (path) => {
+      const pinnedPath = normalizeShellPath(path);
+      try {
+        window.localStorage.setItem(pinnedShellDefaultStorageKey, pinnedPath);
+      } catch (error) {}
+      return pinnedPath;
+    };
+
     const shellFrameTitle = (path) => {
       const url = new URL(path, window.location.origin);
       return `${url.pathname}${url.search}${url.hash}` || "/";
@@ -4493,6 +4584,15 @@
         if (labelPath === "/dead/chat/" || labelPath.startsWith("/dead/chat/?") || labelPath.startsWith("/dead/chat/#")) {
           notifyPublicNicknameColorUpdated(readPublicNicknameColor());
           notifyChatTimeZoneUpdated();
+          notifyPublicChatConnectionUpdated();
+          if (
+            publicConnectionEnabled
+            && !ghostPresenceAnnounced
+            && window.WebSocket
+            && ghostCounterSocket?.readyState === window.WebSocket.OPEN
+          ) {
+            ghostPresenceAnnounced = notifyPublicChatPresence("join");
+          }
         }
       });
 
@@ -4526,22 +4626,15 @@
         || `${window.location.pathname}${window.location.search}${window.location.hash}`
     );
 
-    const isVideosShellPath = (path) => {
-      const normalizedPath = normalizeShellPath(path);
-      return normalizedPath === "/dead/videos/"
-        || normalizedPath === "/dead/videos/index.html"
-        || normalizedPath.startsWith("/dead/videos/?")
-        || normalizedPath.startsWith("/dead/videos/#")
-        || normalizedPath.startsWith("/dead/videos/index.html?");
-    };
-
-    const toggleVideosFrameDisplayMode = () => {
-      const frame = staticMarkdownOverlay?.querySelector(".static-markdown-frame");
-      if (!frame?.contentWindow) return false;
-      frame.contentWindow.postMessage({
-        type: "feedGridToggleDisplayMode"
-      }, window.location.origin);
-      return true;
+    const pinCurrentShellPage = () => {
+      const currentPath = getCurrentShellPath();
+      const pinnedPath = writePinnedShellDefaultPath(currentPath);
+      if (document.body.classList.contains("has-shell-frame")) {
+        setMainPageRouteLabel(shellFrameTitle(pinnedPath), pinnedPath);
+      } else {
+        setMainPageRouteLabel("Main Page", "/");
+      }
+      return pinnedPath;
     };
 
     const postOpenChatShellMessage = (frame, seedSlash = true) => {
@@ -5063,12 +5156,15 @@
       loadShellFrame(currentPath, { replace: true });
     });
 
-    const startupFramePath = new URLSearchParams(window.location.search).get("frame") || window.sessionStorage.getItem("deadRootShellFramePath");
+    const startupParams = new URLSearchParams(window.location.search);
+    const startupFramePath = startupParams.get("frame") || window.sessionStorage.getItem("deadRootShellFramePath");
     if (startupFramePath) {
       window.sessionStorage.removeItem("deadRootShellFramePath");
       loadShellFrame(startupFramePath, { replace: true });
     } else if (window.location.pathname !== "/" && window.location.pathname !== "/index.html") {
       loadShellFrame(`${window.location.pathname}${window.location.search}${window.location.hash}`, { replace: true });
+    } else if (readPinnedShellDefaultPath() !== "/") {
+      loadShellFrame(readPinnedShellDefaultPath(), { replace: true });
     } else {
       renderHomePage();
     }
@@ -5876,12 +5972,26 @@
       ghostCounter.setAttribute("aria-label", label);
     };
 
-    const restoreGhostCounterLabel = () => {
+    const setGhostCounterOfflineLabel = () => {
       ghostCounter.classList.remove("is-you-dummy");
+      ghostCounter.classList.add("is-public-offline");
+      ghostCount.textContent = "";
+      ghostLabel.textContent = "OFFLINE";
+      ghostCounter.setAttribute("aria-label", "OFFLINE");
+    };
+
+    const restoreGhostCounterLabel = () => {
+      if (!publicConnectionEnabled) {
+        setGhostCounterOfflineLabel();
+        return;
+      }
+      ghostCounter.classList.remove("is-you-dummy");
+      ghostCounter.classList.remove("is-public-offline");
       setGhostCounterLabel(formatGhostsOnlineText(ghostsOnlineCount));
     };
 
     const showYouDummyLabel = () => {
+      if (!publicConnectionEnabled) return;
       if (ghostsOnlineCount !== 1) return;
       ghostCounter.classList.add("is-you-dummy");
       ghostCount.textContent = "";
@@ -5898,11 +6008,36 @@
       restoreGhostCounterLabel();
     };
 
+    const scheduleGhostCounterReconnect = () => {
+      if (!publicConnectionEnabled) return;
+      if (ghostCounterReconnectTimer) window.clearTimeout(ghostCounterReconnectTimer);
+      ghostCounterReconnectTimer = window.setTimeout(() => {
+        ghostCounterReconnectTimer = null;
+        connectGhostCounterSocket();
+      }, 5000);
+    };
+
+    const disconnectGhostCounterSocket = () => {
+      if (ghostCounterReconnectTimer) {
+        window.clearTimeout(ghostCounterReconnectTimer);
+        ghostCounterReconnectTimer = null;
+      }
+      if (ghostCounterSocket) {
+        const socket = ghostCounterSocket;
+        ghostCounterSocket = null;
+        try {
+          socket.close();
+        } catch (error) {}
+      }
+    };
+
     const connectGhostCounterSocket = () => {
+      if (!publicConnectionEnabled) return;
       if (!window.WebSocket) {
         setGhostsOnline(null);
         return;
       }
+      if (ghostCounterSocket && ghostCounterSocket.readyState !== window.WebSocket.CLOSED) return;
 
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const socketUrl = `${protocol}//${window.location.host}/api/ghosts-online`;
@@ -5911,11 +6046,13 @@
       try {
         socket = new WebSocket(socketUrl);
       } catch (error) {
-        window.setTimeout(connectGhostCounterSocket, 5000);
+        scheduleGhostCounterReconnect();
         return;
       }
+      ghostCounterSocket = socket;
 
       socket.addEventListener("message", (event) => {
+        if (!publicConnectionEnabled || socket !== ghostCounterSocket) return;
         try {
           const data = JSON.parse(event.data);
           const count = Number(data && data.count);
@@ -5927,9 +6064,38 @@
         }
       });
 
-      socket.addEventListener("close", () => {
-        window.setTimeout(connectGhostCounterSocket, 5000);
+      socket.addEventListener("open", () => {
+        if (!publicConnectionEnabled || socket !== ghostCounterSocket || ghostPresenceAnnounced) return;
+        ghostPresenceAnnounced = notifyPublicChatPresence("join");
       });
+
+      socket.addEventListener("close", () => {
+        if (socket === ghostCounterSocket) ghostCounterSocket = null;
+        scheduleGhostCounterReconnect();
+      });
+    };
+
+    const setPublicConnectionEnabled = (enabled) => {
+      publicConnectionEnabled = Boolean(enabled);
+      const ghostToggles = document.querySelectorAll(".ghost-glyph, .mobile-ghost-icon");
+      if (publicConnectionEnabled) {
+        ghostToggles.forEach((toggle) => toggle.setAttribute("aria-label", "Go offline"));
+        ghostPresenceAnnounced = false;
+        setGhostsOnline(null);
+        connectGhostCounterSocket();
+      } else {
+        ghostToggles.forEach((toggle) => toggle.setAttribute("aria-label", "Go online"));
+        if (ghostPresenceAnnounced) notifyPublicChatPresence("part");
+        ghostPresenceAnnounced = false;
+        disconnectGhostCounterSocket();
+        stopWhiteNoise();
+        setGhostCounterOfflineLabel();
+      }
+      notifyPublicChatConnectionUpdated({ announce: false });
+    };
+
+    const togglePublicConnection = () => {
+      setPublicConnectionEnabled(!publicConnectionEnabled);
     };
 
     const ghostLabelElement = document.getElementById("ghost-label");
@@ -6133,12 +6299,13 @@
       refreshDavidVoice();
       spiralHoverActive = true;
 
-      const phrase = spiralRepeatCount % 2 === 0 ? "Watch" : "View";
-      const utterance = new SpeechSynthesisUtterance(phrase);
+      const utterance = new SpeechSynthesisUtterance("Pin This Page");
       if (davidVoice) utterance.voice = davidVoice;
-      utterance.rate = 1;
-      utterance.pitch = spiralRepeatCount % 2 === 0 ? 1.25 : 0.75;
-      utterance.volume = TTS_VOLUME_SCALE * siteVolumeScale;
+      utterance.rate = 1.04 + Math.random() * 0.16;
+      utterance.pitch = spiralRepeatCount % 2 === 0
+        ? 1.18 + Math.random() * 0.18
+        : 0.68 + Math.random() * 0.22;
+      utterance.volume = 0.9 * TTS_VOLUME_SCALE * siteVolumeScale;
 
       window.speechSynthesis.speak(utterance);
       spiralRepeatCount += 1;
@@ -6573,14 +6740,12 @@
       spiralIcon.addEventListener("mouseleave", stopHeaderSpeech);
       spiralIcon.addEventListener("click", (event) => {
         event.preventDefault();
-        if (isVideosShellPath(getCurrentShellPath()) && toggleVideosFrameDisplayMode()) return;
-        loadShellFrame("/dead/videos/", { push: true });
+        pinCurrentShellPage();
       });
       spiralIcon.addEventListener("keydown", (event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
         event.preventDefault();
-        if (isVideosShellPath(getCurrentShellPath()) && toggleVideosFrameDisplayMode()) return;
-        loadShellFrame("/dead/videos/", { push: true });
+        pinCurrentShellPage();
       });
     }
     addDesktopSpeechRepeatHover(".index-bracket-left", "Go Left");
@@ -6623,8 +6788,22 @@
     });
 
     const ghostGlyph = document.querySelector(".ghost-glyph");
+    const addPublicConnectionToggleHandlers = (element) => {
+      if (!element) return;
+      element.addEventListener("click", (event) => {
+        event.preventDefault();
+        togglePublicConnection();
+      });
+      element.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        togglePublicConnection();
+      });
+    };
+
     if (ghostGlyph) {
       ghostGlyph.addEventListener("mouseenter", () => {
+        if (!publicConnectionEnabled) return;
         if (isAudioMuted) return;
         stopWhiteNoise();
         stopModemStatic();
@@ -6634,11 +6813,16 @@
         speakGhostPhraseLoop();
       });
       ghostGlyph.addEventListener("mouseleave", stopHeaderSpeech);
+      addPublicConnectionToggleHandlers(ghostGlyph);
     }
+    addPublicConnectionToggleHandlers(document.querySelector(".mobile-ghost-icon"));
 
     const globeGlyph = document.querySelector(".alien-glyph");
     if (globeGlyph) {
-      globeGlyph.addEventListener("mouseenter", startWhiteNoise);
+      globeGlyph.addEventListener("mouseenter", () => {
+        if (!publicConnectionEnabled) return;
+        startWhiteNoise();
+      });
       globeGlyph.addEventListener("mouseleave", stopWhiteNoise);
     }
 
@@ -6647,6 +6831,12 @@
       stopWhiteNoise();
       stopModemStatic();
     };
+
+    window.addEventListener("pagehide", () => {
+      if (!ghostPresenceAnnounced) return;
+      notifyPublicChatPresence("part");
+      ghostPresenceAnnounced = false;
+    });
 
     if (typeof desktopHeaderAudioQuery.addEventListener === "function") {
       desktopHeaderAudioQuery.addEventListener("change", stopHeaderAudio);
