@@ -737,6 +737,83 @@
         0 0 16px rgba(0, 255, 102, 0.72);
     }
 
+    .recycle-haunt-message {
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      padding: clamp(18px, 4vw, 44px);
+      color: #00ff66;
+      background:
+        repeating-linear-gradient(0deg, rgba(0, 255, 102, 0.08) 0 1px, transparent 1px 4px),
+        radial-gradient(circle at 50% 45%, rgba(0, 255, 102, 0.14), transparent 42%),
+        #000;
+      font-family: "Courier New", Courier, monospace;
+      text-align: center;
+      text-shadow:
+        2px 0 rgba(255, 0, 96, 0.48),
+        -2px 0 rgba(0, 229, 255, 0.42),
+        0 0 14px rgba(0, 255, 102, 0.62);
+    }
+
+    .recycle-haunt-copy {
+      max-width: 820px;
+      font-size: clamp(20px, 5vw, 58px);
+      line-height: 1.04;
+    }
+
+    .recycle-haunt-countdown {
+      margin-top: clamp(14px, 3vw, 28px);
+      font-size: clamp(18px, 4vw, 44px);
+      color: #fff;
+    }
+
+    .recycle-icon.is-haunted .emoji-tint {
+      animation: recycle-haunt-twitch 360ms steps(2, end) infinite;
+      filter:
+        drop-shadow(2px 0 0 rgba(255, 0, 96, 0.75))
+        drop-shadow(-2px 0 0 rgba(0, 229, 255, 0.72))
+        drop-shadow(0 0 12px rgba(0, 255, 102, 0.9));
+    }
+
+    .recycle-icon.is-haunted::after {
+      content: "!";
+      position: absolute;
+      right: 3px;
+      top: 1px;
+      color: #00ff66;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 13px;
+      font-weight: 700;
+      text-shadow: 0 0 7px rgba(0, 255, 102, 0.9);
+      pointer-events: none;
+    }
+
+    @keyframes recycle-haunt-twitch {
+      0% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+      }
+
+      25% {
+        transform: translate3d(-1px, 1px, 0) rotate(-9deg);
+      }
+
+      50% {
+        transform: translate3d(1px, -1px, 0) rotate(10deg);
+      }
+
+      75% {
+        transform: translate3d(-2px, 0, 0) rotate(-4deg);
+      }
+
+      100% {
+        transform: translate3d(1px, 1px, 0) rotate(6deg);
+      }
+    }
+
     .gear-sidebar-panel:hover {
       color: white;
     }
@@ -4434,6 +4511,29 @@
       frame.requestFullscreen().catch(() => {});
     };
 
+    const getCurrentShellPath = () => (
+      mainPageRouteLink?.dataset.shellPath
+        || `${window.location.pathname}${window.location.search}${window.location.hash}`
+    );
+
+    const isVideosShellPath = (path) => {
+      const normalizedPath = normalizeShellPath(path);
+      return normalizedPath === "/dead/videos/"
+        || normalizedPath === "/dead/videos/index.html"
+        || normalizedPath.startsWith("/dead/videos/?")
+        || normalizedPath.startsWith("/dead/videos/#")
+        || normalizedPath.startsWith("/dead/videos/index.html?");
+    };
+
+    const toggleVideosFrameDisplayMode = () => {
+      const frame = staticMarkdownOverlay?.querySelector(".static-markdown-frame");
+      if (!frame?.contentWindow) return false;
+      frame.contentWindow.postMessage({
+        type: "feedGridToggleDisplayMode"
+      }, window.location.origin);
+      return true;
+    };
+
     const postOpenChatShellMessage = (frame, seedSlash = true) => {
       if (!frame?.contentWindow) return;
       try {
@@ -4514,11 +4614,139 @@
       loadShellFrame(shellCycleRoutes[nextIndex], { push: true });
     };
 
-    const randomizeShellRoute = () => {
+    const RECYCLE_SPAM_WINDOW_MS = 15000;
+    const RECYCLE_SPAM_CLICK_LIMIT = 10;
+    const RECYCLE_ANNOYANCE_COOLDOWN_MS = 4500;
+    const RECYCLE_HAUNT_LOAD_DELAY_SECONDS = 3;
+    const recycleHauntMessages = [
+      "Slow down there click demon.",
+      "The recycle symbol saw that.",
+      "Randomness needs to chew before it swallows.",
+      "You are making the page dizzy.",
+      "The button is not a slot machine.",
+      "Please wait while the internet pretends to forgive you.",
+      "The next page is loading after a brief spiritual penalty."
+    ];
+    const recycleHauntState = {
+      clickTimes: [],
+      annoyanceLevel: 0,
+      lastAnnoyedAt: 0,
+      countdownTimer: null,
+      releaseTimer: null,
+      pendingRoute: ""
+    };
+
+    const getRandomShellRoute = () => {
       const currentPath = normalizeShellPath(`${window.location.pathname}${window.location.search}${window.location.hash}`);
       const candidates = shellRandomRoutes.filter((route) => normalizeShellPath(route) !== currentPath);
       const routePool = candidates.length ? candidates : shellRandomRoutes;
-      const nextRoute = routePool[Math.floor(Math.random() * routePool.length)] || "/";
+      return routePool[Math.floor(Math.random() * routePool.length)] || "/";
+    };
+
+    const resetRecycleHauntTimers = () => {
+      if (recycleHauntState.countdownTimer) {
+        window.clearInterval(recycleHauntState.countdownTimer);
+        recycleHauntState.countdownTimer = null;
+      }
+      if (recycleHauntState.releaseTimer) {
+        window.clearTimeout(recycleHauntState.releaseTimer);
+        recycleHauntState.releaseTimer = null;
+      }
+    };
+
+    const setRecycleHaunted = (isHaunted) => {
+      recycleButton?.classList.toggle("is-haunted", Boolean(isHaunted));
+      if (recycleButton) {
+        recycleButton.setAttribute(
+          "aria-label",
+          isHaunted ? `Randomize page, haunted annoyance level ${recycleHauntState.annoyanceLevel}` : "Randomize page"
+        );
+      }
+    };
+
+    const coolRecycleAnnoyance = (now = performance.now()) => {
+      if (!recycleHauntState.lastAnnoyedAt) return;
+      const cooledLevels = Math.floor((now - recycleHauntState.lastAnnoyedAt) / RECYCLE_ANNOYANCE_COOLDOWN_MS);
+      if (cooledLevels <= 0) return;
+      recycleHauntState.annoyanceLevel = Math.max(0, recycleHauntState.annoyanceLevel - cooledLevels);
+      recycleHauntState.lastAnnoyedAt = now;
+      if (recycleHauntState.annoyanceLevel === 0 && !recycleHauntState.countdownTimer) {
+        setRecycleHaunted(false);
+      }
+    };
+
+    const renderRecycleHauntMessage = (message, secondsLeft) => {
+      if (!staticMarkdownOverlay) return;
+      const panel = document.createElement("div");
+      panel.className = "recycle-haunt-message";
+      const copy = document.createElement("div");
+      copy.className = "recycle-haunt-copy";
+      copy.textContent = message;
+      const countdown = document.createElement("div");
+      countdown.className = "recycle-haunt-countdown";
+      countdown.textContent = `(${secondsLeft}s)`;
+      panel.append(copy, countdown);
+      document.body.classList.remove("has-shell-frame");
+      staticMarkdownOverlay.classList.remove("has-iframe");
+      staticMarkdownOverlay.replaceChildren(panel);
+    };
+
+    const speakRecycleHauntMessage = (message) => {
+      if (typeof speakWithDavid === "function") {
+        speakWithDavid(message, {
+          rate: 0.88 + Math.random() * 0.18,
+          pitch: 0.58 + Math.random() * 0.34,
+          volume: 0.95
+        });
+      }
+    };
+
+    const startRecycleHauntDelay = (nextRoute) => {
+      resetRecycleHauntTimers();
+      recycleHauntState.pendingRoute = nextRoute;
+      const message = recycleHauntMessages[Math.floor(Math.random() * recycleHauntMessages.length)] || recycleHauntMessages[0];
+      let secondsLeft = RECYCLE_HAUNT_LOAD_DELAY_SECONDS;
+      setRecycleHaunted(true);
+      renderRecycleHauntMessage(message, secondsLeft);
+      speakRecycleHauntMessage(message);
+
+      recycleHauntState.countdownTimer = window.setInterval(() => {
+        secondsLeft -= 1;
+        if (secondsLeft > 0) {
+          renderRecycleHauntMessage(message, secondsLeft);
+          return;
+        }
+
+        resetRecycleHauntTimers();
+        recycleHauntState.releaseTimer = window.setTimeout(() => {
+          coolRecycleAnnoyance();
+          if (recycleHauntState.annoyanceLevel <= 0) setRecycleHaunted(false);
+        }, RECYCLE_ANNOYANCE_COOLDOWN_MS);
+        loadShellFrame(recycleHauntState.pendingRoute || "/", { push: true });
+        recycleHauntState.pendingRoute = "";
+      }, 1000);
+    };
+
+    const shouldHauntRecycleRandomize = () => {
+      const now = performance.now();
+      coolRecycleAnnoyance(now);
+      recycleHauntState.clickTimes = recycleHauntState.clickTimes
+        .filter((time) => now - time <= RECYCLE_SPAM_WINDOW_MS);
+      recycleHauntState.clickTimes.push(now);
+
+      if (recycleHauntState.clickTimes.length < RECYCLE_SPAM_CLICK_LIMIT) return false;
+      recycleHauntState.annoyanceLevel = Math.min(9, recycleHauntState.annoyanceLevel + 1);
+      recycleHauntState.lastAnnoyedAt = now;
+      recycleHauntState.clickTimes = [];
+      return true;
+    };
+
+    const randomizeShellRoute = () => {
+      const nextRoute = getRandomShellRoute();
+      if (shouldHauntRecycleRandomize()) {
+        startRecycleHauntDelay(nextRoute);
+        return;
+      }
       loadShellFrame(nextRoute, { push: true });
     };
 
@@ -6334,11 +6562,13 @@
       spiralIcon.addEventListener("mouseleave", stopHeaderSpeech);
       spiralIcon.addEventListener("click", (event) => {
         event.preventDefault();
+        if (isVideosShellPath(getCurrentShellPath()) && toggleVideosFrameDisplayMode()) return;
         loadShellFrame("/dead/videos/", { push: true });
       });
       spiralIcon.addEventListener("keydown", (event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
         event.preventDefault();
+        if (isVideosShellPath(getCurrentShellPath()) && toggleVideosFrameDisplayMode()) return;
         loadShellFrame("/dead/videos/", { push: true });
       });
     }

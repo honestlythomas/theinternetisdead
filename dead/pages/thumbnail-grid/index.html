@@ -630,7 +630,7 @@
     let deviceScale = 1;
     let statusText = "Loading feed...";
     let currentSort = "newest";
-    let displayMode = "fullGrid";
+    let displayMode = "slideshow";
     let menuOpen = false;
     let sideMenuOpen = false;
     let hoveredTileIndex = -1;
@@ -2488,6 +2488,10 @@
 
     window.addEventListener("message", (event) => {
       const data = event.data || {};
+      if (data.type === "feedGridToggleDisplayMode") {
+        cycleDisplayMode();
+        return;
+      }
       if (data.type !== "feedGridOpenVideo") return;
 
       pendingOpenVideoId = String(data.videoId || "").trim();
