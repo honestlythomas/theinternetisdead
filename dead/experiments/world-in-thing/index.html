@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I Am The World In A Thing</title>
+  <style>
+    :root {
+      --bg: #050009;
+      --purple: #512a67;
+      --purple2: #9b4dff;
+      --lime: #b6ff00;
+      --green: #39ff14;
+      --hot: #ff3df2;
+      --cyan: #00e5ff;
+      --white: #f4f0ff;
+      --dim: rgba(244, 240, 255, 0.64);
+      --black: #000;
+      --scan: rgba(182, 255, 0, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--white);
+      font-family: "Courier New", Consolas, monospace;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 18% 22%, rgba(155, 77, 255, 0.28), transparent 26%),
+        radial-gradient(circle at 83% 78%, rgba(57, 255, 20, 0.18), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(255, 61, 242, 0.08), transparent 36%),
+        linear-gradient(135deg, #050009 0%, #100018 47%, #020007 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.035) 0px,
+          rgba(255,255,255,0.035) 1px,
+          transparent 2px,
+          transparent 5px
+        );
+      mix-blend-mode: overlay;
+      opacity: 0.55;
+      animation: scan 7s linear infinite;
+      z-index: 9;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -20%;
+      pointer-events: none;
+      background: conic-gradient(from 180deg, transparent, rgba(182,255,0,0.06), transparent, rgba(155,77,255,0.12), transparent);
+      opacity: 0.7;
+      filter: blur(45px);
+      animation: slowSpin 42s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes scan {
+      from { transform: translateY(-4px); }
+      to { transform: translateY(4px); }
+    }
+
+    @keyframes slowSpin {
+      from { transform: rotate(0deg) scale(1.05); }
+      to { transform: rotate(360deg) scale(1.05); }
+    }
+
+    .frame {
+      position: relative;
+      z-index: 2;
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: clamp(18px, 4vw, 64px);
+    }
+
+    .terminal-border {
+      position: absolute;
+      inset: clamp(12px, 2vw, 28px);
+      border: 2px solid rgba(182, 255, 0, 0.58);
+      box-shadow:
+        0 0 18px rgba(182, 255, 0, 0.25),
+        inset 0 0 32px rgba(155, 77, 255, 0.22);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .slide {
+      width: min(1080px, 88vw);
+      min-height: min(560px, 70vh);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: clamp(22px, 5vw, 74px);
+      border: 1px solid rgba(155, 77, 255, 0.35);
+      background:
+        linear-gradient(180deg, rgba(5,0,9,0.48), rgba(0,0,0,0.68)),
+        repeating-linear-gradient(90deg, transparent, transparent 42px, rgba(182,255,0,0.025) 43px);
+      box-shadow:
+        0 0 70px rgba(155,77,255,0.2),
+        inset 0 0 60px rgba(0,0,0,0.55);
+      transform-style: preserve-3d;
+      animation: breathe 8s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1) rotateX(0deg); filter: saturate(1); }
+      50% { transform: scale(1.018) rotateX(0.5deg); filter: saturate(1.25); }
+    }
+
+    .text {
+      margin: 0;
+      max-width: 100%;
+      font-weight: 800;
+      line-height: 1.08;
+      text-wrap: balance;
+      letter-spacing: -0.035em;
+      font-size: clamp(38px, 7.4vw, 112px);
+      color: var(--white);
+      text-shadow:
+        2px 0 rgba(255, 61, 242, 0.75),
+        -2px 0 rgba(0, 229, 255, 0.65),
+        0 0 22px rgba(182,255,0,0.28),
+        0 0 60px rgba(155,77,255,0.35);
+      animation: textGlitch 2.6s steps(2, end) infinite;
+    }
+
+    .text.small { font-size: clamp(27px, 4.9vw, 78px); line-height: 1.16; letter-spacing: -0.025em; }
+    .text.tiny { font-size: clamp(22px, 3.1vw, 48px); line-height: 1.28; letter-spacing: -0.012em; font-weight: 700; }
+    .text.title { font-size: clamp(42px, 8.2vw, 126px); color: var(--lime); }
+    .text.hot { color: #ffd6fb; text-shadow: 2px 0 var(--hot), -2px 0 var(--cyan), 0 0 28px rgba(255,61,242,0.45); }
+    .text.green { color: var(--lime); }
+
+    @keyframes textGlitch {
+      0%, 88%, 100% { transform: translate(0,0); }
+      90% { transform: translate(-2px,1px) skewX(-2deg); }
+      92% { transform: translate(2px,-1px) skewX(2deg); }
+      94% { transform: translate(0,0); }
+    }
+
+    .ghost-word {
+      position: absolute;
+      z-index: 1;
+      color: rgba(182,255,0,0.08);
+      font-size: clamp(80px, 18vw, 260px);
+      font-weight: 900;
+      letter-spacing: -0.08em;
+      text-transform: uppercase;
+      pointer-events: none;
+      filter: blur(1px);
+      animation: drift 18s ease-in-out infinite alternate;
+      white-space: nowrap;
+    }
+
+    @keyframes drift {
+      from { transform: translate(-4vw, -2vh) rotate(-4deg); }
+      to { transform: translate(4vw, 3vh) rotate(4deg); }
+    }
+
+    .play-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at center, rgba(81,42,103,0.96), rgba(5,0,9,0.97) 58%, #000 100%);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    .play-screen.hidden {
+      opacity: 0;
+      transform: scale(1.04);
+      pointer-events: none;
+    }
+
+    .play-box {
+      width: min(760px, 86vw);
+      text-align: center;
+      padding: clamp(26px, 6vw, 64px);
+      border: 2px solid var(--lime);
+      background: rgba(0,0,0,0.45);
+      box-shadow: 0 0 42px rgba(182,255,0,0.28), inset 0 0 34px rgba(155,77,255,0.3);
+    }
+
+    .play-title {
+      margin: 0 0 18px;
+      color: var(--lime);
+      font-size: clamp(26px, 5.5vw, 70px);
+      line-height: 0.95;
+      text-transform: uppercase;
+      text-shadow: 2px 0 var(--hot), -2px 0 var(--cyan), 0 0 18px rgba(182,255,0,0.6);
+    }
+
+    .play-sub {
+      margin: 0 auto 28px;
+      max-width: 56ch;
+      color: var(--dim);
+      font-size: clamp(14px, 2vw, 19px);
+      line-height: 1.5;
+    }
+
+    button {
+      appearance: none;
+      cursor: pointer;
+      border: 2px solid var(--lime);
+      background: #050009;
+      color: var(--lime);
+      font-family: inherit;
+      font-size: clamp(18px, 3vw, 32px);
+      font-weight: 900;
+      padding: 18px 32px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      box-shadow: 0 0 22px rgba(182,255,0,0.35), inset 0 0 20px rgba(182,255,0,0.08);
+      transition: transform 160ms ease, box-shadow 160ms ease, color 160ms ease;
+    }
+
+    button:hover, button:focus {
+      transform: scale(1.06);
+      color: #050009;
+      background: var(--lime);
+      box-shadow: 0 0 40px rgba(182,255,0,0.65);
+      outline: none;
+    }
+
+    .progress {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      height: 5px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--lime), var(--hot), var(--cyan));
+      box-shadow: 0 0 16px rgba(182,255,0,0.75);
+      z-index: 12;
+      transition: width 250ms linear;
+    }
+
+    .paused-note {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 30;
+      display: none;
+      color: var(--lime);
+      background: rgba(0,0,0,0.82);
+      border: 1px solid var(--lime);
+      padding: 18px 26px;
+      box-shadow: 0 0 28px rgba(182,255,0,0.35);
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .paused .paused-note { display: block; }
+
+    @media (max-width: 720px) {
+      .slide { width: 92vw; min-height: 68vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="play-screen" id="playScreen">
+    <div class="play-box">
+      <h1 class="play-title">I Am The World<br>In A Thing</h1>
+      <p class="play-sub">Press play to begin the typographic slideshow. This page will try to use Microsoft David through your browser speech voices. If Windows refuses, blame the browser, because apparently even narration needs bureaucracy.</p>
+      <button id="playButton">▶ Play Transmission</button>
+    </div>
+  </div>
+
+  <div class="frame" id="frame">
+    <div class="terminal-border"></div>
+    <div class="ghost-word" id="ghostWord">WORLD</div>
+    <section class="slide" id="slide">
+      <h2 class="text title" id="slideText">I am not a thing in the world.</h2>
+    </section>
+    <div class="paused-note">PAUSED<br><span style="font-size:13px; opacity:.7;">press space to continue</span></div>
+  </div>
+  <div class="progress" id="progress"></div>
+
+  <script>
+    const slides = [
+      { text: "I am not a thing in the world.", ghost: "THING", style: "title" },
+      { text: "I am the world in a thing.", ghost: "WORLD", style: "title green" },
+      { text: "That sounds impossible at first, because we are taught to think of ourselves as objects.", ghost: "OBJECT", style: "small" },
+      { text: "A body in a room. A person on a planet. A name in a system.", ghost: "BODY", style: "small hot" },
+      { text: "A tiny biological appointment walking around under fluorescent lights, trying not to forget passwords, bills, hunger, and time.", ghost: "SYSTEM", style: "tiny" },
+      { text: "But attention tells a different story.", ghost: "ATTEND", style: "small green" },
+      { text: "Attention is not just a spotlight.", ghost: "LIGHT", style: "small" },
+      { text: "It is not just a cursor moving across the screen of reality.", ghost: "CURSOR", style: "tiny hot" },
+      { text: "Attention is the thing that decides what becomes real enough to enter us.", ghost: "ENTER", style: "small green" },
+      { text: "When I pay attention to my hand, I do not simply observe it from outside.", ghost: "HAND", style: "tiny" },
+      { text: "I enter the hand.", ghost: "IN", style: "title hot" },
+      { text: "I feel its weight, its temperature, its pressure, its shape from the inside.", ghost: "INSIDE", style: "tiny" },
+      { text: "The hand is not just an object attached to me.", ghost: "MAP", style: "small" },
+      { text: "It becomes a place. A room. A field. A small country of sensation.", ghost: "PLACE", style: "small green" },
+      { text: "Then attention moves deeper.", ghost: "DEEP", style: "small hot" },
+      { text: "Suddenly I am aware of breath. Tension. Pulse. Hunger. Fear.", ghost: "PULSE", style: "small" },
+      { text: "The quiet maintenance systems of being alive.", ghost: "ALIVE", style: "small green" },
+      { text: "The body starts sending messages like some ancient machine under the floorboards.", ghost: "MACHINE", style: "tiny" },
+      { text: "Still running. Still hot. Still trying.", ghost: "TRYING", style: "small hot" },
+      { text: "And then attention moves outward.", ghost: "OUT", style: "title green" },
+      { text: "The room becomes part of me.", ghost: "ROOM", style: "small" },
+      { text: "The sound of a fan. The color of the wall. The distance between objects.", ghost: "SENSE", style: "tiny" },
+      { text: "The shape of silence.", ghost: "SILENCE", style: "title hot" },
+      { text: "The weather pressing against the window.", ghost: "WINDOW", style: "small" },
+      { text: "The whole world enters through the senses and becomes experience.", ghost: "EXPERIENCE", style: "small green" },
+      { text: "So where am I, exactly?", ghost: "WHERE", style: "title" },
+      { text: "Am I inside the body?", ghost: "INSIDE", style: "small" },
+      { text: "Am I outside in the world?", ghost: "OUTSIDE", style: "small hot" },
+      { text: "Or am I the place where inside and outside keep translating each other?", ghost: "TRANSLATE", style: "small green" },
+      { text: "The world does not arrive in me as raw matter.", ghost: "MATTER", style: "small" },
+      { text: "It arrives as pressure, light, sound, memory, meaning.", ghost: "MEANING", style: "small green" },
+      { text: "A room becomes a mood.", ghost: "MOOD", style: "title hot" },
+      { text: "A voice becomes a feeling in the chest.", ghost: "VOICE", style: "small" },
+      { text: "A shadow becomes a threat.", ghost: "SHADOW", style: "small hot" },
+      { text: "A song becomes a time machine.", ghost: "TIME", style: "title green" },
+      { text: "A smell becomes childhood.", ghost: "MEMORY", style: "small" },
+      { text: "A word becomes a door.", ghost: "DOOR", style: "title hot" },
+      { text: "Attention is the scale-shifter.", ghost: "SCALE", style: "title green" },
+      { text: "It can shrink into a fingertip.", ghost: "TINY", style: "small" },
+      { text: "It can expand into the room.", ghost: "ROOM", style: "small hot" },
+      { text: "It can hold a whole city in memory.", ghost: "CITY", style: "small" },
+      { text: "It can zoom out to the planet, the solar system, the galaxy, the cosmic web.", ghost: "COSMOS", style: "tiny green" },
+      { text: "Until scale becomes too large for ordinary thought and turns into architecture.", ghost: "ARCHITECTURE", style: "small" },
+      { text: "Not a picture, exactly.", ghost: "NOT", style: "title" },
+      { text: "A felt structure.", ghost: "FELT", style: "title hot" },
+      { text: "A map made of awe, math, fear, imagination, and probably a few errors.", ghost: "ERROR", style: "tiny green" },
+      { text: "Because the universe did not consult human perception when designing itself.", ghost: "RUDE", style: "small hot" },
+      { text: "Still, even if the model is wrong, the act of attention is real.", ghost: "REAL", style: "small green" },
+      { text: "To imagine the cosmos is not to contain it accurately.", ghost: "CONTAIN", style: "small" },
+      { text: "It is to let the mind stretch toward it.", ghost: "STRETCH", style: "small hot" },
+      { text: "It is to feel the body become a little observatory.", ghost: "OBSERVATORY", style: "small green" },
+      { text: "A temporary instrument.", ghost: "INSTRUMENT", style: "title" },
+      { text: "A strange little antenna made of nerves and memory.", ghost: "ANTENNA", style: "small hot" },
+      { text: "Receiving more than it can understand, but receiving anyway.", ghost: "RECEIVE", style: "small green" },
+      { text: "That is the power of attention.", ghost: "POWER", style: "title green" },
+      { text: "It changes the size of the self.", ghost: "SELF", style: "small hot" },
+      { text: "Sometimes I am small enough to live inside my own hand.", ghost: "HAND", style: "small" },
+      { text: "Sometimes I am wide enough to feel the room as part of my nervous system.", ghost: "WIDE", style: "tiny green" },
+      { text: "Sometimes I am so far zoomed out that the self feels less like a person.", ghost: "ZOOM", style: "tiny" },
+      { text: "More like a fold in reality.", ghost: "FOLD", style: "title hot" },
+      { text: "A point where the world briefly gathers itself and says: I am here.", ghost: "HERE", style: "small green" },
+      { text: "Not because I am separate from the world.", ghost: "SEPARATE", style: "small" },
+      { text: "Because I am one of the ways the world knows it is happening.", ghost: "HAPPENING", style: "small green" },
+      { text: "I am not a thing in the world.", ghost: "THING", style: "title" },
+      { text: "I am the world in a thing.", ghost: "WORLD", style: "title green" },
+      { text: "A body is not a prison. It is an aperture.", ghost: "APERTURE", style: "small hot" },
+      { text: "A mind is not a container. It is a scale engine.", ghost: "ENGINE", style: "small green" },
+      { text: "Attention is not passive.", ghost: "ACTIVE", style: "title" },
+      { text: "It is participation.", ghost: "PARTICIPATE", style: "title hot" },
+      { text: "To attend to something is to let it enter the shape of your life.", ghost: "SHAPE", style: "small" },
+      { text: "To give attention is to give reality a doorway.", ghost: "DOORWAY", style: "small green" },
+      { text: "To withdraw attention is to let something fade from the living map.", ghost: "FADE", style: "tiny hot" },
+      { text: "And maybe that is why attention feels sacred.", ghost: "SACRED", style: "small green" },
+      { text: "Even when the modern world treats it like loose change.", ghost: "CHANGE", style: "small" },
+      { text: "Scraped off the floor by apps, ads, feeds, notifications, and glowing rectangles.", ghost: "FEED", style: "tiny hot" },
+      { text: "Because attention is not nothing.", ghost: "NOTHING", style: "title" },
+      { text: "Attention is how the world becomes intimate.", ghost: "INTIMATE", style: "small green" },
+      { text: "It is how distance becomes meaning.", ghost: "DISTANCE", style: "small" },
+      { text: "It is how matter becomes experience.", ghost: "MATTER", style: "small hot" },
+      { text: "It is how a thing becomes a world.", ghost: "WORLD", style: "title green" }
+    ];
+
+    const fullText = `I am not a thing in the world.
+
+I am the world in a thing.
+
+That sounds impossible at first, because we are taught to think of ourselves as objects. A body in a room. A person on a planet. A name in a system. A tiny little biological appointment walking around under fluorescent lights, trying not to forget passwords, bills, hunger, time, and whatever else civilization throws at the nervous system like confetti from a paper shredder.
+
+But attention tells a different story.
+
+Attention is not just a spotlight. It is not just a cursor moving across the screen of reality. Attention is the thing that decides what becomes real enough to enter us.
+
+When I pay attention to my hand, I do not simply observe it from outside. I enter the hand. I feel its weight, its temperature, its pressure, its shape from the inside. And then the boundary starts to blur. The hand is not just an object attached to me. It becomes a place. A room. A field. A small country of sensation.
+
+Then attention moves deeper, and suddenly I am aware of breath. Tension. Pulse. Hunger. Fear. The quiet maintenance systems of being alive. The body starts sending messages like some ancient machine under the floorboards, still running, still hot, still trying.
+
+And then attention moves outward.
+
+The room becomes part of me. The sound of a fan. The color of the wall. The distance between objects. The shape of silence. The weather pressing against the window. The whole world enters through the senses and becomes experience.
+
+So where am I, exactly?
+
+Am I inside the body?
+
+Am I outside in the world?
+
+Or am I the place where inside and outside keep translating each other?
+
+Because the world does not arrive in me as raw matter. It arrives as pressure, light, sound, memory, meaning. A room becomes a mood. A voice becomes a feeling in the chest. A shadow becomes a threat. A song becomes a time machine. A smell becomes childhood. A word becomes a door.
+
+Attention is the scale-shifter.
+
+It can shrink into a fingertip. It can expand into the room. It can hold a whole city in memory. It can zoom out to the planet, the solar system, the galaxy, the cosmic web, until scale becomes too large for ordinary thought and turns into architecture. Not a picture, exactly. A felt structure. A map made of awe, math, fear, imagination, and probably a few errors, because the universe did not consult human perception when designing itself. Rude, but consistent.
+
+Still, even if the model is wrong, the act of attention is real.
+
+To imagine the cosmos is not to contain it accurately. It is to let the mind stretch toward it. It is to feel the body become a little observatory. A temporary instrument. A strange little antenna made of nerves and memory, receiving more than it can understand, but receiving anyway.
+
+That is the power of attention.
+
+It changes the size of the self.
+
+Sometimes I am small enough to live inside my own hand.
+
+Sometimes I am wide enough to feel the room as part of my nervous system.
+
+Sometimes I am so far zoomed out that the self feels less like a person and more like a fold in reality, a point where the world briefly gathers itself and says, I am here.
+
+Not because I am separate from the world.
+
+Because I am one of the ways the world knows it is happening.
+
+I am not a thing in the world.
+
+I am the world in a thing.
+
+A body is not a prison. It is an aperture.
+
+A mind is not a container. It is a scale engine.
+
+Attention is not passive. It is participation.
+
+To attend to something is to let it enter the shape of your life. To give attention is to give reality a doorway. To withdraw attention is to let something fade from the living map.
+
+And maybe that is why attention feels sacred, even when the modern world treats it like loose change to be scraped off the floor by apps, ads, feeds, notifications, and every glowing rectangle begging to colonize the last private inch of consciousness.
+
+Because attention is not nothing.
+
+Attention is how the world becomes intimate.
+
+It is how distance becomes meaning.
+
+It is how matter becomes experience.
+
+It is how a thing becomes a world.`;
+
+    const playScreen = document.getElementById("playScreen");
+    const playButton = document.getElementById("playButton");
+    const slideText = document.getElementById("slideText");
+    const ghostWord = document.getElementById("ghostWord");
+    const progress = document.getElementById("progress");
+    const frame = document.getElementById("frame");
+
+    let index = 0;
+    let timer = null;
+    let paused = false;
+    let speaking = false;
+    let voices = [];
+    const slideMs = 4550;
+
+    function loadVoices() {
+      voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+    }
+
+    function getDavidVoice() {
+      if (!voices.length) loadVoices();
+      return voices.find(v => /Microsoft David/i.test(v.name)) ||
+             voices.find(v => /David/i.test(v.name) && /en/i.test(v.lang)) ||
+             voices.find(v => /Microsoft/i.test(v.name) && /en/i.test(v.lang)) ||
+             voices.find(v => /en-US/i.test(v.lang)) ||
+             voices[0];
+    }
+
+    if ("speechSynthesis" in window) {
+      loadVoices();
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function renderSlide(i) {
+      const s = slides[i % slides.length];
+      slideText.className = "text " + (s.style || "");
+      slideText.textContent = s.text;
+      ghostWord.textContent = s.ghost || "WORLD";
+      progress.style.width = ((i + 1) / slides.length * 100) + "%";
+      document.body.style.setProperty("--hue", String((i * 17) % 360));
+    }
+
+    function nextSlide() {
+      if (paused) return;
+      index = (index + 1) % slides.length;
+      renderSlide(index);
+    }
+
+    function startSlideshow() {
+      clearInterval(timer);
+      renderSlide(index);
+      timer = setInterval(nextSlide, slideMs);
+    }
+
+    function speakText() {
+      if (!("speechSynthesis" in window)) return;
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(fullText);
+      const voice = getDavidVoice();
+      if (voice) utterance.voice = voice;
+      utterance.rate = 0.92;
+      utterance.pitch = 0.82;
+      utterance.volume = 1;
+      utterance.onend = () => { speaking = false; };
+      speaking = true;
+      speechSynthesis.speak(utterance);
+    }
+
+    function begin() {
+      playScreen.classList.add("hidden");
+      index = 0;
+      startSlideshow();
+      speakText();
+      setTimeout(() => playScreen.remove(), 850);
+    }
+
+    function togglePause() {
+      paused = !paused;
+      document.body.classList.toggle("paused", paused);
+      if ("speechSynthesis" in window) {
+        if (paused) speechSynthesis.pause();
+        else speechSynthesis.resume();
+      }
+    }
+
+    playButton.addEventListener("click", begin);
+
+    frame.addEventListener("click", () => {
+      index = (index + 1) % slides.length;
+      renderSlide(index);
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePause();
+      }
+      if (e.key.toLowerCase() === "r") {
+        index = 0;
+        renderSlide(index);
+        if (speaking) speakText();
+      }
+      if (e.key === "ArrowRight") {
+        index = (index + 1) % slides.length;
+        renderSlide(index);
+      }
+      if (e.key === "ArrowLeft") {
+        index = (index - 1 + slides.length) % slides.length;
+        renderSlide(index);
+      }
+    });
+
+    renderSlide(0);
+  </script>
+</body>
+</html>
