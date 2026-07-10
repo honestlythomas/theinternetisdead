@@ -659,6 +659,84 @@
       }
     }
 
+    .three-am-popup {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      z-index: 2147483647;
+      width: min(520px, calc(100vw - 28px));
+      transform: translate(-50%, -50%);
+      border: 2px solid #00ff66;
+      background: rgba(0, 0, 0, 0.92);
+      box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.16),
+        0 0 38px rgba(0, 255, 102, 0.44),
+        inset 0 0 24px rgba(0, 255, 102, 0.13);
+      color: #00ff66;
+      font-family: "Courier New", Courier, monospace;
+      text-shadow: 0 0 8px rgba(0, 255, 102, 0.58);
+    }
+
+    .three-am-popup-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(0, 255, 102, 0.54);
+      padding: 8px 10px;
+      background: rgba(0, 255, 102, 0.13);
+      font-size: 13px;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .three-am-popup-close {
+      width: 28px;
+      height: 28px;
+      border: 1px solid currentColor;
+      border-radius: 0;
+      background: #000;
+      color: inherit;
+      font: inherit;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .three-am-popup-close:hover,
+    .three-am-popup-close:focus-visible {
+      background: #00ff66;
+      color: #000;
+      outline: none;
+    }
+
+    .three-am-popup-message {
+      margin: 0;
+      padding: 20px;
+      font-size: clamp(18px, 3.4vw, 32px);
+      line-height: 1.18;
+      text-align: center;
+    }
+
+    .three-am-frame-text {
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      padding: clamp(18px, 4vw, 42px);
+      color: #00ff66;
+      background: #000;
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(20px, 5vw, 58px);
+      line-height: 1.08;
+      text-align: center;
+      text-shadow:
+        2px 0 rgba(255, 0, 96, 0.48),
+        -2px 0 rgba(0, 229, 255, 0.42),
+        0 0 16px rgba(0, 255, 102, 0.72);
+    }
+
     .gear-sidebar-panel:hover {
       color: white;
     }
@@ -4064,6 +4142,7 @@
     const chatNicknameExplicitStorageKey = "tektiteChatNicknameExplicit";
     const publicNicknameColorStorageKey = "tektiteChatPublicNicknameColor";
     let ghostsOnlineCount = null;
+    let suppressCustomizationSave = false;
 
     const normalizeChatNickname = (value) => String(value || "").trim().slice(0, 40);
 
@@ -4719,6 +4798,10 @@
         enableGearEffect(event.data.effect);
         return;
       }
+      if (event.data?.type === "triggerThreeAmEasterEgg") {
+        triggerThreeAmEasterEgg({ force: true });
+        return;
+      }
       if (event.data?.type === "gifPartySpawnAllImages") {
         spawnGifParty();
         return;
@@ -4943,6 +5026,7 @@
     };
 
     const saveCustomizationSettings = () => {
+      if (suppressCustomizationSave) return;
       if (!isRememberSettingsEnabled()) return;
       try {
         localStorage.setItem(CUSTOMIZATION_STORAGE_KEY, JSON.stringify(getCustomizationSettings()));
@@ -5308,6 +5392,186 @@
       }
     };
 
+    const THREE_AM_EASTER_EGG_TEXT = "What are you doing on the internet is dead at 3am? Are you crazy?";
+    const threeAmEasterEggState = {
+      active: false,
+      dismissedKey: "",
+      popup: null,
+      speechTimers: [],
+      restore: null
+    };
+
+    const getCurrentClockParts = () => {
+      const now = new Date();
+      const selectedTimeZone = timezoneSelect?.value || undefined;
+      if (!selectedTimeZone) {
+        return {
+          hour: now.getHours(),
+          minute: now.getMinutes(),
+          dateKey: `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+        };
+      }
+
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: selectedTimeZone,
+        hourCycle: "h23",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).formatToParts(now).reduce((result, part) => {
+        if (part.type !== "literal") result[part.type] = part.value;
+        return result;
+      }, {});
+
+      return {
+        hour: Number(parts.hour),
+        minute: Number(parts.minute),
+        dateKey: `${parts.year}-${parts.month}-${parts.day}`
+      };
+    };
+
+    const getThreeAmDismissalKey = () => {
+      const parts = getCurrentClockParts();
+      return `${parts.dateKey}-03:00`;
+    };
+
+    const clearThreeAmSpeechTimers = () => {
+      threeAmEasterEggState.speechTimers.forEach((timer) => window.clearTimeout(timer));
+      threeAmEasterEggState.speechTimers = [];
+    };
+
+    const speakThreeAmPhrase = () => {
+      if (!window.speechSynthesis) return;
+      refreshDavidVoice();
+      const utterance = new SpeechSynthesisUtterance(THREE_AM_EASTER_EGG_TEXT);
+      if (davidVoice) utterance.voice = davidVoice;
+      utterance.rate = 0.84 + Math.random() * 0.22;
+      utterance.pitch = 0.66 + Math.random() * 0.26;
+      utterance.volume = 0.95 * TTS_VOLUME_SCALE * siteVolumeScale;
+      window.speechSynthesis.speak(utterance);
+    };
+
+    const startThreeAmSpeech = () => {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      [0, 1550 + Math.random() * 1100, 3600 + Math.random() * 1500].forEach((delay) => {
+        const timer = window.setTimeout(() => {
+          if (threeAmEasterEggState.active) speakThreeAmPhrase();
+        }, delay);
+        threeAmEasterEggState.speechTimers.push(timer);
+      });
+    };
+
+    const renderThreeAmFrameText = () => {
+      if (!staticMarkdownOverlay) return;
+      const textPanel = document.createElement("div");
+      textPanel.className = "three-am-frame-text";
+      textPanel.textContent = THREE_AM_EASTER_EGG_TEXT;
+      staticMarkdownOverlay.classList.remove("has-iframe");
+      document.body.classList.remove("has-shell-frame");
+      staticMarkdownOverlay.replaceChildren(textPanel);
+    };
+
+    const createThreeAmPopup = () => {
+      const popup = document.createElement("section");
+      popup.className = "three-am-popup";
+      popup.setAttribute("role", "dialog");
+      popup.setAttribute("aria-modal", "true");
+      popup.setAttribute("aria-label", "3:00am warning");
+
+      const bar = document.createElement("div");
+      bar.className = "three-am-popup-bar";
+      const title = document.createElement("span");
+      title.textContent = "3:00am";
+      const closeButton = document.createElement("button");
+      closeButton.className = "three-am-popup-close";
+      closeButton.type = "button";
+      closeButton.setAttribute("aria-label", "Close 3:00am warning");
+      closeButton.textContent = "X";
+      closeButton.addEventListener("click", dismissThreeAmEasterEgg);
+      bar.append(title, closeButton);
+
+      const message = document.createElement("p");
+      message.className = "three-am-popup-message";
+      message.textContent = THREE_AM_EASTER_EGG_TEXT;
+      popup.append(bar, message);
+      document.body.appendChild(popup);
+      closeButton.focus({ preventScroll: true });
+      return popup;
+    };
+
+    const dismissThreeAmEasterEgg = () => {
+      if (!threeAmEasterEggState.active) return;
+      threeAmEasterEggState.active = false;
+      threeAmEasterEggState.dismissedKey = getThreeAmDismissalKey();
+      clearThreeAmSpeechTimers();
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      threeAmEasterEggState.popup?.remove();
+      threeAmEasterEggState.popup = null;
+
+      const restore = threeAmEasterEggState.restore;
+      threeAmEasterEggState.restore = null;
+      suppressCustomizationSave = true;
+      try {
+        if (colorFilterPicker && restore?.color) colorFilterPicker.value = restore.color;
+        if (blendModeSelect && restore?.blendMode) blendModeSelect.value = restore.blendMode;
+        if (hueshiftToggle) hueshiftToggle.checked = Boolean(restore?.hueshifting);
+        if (invertToggle) invertToggle.checked = Boolean(restore?.inverted);
+        updatePageColorFilter(Boolean(restore?.colorFilterActive));
+        setMeltEnabled(Boolean(restore?.melting));
+      } finally {
+        suppressCustomizationSave = false;
+      }
+
+      if (restore?.path) {
+        loadShellFrame(restore.path, { replace: true });
+      } else {
+        renderHomePage();
+      }
+    };
+
+    const triggerThreeAmEasterEgg = (options = {}) => {
+      if (threeAmEasterEggState.active) return;
+      const parts = getCurrentClockParts();
+      const dismissalKey = `${parts.dateKey}-03:00`;
+      const isThreeAm = parts.hour === 3 && parts.minute === 0;
+      if (!options.force && (!isThreeAm || threeAmEasterEggState.dismissedKey === dismissalKey)) return;
+
+      threeAmEasterEggState.active = true;
+      const restorePath = document.body.classList.contains("has-shell-frame")
+        ? (mainPageRouteLink?.dataset.shellPath || `${window.location.pathname}${window.location.search}${window.location.hash}`)
+        : `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      threeAmEasterEggState.restore = {
+        path: restorePath,
+        colorFilterActive: Boolean(pageColorFilter?.classList.contains("is-active")),
+        color: colorFilterPicker?.value || "#ff00ff",
+        blendMode: blendModeSelect?.value || "color",
+        hueshifting: Boolean(hueshiftToggle?.checked),
+        inverted: Boolean(invertToggle?.checked),
+        melting: Boolean(meltToggle?.checked)
+      };
+
+      suppressCustomizationSave = true;
+      try {
+        if (colorFilterPicker) colorFilterPicker.value = "#000000";
+        if (blendModeSelect) blendModeSelect.value = "color";
+        if (hueshiftToggle) hueshiftToggle.checked = false;
+        if (invertToggle) invertToggle.checked = false;
+        updatePageColorFilter(true);
+        setMeltEnabled(true);
+      } finally {
+        suppressCustomizationSave = false;
+      }
+
+      renderThreeAmFrameText();
+      threeAmEasterEggState.popup = createThreeAmPopup();
+      startThreeAmSpeech();
+    };
+
+    window.triggerThreeAmEasterEgg = () => triggerThreeAmEasterEgg({ force: true });
+
     colorFilterPicker?.addEventListener("input", () => updatePageColorFilter(true));
     blendModeSelect?.addEventListener("change", updatePageColorFilter);
     hueshiftToggle?.addEventListener("change", () => updatePageColorFilter(hueshiftToggle.checked));
@@ -5344,6 +5608,8 @@
         year: "numeric",
         timeZone: selectedTimeZone
       });
+
+      triggerThreeAmEasterEgg();
     };
 
     updateClock();

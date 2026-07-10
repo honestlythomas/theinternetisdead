@@ -1712,6 +1712,7 @@ const focusSink = document.getElementById('focusSink');
     // ADDED: Single canonical built-in command registry so command execution, help output,
     // and tab-complete all point at the same source instead of drifting apart.
     const builtInCommands = [
+      { name: '/3am', value: '/3am', execute: true, desc: 'trigger the 3:00am easter egg' },
       { name: '/clear', value: '/clear', execute: true, desc: 'clear local non-public chat messages' },
       { name: '/customize', value: '/customize', execute: true, desc: 'open the site customization sidebar' },
       { name: '/dead', value: '/dead', execute: true, desc: 'show the /dead/ page directory' },
@@ -5962,6 +5963,14 @@ function createHomepageCustomizeMessageNode(result = {}) {
         addSystemMessage(formatCommandExecutionMessage('/gif_party'));
         if (!postToParentPage({ type: 'gifPartySpawnAllImages' })) {
           applyDvdSlideshowMode();
+        }
+        return true;
+      }
+
+      if (command === '/3am') {
+        addSystemMessage(formatCommandExecutionMessage('/3am'));
+        if (!postToParentPage({ type: 'triggerThreeAmEasterEgg' }) && window.parent === window && typeof window.triggerThreeAmEasterEgg === 'function') {
+          window.triggerThreeAmEasterEgg();
         }
         return true;
       }
