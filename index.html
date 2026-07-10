@@ -881,7 +881,7 @@
       left: 50%;
       top: 50%;
       display: grid;
-      grid-template-rows: clamp(58px, 9vh, 96px) minmax(0, 1fr) clamp(28px, 4vh, 40px);
+      grid-template-rows: clamp(58px, 9vh, 96px) auto minmax(0, 1fr) clamp(28px, 4vh, 40px);
       justify-items: center;
       width: min(82vw, 980px, calc(100% - 48px));
       height: min(80vh, 800px, calc(100% - 48px));
@@ -895,6 +895,15 @@
       margin: 0;
       font-size: clamp(32px, 5.2vw, 72px);
       line-height: 1;
+    }
+
+    .static-home-skull {
+      display: block;
+      align-self: start;
+      margin-top: clamp(8px, 1.5vh, 16px);
+      font-size: clamp(72px, 13vw, 180px);
+      line-height: 0.9;
+      filter: drop-shadow(0 0 4px #000) drop-shadow(0 0 12px #000);
     }
 
     .static-home-middle {
@@ -951,6 +960,10 @@
     }
 
     .static-home-content.is-preview-active .static-home-middle-text {
+      display: none;
+    }
+
+    .static-home-content.is-preview-active .static-home-skull {
       display: none;
     }
 
@@ -4386,6 +4399,10 @@
       const heading = document.createElement("h1");
       heading.className = "static-home-title";
       heading.textContent = "Hello World!";
+      const skull = document.createElement("div");
+      skull.className = "static-home-skull";
+      skull.setAttribute("aria-label", "Skull and crossbones");
+      skull.textContent = "☠️";
       const middle = document.createElement("div");
       middle.className = "static-home-middle";
       const paragraph = document.createElement("p");
@@ -4464,7 +4481,7 @@
           if (!homeContent.contains(document.activeElement)) clearActivePreview();
         }, 0);
       });
-      homeContent.append(heading, middle, linksList);
+      homeContent.append(heading, skull, middle, linksList);
       fragment.appendChild(homeContent);
       staticMarkdownOverlay.replaceChildren(fragment);
     };
