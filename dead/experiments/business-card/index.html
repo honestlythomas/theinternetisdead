@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>360° Business Card</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at center, #28133b 0%, #100818 45%, #030205 100%);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    #status {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      max-width: calc(100vw - 32px);
+      padding: 9px 13px;
+      border: 1px solid rgba(194, 255, 92, 0.5);
+      border-radius: 999px;
+      background: rgba(8, 4, 13, 0.82);
+      color: #c2ff5c;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-align: center;
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+    }
+
+    #hint {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      padding: 8px 12px;
+      border: 1px solid rgba(183, 111, 255, 0.45);
+      border-radius: 999px;
+      background: rgba(8, 4, 13, 0.72);
+      color: #d6b4ff;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="status">Loading front.png and back.png…</div>
+  <div id="hint">Drag to rotate • scroll to zoom</div>
+
+  <!-- Classic scripts work when index.html is opened directly from a folder. -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    (function () {
+      const status = document.getElementById("status");
+
+      if (!window.THREE) {
+        status.textContent =
+          "Three.js failed to load. Check your internet connection or CDN blocking.";
+        status.style.color = "#ff8080";
+        return;
+      }
+
+      const scene = new THREE.Scene();
+
+      const camera = new THREE.PerspectiveCamera(
+        35,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        100
+      );
+
+      camera.position.set(0, 0.1, 4.25);
+
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true
+      });
+
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      document.body.appendChild(renderer.domElement);
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.065;
+      controls.enablePan = false;
+      controls.minDistance = 4.0;
+      controls.maxDistance = 11;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 1.2;
+      controls.target.set(0, 0, 0);
+
+      const card = new THREE.Group();
+      scene.add(card);
+
+      const CARD_WIDTH = 3.5;
+      const CARD_HEIGHT = 2.0;
+      const CARD_DEPTH = 0.04;
+
+      let loadedCount = 0;
+      let failed = false;
+
+      function updateStatus() {
+        if (failed) return;
+
+        loadedCount += 1;
+
+        if (loadedCount === 2) {
+          status.textContent = "front.png + back.png loaded";
+          setTimeout(function () {
+            status.style.opacity = "0";
+            status.style.transition = "opacity 500ms ease";
+          }, 1200);
+        }
+      }
+
+      function textureError(filename) {
+        failed = true;
+        status.textContent =
+          "Could not load " + filename +
+          ". Confirm the spelling is exact and all three files are together.";
+        status.style.color = "#ff8080";
+      }
+
+      function prepareTexture(texture) {
+        texture.encoding = THREE.sRGBEncoding;
+        texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+
+        /*
+          Source image: 3.75 × 2.25
+          Visible centered crop: 3.5 × 2.0
+        */
+        texture.repeat.set(3.5 / 3.75, 2.0 / 2.25);
+        texture.offset.set(
+          (1 - texture.repeat.x) / 2,
+          (1 - texture.repeat.y) / 2
+        );
+
+        return texture;
+      }
+
+      const loader = new THREE.TextureLoader();
+
+      const frontTexture = prepareTexture(
+        loader.load(
+          "front.png",
+          updateStatus,
+          undefined,
+          function () {
+            textureError("front.png");
+          }
+        )
+      );
+
+      const backTexture = prepareTexture(
+        loader.load(
+          "back.png",
+          updateStatus,
+          undefined,
+          function () {
+            textureError("back.png");
+          }
+        )
+      );
+
+      const edgeMaterial = new THREE.MeshStandardMaterial({
+        color: 0x17101d,
+        roughness: 0.76,
+        metalness: 0.08
+      });
+
+      const slab = new THREE.Mesh(
+        new THREE.BoxGeometry(CARD_WIDTH, CARD_HEIGHT, CARD_DEPTH),
+        edgeMaterial
+      );
+
+      card.add(slab);
+
+      const faceGeometry = new THREE.PlaneGeometry(CARD_WIDTH, CARD_HEIGHT);
+
+      const frontFace = new THREE.Mesh(
+        faceGeometry,
+        new THREE.MeshBasicMaterial({
+          map: frontTexture,
+          side: THREE.FrontSide
+        })
+      );
+
+      frontFace.position.z = CARD_DEPTH / 2 + 0.001;
+      card.add(frontFace);
+
+      const backFace = new THREE.Mesh(
+        faceGeometry,
+        new THREE.MeshBasicMaterial({
+          map: backTexture,
+          side: THREE.FrontSide
+        })
+      );
+
+      backFace.position.z = -(CARD_DEPTH / 2 + 0.001);
+      backFace.rotation.y = Math.PI;
+      card.add(backFace);
+
+      scene.add(new THREE.AmbientLight(0xffffff, 1.7));
+
+      const keyLight = new THREE.DirectionalLight(0xd9b8ff, 1.9);
+      keyLight.position.set(3, 4, 5);
+      scene.add(keyLight);
+
+      const rimLight = new THREE.DirectionalLight(0xc2ff5c, 1.1);
+      rimLight.position.set(-4, -2, -3);
+      scene.add(rimLight);
+
+      card.rotation.x = THREE.MathUtils.degToRad(-5);
+      card.rotation.y = THREE.MathUtils.degToRad(-18);
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        controls.update();
+
+        const time = performance.now() * 0.001;
+        card.position.y = Math.sin(time * 0.8) * 0.045;
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      window.addEventListener("resize", function () {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    })();
+  </script>
+</body>
+</html>
