@@ -4271,7 +4271,6 @@
     let publicConnectionEnabled = true;
     let ghostCounterSocket = null;
     let ghostCounterReconnectTimer = null;
-    let ghostPresenceAnnounced = false;
     let suppressCustomizationSave = false;
 
     const normalizeChatNickname = (value) => String(value || "").trim().slice(0, 40);
@@ -4352,20 +4351,8 @@
       if (!frame || !frame.contentWindow) return;
       frame.contentWindow.postMessage({
         type: "setPublicChatConnection",
-        online: publicConnectionEnabled,
-        announce: Boolean(options.announce)
+        online: publicConnectionEnabled
       }, window.location.origin);
-    };
-
-    const notifyPublicChatPresence = (action) => {
-      const frame = document.querySelector('iframe[title="/dead/chat/"]');
-      if (!frame || !frame.contentWindow) return false;
-      frame.contentWindow.postMessage({
-        type: "publicChatPresence",
-        action,
-        nickname: readChatNickname()
-      }, window.location.origin);
-      return true;
     };
 
     const syncGearNicknameInput = () => {
@@ -4585,14 +4572,6 @@
           notifyPublicNicknameColorUpdated(readPublicNicknameColor());
           notifyChatTimeZoneUpdated();
           notifyPublicChatConnectionUpdated();
-          if (
-            publicConnectionEnabled
-            && !ghostPresenceAnnounced
-            && window.WebSocket
-            && ghostCounterSocket?.readyState === window.WebSocket.OPEN
-          ) {
-            ghostPresenceAnnounced = notifyPublicChatPresence("join");
-          }
         }
       });
 
@@ -6064,11 +6043,6 @@
         }
       });
 
-      socket.addEventListener("open", () => {
-        if (!publicConnectionEnabled || socket !== ghostCounterSocket || ghostPresenceAnnounced) return;
-        ghostPresenceAnnounced = notifyPublicChatPresence("join");
-      });
-
       socket.addEventListener("close", () => {
         if (socket === ghostCounterSocket) ghostCounterSocket = null;
         scheduleGhostCounterReconnect();
@@ -6080,18 +6054,15 @@
       const ghostToggles = document.querySelectorAll(".ghost-glyph, .mobile-ghost-icon");
       if (publicConnectionEnabled) {
         ghostToggles.forEach((toggle) => toggle.setAttribute("aria-label", "Go offline"));
-        ghostPresenceAnnounced = false;
         setGhostsOnline(null);
         connectGhostCounterSocket();
       } else {
         ghostToggles.forEach((toggle) => toggle.setAttribute("aria-label", "Go online"));
-        if (ghostPresenceAnnounced) notifyPublicChatPresence("part");
-        ghostPresenceAnnounced = false;
         disconnectGhostCounterSocket();
         stopWhiteNoise();
         setGhostCounterOfflineLabel();
       }
-      notifyPublicChatConnectionUpdated({ announce: false });
+      notifyPublicChatConnectionUpdated();
     };
 
     const togglePublicConnection = () => {
@@ -6831,12 +6802,6 @@
       stopWhiteNoise();
       stopModemStatic();
     };
-
-    window.addEventListener("pagehide", () => {
-      if (!ghostPresenceAnnounced) return;
-      notifyPublicChatPresence("part");
-      ghostPresenceAnnounced = false;
-    });
 
     if (typeof desktopHeaderAudioQuery.addEventListener === "function") {
       desktopHeaderAudioQuery.addEventListener("change", stopHeaderAudio);
