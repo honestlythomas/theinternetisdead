@@ -9,22 +9,36 @@ export function createBushInventoryController({
   bushCarryGhostCount,
   stackMax = 64,
   bushIconSrc = "assets/png/topdown-pine-tree01.png",
-  rubbleIconSrc = "assets/png/rubble-pile.png"
+  rubbleIconSrc = "assets/png/rubble-pile.png",
+  springIconSrc = "assets/png/magenta-spring-item.png",
+  planksIconSrc = "assets/png/planks.png",
+  stickIconSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cline x1='32' y1='8' x2='32' y2='56' stroke='%23723f18' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E"
 } = {}) {
   const slots = Array.from(bushInventorySlots || []);
+  const plankRecipeSlots = bushInventory ? Array.from(bushInventory.querySelectorAll("[data-plank-slot]")) : [];
+  const plankRecipeCenterSlot = plankRecipeSlots.find((slot) => slot.dataset.plankSlot === "3") || null;
   const iconSrcByType = {
     bush: bushIconSrc,
-    rubble: rubbleIconSrc
+    rubble: rubbleIconSrc,
+    spring: springIconSrc,
+    planks: planksIconSrc,
+    stick: stickIconSrc
   };
   const altByType = {
     bush: "Collected bush",
-    rubble: "Collected rubble"
+    rubble: "Collected rubble",
+    spring: "Collected spring",
+    planks: "Planks",
+    stick: "Stick"
   };
+  const validItemTypes = new Set(["bush", "rubble", "spring", "planks", "stick"]);
 
   let slotItems = slots.map(() => null);
   let activeCarryType = null;
   let activeCarryCount = 0;
   let onLayoutChanged = null;
+  let onPlanksCrafted = null;
+  let onStickCrafted = null;
   let rightSpreadActive = false;
   let leftShiftHeld = false;
   let pendingSingleClickTimer = null;
@@ -54,7 +68,7 @@ export function createBushInventoryController({
   }
 
   function normalizeItem(item) {
-    if (!item || (item.type !== "bush" && item.type !== "rubble")) return null;
+    if (!item || !validItemTypes.has(item.type)) return null;
     const count = clampStackCount(item.count);
     if (count <= 0) return null;
     return { type: item.type, count };
@@ -72,6 +86,23 @@ export function createBushInventoryController({
       ...slots.slice(safeStart).map((_, offset) => safeStart + offset),
       ...slots.slice(0, safeStart).map((_, offset) => offset),
     ];
+  }
+
+  function isActionSlotIndex(index) {
+    return index === 0 || index === slots.length - 1;
+  }
+
+  function getAutoFillSlotOrder() {
+    const regularSlots = [];
+    const actionSlots = [];
+    for (let index = 0; index < slots.length; index += 1) {
+      if (isActionSlotIndex(index)) {
+        actionSlots.push(index);
+      } else {
+        regularSlots.push(index);
+      }
+    }
+    return [...regularSlots, ...actionSlots];
   }
 
   function getCountsByType(type) {
@@ -92,12 +123,23 @@ export function createBushInventoryController({
 
     if (currentTotal < safeSlottedTotal && normalized.length) {
       let missing = safeSlottedTotal - currentTotal;
-      for (let index = 0; index < normalized.length && missing > 0; index += 1) {
+      const addToSlot = (index) => {
+        if (missing <= 0) return;
         const room = stackMax - normalized[index];
-        if (room <= 0) continue;
+        if (room <= 0) return;
         const addCount = Math.min(room, missing);
         normalized[index] += addCount;
         missing -= addCount;
+      };
+
+      for (const index of getAutoFillSlotOrder()) {
+        if (missing <= 0) break;
+        if (normalized[index] > 0) addToSlot(index);
+      }
+
+      for (const index of getAutoFillSlotOrder()) {
+        if (missing <= 0) break;
+        if (!slotItems[index]) addToSlot(index);
       }
     } else if (currentTotal > safeSlottedTotal) {
       let excess = currentTotal - safeSlottedTotal;
@@ -128,7 +170,7 @@ export function createBushInventoryController({
 
     for (const count of displacedCounts) {
       let remaining = count;
-      for (const index of getSlotFillOrder(0)) {
+      for (const index of getAutoFillSlotOrder()) {
         if (remaining <= 0) break;
         const current = nextItems[index];
         if (current && current.type !== type) continue;
@@ -158,6 +200,15 @@ export function createBushInventoryController({
     setRubbleCounts(count, getCountsByType("rubble"));
   }
 
+  function setSpringCounts(totalCount, counts = getCountsByType("spring")) {
+    placeCountsForType("spring", normalizeCountsForType(totalCount, counts, "spring"));
+    renderItems();
+  }
+
+  function setSpringCount(count = 0) {
+    setSpringCounts(count, getCountsByType("spring"));
+  }
+
   function getCounts() {
     return getCountsByType("bush");
   }
@@ -166,14 +217,77 @@ export function createBushInventoryController({
     return getCountsByType("rubble");
   }
 
+  function getSpringCounts() {
+    return getCountsByType("spring");
+  }
+
+  function getPlankCounts() {
+    return getCountsByType("planks");
+  }
+
+  function getStickCounts() {
+    return getCountsByType("stick");
+  }
+
+  function setPlankCounts(totalCount, counts = getPlankCounts()) {
+    placeCountsForType("planks", normalizeCountsForType(totalCount, counts, "planks"));
+    renderItems();
+  }
+
+  function setPlankCount(count = 0) {
+    setPlankCounts(count, getPlankCounts());
+  }
+
+  function setStickCounts(totalCount, counts = getStickCounts()) {
+    placeCountsForType("stick", normalizeCountsForType(totalCount, counts, "stick"));
+    renderItems();
+  }
+
+  function setStickCount(count = 0) {
+    setStickCounts(count, getStickCounts());
+  }
+
   function setLayoutChangedHandler(handler) {
     onLayoutChanged = typeof handler === "function" ? handler : null;
   }
 
   function saveLayoutIfReady() {
     if (typeof onLayoutChanged === "function") {
-      onLayoutChanged(getCounts(), getRubbleCounts());
+      onLayoutChanged(getCounts(), getRubbleCounts(), getSpringCounts(), getPlankCounts(), getStickCounts());
     }
+  }
+
+  function getRoomAfterCraft(outputType, inputType) {
+    return getAutoFillSlotOrder().reduce((room, index) => {
+      let item = normalizeItem(slotItems[index]);
+      if ([2, 3, 4].includes(index) && item && item.type === inputType) {
+        const remaining = item.count - 1;
+        item = remaining > 0 ? { type: inputType, count: remaining } : null;
+      }
+      if (item && item.type !== outputType) return room;
+      return room + (stackMax - (item ? item.count : 0));
+    }, 0);
+  }
+
+  function addItemToInventory(type, count = 1) {
+    if (!validItemTypes.has(type)) return 0;
+    let remaining = clampStackCount(count);
+    let added = 0;
+
+    for (const index of getAutoFillSlotOrder()) {
+      if (remaining <= 0) break;
+      const item = normalizeItem(slotItems[index]);
+      if (item && item.type !== type) continue;
+      const currentCount = item ? item.count : 0;
+      const room = stackMax - currentCount;
+      if (room <= 0) continue;
+      const addCount = Math.min(room, remaining);
+      slotItems[index] = { type, count: currentCount + addCount };
+      remaining -= addCount;
+      added += addCount;
+    }
+
+    return added;
   }
 
   function positionCarryGhost(event) {
@@ -184,7 +298,7 @@ export function createBushInventoryController({
 
   function updateCarryGhost() {
     if (!bushCarryGhost) return;
-    const isCarrying = activeCarryCount > 0 && (activeCarryType === "bush" || activeCarryType === "rubble");
+    const isCarrying = activeCarryCount > 0 && validItemTypes.has(activeCarryType);
     bushCarryGhost.hidden = !isCarrying;
     bushCarryGhost.setAttribute("aria-hidden", String(!isCarrying));
     bushCarryGhost.dataset.itemType = isCarrying ? activeCarryType : "";
@@ -381,7 +495,7 @@ export function createBushInventoryController({
 
   function consumeItemFromSlot(slotIndex, type, count = 1) {
     if (!Number.isInteger(slotIndex) || !slots[slotIndex]) return false;
-    if (type !== "bush" && type !== "rubble") return false;
+    if (!validItemTypes.has(type)) return false;
     const item = normalizeItem(slotItems[slotIndex]);
     const amount = Math.max(1, Math.floor(Number(count) || 1));
     if (!item || item.type !== type || item.count < amount) return false;
@@ -397,6 +511,100 @@ export function createBushInventoryController({
     if (!Number.isInteger(slotIndex) || !slots[slotIndex]) return false;
     const item = normalizeItem(slotItems[slotIndex]);
     return Boolean(item && item.type === type && item.count > 0);
+  }
+
+  function startCarryVirtualItem(type, count = 1, event = null) {
+    if (!validItemTypes.has(type)) return false;
+    const amount = clampStackCount(count);
+    if (amount <= 0 || activeCarryCount > 0) return false;
+    activeCarryType = type;
+    activeCarryCount = amount;
+    updateCarryGhost();
+    positionCarryGhost(event);
+    return true;
+  }
+
+  function hasItemInYellowInventorySlots(type) {
+    return [2, 3, 4].every((index) => {
+      const item = normalizeItem(slotItems[index]);
+      return item && item.type === type && item.count > 0;
+    });
+  }
+
+  function craftItemFromYellowSlots({ inputType, outputType, onCrafted, consumedKey, producedKey }) {
+    if (!validItemTypes.has(inputType) || !validItemTypes.has(outputType)) return false;
+    if (!hasItemInYellowInventorySlots(inputType)) return false;
+    if (getRoomAfterCraft(outputType, inputType) < 1) return false;
+
+    for (const index of [2, 3, 4]) {
+      const item = normalizeItem(slotItems[index]);
+      if (!item || item.type !== inputType || item.count <= 0) return false;
+      const remaining = item.count - 1;
+      slotItems[index] = remaining > 0 ? { type: inputType, count: remaining } : null;
+    }
+
+    const added = addItemToInventory(outputType, 1);
+    if (added <= 0) return false;
+
+    if (typeof onCrafted === "function") {
+      onCrafted({
+        [consumedKey]: 3,
+        [producedKey]: added,
+        inputType,
+        outputType,
+        bushCounts: getCounts(),
+        plankCounts: getPlankCounts(),
+        stickCounts: getStickCounts()
+      });
+    }
+
+    renderItems();
+    saveLayoutIfReady();
+    return true;
+  }
+
+  function craftPlanksFromYellowSlots() {
+    return craftItemFromYellowSlots({
+      inputType: "bush",
+      outputType: "planks",
+      onCrafted: onPlanksCrafted,
+      consumedKey: "bushesConsumed",
+      producedKey: "planksProduced"
+    });
+  }
+
+  function craftStickFromYellowSlots() {
+    return craftItemFromYellowSlots({
+      inputType: "planks",
+      outputType: "stick",
+      onCrafted: onStickCrafted,
+      consumedKey: "planksConsumed",
+      producedKey: "sticksProduced"
+    });
+  }
+
+  function getActiveRecipe() {
+    if (hasItemInYellowInventorySlots("bush")) {
+      return {
+        outputType: "planks",
+        title: "Planks",
+        craft: craftPlanksFromYellowSlots
+      };
+    }
+    if (hasItemInYellowInventorySlots("planks")) {
+      return {
+        outputType: "stick",
+        title: "Stick",
+        craft: craftStickFromYellowSlots
+      };
+    }
+    return null;
+  }
+
+  function getItemInSlot(slotIndex) {
+    if (!Number.isInteger(slotIndex) || !slots[slotIndex]) return null;
+    const item = normalizeItem(slotItems[slotIndex]);
+    return item ? { ...item } : null;
   }
 
   function appendInventoryIcon(slot, { src, alt, count, type }) {
@@ -421,14 +629,14 @@ export function createBushInventoryController({
 
     for (const slot of slots) {
       slot.innerHTML = "";
-      slot.classList.remove("has-bush", "has-rubble");
+      slot.classList.remove("has-bush", "has-rubble", "has-spring", "has-planks", "has-stick");
       delete slot.dataset.itemType;
     }
 
     for (const [index, slot] of slots.entries()) {
       const item = normalizeItem(slotItems[index]);
       if (!item) continue;
-      slot.classList.add(item.type === "rubble" ? "has-rubble" : "has-bush");
+      slot.classList.add(`has-${item.type}`);
       appendInventoryIcon(slot, {
         src: iconSrcByType[item.type] || bushIconSrc,
         alt: altByType[item.type] || "Collected item",
@@ -437,7 +645,38 @@ export function createBushInventoryController({
       });
     }
 
+    renderPlankRecipeSlots();
     updateCarryGhost();
+  }
+
+  function hasBushInYellowInventorySlots() {
+    return hasItemInYellowInventorySlots("bush");
+  }
+
+  function renderPlankRecipeSlots() {
+    if (!plankRecipeSlots.length) return;
+    const recipe = getActiveRecipe();
+    const unlocked = Boolean(recipe);
+    bushInventory.classList.toggle("planks-unlocked", unlocked);
+
+    for (const slot of plankRecipeSlots) {
+      slot.innerHTML = "";
+      slot.classList.remove("has-planks", "has-stick", "planks-enabled");
+      slot.classList.add("planks-locked");
+      delete slot.dataset.itemType;
+      slot.removeAttribute("title");
+    }
+
+    if (!recipe || !plankRecipeCenterSlot) return;
+    plankRecipeCenterSlot.classList.remove("planks-locked");
+    plankRecipeCenterSlot.classList.add(`has-${recipe.outputType}`, "planks-enabled");
+    appendInventoryIcon(plankRecipeCenterSlot, {
+      src: iconSrcByType[recipe.outputType],
+      alt: altByType[recipe.outputType],
+      count: 1,
+      type: recipe.outputType
+    });
+    plankRecipeCenterSlot.title = recipe.title;
   }
 
   function attachListeners() {
@@ -540,6 +779,37 @@ export function createBushInventoryController({
       });
     }
 
+    if (plankRecipeCenterSlot) {
+      plankRecipeCenterSlot.addEventListener("mousedown", (event) => {
+        if (event.button !== 0) return;
+        event.stopPropagation();
+        const recipe = getActiveRecipe();
+        if (event.detail >= 2 && recipe) {
+          event.preventDefault();
+          clearPendingSingleClick();
+          recipe.craft();
+        }
+      });
+
+      plankRecipeCenterSlot.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (canDragInventory(event)) event.preventDefault();
+      });
+
+      plankRecipeCenterSlot.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+
+      plankRecipeCenterSlot.addEventListener("dblclick", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        clearPendingSingleClick();
+        const recipe = getActiveRecipe();
+        if (recipe) recipe.craft();
+      });
+    }
+
     window.addEventListener("mousemove", positionCarryGhost);
     window.addEventListener("keydown", (event) => {
       if (event.code === "ShiftLeft") leftShiftHeld = true;
@@ -568,15 +838,34 @@ export function createBushInventoryController({
     toggleOpen,
     normalizeSlotCounts: (totalCount, counts = getCounts()) => normalizeCountsForType(totalCount, counts, "bush"),
     normalizeRubbleSlotCounts: (totalCount, counts = getRubbleCounts()) => normalizeCountsForType(totalCount, counts, "rubble"),
+    normalizeSpringSlotCounts: (totalCount, counts = getSpringCounts()) => normalizeCountsForType(totalCount, counts, "spring"),
+    normalizePlankSlotCounts: (totalCount, counts = getPlankCounts()) => normalizeCountsForType(totalCount, counts, "planks"),
+    normalizeStickSlotCounts: (totalCount, counts = getStickCounts()) => normalizeCountsForType(totalCount, counts, "stick"),
     setCounts,
     setRubbleCounts,
+    setSpringCounts,
+    setPlankCounts,
+    setStickCounts,
     getCounts,
     getRubbleCounts,
+    getSpringCounts,
+    getPlankCounts,
+    getStickCounts,
     setRubbleCount,
+    setSpringCount,
+    setPlankCount,
+    setStickCount,
     setLayoutChangedHandler,
+    setPlanksCraftedHandler: (handler) => {
+      onPlanksCrafted = typeof handler === "function" ? handler : null;
+    },
+    setStickCraftedHandler: (handler) => {
+      onStickCrafted = typeof handler === "function" ? handler : null;
+    },
     getActiveCarryCount: () => activeCarryCount,
     getActiveCarryType: () => activeCarryType,
     hasItemInSlot,
+    getItemInSlot,
     consumeItemFromSlot,
     cancelCarryToLeftmostSlot
   };
@@ -619,7 +908,11 @@ export function createPlayerController(ctx) {
     handleLooseRubbleClick = () => false,
     cancelLooseRubbleClickHold = () => false,
     updateLooseRubbleHover = () => null,
-    handleInventoryRubbleFire = () => false,
+    handleNpcSpringClick = () => false,
+    updateNpcSpringHover = () => null,
+    setSpringPickupVacuumActive = () => {},
+    handleBlueSlotPlacementClick = () => false,
+    updateBlueSlotPlacementHover = () => null,
     isTextEntryTarget,
     toggleBushInventory,
     getActiveBushCarryCount,
@@ -1169,13 +1462,21 @@ export function createPlayerController(ctx) {
         return;
       }
 
-      if (event.button === 0 && handleInventoryRubbleFire(event)) {
+      if (event.button === 0 && handleNpcSpringClick(event)) {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.button === 0 && handleBlueSlotPlacementClick(event)) {
         event.preventDefault();
         return;
       }
 
       if (event.button === 1 || event.button === 2) {
         event.preventDefault();
+        if (event.button === 2) {
+          setSpringPickupVacuumActive(true);
+        }
         state.dragging = true;
         state.lastPointerX = event.clientX;
         state.lastPointerY = event.clientY;
@@ -1188,7 +1489,9 @@ export function createPlayerController(ctx) {
       const hoveringFlattenedTree = Boolean(updateFlattenedTreeHover?.(event));
       const hoveringLooseRubble = Boolean(updateLooseRubbleHover?.(event));
       const hoveringClickableStaticRubble = Boolean(updateStaticRubbleHover?.(event));
-      canvas.classList.toggle("clickable-tree", (hoveringFlattenedTree || hoveringLooseRubble || hoveringClickableStaticRubble) && !state.dragging);
+      const hoveringNpcSpring = Boolean(updateNpcSpringHover?.(event));
+      const hoveringPlacementTile = Boolean(updateBlueSlotPlacementHover?.(event));
+      canvas.classList.toggle("clickable-tree", (hoveringFlattenedTree || hoveringLooseRubble || hoveringClickableStaticRubble || hoveringNpcSpring || hoveringPlacementTile) && !state.dragging);
 
       if (!state.dragging) return;
 
@@ -1211,6 +1514,9 @@ export function createPlayerController(ctx) {
       cancelFlattenedTreeClickHold?.(event.pointerId ?? null);
       cancelStaticRubbleClickHold?.(event.pointerId ?? null);
       cancelLooseRubbleClickHold?.(event.pointerId ?? null);
+      if (event.button === 2) {
+        setSpringPickupVacuumActive(false);
+      }
       state.dragging = false;
       canvas.classList.remove("dragging");
 
@@ -1223,20 +1529,26 @@ export function createPlayerController(ctx) {
       cancelFlattenedTreeClickHold?.();
       cancelStaticRubbleClickHold?.();
       cancelLooseRubbleClickHold?.();
+      setSpringPickupVacuumActive(false);
       state.dragging = false;
       canvas.classList.remove("dragging");
       canvas.classList.remove("clickable-tree");
       updateFlattenedTreeHover?.(null);
       updateLooseRubbleHover?.(null);
+      updateNpcSpringHover?.(null);
+      updateBlueSlotPlacementHover?.(null);
     });
 
     canvas.addEventListener("pointerleave", () => {
       cancelFlattenedTreeClickHold?.();
       cancelStaticRubbleClickHold?.();
       cancelLooseRubbleClickHold?.();
+      setSpringPickupVacuumActive(false);
       canvas.classList.remove("clickable-tree");
       updateFlattenedTreeHover?.(null);
       updateLooseRubbleHover?.(null);
+      updateNpcSpringHover?.(null);
+      updateBlueSlotPlacementHover?.(null);
     });
 
     window.addEventListener("wheel", (event) => {

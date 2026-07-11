@@ -553,8 +553,22 @@
       gap: 7px;
     }
 
+    .plank-recipe-row {
+      display: none;
+      gap: 7px;
+      margin-top: 1px;
+    }
+
     .bush-inventory:not(.open) .inventory-slot-row {
       pointer-events: none;
+    }
+
+    .bush-inventory:not(.open) .plank-recipe-row {
+      pointer-events: none;
+    }
+
+    .bush-inventory.planks-unlocked .plank-recipe-row {
+      display: flex;
     }
 
     .bush-inventory.open {
@@ -580,11 +594,77 @@
         0 0 6px rgba(84, 165, 255, 0.18);
     }
 
+    .bush-slot[data-bush-slot="2"],
+    .bush-slot[data-bush-slot="3"],
+    .bush-slot[data-bush-slot="4"],
+    .bush-slot[data-plank-slot] {
+      border-color: rgba(255, 214, 74, 0.98);
+      box-shadow:
+        inset 0 0 7px rgba(255, 214, 74, 0.24),
+        0 0 7px rgba(255, 214, 74, 0.2);
+    }
+
     .bush-slot[data-bush-slot="6"] {
       border-color: rgba(255, 64, 74, 0.98);
       box-shadow:
         inset 0 0 7px rgba(255, 64, 74, 0.24),
         0 0 7px rgba(255, 64, 74, 0.2);
+    }
+
+    .bush-slot.has-spring {
+      border-color: rgba(255, 0, 214, 0.98);
+      box-shadow:
+        inset 0 0 7px rgba(255, 0, 214, 0.24),
+        0 0 7px rgba(255, 0, 214, 0.24);
+    }
+
+    .bush-slot.has-planks {
+      border-color: rgba(255, 214, 74, 1);
+      box-shadow:
+        inset 0 0 8px rgba(255, 214, 74, 0.3),
+        0 0 10px rgba(255, 214, 74, 0.28);
+    }
+
+    .bush-slot.has-stick {
+      border-color: rgba(155, 88, 34, 1);
+      box-shadow:
+        inset 0 0 8px rgba(155, 88, 34, 0.28),
+        0 0 10px rgba(155, 88, 34, 0.22);
+    }
+
+    .bush-slot.planks-locked {
+      background: rgba(69, 73, 72, 0.5);
+      border-color: rgba(156, 156, 139, 0.78);
+      box-shadow: inset 0 0 7px rgba(210, 210, 190, 0.11);
+      opacity: 0.48;
+      filter: grayscale(1);
+    }
+
+    .bush-slot.planks-enabled {
+      opacity: 1;
+      filter: none;
+    }
+
+    .bush-slot.action-inactive {
+      border-color: rgba(150, 154, 154, 0.74);
+      background: rgba(82, 90, 88, 0.42);
+      box-shadow: inset 0 0 7px rgba(185, 190, 188, 0.12);
+      opacity: 0.58;
+      filter: grayscale(0.95);
+    }
+
+    .bush-slot[data-bush-slot="0"].action-active {
+      border-color: rgba(84, 165, 255, 1);
+      box-shadow:
+        inset 0 0 8px rgba(84, 165, 255, 0.34),
+        0 0 10px rgba(84, 165, 255, 0.42);
+    }
+
+    .bush-slot[data-bush-slot="6"].action-active {
+      border-color: rgba(255, 64, 74, 1);
+      box-shadow:
+        inset 0 0 8px rgba(255, 64, 74, 0.34),
+        0 0 10px rgba(255, 64, 74, 0.42);
     }
 
     .bush-slot img {
@@ -601,12 +681,16 @@
     }
 
     .bush-slot.has-bush,
-    .bush-slot.has-rubble {
+    .bush-slot.has-rubble,
+    .bush-slot.has-planks,
+    .bush-slot.has-stick {
       cursor: default;
     }
 
     .bush-slot.has-bush:active,
     .bush-slot.has-rubble:active,
+    .bush-slot.has-planks:active,
+    .bush-slot.has-stick:active,
     .bush-slot.carry-target {
       cursor: grabbing;
     }
@@ -877,6 +961,7 @@
       <p class="dim" id="seaLevelReadout">Sea level: 0</p>
       <p class="dim" id="bushesCollectedReadout">Collected Bushes: 0</p>
       <p class="dim" id="rubbleCollectedReadout">Collected Rubble: 0</p>
+      <p class="dim" id="springsCollectedReadout">Collected Springs: 0</p>
       <p class="dim" id="localStorageStatus">LocalStorage: ready</p>
       <div class="stats-storage-actions">
         <a id="clearLocalStorageLink" href="#">Clear LocalStorage + SessionStorage</a>
@@ -895,6 +980,15 @@
       <div class="bush-slot" data-bush-slot="4"></div>
       <div class="bush-slot" data-bush-slot="5"></div>
       <div class="bush-slot" data-bush-slot="6"></div>
+    </div>
+    <div class="plank-recipe-row" aria-label="Unlocked crafting row">
+      <div class="bush-slot planks-locked" data-plank-slot="0"></div>
+      <div class="bush-slot planks-locked" data-plank-slot="1"></div>
+      <div class="bush-slot planks-locked" data-plank-slot="2"></div>
+      <div class="bush-slot planks-locked" data-plank-slot="3"></div>
+      <div class="bush-slot planks-locked" data-plank-slot="4"></div>
+      <div class="bush-slot planks-locked" data-plank-slot="5"></div>
+      <div class="bush-slot planks-locked" data-plank-slot="6"></div>
     </div>
   </div>
   <div class="bush-carry-ghost" id="bushCarryGhost" aria-hidden="true" hidden>
@@ -924,6 +1018,6 @@
       }
     })();
   </script>
-  <script type="module" src="./assets/scripts/runtime-bridge.js?v=rubble-slot-projectile-20260508"></script>
+  <script type="module" src="./assets/scripts/runtime-bridge.js?v=rare-spring-boss-rate-333-20260710"></script>
 </body>
 </html>

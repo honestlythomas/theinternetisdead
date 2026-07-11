@@ -18,14 +18,15 @@
       createPlayerController,
       createSurfaceObjects,
       isTextEntryTarget
-    } from "./surface-entities.js?v=rubble-slot-projectile-20260508";
-    import { createBaseGenerator } from "./base-generator.js?v=rubble-slot-projectile-20260508";
+    } from "./surface-entities.js?v=stick-crafting-20260710";
+    import { createBaseGenerator } from "./base-generator.js?v=stackable-rubble-stick-20260710";
     import {
       createCloudLayer,
       createGraphicsPipeline,
       createMaterialPipeline,
       createSceneSetup
     } from "./graphics-pipeline.js?v=rubble-slot-projectile-20260508";
+    import { createNpcEnemiesController } from "./npc-enemies-controller.js?v=rare-spring-boss-rate-333-20260710";
     import {
       hideLoadingScreen as hideLoadingPanel,
       setupEscMenuPanels,
@@ -47,6 +48,7 @@
     const seaLevelReadout = document.getElementById("seaLevelReadout");
     const bushesCollectedReadout = document.getElementById("bushesCollectedReadout");
     const rubbleCollectedReadout = document.getElementById("rubbleCollectedReadout");
+    const springsCollectedReadout = document.getElementById("springsCollectedReadout");
     const modeReadout = document.getElementById("modeReadout");
     const escMenuSelect = document.getElementById("escMenuSelect");
     const tutorialPanel = document.getElementById("tutorialPanel");
@@ -88,14 +90,48 @@
     const normalizeBushInventorySlotCounts = bushInventoryController.normalizeSlotCounts;
     const setBushInventoryCounts = bushInventoryController.setCounts;
     const setInventoryRubbleCounts = bushInventoryController.setRubbleCounts;
+    const setInventorySpringCounts = bushInventoryController.setSpringCounts;
+    const setInventoryPlankCounts = bushInventoryController.setPlankCounts;
+    const setInventoryStickCounts = bushInventoryController.setStickCounts;
     const normalizeRubbleInventorySlotCounts = bushInventoryController.normalizeRubbleSlotCounts;
+    const normalizeSpringInventorySlotCounts = bushInventoryController.normalizeSpringSlotCounts;
+    const normalizePlankInventorySlotCounts = bushInventoryController.normalizePlankSlotCounts;
+    const normalizeStickInventorySlotCounts = bushInventoryController.normalizeStickSlotCounts;
     const getBushInventorySlotCounts = bushInventoryController.getCounts;
     const getRubbleInventorySlotCounts = bushInventoryController.getRubbleCounts;
+    const getSpringInventorySlotCounts = bushInventoryController.getSpringCounts;
+    const getPlankInventorySlotCounts = bushInventoryController.getPlankCounts;
+    const getStickInventorySlotCounts = bushInventoryController.getStickCounts;
     const toggleBushInventory = bushInventoryController.toggleOpen;
     const getActiveBushCarryCount = bushInventoryController.getActiveCarryCount;
     const cancelBushCarryToLeftmostSlot = bushInventoryController.cancelCarryToLeftmostSlot;
     const consumeInventoryItemFromSlot = bushInventoryController.consumeItemFromSlot;
     const hasInventoryItemInSlot = bushInventoryController.hasItemInSlot;
+    const getInventoryItemInSlot = bushInventoryController.getItemInSlot;
+    let clearBlueSlotPlacementPreview = () => {};
+    let activeInventoryActionSlot = "blue";
+
+    function setActiveInventoryActionSlot(nextSlot = "blue") {
+      activeInventoryActionSlot = nextSlot === "red" ? "red" : "blue";
+      for (const slot of bushInventorySlots) {
+        const isBlueAction = slot.dataset.bushSlot === "0";
+        const isRedAction = slot.dataset.bushSlot === "6";
+        if (!isBlueAction && !isRedAction) continue;
+        const isActive = (activeInventoryActionSlot === "blue" && isBlueAction) ||
+          (activeInventoryActionSlot === "red" && isRedAction);
+        slot.classList.toggle("action-active", isActive);
+        slot.classList.toggle("action-inactive", !isActive);
+      }
+      if (activeInventoryActionSlot !== "blue") {
+        clearBlueSlotPlacementPreview();
+      }
+    }
+
+    function toggleActiveInventoryActionSlot() {
+      setActiveInventoryActionSlot(activeInventoryActionSlot === "blue" ? "red" : "blue");
+    }
+
+    setActiveInventoryActionSlot("blue");
 
     const underwaterOverlay = document.getElementById("underwaterOverlay");
     const startMenu = document.getElementById("startMenu");
@@ -384,6 +420,13 @@
         startBackgroundMusicOnce();
       }
 
+      if (!isTextEntry && event.code === "Tab") {
+        event.preventDefault();
+        if (!event.repeat) {
+          toggleActiveInventoryActionSlot();
+        }
+      }
+
       if (!isTextEntry && event.shiftKey && event.code === "KeyM") {
         event.preventDefault();
         muteAllEnabled = !muteAllEnabled;
@@ -476,8 +519,12 @@
       const deletedRubbleStorageKey = `new-3D-game.deleted-rubble.${seedText}`;
       const bushesCollectedStorageKey = `new-3D-game.bushes-collected.${seedText}`;
       const rubbleCollectedStorageKey = `new-3D-game.rubble-collected.${seedText}`;
+      const springsCollectedStorageKey = `new-3D-game.springs-collected.${seedText}`;
       const bushInventoryStorageKey = `new-3D-game.bush-inventory.${seedText}`;
       const rubbleInventoryStorageKey = `new-3D-game.rubble-inventory.${seedText}`;
+      const springInventoryStorageKey = `new-3D-game.spring-inventory.${seedText}`;
+      const plankInventoryStorageKey = `new-3D-game.plank-inventory.${seedText}`;
+      const stickInventoryStorageKey = `new-3D-game.stick-inventory.${seedText}`;
       const worldCacheVersion = 3;
       const worldCacheSaveIntervalMs = 2500;
       let worldCacheLoadedChunkCount = 0;
@@ -571,6 +618,19 @@
         rubbleCollectedCount = Math.max(rubbleCollectedCount, Math.round(Number(savedFullState.collected.rubble)));
       }
 
+      function loadSpringsCollectedCount() {
+        const localCount = loadLocalCount(springsCollectedStorageKey, {
+          minimum: 0,
+          warningMessage: "Could not load springs collected local count:"
+        });
+        return Math.max(localCount, loadLegacySessionCount(springsCollectedStorageKey));
+      }
+
+      let springsCollectedCount = loadSpringsCollectedCount();
+      if (shouldRestoreFullState && savedFullState?.collected && Number.isFinite(Number(savedFullState.collected.springs))) {
+        springsCollectedCount = Math.max(springsCollectedCount, Math.round(Number(savedFullState.collected.springs)));
+      }
+
       function loadBushInventorySlotCounts() {
         return normalizeBushInventorySlotCounts(
           bushesCollectedCount,
@@ -597,6 +657,57 @@
         );
       }
 
+      function loadSpringInventorySlotCounts() {
+        return normalizeSpringInventorySlotCounts(
+          springsCollectedCount,
+          (() => {
+            const localLayout = loadLocalJsonArray(springInventoryStorageKey, {
+              warningMessage: "Could not load spring inventory local layout:"
+            });
+            const legacyLayout = loadLegacySessionJsonArray(springInventoryStorageKey);
+            return localLayout.length ? localLayout : legacyLayout;
+          })()
+        );
+      }
+
+      function getPlanksInInventoryCount() {
+        return getPlankInventorySlotCounts().reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0);
+      }
+
+      function getSticksInInventoryCount() {
+        return getStickInventorySlotCounts().reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0);
+      }
+
+      function loadPlankInventorySlotCounts() {
+        const layout = (() => {
+          if (shouldRestoreFullState && Array.isArray(savedFullState?.inventory?.planks)) {
+            return savedFullState.inventory.planks;
+          }
+          const localLayout = loadLocalJsonArray(plankInventoryStorageKey, {
+            warningMessage: "Could not load plank inventory local layout:"
+          });
+          const legacyLayout = loadLegacySessionJsonArray(plankInventoryStorageKey);
+          return localLayout.length ? localLayout : legacyLayout;
+        })();
+        const total = layout.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0);
+        return normalizePlankInventorySlotCounts(total, layout);
+      }
+
+      function loadStickInventorySlotCounts() {
+        const layout = (() => {
+          if (shouldRestoreFullState && Array.isArray(savedFullState?.inventory?.sticks)) {
+            return savedFullState.inventory.sticks;
+          }
+          const localLayout = loadLocalJsonArray(stickInventoryStorageKey, {
+            warningMessage: "Could not load stick inventory local layout:"
+          });
+          const legacyLayout = loadLegacySessionJsonArray(stickInventoryStorageKey);
+          return localLayout.length ? localLayout : legacyLayout;
+        })();
+        const total = layout.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0);
+        return normalizeStickInventorySlotCounts(total, layout);
+      }
+
       function saveBushInventorySlotCounts(counts = getBushInventorySlotCounts()) {
         saveLocalJson(
           bushInventoryStorageKey,
@@ -613,14 +724,58 @@
         );
       }
 
-      bushInventoryController.setLayoutChangedHandler((bushCounts, rubbleCounts) => {
+      function saveSpringInventorySlotCounts(counts = getSpringInventorySlotCounts()) {
+        saveLocalJson(
+          springInventoryStorageKey,
+          normalizeSpringInventorySlotCounts(springsCollectedCount, counts),
+          { warningMessage: "Could not save spring inventory local layout:" }
+        );
+      }
+
+      function savePlankInventorySlotCounts(counts = getPlankInventorySlotCounts()) {
+        saveLocalJson(
+          plankInventoryStorageKey,
+          normalizePlankInventorySlotCounts(
+            counts.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0),
+            counts
+          ),
+          { warningMessage: "Could not save plank inventory local layout:" }
+        );
+      }
+
+      function saveStickInventorySlotCounts(counts = getStickInventorySlotCounts()) {
+        saveLocalJson(
+          stickInventoryStorageKey,
+          normalizeStickInventorySlotCounts(
+            counts.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0),
+            counts
+          ),
+          { warningMessage: "Could not save stick inventory local layout:" }
+        );
+      }
+
+      bushInventoryController.setLayoutChangedHandler((bushCounts, rubbleCounts, springCounts, plankCounts, stickCounts) => {
         saveBushInventorySlotCounts(bushCounts);
         saveRubbleInventorySlotCounts(rubbleCounts);
+        saveSpringInventorySlotCounts(springCounts);
+        savePlankInventorySlotCounts(plankCounts);
+        saveStickInventorySlotCounts(stickCounts);
       });
       setBushInventoryCounts(bushesCollectedCount, loadBushInventorySlotCounts());
       setInventoryRubbleCounts(rubbleCollectedCount, loadRubbleInventorySlotCounts());
+      setInventorySpringCounts(springsCollectedCount, loadSpringInventorySlotCounts());
+      const plankInventorySlotCounts = loadPlankInventorySlotCounts();
+      setInventoryPlankCounts(
+        plankInventorySlotCounts.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0),
+        plankInventorySlotCounts
+      );
+      const stickInventorySlotCounts = loadStickInventorySlotCounts();
+      setInventoryStickCounts(
+        stickInventorySlotCounts.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0),
+        stickInventorySlotCounts
+      );
 
-      function updateBushesCollectedReadout() {
+      function updateCollectedReadouts() {
         if (bushesCollectedReadout) {
           bushesCollectedReadout.textContent = `Collected Bushes: ${bushesCollectedCount}`;
         }
@@ -629,11 +784,48 @@
           rubbleCollectedReadout.textContent = `Collected Rubble: ${rubbleCollectedCount}`;
         }
 
+        if (springsCollectedReadout) {
+          springsCollectedReadout.textContent = `Collected Springs: ${springsCollectedCount}`;
+        }
+      }
+
+      function syncBushInventorySlots() {
         setBushInventoryCounts(bushesCollectedCount, getBushInventorySlotCounts());
-        setInventoryRubbleCounts(rubbleCollectedCount, getRubbleInventorySlotCounts());
         saveBushInventorySlotCounts();
+      }
+
+      function syncRubbleInventorySlots() {
+        setInventoryRubbleCounts(rubbleCollectedCount, getRubbleInventorySlotCounts());
         saveRubbleInventorySlotCounts();
       }
+
+      function syncSpringInventorySlots() {
+        setInventorySpringCounts(springsCollectedCount, getSpringInventorySlotCounts());
+        saveSpringInventorySlotCounts();
+      }
+
+      function syncPlankInventorySlots() {
+        const planksInInventory = getPlanksInInventoryCount();
+        setInventoryPlankCounts(planksInInventory, getPlankInventorySlotCounts());
+        savePlankInventorySlotCounts();
+      }
+
+      function syncStickInventorySlots() {
+        const sticksInInventory = getSticksInInventoryCount();
+        setInventoryStickCounts(sticksInInventory, getStickInventorySlotCounts());
+        saveStickInventorySlotCounts();
+      }
+
+      bushInventoryController.setPlanksCraftedHandler(({ bushesConsumed = 3 } = {}) => {
+        bushesCollectedCount = Math.max(0, bushesCollectedCount - Math.max(0, Math.round(Number(bushesConsumed) || 0)));
+        saveBushesCollectedCount();
+        updateCollectedReadouts();
+      });
+
+      bushInventoryController.setStickCraftedHandler(() => {
+        savePlankInventorySlotCounts();
+        saveStickInventorySlotCounts();
+      });
 
       function saveBushesCollectedCount() {
         saveLocalCount(bushesCollectedStorageKey, bushesCollectedCount, {
@@ -647,7 +839,13 @@
         });
       }
 
-      updateBushesCollectedReadout();
+      function saveSpringsCollectedCount() {
+        saveLocalCount(springsCollectedStorageKey, springsCollectedCount, {
+          warningMessage: "Could not save springs collected local count:"
+        });
+      }
+
+      updateCollectedReadouts();
 
       function saveDeletedTreeKeys() {
         saveLocalStringSet(deletedTreeStorageKey, deletedTreeKeys, {
@@ -665,6 +863,8 @@
       saveDeletedRubbleKeys();
       saveBushesCollectedCount();
       saveRubbleCollectedCount();
+      saveSpringsCollectedCount();
+      saveStickInventorySlotCounts();
 
       function formatCoord(value) {
         return Number.isFinite(value) ? value.toFixed(2) : "0.00";
@@ -715,7 +915,7 @@
 
         spawnStatus.textContent = `Spawn: ${formatXYZ(activeSpawnPoint)} facing ${formatYaw(activeSpawnPoint.yaw)}`;
         spawnCoordsReadout.textContent = `Spawn XYZ: ${formatXYZ(activeSpawnPoint)} facing ${formatYaw(activeSpawnPoint.yaw)}`;
-        updateBushesCollectedReadout();
+        updateCollectedReadouts();
       }
 
       activeSpawnPoint = shouldRestoreFullState && savedFullState.spawnPoint
@@ -882,6 +1082,7 @@
       scene.add(player.mesh);
       markBackgroundMusicReady();
       let audioHandler = null;
+      let rightClickRubbleVacuumActive = false;
       const surfaceObjects = createSurfaceObjects({
         THREE,
         scene,
@@ -896,17 +1097,19 @@
         getTerrainHeightAtWorld: (x, z) => getTerrainHeightAtWorld(x, z),
         tileSize,
         rubbleMaterial,
-        getIsLeftControlRubbleAbsorbActive: () => keys.has("ControlLeft"),
+        getIsLeftControlRubbleAbsorbActive: () => keys.has("ControlLeft") || rightClickRubbleVacuumActive,
         onRubbleCollected: () => {
           rubbleCollectedCount += 1;
           saveRubbleCollectedCount();
-          updateBushesCollectedReadout();
+          syncRubbleInventorySlots();
+          updateCollectedReadouts();
         },
         onTreeDeleted: ({ wasAlreadyDeleted }) => {
           if (!wasAlreadyDeleted) {
             bushesCollectedCount += 1;
             saveBushesCollectedCount();
-            updateBushesCollectedReadout();
+            syncBushInventorySlots();
+            updateCollectedReadouts();
           }
         }
       });
@@ -1006,8 +1209,12 @@
         getDeletedRubbleKeys: () => deletedRubbleKeys,
         getBushesCollectedCount: () => bushesCollectedCount,
         getRubbleCollectedCount: () => rubbleCollectedCount,
+        getSpringsCollectedCount: () => springsCollectedCount,
         getBushInventorySlotCounts,
         getRubbleInventorySlotCounts,
+        getSpringInventorySlotCounts,
+        getPlankInventorySlotCounts,
+        getStickInventorySlotCounts,
         getCameraState: () => state,
         getPlayer: () => player,
         getIsThirdPersonMode: () => isThirdPersonMode,
@@ -1039,8 +1246,12 @@
         saveDeletedRubbleKeys();
         saveBushesCollectedCount();
         saveRubbleCollectedCount();
+        saveSpringsCollectedCount();
         saveBushInventorySlotCounts();
         saveRubbleInventorySlotCounts();
+        saveSpringInventorySlotCounts();
+        savePlankInventorySlotCounts();
+        saveStickInventorySlotCounts();
         saveLoadState.saveFullGameState();
       };
       const clearAllLocalStorage = saveLoadState.clearAllLocalStorage;
@@ -1132,17 +1343,513 @@
         getSolidSurfaceHeightAtWorld,
         getWaterSurfaceHeightAtWorld,
         isWaterAtWorld,
+        tileToWorldX,
+        tileToWorldZ,
         getTreeSampleAtTile,
+        getRubbleSampleAtTile,
         findRubblePileAtWorld,
         advanceRubbleCrackStateAtWorld,
         advanceRubbleHoldCrackAtWorld,
         convertRubblePileAtWorldToLooseRagdoll,
+        addRubblePile,
+        addTreeSprite,
         buildChunk,
         disposeChunk,
         updateChunks,
         processDistantLodQueue,
         updateTreeSpritesFacingCamera
       } = baseGenerator;
+
+      const npcEnemiesController = createNpcEnemiesController({
+        THREE,
+        scene,
+        renderer,
+        camera,
+        player,
+        seedNumber,
+        tileSize,
+        seaLevel,
+        getTerrainSampleAtTile,
+        getVisibleSurfaceHeightAtWorld,
+        getTreeSampleAtTile,
+        hasRedSlotRubble: () => activeInventoryActionSlot === "red" && hasInventoryItemInSlot?.(6, "rubble"),
+        consumeRedSlotRubble: () => {
+          if (!consumeInventoryItemFromSlot?.(6, "rubble", 1)) return false;
+          rubbleCollectedCount = Math.max(0, rubbleCollectedCount - 1);
+          saveRubbleCollectedCount();
+          updateCollectedReadouts();
+          return true;
+        },
+        onSpringCollected: () => {
+          springsCollectedCount += 1;
+          saveSpringsCollectedCount();
+          syncSpringInventorySlots();
+          updateCollectedReadouts();
+        },
+        renderRadiusTiles: 100,
+        cullRadiusTiles: 112
+      });
+      window.__npcEnemiesController = npcEnemiesController;
+      window.__getNpcEnemyCount = () => npcEnemiesController.getActiveEnemyCount();
+      window.__getNpcCloudCount = () => npcEnemiesController.getActiveCloudCount();
+      const getNpcCloudSurfaceHeightAtWorld = (x, z) => npcEnemiesController.getCloudSurfaceHeightAtWorld(x, z);
+
+      const blueSlotPlacementPointer = new THREE.Vector2();
+      const blueSlotPlacementRaycaster = new THREE.Raycaster();
+      const blueSlotPlacementTile = {
+        type: null,
+        tileX: 0,
+        tileZ: 0,
+        x: 0,
+        y: 0,
+        z: 0,
+        valid: false
+      };
+      const blueSlotPlacementGroup = new THREE.Group();
+      blueSlotPlacementGroup.name = "blue-slot-placement-preview";
+      blueSlotPlacementGroup.visible = false;
+      blueSlotPlacementGroup.renderOrder = 30;
+      const blueSlotPlacementTileMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffd64a,
+        transparent: true,
+        opacity: 0.34,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      const blueSlotPlacementTileMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(tileSize, tileSize),
+        blueSlotPlacementTileMaterial
+      );
+      blueSlotPlacementTileMesh.rotation.x = -Math.PI * 0.5;
+      blueSlotPlacementTileMesh.renderOrder = 30;
+      blueSlotPlacementGroup.add(blueSlotPlacementTileMesh);
+      let blueSlotPlacementGhost = null;
+      let blueSlotPlacementGhostType = null;
+      const plankModelTexture = new THREE.TextureLoader().load("assets/png/tv-wood.png");
+      plankModelTexture.colorSpace = THREE.SRGBColorSpace;
+      plankModelTexture.wrapS = THREE.RepeatWrapping;
+      plankModelTexture.wrapT = THREE.RepeatWrapping;
+      plankModelTexture.repeat.set(1.8, 1.8);
+      scene.add(blueSlotPlacementGroup);
+      const placedPlankObjects = new Map();
+      const placedStickObjects = new Map();
+      const stackableTileHeights = new Map();
+      const stackablePlacementTypes = new Set(["rubble", "planks", "stick"]);
+
+      function getPlacedStackCount(stackMap, key) {
+        const value = stackMap.get(key);
+        if (Array.isArray(value)) return value.filter((object) => object && object.parent).length;
+        return value && value.parent ? 1 : 0;
+      }
+
+      function addPlacedStackObject(stackMap, key, object) {
+        const value = stackMap.get(key);
+        if (Array.isArray(value)) {
+          value.push(object);
+          return value.length;
+        }
+        if (value && value.parent) {
+          stackMap.set(key, [value, object]);
+          return 2;
+        }
+        stackMap.set(key, [object]);
+        return 1;
+      }
+
+      function isStackablePlacementType(type) {
+        return stackablePlacementTypes.has(type);
+      }
+
+      function countRubblePilesAtTile(tileX, tileZ) {
+        let count = 0;
+        for (const rubbleGroup of rubbleObjects.values()) {
+          if (!rubbleGroup?.parent || !rubbleGroup.userData?.isRubblePile) continue;
+          if (rubbleGroup.userData.rubbleGlobalX === tileX && rubbleGroup.userData.rubbleGlobalZ === tileZ) {
+            count += 1;
+          }
+        }
+        return count;
+      }
+
+      function getRubbleStackHeightAtTile(tileX, tileZ, baseY) {
+        let height = 0;
+        for (const rubbleGroup of rubbleObjects.values()) {
+          if (!rubbleGroup?.parent || !rubbleGroup.userData?.isRubblePile) continue;
+          if (rubbleGroup.userData.rubbleGlobalX !== tileX || rubbleGroup.userData.rubbleGlobalZ !== tileZ) continue;
+          const topY = Number(rubbleGroup.userData.rubbleTopY);
+          if (Number.isFinite(topY)) {
+            height = Math.max(height, topY - baseY);
+          }
+        }
+        return Math.max(0, height);
+      }
+
+      function getStackableTileHeight(key, tileX, tileZ, baseY) {
+        return Math.max(
+          Number(stackableTileHeights.get(key)) || 0,
+          getRubbleStackHeightAtTile(tileX, tileZ, baseY)
+        );
+      }
+
+      function setStackableTileHeight(key, height) {
+        stackableTileHeights.set(key, Math.max(Number(stackableTileHeights.get(key)) || 0, height));
+      }
+
+      function getPlacedStackSurfaceHeightAtWorld(x, z) {
+        const tileX = Math.floor(x / tileSize);
+        const tileZ = Math.floor(z / tileSize);
+        const key = `${tileX},${tileZ}`;
+        const height = Number(stackableTileHeights.get(key)) || 0;
+        if (height <= 0) return -Infinity;
+
+        const tileMinX = tileToWorldX(tileX);
+        const tileMaxX = tileToWorldX(tileX + 1);
+        const tileMinZ = tileToWorldZ(tileZ);
+        const tileMaxZ = tileToWorldZ(tileZ + 1);
+        if (x < tileMinX || x >= tileMaxX || z < tileMinZ || z >= tileMaxZ) return -Infinity;
+
+        const sample = getTerrainSampleAtTile(tileX, tileZ);
+        if (!sample) return -Infinity;
+        return sample.landLevel * heightStep + height;
+      }
+
+      function disposeBlueSlotPlacementGhost() {
+        if (!blueSlotPlacementGhost) return;
+        blueSlotPlacementGroup.remove(blueSlotPlacementGhost);
+        blueSlotPlacementGhost.traverse((child) => {
+          if (child.geometry) child.geometry.dispose();
+          if (child.material) child.material.dispose();
+        });
+        blueSlotPlacementGhost = null;
+        blueSlotPlacementGhostType = null;
+      }
+
+      function createBlueSlotPlacementGhost(type) {
+        const group = new THREE.Group();
+        const ghostMaterial = new THREE.MeshBasicMaterial({
+          color: type === "spring" ? 0xff00d6 : (type === "rubble" ? 0x8f867c : (type === "planks" ? 0xd8ad63 : (type === "stick" ? 0x7a441b : 0x42d96b))),
+          transparent: true,
+          opacity: 0.42,
+          depthWrite: false,
+          side: THREE.DoubleSide
+        });
+
+        if (type === "bush") {
+          const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.28, 1.4, 8), ghostMaterial.clone());
+          trunk.position.y = 0.72;
+          const canopy = new THREE.Mesh(new THREE.ConeGeometry(1.45, 3.1, 10), ghostMaterial.clone());
+          canopy.position.y = 2.65;
+          group.add(trunk, canopy);
+        } else if (type === "rubble") {
+          const chunks = [
+            [1.45, 0.62, 1.2, -0.45, 0.34, -0.25],
+            [1.05, 0.78, 0.92, 0.5, 0.43, 0.12],
+            [0.86, 0.52, 0.74, 0.02, 0.27, 0.56]
+          ];
+          for (const [sx, sy, sz, x, y, z] of chunks) {
+            const rock = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), ghostMaterial.clone());
+            rock.position.set(x, y, z);
+            rock.rotation.set(0.22 + x * 0.1, y, -0.18 + z * 0.08);
+            group.add(rock);
+          }
+        } else if (type === "spring") {
+          const top = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.13, 8, 22), ghostMaterial.clone());
+          const waist = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.12, 8, 20), ghostMaterial.clone());
+          const bottom = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.13, 8, 22), ghostMaterial.clone());
+          top.position.y = 2.3;
+          waist.position.y = 1.25;
+          bottom.position.y = 0.25;
+          top.rotation.x = waist.rotation.x = bottom.rotation.x = Math.PI * 0.5;
+          const strandA = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.4, 8), ghostMaterial.clone());
+          const strandB = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.4, 8), ghostMaterial.clone());
+          strandA.position.y = strandB.position.y = 1.25;
+          strandA.rotation.z = 0.38;
+          strandB.rotation.z = -0.38;
+          group.add(top, waist, bottom, strandA, strandB);
+        } else if (type === "planks") {
+          const deckMaterial = ghostMaterial.clone();
+          deckMaterial.map = plankModelTexture;
+          deckMaterial.color.set(0xffffff);
+          const deck = new THREE.Mesh(new THREE.BoxGeometry(tileSize * 0.88, 0.18, tileSize * 0.88), deckMaterial);
+          deck.position.y = 0.11;
+          group.add(deck);
+        } else if (type === "stick") {
+          const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, tileSize, 8), ghostMaterial.clone());
+          stick.position.y = tileSize * 0.5;
+          group.add(stick);
+        }
+
+        return group;
+      }
+
+      function syncBlueSlotPlacementGhost(type) {
+        if (blueSlotPlacementGhostType === type && blueSlotPlacementGhost) return;
+        disposeBlueSlotPlacementGhost();
+        blueSlotPlacementGhost = createBlueSlotPlacementGhost(type);
+        blueSlotPlacementGhostType = type;
+        blueSlotPlacementGroup.add(blueSlotPlacementGhost);
+      }
+
+      function getBlueSlotPlacementMeshes() {
+        const targets = [];
+        for (const chunk of loadedChunks.values()) {
+          chunk.traverse((child) => {
+            if (child.isMesh && !child.userData?.isRubblePile && !child.userData?.isPineTreeSprite) {
+              targets.push(child);
+            }
+          });
+        }
+        return targets;
+      }
+
+      function getBlueSlotPlacementTarget(event) {
+        if (activeInventoryActionSlot !== "blue") return null;
+        const item = getInventoryItemInSlot?.(0);
+        if (!item || !item.type) return null;
+        const rect = renderer.domElement.getBoundingClientRect();
+        if (!rect.width || !rect.height) return null;
+
+        blueSlotPlacementPointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        blueSlotPlacementPointer.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+        blueSlotPlacementRaycaster.setFromCamera(blueSlotPlacementPointer, camera);
+        const hit = blueSlotPlacementRaycaster.intersectObjects(getBlueSlotPlacementMeshes(), false)[0];
+        if (!hit) return null;
+
+        const tileX = Math.floor(hit.point.x / tileSize);
+        const tileZ = Math.floor(hit.point.z / tileSize);
+        const x = tileToWorldX(tileX + 0.5);
+        const z = tileToWorldZ(tileZ + 0.5);
+        const sample = getTerrainSampleAtTile(tileX, tileZ);
+        if (!sample || (sample.waterLevel === seaLevel && sample.landLevel < seaLevel)) return null;
+
+        const key = `${tileX},${tileZ}`;
+        const occupiedByTree = treeColliders.has(key) && treeColliders.get(key)?.sprite?.parent;
+        const occupiedByRubble = Boolean(findRubblePileAtWorld(x, z));
+        const occupiedByPlanks = getPlacedStackCount(placedPlankObjects, key) > 0;
+        const occupiedByStick = getPlacedStackCount(placedStickObjects, key) > 0;
+        const occupiedByStackable = occupiedByRubble || occupiedByPlanks || occupiedByStick;
+        if (occupiedByTree || (occupiedByStackable && !isStackablePlacementType(item.type))) return null;
+
+        const baseY = sample.landLevel * heightStep;
+        const stackHeight = isStackablePlacementType(item.type)
+          ? getStackableTileHeight(key, tileX, tileZ, baseY)
+          : 0;
+
+        return {
+          type: item.type,
+          tileX,
+          tileZ,
+          x,
+          z,
+          y: baseY + stackHeight,
+          stackBaseY: baseY,
+          stackHeight,
+          valid: true
+        };
+      }
+
+      function setBlueSlotPlacementPreview(target) {
+        if (!target) {
+          blueSlotPlacementTile.valid = false;
+          blueSlotPlacementGroup.visible = false;
+          return;
+        }
+
+        Object.assign(blueSlotPlacementTile, target);
+        syncBlueSlotPlacementGhost(target.type);
+        blueSlotPlacementGroup.position.set(target.x, target.y + 0.055, target.z);
+        blueSlotPlacementTileMesh.material.color.set(0xffd64a);
+        blueSlotPlacementTileMesh.material.opacity = 0.34;
+        if (blueSlotPlacementGhost) {
+          blueSlotPlacementGhost.position.y = 0.06;
+        }
+        blueSlotPlacementGroup.visible = true;
+      }
+
+      clearBlueSlotPlacementPreview = () => setBlueSlotPlacementPreview(null);
+
+      function updateBlueSlotPlacementHover(event) {
+        if (!event) {
+          setBlueSlotPlacementPreview(null);
+          return null;
+        }
+        const target = getBlueSlotPlacementTarget(event);
+        setBlueSlotPlacementPreview(target);
+        return target;
+      }
+
+      function spendBlueSlotPlacementItem(type) {
+        if (!consumeInventoryItemFromSlot?.(0, type, 1)) return false;
+        if (type === "bush") {
+          bushesCollectedCount = Math.max(0, bushesCollectedCount - 1);
+          saveBushesCollectedCount();
+          saveBushInventorySlotCounts();
+        } else if (type === "rubble") {
+          rubbleCollectedCount = Math.max(0, rubbleCollectedCount - 1);
+          saveRubbleCollectedCount();
+          saveRubbleInventorySlotCounts();
+        } else if (type === "spring") {
+          springsCollectedCount = Math.max(0, springsCollectedCount - 1);
+          saveSpringsCollectedCount();
+          saveSpringInventorySlotCounts();
+        } else if (type === "planks") {
+          syncPlankInventorySlots();
+        } else if (type === "stick") {
+          syncStickInventorySlots();
+        }
+        updateCollectedReadouts();
+        return true;
+      }
+
+      function placeBushAtTile(target) {
+        const sample = getTerrainSampleAtTile(target.tileX, target.tileZ);
+        if (!sample) return false;
+        const key = getTreeColliderKey(target.tileX, target.tileZ);
+        deletedTreeKeys.delete(key);
+        saveDeletedTreeKeys();
+        const baseScale = tileSize * 3.35;
+        addTreeSprite(scene, {
+          globalX: target.tileX,
+          globalZ: target.tileZ,
+          variantName: "placed-single",
+          footprintSize: 1,
+          x: target.x,
+          y: sample.landLevel * heightStep,
+          z: target.z,
+          scale: baseScale,
+          visualWidth: baseScale,
+          visualHeight: baseScale * 1.16,
+          baseY: sample.landLevel * heightStep,
+          topY: sample.landLevel * heightStep + baseScale * 1.16,
+          opacity: 0.96
+        });
+        return true;
+      }
+
+      function placeRubbleAtTile(target) {
+        const sample = getTerrainSampleAtTile(target.tileX, target.tileZ);
+        if (!sample) return false;
+        const key = `${target.tileX},${target.tileZ}`;
+        deletedRubbleKeys.delete(key);
+        saveDeletedRubbleKeys();
+        const stackIndex = Math.max(0, countRubblePilesAtTile(target.tileX, target.tileZ));
+        const stackKey = `${key}:placed-stack-${stackIndex + 1}`;
+        const baseY = sample.landLevel * heightStep;
+        const stackHeight = getStackableTileHeight(key, target.tileX, target.tileZ, baseY);
+        addRubblePile(scene, {
+          key: stackKey,
+          globalX: target.tileX,
+          globalZ: target.tileZ,
+          footprintSize: 1,
+          x: target.x,
+          y: baseY + stackHeight,
+          z: target.z,
+          footprintWorld: tileSize,
+          spread: tileSize * 0.28,
+          baseScale: tileSize * 0.62,
+          pieceCount: 7,
+          underwater: false,
+          heightStretch: 1.08,
+          rotationX: 0,
+          rotationY: hash2D(target.tileX * 379 - 191, target.tileZ * 379 + 197) * Math.PI * 2
+        });
+        setStackableTileHeight(key, stackHeight + tileSize * 0.22);
+        return true;
+      }
+
+      function placeSpringAtTile(target) {
+        return Boolean(npcEnemiesController.createPlacedEnemyAtTile?.(target.tileX, target.tileZ));
+      }
+
+      function createPlanksModel() {
+        const group = new THREE.Group();
+        const woodMaterial = new THREE.MeshStandardMaterial({
+          map: plankModelTexture,
+          color: 0xffffff,
+          roughness: 0.76,
+          metalness: 0.02
+        });
+        const deck = new THREE.Mesh(new THREE.BoxGeometry(tileSize * 0.9, 0.28, tileSize * 0.9), woodMaterial);
+        deck.position.y = 0.14;
+        deck.castShadow = true;
+        deck.receiveShadow = true;
+        group.add(deck);
+        return group;
+      }
+
+      function placePlanksAtTile(target) {
+        const sample = getTerrainSampleAtTile(target.tileX, target.tileZ);
+        if (!sample) return false;
+        const key = `${target.tileX},${target.tileZ}`;
+        const baseY = sample.landLevel * heightStep;
+        const stackHeight = getStackableTileHeight(key, target.tileX, target.tileZ, baseY);
+        const group = createPlanksModel();
+        group.name = `placed-planks-${key}-${getPlacedStackCount(placedPlankObjects, key) + 1}`;
+        group.position.set(target.x, baseY + stackHeight, target.z);
+        group.rotation.y = hash2D(target.tileX * 811 + 29, target.tileZ * 811 - 43) > 0.5 ? Math.PI * 0.5 : 0;
+        group.userData.isPlacedPlanks = true;
+        group.userData.tileKey = key;
+        scene.add(group);
+        addPlacedStackObject(placedPlankObjects, key, group);
+        setStackableTileHeight(key, stackHeight + 0.28);
+        return true;
+      }
+
+      function createStickModel() {
+        const group = new THREE.Group();
+        const stickMaterial = new THREE.MeshStandardMaterial({
+          color: 0x744017,
+          roughness: 0.86,
+          metalness: 0.02
+        });
+        const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, tileSize, 8), stickMaterial);
+        stick.position.y = tileSize * 0.5;
+        stick.castShadow = true;
+        stick.receiveShadow = true;
+        group.add(stick);
+        return group;
+      }
+
+      function placeStickAtTile(target) {
+        const sample = getTerrainSampleAtTile(target.tileX, target.tileZ);
+        if (!sample) return false;
+        const key = `${target.tileX},${target.tileZ}`;
+        const baseY = sample.landLevel * heightStep;
+        const stackHeight = getStackableTileHeight(key, target.tileX, target.tileZ, baseY);
+        const stackIndex = getPlacedStackCount(placedStickObjects, key);
+        const group = createStickModel();
+        group.name = `placed-stick-${key}-${stackIndex + 1}`;
+        group.position.set(target.x, baseY + stackHeight, target.z);
+        group.userData.isPlacedStick = true;
+        group.userData.tileKey = key;
+        group.userData.stackIndex = stackIndex;
+        scene.add(group);
+        addPlacedStackObject(placedStickObjects, key, group);
+        setStackableTileHeight(key, stackHeight + tileSize);
+        return true;
+      }
+
+      function handleBlueSlotPlacementClick(event) {
+        if (activeInventoryActionSlot !== "blue") return false;
+        const target = getBlueSlotPlacementTarget(event);
+        if (!target) return false;
+
+        const placed = target.type === "bush"
+          ? placeBushAtTile(target)
+          : target.type === "rubble"
+            ? placeRubbleAtTile(target)
+            : target.type === "spring"
+              ? placeSpringAtTile(target)
+              : target.type === "planks"
+                ? placePlanksAtTile(target)
+                : target.type === "stick"
+                  ? placeStickAtTile(target)
+                  : false;
+        if (!placed) return false;
+        if (!spendBlueSlotPlacementItem(target.type)) return false;
+        setBlueSlotPlacementPreview(null);
+        return true;
+      }
 
       window.__setTileGridVisibility = (visible) => {
         showGridLines = visible;
@@ -1352,7 +2059,7 @@
         getShowGridLines: () => showGridLines,
         formatXYZ,
         formatYaw,
-        updateBushesCollectedReadout
+        updateBushesCollectedReadout: updateCollectedReadouts
       });
 
       const updateLodFogCurtain = graphicsPipeline.updateLodFogCurtain;
@@ -1367,38 +2074,6 @@
         getIsThirdPersonMode: () => isThirdPersonMode
       });
       applyVolumeOptions();
-
-      const rubbleFirePointer = new THREE.Vector2();
-      const rubbleFireRaycaster = new THREE.Raycaster();
-
-      function handleInventoryRubbleFire(event) {
-        if (!event || event.button !== 0) return false;
-        if (!player?.mesh || typeof fireRubbleProjectile !== "function") return false;
-        if (!hasInventoryItemInSlot?.(6, "rubble")) return false;
-
-        const rect = renderer.domElement.getBoundingClientRect();
-        if (!rect.width || !rect.height) return false;
-
-        rubbleFirePointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        rubbleFirePointer.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
-        rubbleFireRaycaster.setFromCamera(rubbleFirePointer, camera);
-
-        const direction = rubbleFireRaycaster.ray.direction.clone().normalize();
-        const origin = player.mesh.position.clone();
-
-        const fired = fireRubbleProjectile(origin, direction, 142);
-        if (!fired) return false;
-
-        if (!consumeInventoryItemFromSlot?.(6, "rubble", 1)) {
-          if (fired.parent) fired.parent.remove(fired);
-          return false;
-        }
-
-        rubbleCollectedCount = Math.max(0, rubbleCollectedCount - 1);
-        saveRubbleCollectedCount();
-        updateBushesCollectedReadout();
-        return true;
-      }
 
       const playerController = createPlayerController({
         THREE,
@@ -1424,9 +2099,22 @@
         },
         getTerrainHeightAtWorld,
         getVisibleSurfaceHeightAtWorld,
-        getRubbleSurfaceHeightAtWorld,
-        getSolidSurfaceHeightAtWorld,
-        getWaterSurfaceHeightAtWorld,
+        getRubbleSurfaceHeightAtWorld: (x, z) => Math.max(
+          getRubbleSurfaceHeightAtWorld(x, z),
+          getPlacedStackSurfaceHeightAtWorld(x, z)
+        ),
+        getSolidSurfaceHeightAtWorld: (x, z) => Math.max(
+          getSolidSurfaceHeightAtWorld(x, z),
+          getPlacedStackSurfaceHeightAtWorld(x, z),
+          getNpcCloudSurfaceHeightAtWorld(x, z)
+        ),
+        getWaterSurfaceHeightAtWorld: (x, z) => {
+          const cloudSurfaceY = getNpcCloudSurfaceHeightAtWorld(x, z);
+          const waterSurfaceY = getWaterSurfaceHeightAtWorld(x, z);
+          return Number.isFinite(cloudSurfaceY) && cloudSurfaceY > waterSurfaceY
+            ? -Infinity
+            : waterSurfaceY;
+        },
         onRubbleLanding: ({ x, z }) => {
           const rubbleLandingResult = advanceRubbleCrackStateAtWorld(x, z);
           if (rubbleLandingResult?.hit && audioHandler && typeof audioHandler.playTreeFlattenCrack === "function") {
@@ -1451,7 +2139,19 @@
         handleLooseRubbleClick,
         cancelLooseRubbleClickHold,
         updateLooseRubbleHover,
-        handleInventoryRubbleFire,
+        handleNpcSpringClick: (event) => activeInventoryActionSlot === "red" && npcEnemiesController.handleNpcSpringClick(event),
+        updateNpcSpringHover: (event) => {
+          if (activeInventoryActionSlot === "red") return npcEnemiesController.updateNpcSpringHover(event);
+          npcEnemiesController.updateNpcSpringHover(null);
+          return null;
+        },
+        setSpringPickupVacuumActive: (active) => {
+          const isActive = Boolean(active);
+          rightClickRubbleVacuumActive = isActive;
+          npcEnemiesController.setSpringPickupVacuumActive(isActive);
+        },
+        handleBlueSlotPlacementClick,
+        updateBlueSlotPlacementHover,
         isTextEntryTarget,
         toggleBushInventory,
         getActiveBushCarryCount,
@@ -1479,6 +2179,7 @@
         updateNerdStats();
         updateTreeFlattening(deltaSeconds);
         updateLooseRubbleEntities(deltaSeconds);
+        npcEnemiesController.update(deltaSeconds, elapsedSeconds);
         updateCloudLayer(deltaSeconds);
         updateLodFogCurtain();
         processDistantLodQueue();

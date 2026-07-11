@@ -269,10 +269,14 @@ export function createSaveLoadState({
   getHideTrees,
   getDeletedTreeKeys = () => new Set(),
   getDeletedRubbleKeys = () => new Set(),
-  getBushesCollectedCount = () => 0,
-  getRubbleCollectedCount = () => 0,
-  getBushInventorySlotCounts = () => [],
-  getRubbleInventorySlotCounts = () => [],
+      getBushesCollectedCount = () => 0,
+      getRubbleCollectedCount = () => 0,
+      getSpringsCollectedCount = () => 0,
+      getBushInventorySlotCounts = () => [],
+      getRubbleInventorySlotCounts = () => [],
+      getSpringInventorySlotCounts = () => [],
+      getPlankInventorySlotCounts = () => [],
+      getStickInventorySlotCounts = () => [],
   getCameraState,
   getPlayer,
   getIsThirdPersonMode,
@@ -351,11 +355,15 @@ export function createSaveLoadState({
       deletedRubbleKeys: [...getDeletedRubbleKeys()].filter((key) => typeof key === "string"),
       collected: {
         bushes: Math.max(0, Math.round(Number(getBushesCollectedCount()) || 0)),
-        rubble: Math.max(0, Math.round(Number(getRubbleCollectedCount()) || 0))
+        rubble: Math.max(0, Math.round(Number(getRubbleCollectedCount()) || 0)),
+        springs: Math.max(0, Math.round(Number(getSpringsCollectedCount()) || 0))
       },
       inventory: {
         bushes: Array.isArray(getBushInventorySlotCounts()) ? getBushInventorySlotCounts() : [],
-        rubble: Array.isArray(getRubbleInventorySlotCounts()) ? getRubbleInventorySlotCounts() : []
+        rubble: Array.isArray(getRubbleInventorySlotCounts()) ? getRubbleInventorySlotCounts() : [],
+        springs: Array.isArray(getSpringInventorySlotCounts()) ? getSpringInventorySlotCounts() : [],
+        planks: Array.isArray(getPlankInventorySlotCounts()) ? getPlankInventorySlotCounts() : [],
+        sticks: Array.isArray(getStickInventorySlotCounts()) ? getStickInventorySlotCounts() : []
       },
       ui: {
         showGridLines: getShowGridLines(),

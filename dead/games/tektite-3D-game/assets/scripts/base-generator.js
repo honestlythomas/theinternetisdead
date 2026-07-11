@@ -1198,7 +1198,7 @@ export function createBaseGenerator({
     hitboxGrid.visible = Boolean(getShowGridLines());
     hitboxGrid.renderOrder = 6;
     hitboxGrid.userData.isRubbleHitboxGrid = true;
-    hitboxGrid.userData.rubbleKey = `${rubble.globalX},${rubble.globalZ}`;
+    hitboxGrid.userData.rubbleKey = rubble.key || `${rubble.globalX},${rubble.globalZ}`;
 
     rubbleHitboxGridObjects.add(hitboxGrid);
     return hitboxGrid;
@@ -1206,7 +1206,7 @@ export function createBaseGenerator({
 
   function addRubblePile(group, rubble) {
     const rubbleGroup = new THREE.Group();
-    const rubbleKey = getRubbleKey(rubble.globalX, rubble.globalZ);
+    const rubbleKey = rubble.key || getRubbleKey(rubble.globalX, rubble.globalZ);
     if (deletedRubbleKeys.has(rubbleKey)) return;
     const storedLandingCount = Math.max(0, Math.round(Number(rubbleCrackLandingCounts.get(rubbleKey)) || 0));
     const storedHoldTickCount = Math.max(0, Math.round(Number(rubbleClickHoldCounts.get(rubbleKey)) || 0));
