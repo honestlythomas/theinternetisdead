@@ -33,6 +33,69 @@
       cursor: grabbing;
     }
 
+    .card-rotation-controls {
+      position: fixed;
+      inset: 0;
+      z-index: 9;
+      pointer-events: none;
+    }
+
+    .card-rotation-button {
+      position: fixed;
+      display: grid;
+      place-items: center;
+      width: clamp(46px, 7vw, 86px);
+      height: clamp(46px, 7vw, 86px);
+      padding: 0;
+      border: 2px solid rgba(0, 255, 0, 0.62);
+      background: rgba(0, 0, 0, 0.36);
+      color: rgba(0, 255, 0, 0.82);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(28px, 5.6vw, 62px);
+      font-weight: 700;
+      line-height: 1;
+      text-shadow: 0 0 12px rgba(0, 255, 0, 0.86);
+      pointer-events: auto;
+      user-select: none;
+      touch-action: none;
+      cursor: pointer;
+      opacity: 0.58;
+    }
+
+    .card-rotation-button:hover,
+    .card-rotation-button:focus-visible,
+    .card-rotation-button.is-active {
+      background: rgba(0, 0, 0, 0.62);
+      border-color: rgba(0, 255, 0, 0.96);
+      color: #00ff00;
+      opacity: 0.9;
+      outline: 0;
+    }
+
+    .card-rotation-button-up {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .card-rotation-button-down {
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .card-rotation-button-left {
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+    }
+
+    .card-rotation-button-right {
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+    }
+
     #status {
       position: fixed;
       top: 16px;
@@ -52,29 +115,17 @@
       backdrop-filter: blur(8px);
     }
 
-    #hint {
-      position: fixed;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      padding: 8px 12px;
-      border: 1px solid rgba(183, 111, 255, 0.45);
-      border-radius: 999px;
-      background: rgba(8, 4, 13, 0.72);
-      color: #d6b4ff;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      pointer-events: none;
-      backdrop-filter: blur(8px);
-    }
   </style>
 </head>
 
 <body>
   <div id="status">Loading front.png and back.png…</div>
-  <div id="hint">Drag to rotate • scroll to zoom</div>
+  <div class="card-rotation-controls" aria-label="Card rotation controls">
+    <button class="card-rotation-button card-rotation-button-up" type="button" data-card-rotate="up" aria-label="Rotate card up">↑</button>
+    <button class="card-rotation-button card-rotation-button-down" type="button" data-card-rotate="down" aria-label="Rotate card down">↓</button>
+    <button class="card-rotation-button card-rotation-button-left" type="button" data-card-rotate="left" aria-label="Rotate card left">←</button>
+    <button class="card-rotation-button card-rotation-button-right" type="button" data-card-rotate="right" aria-label="Rotate card right">→</button>
+  </div>
 
   <!-- Classic scripts work when index.html is opened directly from a folder. -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -83,6 +134,10 @@
   <script>
     (function () {
       const status = document.getElementById("status");
+      const cardRotationButtons = Array.from(
+        document.querySelectorAll("[data-card-rotate]")
+      );
+      const activeCardRotationControls = new Set();
 
       if (!window.THREE) {
         status.textContent =
@@ -104,13 +159,143 @@
 
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
-        alpha: true
+        alpha: false,
+        powerPreference: "high-performance",
+        stencil: false
       });
 
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      function getTargetPixelRatio() {
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const lowMemoryDevice = navigator.deviceMemory && navigator.deviceMemory <= 4;
+        const compactScreen = Math.min(window.innerWidth, window.innerHeight) < 700;
+        const ratioCap = lowMemoryDevice ? 1 : compactScreen ? 1.25 : 1.5;
+        return Math.min(devicePixelRatio, ratioCap);
+      }
+
+      renderer.setPixelRatio(getTargetPixelRatio());
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.autoClear = false;
       document.body.appendChild(renderer.domElement);
+
+      const backgroundScene = new THREE.Scene();
+      const backgroundCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const backgroundResolution = new THREE.Vector2();
+      const backgroundUniforms = {
+        uTime: { value: 0 },
+        uFrontTexture: { value: null },
+        uBackTexture: { value: null },
+        uCardNormal: { value: new THREE.Vector3(0, 0, 1) },
+        uCameraRight: { value: new THREE.Vector3(1, 0, 0) },
+        uCameraUp: { value: new THREE.Vector3(0, 1, 0) },
+        uCameraForward: { value: new THREE.Vector3(0, 0, -1) },
+        uTanHalfFov: { value: Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5)) },
+        uResolution: { value: new THREE.Vector2(1, 1) }
+      };
+
+      const backgroundMaterial = new THREE.ShaderMaterial({
+        uniforms: backgroundUniforms,
+        depthTest: false,
+        depthWrite: false,
+        vertexShader: [
+          "varying vec2 vUv;",
+          "void main() {",
+          "  vUv = uv;",
+          "  gl_Position = vec4(position.xy, 0.0, 1.0);",
+          "}"
+        ].join("\n"),
+        fragmentShader: [
+          "precision mediump float;",
+          "uniform float uTime;",
+          "uniform sampler2D uFrontTexture;",
+          "uniform sampler2D uBackTexture;",
+          "uniform vec3 uCardNormal;",
+          "uniform vec3 uCameraRight;",
+          "uniform vec3 uCameraUp;",
+          "uniform vec3 uCameraForward;",
+          "uniform float uTanHalfFov;",
+          "uniform vec2 uResolution;",
+          "varying vec2 vUv;",
+          "float hash(vec2 p) {",
+          "  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);",
+          "}",
+          "void main() {",
+          "  vec2 p = vUv * 2.0 - 1.0;",
+          "  p.x *= uResolution.x / max(uResolution.y, 1.0);",
+          "  float radius = length(p);",
+          "  vec3 worldRay = normalize(",
+          "    uCameraForward +",
+          "    uCameraRight * p.x * uTanHalfFov +",
+          "    uCameraUp * p.y * uTanHalfFov",
+          "  );",
+          "  vec3 cardNormal = normalize(uCardNormal);",
+          "  vec3 referenceUp = abs(cardNormal.y) < 0.92",
+          "    ? vec3(0.0, 1.0, 0.0)",
+          "    : vec3(1.0, 0.0, 0.0);",
+          "  vec3 cardTangent = normalize(cross(referenceUp, cardNormal));",
+          "  vec3 cardBitangent = normalize(cross(cardNormal, cardTangent));",
+          "  float localX = dot(worldRay, cardTangent);",
+          "  float localY = clamp(dot(worldRay, cardBitangent), -1.0, 1.0);",
+          "  float hemisphere = dot(worldRay, cardNormal);",
+          "  float foldedDepth = max(abs(hemisphere), 0.0001);",
+          "  const float PI = 3.14159265359;",
+          "  vec2 frontUv = vec2(",
+          "    atan(localX, foldedDepth) / PI + 0.5,",
+          "    asin(localY) / PI + 0.5",
+          "  );",
+          "  vec2 backUv = vec2(",
+          "    atan(-localX, foldedDepth) / PI + 0.5,",
+          "    asin(localY) / PI + 0.5",
+          "  );",
+          "  float seamSoftness = 1.0 - smoothstep(0.0, 0.20, abs(hemisphere));",
+          "  vec2 frontSeamUv = vec2(mix(frontUv.x, 0.5, 0.045), frontUv.y);",
+          "  vec2 backSeamUv = vec2(mix(backUv.x, 0.5, 0.045), backUv.y);",
+          "  vec3 frontMapped = texture2D(uFrontTexture, frontUv).rgb;",
+          "  vec3 backMapped = texture2D(uBackTexture, backUv).rgb;",
+          "  vec3 frontFiltered = texture2D(uFrontTexture, frontSeamUv).rgb * 0.50;",
+          "  frontFiltered += texture2D(uFrontTexture, frontSeamUv + vec2(0.0, 0.012)).rgb * 0.25;",
+          "  frontFiltered += texture2D(uFrontTexture, frontSeamUv - vec2(0.0, 0.012)).rgb * 0.25;",
+          "  vec3 backFiltered = texture2D(uBackTexture, backSeamUv).rgb * 0.50;",
+          "  backFiltered += texture2D(uBackTexture, backSeamUv + vec2(0.0, 0.012)).rgb * 0.25;",
+          "  backFiltered += texture2D(uBackTexture, backSeamUv - vec2(0.0, 0.012)).rgb * 0.25;",
+          "  frontMapped = mix(frontMapped, frontFiltered, seamSoftness * 0.72);",
+          "  backMapped = mix(backMapped, backFiltered, seamSoftness * 0.72);",
+          "  float hemisphereMix = smoothstep(-0.13, 0.13, hemisphere);",
+          "  vec3 hemisphereTexture = mix(backMapped, frontMapped, hemisphereMix);",
+          "  float pulse = 0.5 + 0.5 * sin(uTime * 0.32 + radius * 2.8);",
+          "  float scan = 0.5 + 0.5 * sin(vUv.y * uResolution.y * 0.42);",
+          "  float band = step(0.94, hash(vec2(floor(vUv.y * 44.0), floor(uTime * 7.0))));",
+          "  float grain = hash(gl_FragCoord.xy + floor(uTime * 12.0));",
+          "  vec3 emission = hemisphereTexture * (0.92 + pulse * 0.08);",
+          "  vec3 seamAverage = (frontFiltered + backFiltered) * 0.5;",
+          "  emission = mix(emission, seamAverage, seamSoftness * 0.18);",
+          "  float angularScatter = 0.82 + 0.18 * sin(",
+          "    atan(worldRay.y, worldRay.x) * 9.0 + uTime * 0.08",
+          "  );",
+          "  vec3 color = vec3(0.003, 0.002, 0.007);",
+          "  color += emission * (0.82 + pulse * 0.10) * angularScatter;",
+          "  color += emission * band * 0.09;",
+          "  color *= 0.94 + scan * 0.06;",
+          "  color += (grain - 0.5) * 0.018;",
+          "  color *= 0.78 + 0.22 * (1.0 - smoothstep(0.42, 1.85, radius));",
+          "  gl_FragColor = vec4(max(color, 0.0), 1.0);",
+          "}"
+        ].join("\n")
+      });
+
+      const backgroundQuad = new THREE.Mesh(
+        new THREE.PlaneGeometry(2, 2),
+        backgroundMaterial
+      );
+      backgroundQuad.frustumCulled = false;
+      backgroundScene.add(backgroundQuad);
+
+      function updateBackgroundResolution() {
+        renderer.getDrawingBufferSize(backgroundResolution);
+        backgroundUniforms.uResolution.value.copy(backgroundResolution);
+      }
+
+      updateBackgroundResolution();
 
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
@@ -156,9 +341,11 @@
 
       function prepareTexture(texture) {
         texture.encoding = THREE.sRGBEncoding;
-        texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
         texture.wrapS = THREE.ClampToEdgeWrapping;
         texture.wrapT = THREE.ClampToEdgeWrapping;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
+        texture.magFilter = THREE.LinearFilter;
 
         /*
           Source image: 3.75 × 2.25
@@ -197,6 +384,9 @@
         )
       );
 
+      backgroundUniforms.uFrontTexture.value = frontTexture;
+      backgroundUniforms.uBackTexture.value = backTexture;
+
       const edgeMaterial = new THREE.MeshStandardMaterial({
         color: 0x17101d,
         roughness: 0.76,
@@ -214,8 +404,14 @@
 
       const frontFace = new THREE.Mesh(
         faceGeometry,
-        new THREE.MeshBasicMaterial({
+        new THREE.MeshStandardMaterial({
           map: frontTexture,
+          color: 0x000000,
+          emissive: 0xffffff,
+          emissiveMap: frontTexture,
+          emissiveIntensity: 1.35,
+          roughness: 0.72,
+          metalness: 0,
           side: THREE.FrontSide
         })
       );
@@ -225,8 +421,14 @@
 
       const backFace = new THREE.Mesh(
         faceGeometry,
-        new THREE.MeshBasicMaterial({
+        new THREE.MeshStandardMaterial({
           map: backTexture,
+          color: 0x000000,
+          emissive: 0xffffff,
+          emissiveMap: backTexture,
+          emissiveIntensity: 1.35,
+          roughness: 0.72,
+          metalness: 0,
           side: THREE.FrontSide
         })
       );
@@ -248,23 +450,133 @@
       card.rotation.x = THREE.MathUtils.degToRad(-5);
       card.rotation.y = THREE.MathUtils.degToRad(-18);
 
-      function animate() {
-        requestAnimationFrame(animate);
+      function setCardRotationControl(button, isActive) {
+        const direction = String(
+          (button && button.dataset.cardRotate) || ""
+        ).trim();
+
+        if (!direction) return;
+
+        button.classList.toggle("is-active", isActive);
+
+        if (isActive) {
+          controls.autoRotate = false;
+          activeCardRotationControls.add(direction);
+          return;
+        }
+
+        activeCardRotationControls.delete(direction);
+      }
+
+      function clearCardRotationControls() {
+        activeCardRotationControls.clear();
+        cardRotationButtons.forEach(function (button) {
+          button.classList.remove("is-active");
+        });
+      }
+
+      cardRotationButtons.forEach(function (button) {
+        button.addEventListener("pointerdown", function (event) {
+          event.preventDefault();
+          button.setPointerCapture(event.pointerId);
+          setCardRotationControl(button, true);
+        });
+
+        button.addEventListener("pointerup", function (event) {
+          event.preventDefault();
+          setCardRotationControl(button, false);
+        });
+
+        button.addEventListener("pointercancel", function () {
+          setCardRotationControl(button, false);
+        });
+
+        button.addEventListener("lostpointercapture", function () {
+          setCardRotationControl(button, false);
+        });
+      });
+
+      window.addEventListener("blur", clearCardRotationControls);
+
+      let previousFrameTime = performance.now();
+      let animationFrameId = 0;
+      const cardFrontNormal = new THREE.Vector3();
+      const cardWorldQuaternion = new THREE.Quaternion();
+      const cameraRight = new THREE.Vector3();
+      const cameraUp = new THREE.Vector3();
+      const cameraForward = new THREE.Vector3();
+
+      function animate(frameTime) {
+        animationFrameId = requestAnimationFrame(animate);
+
+        const deltaSeconds = Math.min(
+          0.05,
+          (frameTime - previousFrameTime) / 1000
+        );
+        previousFrameTime = frameTime;
+
+        const controlRotateAmount = 1.65 * deltaSeconds;
+        if (activeCardRotationControls.has("up")) {
+          card.rotation.x -= controlRotateAmount;
+        }
+        if (activeCardRotationControls.has("down")) {
+          card.rotation.x += controlRotateAmount;
+        }
+        if (activeCardRotationControls.has("left")) {
+          card.rotation.y -= controlRotateAmount;
+        }
+        if (activeCardRotationControls.has("right")) {
+          card.rotation.y += controlRotateAmount;
+        }
 
         controls.update();
 
         const time = performance.now() * 0.001;
         card.position.y = Math.sin(time * 0.8) * 0.045;
 
+        card.getWorldQuaternion(cardWorldQuaternion);
+        cardFrontNormal.set(0, 0, 1).applyQuaternion(cardWorldQuaternion);
+
+        camera.updateMatrixWorld();
+        cameraRight.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
+        cameraUp.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
+        camera.getWorldDirection(cameraForward);
+        backgroundUniforms.uCardNormal.value.copy(cardFrontNormal);
+        backgroundUniforms.uCameraRight.value.copy(cameraRight);
+        backgroundUniforms.uCameraUp.value.copy(cameraUp);
+        backgroundUniforms.uCameraForward.value.copy(cameraForward);
+        backgroundUniforms.uTime.value = time;
+
+        renderer.clear();
+        renderer.render(backgroundScene, backgroundCamera);
+        renderer.clearDepth();
         renderer.render(scene, camera);
       }
 
-      animate();
+      function startAnimation() {
+        if (animationFrameId || document.hidden) return;
+        previousFrameTime = performance.now();
+        animationFrameId = requestAnimationFrame(animate);
+      }
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = 0;
+          return;
+        }
+
+        startAnimation();
+      });
+
+      startAnimation();
 
       window.addEventListener("resize", function () {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
+        renderer.setPixelRatio(getTargetPixelRatio());
         renderer.setSize(window.innerWidth, window.innerHeight);
+        updateBackgroundResolution();
       });
     })();
   </script>
