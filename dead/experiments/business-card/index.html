@@ -155,7 +155,7 @@
         100
       );
 
-      camera.position.set(0, 0.1, 4.25);
+      camera.position.set(0, 0.1, 6.375);
 
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
@@ -177,6 +177,10 @@
       renderer.outputEncoding = THREE.sRGBEncoding;
       renderer.autoClear = false;
       document.body.appendChild(renderer.domElement);
+      renderer.domElement.setAttribute(
+        "aria-label",
+        "Interactive 3D business card. Click the card to hear a message."
+      );
 
       const backgroundScene = new THREE.Scene();
       const backgroundCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -304,7 +308,7 @@
       controls.minDistance = 4.0;
       controls.maxDistance = 11;
       controls.autoRotate = true;
-      controls.autoRotateSpeed = 1.2;
+      controls.autoRotateSpeed = 3.6;
       controls.target.set(0, 0, 0);
 
       const card = new THREE.Group();
@@ -437,6 +441,125 @@
       backFace.rotation.y = Math.PI;
       card.add(backFace);
 
+      const cardRaycaster = new THREE.Raycaster();
+      const cardPointer = new THREE.Vector2();
+      const pointerDownPosition = new THREE.Vector2();
+      const pointerUpPosition = new THREE.Vector2();
+      const projectedCardCenter = new THREE.Vector3();
+      let microsoftDavidVoice = null;
+      let nextCardMessageIndex = 0;
+      let cardSpinVelocity = 0;
+      let cardNudgeOffset = 0;
+      let cardNudgeVelocity = 0;
+
+      function updateMicrosoftDavidVoice() {
+        if (!window.speechSynthesis) return;
+
+        const voices = window.speechSynthesis.getVoices();
+        microsoftDavidVoice = voices.find(function (voice) {
+          return voice.name.toLowerCase().includes("microsoft david");
+        }) || voices.find(function (voice) {
+          return voice.name.toLowerCase().includes("david");
+        }) || null;
+      }
+
+      updateMicrosoftDavidVoice();
+      if (window.speechSynthesis) {
+        window.speechSynthesis.addEventListener(
+          "voiceschanged",
+          updateMicrosoftDavidVoice
+        );
+      }
+
+      function pointerIntersectsCard(clientX, clientY) {
+        const bounds = renderer.domElement.getBoundingClientRect();
+        cardPointer.set(
+          ((clientX - bounds.left) / bounds.width) * 2 - 1,
+          -((clientY - bounds.top) / bounds.height) * 2 + 1
+        );
+        cardRaycaster.setFromCamera(cardPointer, camera);
+        return cardRaycaster.intersectObject(card, true).length > 0;
+      }
+
+      function getCardFaceIntersection(clientX, clientY) {
+        const bounds = renderer.domElement.getBoundingClientRect();
+        cardPointer.set(
+          ((clientX - bounds.left) / bounds.width) * 2 - 1,
+          -((clientY - bounds.top) / bounds.height) * 2 + 1
+        );
+        cardRaycaster.setFromCamera(cardPointer, camera);
+        return cardRaycaster.intersectObjects([frontFace, backFace], false)[0] || null;
+      }
+
+      function kickCardFromEdge(clientX, intersection) {
+        if (!intersection || !intersection.uv) return false;
+
+        const edgeUv = intersection.uv.x;
+        if (edgeUv > 0.05 && edgeUv < 0.95) return false;
+
+        const bounds = renderer.domElement.getBoundingClientRect();
+        projectedCardCenter.setFromMatrixPosition(card.matrixWorld).project(camera);
+        const cardCenterX = bounds.left + (projectedCardCenter.x + 1) * 0.5 * bounds.width;
+        const direction = clientX < cardCenterX ? -1 : 1;
+
+        cardSpinVelocity += direction * 8.5;
+        cardNudgeVelocity += direction * 0.62;
+        controls.autoRotate = false;
+        cancelAutoOrbitResume();
+        scheduleAutoOrbitResume();
+        return true;
+      }
+
+      function speakCardMessage() {
+        if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+
+        updateMicrosoftDavidVoice();
+        window.speechSynthesis.cancel();
+
+        const isPaidLine = nextCardMessageIndex === 1;
+        const message = new SpeechSynthesisUtterance(
+          isPaidLine ? "Yep, I paid for that." : "Yep, I made that."
+        );
+        nextCardMessageIndex = (nextCardMessageIndex + 1) % 2;
+
+        if (microsoftDavidVoice) {
+          message.voice = microsoftDavidVoice;
+        }
+        message.pitch = isPaidLine ? 0.82 : 1;
+        message.rate = isPaidLine ? 0.96 : 1;
+
+        window.speechSynthesis.speak(message);
+      }
+
+      renderer.domElement.addEventListener("pointermove", function (event) {
+        renderer.domElement.style.cursor = pointerIntersectsCard(
+          event.clientX,
+          event.clientY
+        ) ? "pointer" : "";
+      });
+
+      renderer.domElement.addEventListener("pointerleave", function () {
+        renderer.domElement.style.cursor = "";
+      });
+
+      renderer.domElement.addEventListener("pointerdown", function (event) {
+        pointerDownPosition.set(event.clientX, event.clientY);
+      });
+
+      renderer.domElement.addEventListener("click", function (event) {
+        pointerUpPosition.set(event.clientX, event.clientY);
+        const movement = pointerDownPosition.distanceTo(pointerUpPosition);
+
+        if (movement > 6) return;
+        if (!pointerIntersectsCard(event.clientX, event.clientY)) return;
+        const faceIntersection = getCardFaceIntersection(
+          event.clientX,
+          event.clientY
+        );
+        if (kickCardFromEdge(event.clientX, faceIntersection)) return;
+        speakCardMessage();
+      });
+
       scene.add(new THREE.AmbientLight(0xffffff, 1.7));
 
       const keyLight = new THREE.DirectionalLight(0xd9b8ff, 1.9);
@@ -450,6 +573,65 @@
       card.rotation.x = THREE.MathUtils.degToRad(-5);
       card.rotation.y = THREE.MathUtils.degToRad(-18);
 
+      let autoOrbitResumeTimer = 0;
+      let autoOrbitResumeDeadline = 0;
+      let pausedAutoOrbitResumeDelay = 0;
+      let movementFrozen = false;
+
+      document.addEventListener("keydown", function (event) {
+        if (event.code !== "Space" || event.repeat) return;
+        event.preventDefault();
+
+        movementFrozen = !movementFrozen;
+        controls.enabled = !movementFrozen;
+
+        if (movementFrozen && autoOrbitResumeTimer) {
+          pausedAutoOrbitResumeDelay = Math.max(
+            0,
+            autoOrbitResumeDeadline - performance.now()
+          );
+          clearTimeout(autoOrbitResumeTimer);
+          autoOrbitResumeTimer = 0;
+          autoOrbitResumeDeadline = 0;
+          return;
+        }
+
+        if (!movementFrozen && pausedAutoOrbitResumeDelay > 0) {
+          const remainingDelay = pausedAutoOrbitResumeDelay;
+          pausedAutoOrbitResumeDelay = 0;
+          scheduleAutoOrbitResume(remainingDelay);
+        }
+      });
+
+      function cancelAutoOrbitResume() {
+        if (autoOrbitResumeTimer) {
+          clearTimeout(autoOrbitResumeTimer);
+        }
+        autoOrbitResumeTimer = 0;
+        autoOrbitResumeDeadline = 0;
+        pausedAutoOrbitResumeDelay = 0;
+      }
+
+      function scheduleAutoOrbitResume(delay) {
+        cancelAutoOrbitResume();
+        if (activeCardRotationControls.size) return;
+
+        const resumeDelay = typeof delay === "number" ? delay : 5000;
+        if (movementFrozen) {
+          pausedAutoOrbitResumeDelay = resumeDelay;
+          return;
+        }
+
+        autoOrbitResumeDeadline = performance.now() + resumeDelay;
+        autoOrbitResumeTimer = window.setTimeout(function () {
+          autoOrbitResumeTimer = 0;
+          autoOrbitResumeDeadline = 0;
+          if (!activeCardRotationControls.size) {
+            controls.autoRotate = true;
+          }
+        }, resumeDelay);
+      }
+
       function setCardRotationControl(button, isActive) {
         const direction = String(
           (button && button.dataset.cardRotate) || ""
@@ -460,12 +642,14 @@
         button.classList.toggle("is-active", isActive);
 
         if (isActive) {
+          cancelAutoOrbitResume();
           controls.autoRotate = false;
           activeCardRotationControls.add(direction);
           return;
         }
 
         activeCardRotationControls.delete(direction);
+        scheduleAutoOrbitResume();
       }
 
       function clearCardRotationControls() {
@@ -473,6 +657,7 @@
         cardRotationButtons.forEach(function (button) {
           button.classList.remove("is-active");
         });
+        scheduleAutoOrbitResume();
       }
 
       cardRotationButtons.forEach(function (button) {
@@ -500,6 +685,7 @@
 
       let previousFrameTime = performance.now();
       let animationFrameId = 0;
+      let sceneTime = 0;
       const cardFrontNormal = new THREE.Vector3();
       const cardWorldQuaternion = new THREE.Quaternion();
       const cameraRight = new THREE.Vector3();
@@ -515,37 +701,48 @@
         );
         previousFrameTime = frameTime;
 
-        const controlRotateAmount = 1.65 * deltaSeconds;
-        if (activeCardRotationControls.has("up")) {
-          card.rotation.x -= controlRotateAmount;
-        }
-        if (activeCardRotationControls.has("down")) {
-          card.rotation.x += controlRotateAmount;
-        }
-        if (activeCardRotationControls.has("left")) {
-          card.rotation.y -= controlRotateAmount;
-        }
-        if (activeCardRotationControls.has("right")) {
-          card.rotation.y += controlRotateAmount;
-        }
+        if (!movementFrozen) {
+          const controlRotateAmount = 1.65 * deltaSeconds;
+          if (activeCardRotationControls.has("up")) {
+            card.rotation.x -= controlRotateAmount;
+          }
+          if (activeCardRotationControls.has("down")) {
+            card.rotation.x += controlRotateAmount;
+          }
+          if (activeCardRotationControls.has("left")) {
+            card.rotation.y -= controlRotateAmount;
+          }
+          if (activeCardRotationControls.has("right")) {
+            card.rotation.y += controlRotateAmount;
+          }
 
-        controls.update();
+          card.rotation.y += cardSpinVelocity * deltaSeconds;
+          cardSpinVelocity *= Math.exp(-1.05 * deltaSeconds);
 
-        const time = performance.now() * 0.001;
-        card.position.y = Math.sin(time * 0.8) * 0.045;
+          const nudgeAcceleration =
+            -cardNudgeOffset * 20 - cardNudgeVelocity * 7.5;
+          cardNudgeVelocity += nudgeAcceleration * deltaSeconds;
+          cardNudgeOffset += cardNudgeVelocity * deltaSeconds;
 
-        card.getWorldQuaternion(cardWorldQuaternion);
-        cardFrontNormal.set(0, 0, 1).applyQuaternion(cardWorldQuaternion);
+          controls.update();
 
-        camera.updateMatrixWorld();
-        cameraRight.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
-        cameraUp.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
-        camera.getWorldDirection(cameraForward);
-        backgroundUniforms.uCardNormal.value.copy(cardFrontNormal);
-        backgroundUniforms.uCameraRight.value.copy(cameraRight);
-        backgroundUniforms.uCameraUp.value.copy(cameraUp);
-        backgroundUniforms.uCameraForward.value.copy(cameraForward);
-        backgroundUniforms.uTime.value = time;
+          sceneTime += deltaSeconds;
+          card.position.x = cardNudgeOffset;
+          card.position.y = Math.sin(sceneTime * 0.8) * 0.045;
+
+          card.getWorldQuaternion(cardWorldQuaternion);
+          cardFrontNormal.set(0, 0, 1).applyQuaternion(cardWorldQuaternion);
+
+          camera.updateMatrixWorld();
+          cameraRight.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
+          cameraUp.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
+          camera.getWorldDirection(cameraForward);
+          backgroundUniforms.uCardNormal.value.copy(cardFrontNormal);
+          backgroundUniforms.uCameraRight.value.copy(cameraRight);
+          backgroundUniforms.uCameraUp.value.copy(cameraUp);
+          backgroundUniforms.uCameraForward.value.copy(cameraForward);
+          backgroundUniforms.uTime.value = sceneTime;
+        }
 
         renderer.clear();
         renderer.render(backgroundScene, backgroundCamera);
