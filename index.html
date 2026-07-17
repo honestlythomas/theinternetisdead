@@ -4585,6 +4585,17 @@
       frame.src = framePath;
       frame.title = shellFrameTitle(labelPath);
       frame.addEventListener("load", () => {
+        const isCurrentShellFrame = frame.isConnected
+          && staticMarkdownOverlay?.querySelector(".static-markdown-frame") === frame;
+        const isHelpPage = new URL(labelPath, window.location.origin).pathname.startsWith("/dead/help/");
+
+        if (isCurrentShellFrame && isHelpPage) {
+          try {
+            const frameDocumentTitle = frame.contentDocument?.title?.trim();
+            if (frameDocumentTitle) document.title = frameDocumentTitle;
+          } catch (error) {}
+        }
+
         if (labelPath === "/dead/chat/" || labelPath.startsWith("/dead/chat/?") || labelPath.startsWith("/dead/chat/#")) {
           notifyPublicNicknameColorUpdated(readPublicNicknameColor());
           notifyChatTimeZoneUpdated();
