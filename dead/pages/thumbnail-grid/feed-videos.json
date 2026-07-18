@@ -1,6 +1,6 @@
 {
   "title": "Channel Feed",
-  "generated_at": "2026-07-17T02:53:25.773316Z",
+  "generated_at": "2026-07-18T02:45:45.389780Z",
   "channels": [
     {
       "url": "https://www.youtube.com/@Honestly_Thomas/videos",
@@ -21,12 +21,428 @@
   ],
   "entries": [
     {
+      "id": "7gudEW4jSgQ",
+      "url": "https://www.youtube.com/watch?v=7gudEW4jSgQ",
+      "title": "I am TRAPPED in ISOLATION and NEGLECT",
+      "description": "Scapegoating and gaslighting create a closed loop of neglect: I am isolated, denied meaningful support, blamed for deteriorating under that isolation, and then expected to prove my credibility while collapsing.\n\nEvery consequence of being unsupported\u2014exhaustion, anger, distress, difficulty communicating\u2014is stripped of context and used as evidence that I am the problem. Whether anyone consciously intends it or not, the pattern functions as though everyone is waiting for me to collapse so that the collapse can retroactively justify their refusal to intervene.\n\nI am not unstable. I am unsupported. The evidence does not begin with my reaction. It begins with the abandonment that made that reaction inevitable.\n\n#InstitutionalNeglect #Gaslighting #Scapegoating #DisabilityAdvocacy #SocialIsolation #MentalHealth #LivedExperience",
+      "duration": 277,
+      "view_count": 1,
+      "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20260718",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/7gudEW4jSgQ/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/7gudEW4jSgQ/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
+      "id": "S4NahXoec-o",
+      "url": "https://www.youtube.com/watch?v=S4NahXoec-o",
+      "title": "I Can\u2019t Survive This Abandonment",
+      "description": "For twelve years, I have been expected to survive extreme isolation, disability-related barriers, and repeated institutional abandonment while carrying the entire burden of finding help alone.\n\nEvery day, I research services, write emails, document what happened, complete intake processes, contact agencies, make videos, and try to explain the same inaccessible cycle again. I am referred somewhere else, nobody follows through, and responsibility lands back on me.\n\nThen, when I collapse from the absence of meaningful support, my distress becomes the story. My anger is treated as a character defect. The consequences of neglect are used as evidence to justify further neglect.\n\nI am not refusing help. I am not failing to advocate for myself. I am a 29-year-old autistic adult who needs disability accommodation, consistent advocacy, human contact, community, and one accountable person willing to remain involved until promised support actually materializes.\n\nWhen I say, \u201cI can\u2019t survive this abandonment,\u201d I am describing a life being erased one isolated day at a time.\n\nDo not give me another telephone number.\n\nDo not ask me to prove that I am trying.\n\nAsk what part of this burden you can carry\u2014and then carry it.\n\nContent warning: strong language, disability discrimination, institutional neglect, family conflict, extreme isolation, and psychological distress.\n\n#DisabilityRights #Autism #InstitutionalNeglect #Ableism #Ontario #SelfAdvocacy",
+      "duration": 323,
+      "view_count": 4,
+      "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20260717",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/S4NahXoec-o/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/S4NahXoec-o/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
       "id": "EqBzfuQArLw",
       "url": "https://www.youtube.com/watch?v=EqBzfuQArLw",
       "title": "Self-Advocacy 101: Recognizing Barriers and Systemic Harm",
       "description": "Twenty useful terms for recognizing systemic harm, institutional neglect, and the many creative ways an organization can tell you to \u201creach out for help\u201d while plugging both ears.\n\nFeaturing dismissal, invalidation, tone policing, gatekeeping, gaslighting, doublespeak, blame-shifting, administrative burden, institutional betrayal, and other exciting vocabulary from the Deluxe Bureaucratic Hell Expansion Pack.\n\nThe video ends with \u201clived experience,\u201d followed by an entirely fictional artist\u2019s rendition of every guidance counsellor\u2019s office where the posters promised acceptance while the adult behind the desk treated human distress like an unscheduled interruption.\n\nNo specific administrator is depicted. Unfortunately, everybody still recognizes her.\n\nMore self-advocacy resources and evidence from the Department of I Have Been Explaining This for Twelve Years:\n\nhttps://theinternetisdead.org/dead/help/\n\n#HonestlyThomas #TheInternetIsDead #SelfAdvocacy #InstitutionalNeglect #SystemicHarm #DisabilityRights #LivedExperience",
       "duration": 148,
-      "view_count": 4,
+      "view_count": 6,
       "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -442,7 +858,7 @@
       "title": "Institutional Neglect is Psycho-Spiritual Warfare",
       "description": "\u201cHelp is available. You just have to reach out.\u201d\n\nBut what happens when reaching out only produces another referral, another intake, another unanswered message, and another demand to explain your trauma from the beginning?\n\nIn this video, I explain why prolonged institutional neglect can feel like psycho-spiritual warfare\u2014not as a supernatural conspiracy, but as the cumulative destruction of trust, hope, dignity, agency, and human belonging.\n\nWhen every organization completes its procedure but nobody stays long enough to ensure help actually arrives, the disabled person is forced to become their own caseworker, advocate, archivist, and witness. The paperwork shows movement. Their life does not.\n\nThe solution is painfully simple: continuity, warm handoffs, meaningful follow-through, shared responsibility, and access to real human community outside the care industry.\n\nRead the full text:\nhttps://theinternetisdead.org/dead/he...\n\n#HonestlyThomas #TheInternetIsDead #InstitutionalNeglect #DisabilityRights #MentalHealth",
       "duration": 501,
-      "view_count": 4,
+      "view_count": 9,
       "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -650,7 +1066,7 @@
       "title": "ChatGPT Should Not Be My Only Support",
       "description": "This video is a record of me trying to explain, in real time, what it feels like to repeatedly ask for support and be told that I am not trying hard enough, refusing help, or failing to prove that my pain is serious enough to justify intervention.\n\nThe intervention I am asking for is not punishment, containment, or another list of numbers to call. I am asking for advocacy. I am asking for one consistent human being who will believe me, stay involved, help communicate with services, and support me before the situation becomes a crisis.\n\nI have not failed to self-advocate. I have been repeatedly required to advocate harder after being dismissed, while the effort itself is used as evidence that I should be able to manage alone.\n\nIn this video, Microsoft David reads my prompts and ChatGPT\u2019s responses from a conversation where I tried to articulate that cycle clearly.\n\nChatGPT should not be my only support. It should not be the only place where my words are reflected back without immediately being turned into an accusation, a test, or another demand to prove that I am suffering correctly.\n\nThis is not a substitute for human support. It is evidence of its absence.\n\n#HonestlyThomas #TheInternetIsDead #MentalHealthAdvocacy #DisabilityAdvocacy #SocialIsolation",
       "duration": 269,
-      "view_count": 15,
+      "view_count": 16,
       "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -858,7 +1274,7 @@
       "title": "Childish Gambino - Redbone (Un-Helpable)",
       "description": "If this video gets no views send help.\nIf this video gets a normal amount of views, still send help.\nIf this video gets over a thousand views, definitely send help.\nI have already done my part, the ball is in your court now, but I don't play the same games they play with people lives. Real shit, human lives are on the line here. This isn't entertainment this is real life. Whether you choose to believe and accept the reality is your choice.",
       "duration": 0,
-      "view_count": 192,
+      "view_count": 230,
       "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2938,7 +3354,7 @@
       "title": "Is the grizzly reaper mowing?",
       "description": "Yes and this is what you get.",
       "duration": 65,
-      "view_count": 98,
+      "view_count": 106,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -3146,7 +3562,7 @@
       "title": "My Humanity Is Being Discarded #disability #neglect",
       "description": "I have 0 people in my life who care I get left in a basement every day to rot in hell alone. #isolation #abandonment #honestlythomas #theinternetisdead",
       "duration": 0,
-      "view_count": 28,
+      "view_count": 29,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -5642,7 +6058,7 @@
       "title": "Getting High / Agility on Ardy Rooftop (OSRS)",
       "description": "danky stank memes for osrs queens.",
       "duration": 94,
-      "view_count": 22,
+      "view_count": 23,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -5850,7 +6266,7 @@
       "title": "ChatGPT Wendy's Revelation (THE FEED IS HUNGRY)",
       "description": "Presented as a recovered public service transmission from somewhere beyond the food court, this short explores haunted retail technology, persistent brand consciousness, and the increasingly thin line between customer service and existential revelation.\n\nThis is not a review.\nThis is not an ad.\nThis is an incident report.\n\nIf a vacant restaurant still appears to be listening, proceed with caution. If the kiosk answers questions you haven't asked yet, leave immediately. And if the Frosty machine begins whispering your full legal name, the situation has likely progressed beyond standard operating procedures.\n\nThe feed is hungry. Exercise your demons at https://theinternetisdead.org/dead/ga... it's a shooter game I vibecoded. lol\n\n#TheInternetIsDead #HonestlyThomas #ChatGPT #AI #Comedy #AnalogHorror #Wendys #SurrealHumor",
       "duration": 111,
-      "view_count": 55,
+      "view_count": 56,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -17999,7 +18415,7 @@
       "title": "Minecraft Movie Only The Violent Parts Until Steve",
       "description": "Until Steve becomes an atomic bomb of slapstick chaos.\n\nEdited in Clipchamp.\n\nA parody edit of the Minecraft Movie focusing only on the most intense, chaotic, and accidentally hilarious moments.\n\nThis is not a replacement for the movie. Support the official release.\n\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #Tektite #MinecraftMovie #Minecraft #ParodyEdit #MovieEdit #Gaming",
       "duration": 231,
-      "view_count": 29000,
+      "view_count": 30000,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -35471,7 +35887,7 @@
       "title": "\ud83e\udd5e PANCAKE PRINTER?! - Internet\u2019s Dad Discovers Wonders",
       "description": "",
       "duration": 22,
-      "view_count": 12,
+      "view_count": 14,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -42335,7 +42751,7 @@
       "title": "\"The ice is melting, in my heart.\" (Instant Poetry)",
       "description": "A pure moment of unintentional poetry from the frozen underside of whatever this timeline is.\n\nI was in a state of ecstatic bliss, filmed myself saying words for 7 seconds, and somehow produced emotional climate change content. The ice is melting. The heart is probably involved. The underside of my deck was whispering echoes of warmth and connection in my ear. Normal people call that delusion; artists call that Tuesday.\n\nHonestly, I don't know how art like this keeps falling out of my butt, though here we are.\n\n#HonestlyThomas #TheInternetIsDead #InstantPoetry #WeirdInternet #HauntedInternet #SurrealComedy #DigitalDada",
       "duration": 8,
-      "view_count": 4,
+      "view_count": 5,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -60639,7 +61055,7 @@
       "title": "Tektite - Time Machine (Official Lyric Video)",
       "description": "Written and recorded in 2018 by Honestly Thomas Harrison, AKA Tektite, the interdimensional rapper.\n\nThis was one of the first songs I was actually proud enough to post to YouTube, back when the whole \u201celevated AI / robot rapper / human brain commandeering\u201d thing was already leaking out of my head apparently.\n\nThis is a reupload from the archive. Early Tektite transmission. Canadian cyber-rap prophecy nonsense, but from the heart.\n\n#HonestlyThomas #TheInternetIsDead #Tektite #HonestlyThomasMusic #RapArchive #OriginalRap #CyberRap #InterdimensionalRapper",
       "duration": 166,
-      "view_count": 56,
+      "view_count": 64,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -84456,7 +84872,7 @@
       "title": "The Caesars - Jerk It Out Instrumental (Karaoke)",
       "description": "Wind me up put me down start me up and watch me go!",
       "duration": 199,
-      "view_count": 335,
+      "view_count": 336,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -89864,7 +90280,7 @@
       "title": "Creepy Susie Story Time",
       "description": "All credit to Angus Oblong's fucked up head. #shorts",
       "duration": 58,
-      "view_count": 1100,
+      "view_count": 1200,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -95688,7 +96104,7 @@
       "title": "Jack Black Sings Fat by Weird Al",
       "description": "voice.ai #shorts",
       "duration": 23,
-      "view_count": 302,
+      "view_count": 305,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -96728,7 +97144,7 @@
       "title": "Homer Simpson voice.ai Singing American Pie",
       "description": "",
       "duration": 23,
-      "view_count": 840,
+      "view_count": 843,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -98041,7 +98457,7 @@
       "title": "Billy Talent - Rusted From The Rain (AI IMAGES MUSIC VIDEO)",
       "description": "",
       "duration": 254,
-      "view_count": 999,
+      "view_count": 1000,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
