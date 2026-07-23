@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>deadOS Nickname</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --theme-surface: #160020;
+      --theme-surface-raised: #2b073d;
+      --theme-surface-soft: #240532;
+      --theme-text: #baff39;
+      --theme-edge-bright: #ff2bd6;
+      --theme-edge-light: #9d3dff;
+      --theme-edge-dark: #590a78;
+      --theme-edge-deep: #09000f;
+      --theme-selection: #c6ff00;
+      --theme-selection-text: #21002e;
+      --theme-muted: #caa7dc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--theme-surface);
+      color: var(--theme-text);
+      font-family: "Courier New", Courier, monospace;
+      font-weight: 700;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: clamp(12px, 3vw, 28px);
+      background:
+        linear-gradient(rgba(198, 255, 0, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 43, 214, 0.025) 1px, transparent 1px),
+        radial-gradient(circle at 50% 42%, rgba(157, 61, 255, 0.18), transparent 42%),
+        var(--theme-surface);
+      background-size: 32px 32px, 32px 32px, auto, auto;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 3px,
+        rgba(9, 0, 15, 0.22) 4px
+      );
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .login-shell {
+      display: grid;
+      grid-template-rows: 42px minmax(0, 1fr) auto;
+      width: min(100%, 700px);
+      min-height: min(560px, calc(100vh - 32px));
+      max-height: 100%;
+      padding: 14px;
+      background:
+        linear-gradient(135deg, rgba(157, 61, 255, 0.06), transparent 38%),
+        var(--theme-surface);
+      filter: drop-shadow(12px 14px 0 rgba(9, 0, 15, 0.48));
+    }
+
+    .tabs {
+      z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      height: 42px;
+      margin: 0 0 -2px;
+      padding: 0 8px;
+    }
+
+    .tab {
+      min-width: 150px;
+      height: 42px;
+      padding: 9px 16px;
+      border-top: 2px solid var(--theme-edge-bright);
+      border-right: 2px solid var(--theme-edge-deep);
+      border-bottom: 2px solid var(--theme-surface-raised);
+      border-left: 2px solid var(--theme-edge-bright);
+      border-radius: 0;
+      background: var(--theme-surface-raised);
+      color: var(--theme-edge-bright);
+      line-height: 18px;
+      text-align: center;
+      box-shadow:
+        inset 1px 1px 0 rgba(255, 43, 214, 0.3),
+        inset -1px 0 0 rgba(9, 0, 15, 0.5);
+    }
+
+    .panel {
+      display: grid;
+      min-width: 0;
+      min-height: 0;
+      padding: clamp(18px, 4vw, 36px);
+      align-content: center;
+      overflow: auto;
+      border-top: 2px solid var(--theme-edge-light);
+      border-right: 2px solid var(--theme-edge-deep);
+      border-bottom: 2px solid var(--theme-edge-deep);
+      border-left: 2px solid var(--theme-edge-light);
+      background:
+        linear-gradient(180deg, rgba(43, 7, 61, 0.99), rgba(22, 0, 32, 0.99));
+      box-shadow:
+        inset 1px 1px 0 rgba(255, 43, 214, 0.22),
+        inset -1px -1px 0 var(--theme-edge-deep);
+      scrollbar-width: none;
+    }
+
+    .panel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto 26px;
+    }
+
+    .identity-icon {
+      display: grid;
+      width: 60px;
+      height: 60px;
+      place-items: center;
+      border-top: 2px solid var(--theme-edge-bright);
+      border-right: 2px solid var(--theme-edge-deep);
+      border-bottom: 2px solid var(--theme-edge-deep);
+      border-left: 2px solid var(--theme-edge-bright);
+      background:
+        radial-gradient(circle, rgba(255, 43, 214, 0.2), transparent 60%),
+        var(--theme-surface-soft);
+      font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+      font-size: 34px;
+      box-shadow:
+        inset 1px 1px 0 rgba(157, 61, 255, 0.48),
+        4px 4px 0 rgba(9, 0, 15, 0.65);
+    }
+
+    .intro h1 {
+      margin: 0 0 4px;
+      color: var(--theme-edge-bright);
+      font-size: clamp(19px, 4vw, 28px);
+      line-height: 1.1;
+      letter-spacing: 0.03em;
+    }
+
+    .intro p {
+      margin: 0;
+      color: var(--theme-muted);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.45;
+    }
+
+    fieldset {
+      width: 100%;
+      max-width: 560px;
+      min-width: 0;
+      margin: 0 auto;
+      padding: 24px 18px 20px;
+      border: 1px solid var(--theme-edge-dark);
+      background: rgba(9, 0, 15, 0.22);
+      box-shadow:
+        inset 1px 1px 0 rgba(157, 61, 255, 0.24),
+        1px 1px 0 var(--theme-edge-deep);
+    }
+
+    legend {
+      padding: 0 8px;
+      color: var(--theme-edge-bright);
+      font-size: 14px;
+      letter-spacing: 0.04em;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--theme-text);
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      height: 42px;
+      padding: 8px 11px;
+      border-top: 2px solid var(--theme-edge-deep);
+      border-right: 2px solid var(--theme-edge-light);
+      border-bottom: 2px solid var(--theme-edge-light);
+      border-left: 2px solid var(--theme-edge-deep);
+      border-radius: 0;
+      outline: 0;
+      background: #0d0013;
+      color: var(--theme-text);
+      caret-color: var(--theme-edge-bright);
+      box-shadow:
+        inset 1px 1px 0 rgba(9, 0, 15, 0.9),
+        inset -1px -1px 0 rgba(157, 61, 255, 0.4);
+    }
+
+    input:hover,
+    input:focus {
+      border-right-color: var(--theme-edge-bright);
+      border-bottom-color: var(--theme-edge-bright);
+      box-shadow:
+        inset 1px 1px 0 rgba(9, 0, 15, 0.9),
+        inset -1px -1px 0 rgba(255, 43, 214, 0.52),
+        0 0 14px rgba(157, 61, 255, 0.2);
+    }
+
+    input::placeholder {
+      color: #8d6c9e;
+      opacity: 1;
+    }
+
+    .note {
+      margin: 9px 0 0;
+      color: var(--theme-muted);
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .button-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+      min-height: 54px;
+      padding: 12px 0 0;
+    }
+
+    .status {
+      align-self: center;
+      margin-right: auto;
+      color: var(--theme-muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .status.is-error {
+      color: #ff6bde;
+    }
+
+    .action-button {
+      min-width: 148px;
+      height: 34px;
+      margin: 0;
+      padding: 6px 14px;
+      border-top: 2px solid var(--theme-edge-bright);
+      border-right: 2px solid var(--theme-edge-bright);
+      border-bottom: 2px solid var(--theme-edge-bright);
+      border-left: 2px solid var(--theme-edge-bright);
+      border-radius: 0;
+      outline: 0;
+      background:
+        linear-gradient(180deg, var(--theme-surface-raised), var(--theme-surface));
+      color: var(--theme-text);
+      box-shadow:
+        inset 0 0 0 1px var(--theme-selection),
+        inset 2px 2px 0 rgba(255, 43, 214, 0.18),
+        inset -2px -2px 0 rgba(9, 0, 15, 0.55);
+    }
+
+    .action-button:hover,
+    .action-button:focus-visible {
+      background: var(--theme-surface-raised);
+      color: var(--theme-selection);
+      box-shadow:
+        inset 0 0 0 1px var(--theme-selection),
+        0 0 14px rgba(198, 255, 0, 0.24);
+    }
+
+    .action-button:active {
+      border-top-color: var(--theme-edge-deep);
+      border-right-color: var(--theme-edge-light);
+      border-bottom-color: var(--theme-edge-light);
+      border-left-color: var(--theme-edge-deep);
+      background:
+        linear-gradient(180deg, var(--theme-surface), var(--theme-surface-raised));
+    }
+
+    .action-button:disabled {
+      opacity: 0.52;
+      color: var(--theme-muted);
+      pointer-events: none;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 8px;
+      }
+
+      .login-shell {
+        min-height: calc(100vh - 16px);
+        padding: 8px;
+        filter: none;
+      }
+
+      .tabs {
+        padding-left: 3px;
+      }
+
+      .tab {
+        min-width: 126px;
+      }
+
+      .panel {
+        padding: 16px 14px;
+      }
+
+      .intro {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 11px;
+        margin-bottom: 18px;
+      }
+
+      .identity-icon {
+        width: 46px;
+        height: 46px;
+        font-size: 27px;
+      }
+
+      .button-bar {
+        flex-wrap: wrap;
+      }
+
+      .status {
+        width: 100%;
+      }
+
+      .action-button {
+        flex: 1 1 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <form class="login-shell" id="nickname-form" autocomplete="off">
+    <div class="tabs" role="presentation">
+      <div class="tab">Identity</div>
+    </div>
+
+    <main class="panel">
+      <header class="intro">
+        <div class="identity-icon" aria-hidden="true">👤</div>
+        <div>
+          <h1>Identify Your Signal</h1>
+          <p>No account. No password. Just a local name for this dead machine to remember.</p>
+        </div>
+      </header>
+
+      <fieldset>
+        <legend>Nickname</legend>
+        <label for="nickname-input">Enter your deadOS nickname</label>
+        <input
+          id="nickname-input"
+          name="nickname"
+          type="text"
+          maxlength="48"
+          autocomplete="off"
+          placeholder="Unknown Soul"
+          data-1p-ignore="true"
+          data-bwignore="true"
+          data-lpignore="true"
+          readonly
+          disabled
+          required
+        >
+        <p class="note">Your nickname and its OS settings stay in this browser's local storage.</p>
+      </fieldset>
+    </main>
+
+    <footer class="button-bar">
+      <span class="status" id="status" role="status" aria-live="polite">Awaiting identification.</span>
+      <button class="action-button" id="submit-button" type="submit" disabled>Enter deadOS</button>
+    </footer>
+  </form>
+
+  <script>
+    const deadOSnickname = "deadOSnickname";
+    const form = document.querySelector("#nickname-form");
+    const nicknameInput = document.querySelector("#nickname-input");
+    const submitButton = document.querySelector("#submit-button");
+    const status = document.querySelector("#status");
+    let screenIsActive = false;
+
+    try {
+      nicknameInput.value = localStorage.getItem(deadOSnickname) ?? "";
+      if (nicknameInput.value) {
+        status.textContent = "Saved signal detected. Finishing boot handoff.";
+      }
+    } catch (error) {
+      status.textContent = "Local storage is unavailable; this session can still continue.";
+    }
+
+    function activateNicknameScreen() {
+      if (screenIsActive) return;
+      screenIsActive = true;
+      nicknameInput.disabled = false;
+      nicknameInput.readOnly = false;
+      submitButton.disabled = false;
+      status.textContent = nicknameInput.value
+        ? "Saved signal detected. Confirm or rename it."
+        : "Awaiting identification.";
+
+      window.requestAnimationFrame(() => {
+        nicknameInput.focus();
+        if (nicknameInput.value) nicknameInput.select();
+      });
+    }
+
+    window.addEventListener("message", (event) => {
+      if (
+        event.source === window.parent &&
+        event.data?.type === "os:nickname:activate"
+      ) {
+        activateNicknameScreen();
+      }
+    });
+
+    if (window.parent === window) {
+      activateNicknameScreen();
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!screenIsActive) return;
+
+      const nickname = nicknameInput.value.trim().replace(/\s+/g, " ");
+      if (!nickname) {
+        status.textContent = "A nickname is required.";
+        status.classList.add("is-error");
+        nicknameInput.focus();
+        return;
+      }
+
+      nicknameInput.value = nickname;
+      status.classList.remove("is-error");
+
+      try {
+        localStorage.setItem(deadOSnickname, nickname);
+        status.textContent = `Signal recognized: ${nickname}`;
+      } catch (error) {
+        status.textContent = `Signal recognized for this session: ${nickname}`;
+      }
+
+      window.parent.postMessage(
+        {
+          type: "os:nickname:submit",
+          nickname
+        },
+        "*"
+      );
+    });
+  </script>
+</body>
+</html>

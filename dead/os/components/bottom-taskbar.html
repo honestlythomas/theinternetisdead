@@ -80,6 +80,14 @@
       -ms-overflow-style: none;
     }
 
+    body.taskbar-at-top .start-menu {
+      top: var(--taskbar-height);
+      bottom: auto;
+      border-top: 0;
+      border-bottom: 2px solid var(--theme-edge-deep);
+      transform: translateY(-100%);
+    }
+
     body.start-menu-open .start-menu {
       visibility: visible;
       pointer-events: auto;
@@ -95,11 +103,18 @@
       font-size: 13px;
       line-height: 16px;
       letter-spacing: 0.08em;
-      text-transform: uppercase;
+      text-transform: none;
       background:
         linear-gradient(90deg, rgba(89, 10, 120, 0.72), rgba(43, 7, 61, 0.35));
       border-bottom: 1px solid var(--theme-edge-dark);
       box-shadow: inset 0 -1px 0 rgba(157, 61, 255, 0.38);
+    }
+
+    .start-menu-nickname {
+      text-decoration: underline;
+      text-decoration-color: var(--theme-selection);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
     }
 
     .start-menu-item {
@@ -179,6 +194,18 @@
         0 -2px 0 rgba(9, 0, 15, 0.7);
     }
 
+    body.taskbar-at-top .taskbar {
+      top: 0;
+      bottom: auto;
+      align-items: flex-start;
+      border-top: 0;
+      border-bottom: 1px solid var(--theme-edge-bright);
+      box-shadow:
+        inset 0 -1px 0 rgba(157, 61, 255, 0.55),
+        inset 0 2px 0 var(--theme-edge-deep),
+        0 2px 0 rgba(9, 0, 15, 0.7);
+    }
+
     .taskbar-slot {
       position: relative;
       flex: 0 0 auto;
@@ -193,7 +220,20 @@
       top: 50%;
       right: -1px;
       width: 1px;
-      height: 22px;
+      height: 23.1px;
+      background: var(--theme-edge-bright);
+      content: "";
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
+
+    .domain-slot::after {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -1px;
+      width: 1px;
+      height: 23.1px;
       background: var(--theme-edge-bright);
       content: "";
       pointer-events: none;
@@ -245,7 +285,7 @@
       top: 50%;
       left: 0;
       width: 1px;
-      height: 22px;
+      height: 23.1px;
       background: var(--theme-edge-bright);
       content: "";
       pointer-events: none;
@@ -331,9 +371,110 @@
       line-height: 1;
     }
 
+    .clock-slot {
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 1ch;
+      margin-left: auto;
+      padding: 0 12px 0 0;
+      background:
+        linear-gradient(180deg, var(--theme-surface-raised), var(--theme-surface));
+      box-shadow:
+        inset 1px 1px 0 rgba(157, 61, 255, 0.38),
+        inset 0 -2px 0 var(--theme-edge-deep);
+      white-space: nowrap;
+    }
+
+    .clock-slot::before {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      left: 0;
+      width: 1px;
+      height: 23.1px;
+      background: var(--theme-edge-bright);
+      content: "";
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
+
+    .clock-caret {
+      position: relative;
+      display: grid;
+      flex: 0 0 44px;
+      width: 44px;
+      min-width: 44px;
+      max-width: 44px;
+      height: 44px;
+      margin: 0;
+      padding: 0;
+      place-items: center;
+      border-top: 1px solid var(--theme-edge-light);
+      border-right: 1px solid var(--theme-edge-deep);
+      border-bottom: 1px solid var(--theme-edge-deep);
+      border-left: 1px solid var(--theme-edge-light);
+      border-radius: 0;
+      outline: 0;
+      background:
+        linear-gradient(180deg, var(--theme-surface-raised), var(--theme-surface));
+      color: var(--theme-selection);
+      box-shadow:
+        inset 1px 1px 0 rgba(255, 43, 214, 0.18),
+        inset -1px -1px 0 rgba(9, 0, 15, 0.55);
+    }
+
+    .clock-caret::after {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -1px;
+      width: 1px;
+      height: 23.1px;
+      background: var(--theme-edge-bright);
+      content: "";
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
+
+    .clock-caret-shape {
+      display: block;
+      width: 12px;
+      height: 12px;
+      border-right: 4px solid currentColor;
+      border-bottom: 4px solid currentColor;
+      filter: drop-shadow(1px 1px 0 var(--theme-edge-deep));
+      transform: rotate(45deg);
+      transform-origin: 50% 50%;
+      transition: transform 100ms linear;
+    }
+
+    .clock-caret:hover,
+    .clock-caret:focus-visible {
+      color: var(--theme-edge-bright);
+    }
+
+    .clock-caret:focus-visible {
+      outline: 1px dotted var(--theme-selection);
+      outline-offset: 2px;
+    }
+
+    .clock-caret[aria-expanded="true"] .clock-caret-shape {
+      transform: rotate(-135deg);
+    }
+
+    .taskbar-clock {
+      color: var(--theme-text);
+      font-size: 14px;
+      line-height: 18px;
+      letter-spacing: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .start-menu,
-      .taskbar-button {
+      .taskbar-button,
+      .clock-caret-shape {
         transition: none;
       }
     }
@@ -341,7 +482,9 @@
 </head>
 <body>
   <ul class="start-menu" id="start-menu" role="menu" aria-hidden="true">
-    <li class="start-menu-header" aria-hidden="true">theinternetisdead.org</li>
+    <li class="start-menu-header" aria-hidden="true">
+      Welcome, <span class="start-menu-nickname" id="start-menu-nickname"></span>!
+    </li>
     <li class="start-menu-item">
       <button class="start-menu-button" type="button" role="menuitem">
         <span>Desktop</span>
@@ -373,6 +516,7 @@
         role="menuitem"
         data-app-src="/os/apps/settings_app.html"
         data-app-title="Settings"
+        data-app-width="640"
         data-app-singleton
       >
         <span>Settings</span>
@@ -405,25 +549,47 @@
           aria-haspopup="menu"
         >🌀</button>
       </li>
-      <li class="taskbar-slot">
+      <li class="taskbar-slot domain-slot">
         <a
           class="taskbar-button domain-button"
           href="/"
           target="_top"
         >theinternetisdead.org</a>
       </li>
+      <li class="taskbar-slot clock-slot">
+        <button
+          class="taskbar-button clock-caret"
+          type="button"
+          aria-label="Move taskbar to top"
+          aria-expanded="false"
+        >
+          <span class="clock-caret-shape" aria-hidden="true"></span>
+        </button>
+        <time class="taskbar-clock" id="taskbar-clock">Thu. July 23, 2026 @ 12:33:02pm</time>
+      </li>
     </ul>
   </nav>
 
   <script>
+    const deadOSnickname = "deadOSnickname";
     const startMenu = document.querySelector(".start-menu");
+    const startMenuNickname = document.querySelector("#start-menu-nickname");
     const startButton = document.querySelector(".spiral-button");
     const taskbar = document.querySelector(".taskbar");
     const taskbarSlots = [...document.querySelectorAll(".taskbar-slot")];
-    const animationDuration = matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? 0
-      : 180;
+    const clockSlot = document.querySelector(".clock-slot");
+    const clockCaret = document.querySelector(".clock-caret");
+    const clock = document.querySelector("#taskbar-clock");
+    const animationDuration =
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
+        ? 0
+        : 180;
     let closeFrameTimer = null;
+
+    function setStartMenuNickname(nickname) {
+      const normalizedNickname = String(nickname ?? "").trim();
+      startMenuNickname.textContent = normalizedNickname || "Unknown Soul";
+    }
 
     function syncStartMenuWidth() {
       const domainSlot = taskbarSlots[1];
@@ -442,6 +608,25 @@
       } catch {
         // The taskbar still works when opened outside the parent OS document.
       }
+    }
+
+    function setParentTaskbarPosition(position) {
+      try {
+        if (typeof window.parent.setTaskbarPosition === "function") {
+          window.parent.setTaskbarPosition(position);
+          return;
+        }
+      } catch {
+        // Fall through to postMessage when direct same-origin access is blocked.
+      }
+
+      window.parent.postMessage(
+        {
+          type: "os:taskbar:set-position",
+          position
+        },
+        "*"
+      );
     }
 
     function setStartMenuOpen(open) {
@@ -477,6 +662,7 @@
       try {
         window.parent.osShell?.openApp(source, {
           title: button.dataset.appTitle || "Application",
+          width: Number(button.dataset.appWidth) || 1280,
           windowed: true,
           singleton: button.hasAttribute("data-app-singleton"),
           controlBar: { visible: false }
@@ -484,6 +670,42 @@
       } catch {
         // App launching is available when this taskbar runs inside /os/index.html.
       }
+    }
+
+    function formatClock(date) {
+      const days = ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."];
+      const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+      const hours = date.getHours();
+      const twelveHour = hours % 12 || 12;
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+      const meridiem = hours >= 12 ? "pm" : "am";
+
+      return (
+        `${days[date.getDay()]} ${months[date.getMonth()]} ` +
+        `${date.getDate()}, ${date.getFullYear()} @ ` +
+        `${twelveHour}:${minutes}:${seconds}${meridiem}`
+      );
+    }
+
+    function updateClock() {
+      const now = new Date();
+      clock.textContent = formatClock(now);
+      clock.dateTime = now.toISOString();
+      clock.title = now.toString();
     }
 
     function requestWindowAction(method, messageType, id) {
@@ -557,7 +779,7 @@
         });
 
         slot.append(button);
-        taskbar.append(slot);
+        taskbar.insertBefore(slot, clockSlot);
       });
     }
 
@@ -569,6 +791,18 @@
       event.stopPropagation();
       const opening = !document.body.classList.contains("start-menu-open");
       setStartMenuOpen(opening);
+    });
+
+    clockCaret.addEventListener("click", () => {
+      const moveToTop = clockCaret.getAttribute("aria-expanded") !== "true";
+      setStartMenuOpen(false);
+      document.body.classList.toggle("taskbar-at-top", moveToTop);
+      clockCaret.setAttribute("aria-expanded", String(moveToTop));
+      clockCaret.setAttribute(
+        "aria-label",
+        moveToTop ? "Move taskbar to bottom" : "Move taskbar to top"
+      );
+      setParentTaskbarPosition(moveToTop ? "top" : "bottom");
     });
 
     startMenu.addEventListener("click", (event) => {
@@ -589,6 +823,7 @@
 
     window.addEventListener("message", (event) => {
       const message = event.data;
+
       if (
         event.source === window.parent &&
         message?.type === "os:taskbar:set-apps" &&
@@ -596,9 +831,23 @@
       ) {
         setTaskbarApps(message.apps);
       }
+
+      if (
+        event.source === window.parent &&
+        message?.type === "os:taskbar:set-nickname"
+      ) {
+        setStartMenuNickname(message.nickname);
+      }
     });
 
     window.addEventListener("resize", syncStartMenuWidth);
+    try {
+      setStartMenuNickname(localStorage.getItem(deadOSnickname));
+    } catch (error) {
+      setStartMenuNickname("");
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
     syncStartMenuWidth();
   </script>
 </body>
