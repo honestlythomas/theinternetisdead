@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Desktop</title>
+  <style>
+    :root {
+      --desktop-background: #00ff97;
+      --theme-surface: #160020;
+      --theme-surface-raised: #2b073d;
+      --theme-text: #baff39;
+      --theme-edge-bright: #ff2bd6;
+      --theme-edge-light: #9d3dff;
+      --theme-edge-dark: #590a78;
+      --theme-edge-deep: #09000f;
+      --theme-selection: #c6ff00;
+      --theme-selection-text: #21002e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--desktop-background);
+    }
+
+    .desktop-shell {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--desktop-background);
+    }
+
+    .app-window {
+      position: absolute;
+      z-index: 10;
+      display: grid;
+      grid-template-rows: 34px minmax(0, 1fr);
+      min-width: min(280px, calc(100% - 16px));
+      min-height: min(190px, calc(100% - 16px));
+      max-width: calc(100% - 16px);
+      max-height: calc(100% - 16px);
+      overflow: hidden;
+      resize: none;
+      background: var(--theme-surface);
+      border-top: 2px solid var(--theme-edge-light);
+      border-right: 2px solid var(--theme-edge-deep);
+      border-bottom: 2px solid var(--theme-edge-deep);
+      border-left: 2px solid var(--theme-edge-light);
+      box-shadow:
+        inset 1px 1px 0 rgba(255, 43, 214, 0.24),
+        6px 6px 0 rgba(9, 0, 15, 0.62),
+        12px 14px 28px rgba(9, 0, 15, 0.38);
+    }
+
+    .app-window.is-active {
+      border-top-color: var(--theme-edge-bright);
+      border-left-color: var(--theme-edge-bright);
+      box-shadow:
+        inset 1px 1px 0 rgba(255, 43, 214, 0.34),
+        7px 7px 0 rgba(9, 0, 15, 0.68),
+        14px 16px 32px rgba(9, 0, 15, 0.42);
+    }
+
+    .app-window.is-minimized {
+      display: none !important;
+    }
+
+    .app-window.is-chromeless {
+      display: block;
+      min-width: 0;
+      min-height: 0;
+      max-width: none;
+      max-height: none;
+      resize: none;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .app-window:not(.is-windowed) {
+      inset: 0;
+      display: block;
+      width: auto !important;
+      height: auto !important;
+      min-width: 0;
+      min-height: 0;
+      max-width: none;
+      max-height: none;
+      resize: none;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .window-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 0;
+      padding-left: 10px;
+      color: var(--theme-text);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 18px;
+      background:
+        linear-gradient(180deg, rgba(43, 7, 61, 0.99), rgba(22, 0, 32, 0.99));
+      border-bottom: 1px solid var(--theme-edge-bright);
+      cursor: move;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .app-window.is-chromeless .window-titlebar,
+    .app-window:not(.is-windowed) .window-titlebar {
+      display: none;
+    }
+
+    .window-title {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .window-controls {
+      align-self: stretch;
+      display: flex;
+      flex: 0 0 auto;
+    }
+
+    .window-control {
+      align-self: stretch;
+      flex: 0 0 36px;
+      width: 36px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-left: 1px solid var(--theme-edge-dark);
+      border-radius: 0;
+      background: var(--theme-surface-raised);
+      color: var(--theme-edge-bright);
+      font: inherit;
+      font-size: 18px;
+      line-height: 1;
+      cursor: default;
+    }
+
+    .window-control:hover,
+    .window-control:focus-visible {
+      outline: 0;
+      background: var(--theme-selection);
+      color: var(--theme-selection-text);
+    }
+
+    .window-content {
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .app-window.is-chromeless .window-content,
+    .app-window:not(.is-windowed) .window-content {
+      width: 100%;
+      height: 100%;
+    }
+
+    .app-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .window-resize-handle {
+      position: absolute;
+      z-index: 4;
+      width: 18px;
+      height: 18px;
+      touch-action: none;
+    }
+
+    .window-resize-handle[data-resize-corner="north-west"] {
+      top: 0;
+      left: 0;
+      cursor: nwse-resize;
+    }
+
+    .window-resize-handle[data-resize-corner="north-east"] {
+      top: 0;
+      right: 0;
+      cursor: nesw-resize;
+    }
+
+    .window-resize-handle[data-resize-corner="south-west"] {
+      bottom: 0;
+      left: 0;
+      cursor: nesw-resize;
+    }
+
+    .window-resize-handle[data-resize-corner="south-east"] {
+      right: 0;
+      bottom: 0;
+      cursor: nwse-resize;
+    }
+
+    .app-window.is-chromeless .window-resize-handle,
+    .app-window:not(.is-windowed) .window-resize-handle {
+      display: none;
+    }
+
+    .snap-preview {
+      position: absolute;
+      z-index: 2147483000;
+      display: none;
+      pointer-events: none;
+      background: rgba(157, 61, 255, 0.24);
+      border: 2px solid var(--theme-edge-bright);
+      box-shadow:
+        inset 0 0 0 2px rgba(198, 255, 0, 0.3),
+        0 0 24px rgba(255, 43, 214, 0.34);
+    }
+
+    .snap-preview.is-visible {
+      display: block;
+    }
+
+    .snap-preview[data-edge="left"] {
+      inset: 0 50% 0 0;
+    }
+
+    .snap-preview[data-edge="right"] {
+      inset: 0 0 0 50%;
+    }
+
+    .snap-preview[data-edge="top"] {
+      inset: 0 0 50% 0;
+    }
+
+    .snap-preview[data-edge="bottom"] {
+      inset: 50% 0 0 0;
+    }
+  </style>
+</head>
+<body>
+  <main class="desktop-shell" aria-label="Desktop application area"></main>
+
+  <script>
+    const desktopRoot = document.querySelector(".desktop-shell");
+    const osRoot = new URL("../", window.location.href);
+    const appWindows = new Map();
+    const snapPreview = document.createElement("div");
+    const snapThreshold = 18;
+    let nextWindowNumber = 1;
+    let highestZIndex = 10;
+    let activeWindowId = null;
+    let dragState = null;
+    let resizeState = null;
+
+    snapPreview.className = "snap-preview";
+    snapPreview.setAttribute("aria-hidden", "true");
+    desktopRoot.append(snapPreview);
+
+    function resolveAppSource(source) {
+      const projectRelativeSource = source.startsWith("/os/")
+        ? source.slice("/os/".length)
+        : source;
+
+      return new URL(projectRelativeSource, osRoot).href;
+    }
+
+    function updateControlBar(configuration = {}) {
+      try {
+        if (window.parent.osShell?.setControlBar) {
+          window.parent.osShell.setControlBar(configuration);
+          return;
+        }
+      } catch {
+        // Fall through to postMessage when direct same-origin access is blocked.
+      }
+
+      window.parent.postMessage(
+        {
+          type: "os:control-bar:update",
+          configuration
+        },
+        "*"
+      );
+    }
+
+    function getTaskbarApps() {
+      return [...appWindows.values()].map((record) => ({
+        id: record.id,
+        title: record.title,
+        active: record.id === activeWindowId,
+        minimized: record.minimized,
+        layout: record.layout
+      }));
+    }
+
+    function syncTaskbarApps() {
+      const apps = getTaskbarApps();
+
+      try {
+        if (window.parent.osShell?.setTaskbarApps) {
+          window.parent.osShell.setTaskbarApps(apps);
+          return;
+        }
+      } catch {
+        // Fall through to postMessage when direct same-origin access is blocked.
+      }
+
+      window.parent.postMessage(
+        {
+          type: "os:taskbar:set-apps",
+          apps
+        },
+        "*"
+      );
+    }
+
+    function applyActiveWindow(record, raise = true) {
+      if (!record) {
+        activeWindowId = null;
+        appWindows.forEach((item) => {
+          item.element.classList.remove("is-active");
+        });
+        updateControlBar({ visible: false });
+        syncTaskbarApps();
+        return;
+      }
+
+      record.minimized = false;
+      record.element.classList.remove("is-minimized");
+
+      if (raise) {
+        highestZIndex += 1;
+        record.zIndex = highestZIndex;
+        record.element.style.zIndex = String(record.zIndex);
+      }
+
+      activeWindowId = record.id;
+      appWindows.forEach((item) => {
+        item.element.classList.toggle("is-active", item.id === activeWindowId);
+      });
+      updateControlBar(record.controlBar);
+      syncTaskbarApps();
+    }
+
+    function activateHighestVisibleWindow() {
+      const nextRecord = [...appWindows.values()]
+        .filter((record) => !record.minimized)
+        .sort((a, b) => b.zIndex - a.zIndex)[0];
+
+      applyActiveWindow(nextRecord ?? null, false);
+    }
+
+    function focusWindow(id) {
+      const record = appWindows.get(id);
+      if (!record) return;
+
+      applyActiveWindow(record, true);
+    }
+
+    function minimizeWindow(id) {
+      const record = appWindows.get(id);
+      if (!record) return;
+
+      record.minimized = true;
+      record.element.classList.add("is-minimized");
+      record.element.classList.remove("is-active");
+
+      if (activeWindowId === id) {
+        activeWindowId = null;
+        activateHighestVisibleWindow();
+      } else {
+        syncTaskbarApps();
+      }
+    }
+
+    function toggleWindow(id) {
+      const record = appWindows.get(id);
+      if (!record) return;
+
+      if (record.minimized || activeWindowId !== id) {
+        focusWindow(id);
+      } else {
+        minimizeWindow(id);
+      }
+    }
+
+    function readWindowBounds(record) {
+      return {
+        left: Number.parseFloat(record.element.style.left) || 0,
+        top: Number.parseFloat(record.element.style.top) || 0,
+        width: record.element.offsetWidth,
+        height: record.element.offsetHeight
+      };
+    }
+
+    function applyWindowBounds(record, bounds) {
+      record.element.style.left = `${bounds.left}px`;
+      record.element.style.top = `${bounds.top}px`;
+      record.element.style.width = `${bounds.width}px`;
+      record.element.style.height = `${bounds.height}px`;
+    }
+
+    function applyChromelessLayout(record, layout, restoreBounds = null) {
+      if (!record?.windowed) return;
+
+      if (record.layout === "normal") {
+        record.restoreBounds = restoreBounds ?? readWindowBounds(record);
+      }
+
+      record.layout = layout;
+      record.element.classList.add("is-chromeless");
+
+      if (layout === "maximized") {
+        record.element.style.left = "0";
+        record.element.style.top = "0";
+        record.element.style.width = "100%";
+        record.element.style.height = "100%";
+      }
+
+      if (layout === "snapped-left") {
+        record.element.style.left = "0";
+        record.element.style.top = "0";
+        record.element.style.width = "50%";
+        record.element.style.height = "100%";
+      }
+
+      if (layout === "snapped-right") {
+        record.element.style.left = "50%";
+        record.element.style.top = "0";
+        record.element.style.width = "50%";
+        record.element.style.height = "100%";
+      }
+
+      if (layout === "snapped-top") {
+        record.element.style.left = "0";
+        record.element.style.top = "0";
+        record.element.style.width = "100%";
+        record.element.style.height = "50%";
+      }
+
+      if (layout === "snapped-bottom") {
+        record.element.style.left = "0";
+        record.element.style.top = "50%";
+        record.element.style.width = "100%";
+        record.element.style.height = "50%";
+      }
+
+      focusWindow(record.id);
+    }
+
+    function maximizeWindow(id) {
+      const record = appWindows.get(id);
+      if (!record?.windowed) return;
+
+      if (record.layout === "maximized") {
+        restoreWindow(id);
+        return;
+      }
+
+      applyChromelessLayout(record, "maximized");
+    }
+
+    function snapWindow(id, edge, restoreBounds = null) {
+      const record = appWindows.get(id);
+      if (
+        !record?.windowed ||
+        !["left", "right", "top", "bottom"].includes(edge)
+      ) {
+        return;
+      }
+
+      applyChromelessLayout(record, `snapped-${edge}`, restoreBounds);
+    }
+
+    function restoreWindow(id) {
+      const record = appWindows.get(id);
+      if (!record?.windowed) {
+        focusWindow(id);
+        return;
+      }
+
+      record.layout = "normal";
+      record.element.classList.remove("is-chromeless");
+      if (record.restoreBounds) {
+        applyWindowBounds(record, record.restoreBounds);
+      }
+      record.minimized = false;
+      record.element.classList.remove("is-minimized");
+      clampWindowPosition(record);
+      focusWindow(id);
+    }
+
+    function getSnapEdge(clientX, clientY) {
+      if (clientX <= snapThreshold) return "left";
+      if (clientX >= desktopRoot.clientWidth - snapThreshold) return "right";
+      if (clientY <= snapThreshold) return "top";
+      if (clientY >= desktopRoot.clientHeight - snapThreshold) return "bottom";
+      return null;
+    }
+
+    function showSnapPreview(edge) {
+      if (!edge) {
+        snapPreview.classList.remove("is-visible");
+        snapPreview.removeAttribute("data-edge");
+        return;
+      }
+
+      snapPreview.dataset.edge = edge;
+      snapPreview.classList.add("is-visible");
+    }
+
+    function closeWindow(id) {
+      const record = appWindows.get(id);
+      if (!record) return;
+
+      const wasActive = activeWindowId === id;
+      record.frame.src = "about:blank";
+      record.element.remove();
+      appWindows.delete(id);
+
+      if (wasActive) {
+        activeWindowId = null;
+        activateHighestVisibleWindow();
+      } else {
+        syncTaskbarApps();
+      }
+    }
+
+    function clampWindowPosition(record) {
+      if (
+        !record?.windowed ||
+        record.minimized ||
+        record.layout !== "normal"
+      ) {
+        return;
+      }
+
+      const maximumLeft = Math.max(
+        0,
+        desktopRoot.clientWidth - record.element.offsetWidth
+      );
+      const maximumTop = Math.max(
+        0,
+        desktopRoot.clientHeight - record.element.offsetHeight
+      );
+      const currentLeft = Number.parseFloat(record.element.style.left) || 0;
+      const currentTop = Number.parseFloat(record.element.style.top) || 0;
+
+      record.element.style.left =
+        `${Math.min(Math.max(0, currentLeft), maximumLeft)}px`;
+      record.element.style.top =
+        `${Math.min(Math.max(0, currentTop), maximumTop)}px`;
+    }
+
+    function createWindowElement(record, options) {
+      const appWindow = document.createElement("section");
+      const titlebar = document.createElement("header");
+      const title = document.createElement("span");
+      const controls = document.createElement("div");
+      const minimizeButton = document.createElement("button");
+      const maximizeButton = document.createElement("button");
+      const closeButton = document.createElement("button");
+      const content = document.createElement("div");
+      const frame = document.createElement("iframe");
+      const resizeHandles = [
+        "north-west",
+        "north-east",
+        "south-west",
+        "south-east"
+      ].map((corner) => {
+        const handle = document.createElement("div");
+        handle.className = "window-resize-handle";
+        handle.dataset.resizeCorner = corner;
+        handle.setAttribute("aria-hidden", "true");
+        return handle;
+      });
+
+      appWindow.className = "app-window";
+      appWindow.classList.toggle("is-windowed", record.windowed);
+      appWindow.dataset.windowId = record.id;
+      appWindow.setAttribute("aria-label", `${record.title} window`);
+
+      titlebar.className = "window-titlebar";
+      title.className = "window-title";
+      title.textContent = record.title;
+      controls.className = "window-controls";
+
+      minimizeButton.className = "window-control window-minimize";
+      minimizeButton.type = "button";
+      minimizeButton.setAttribute("aria-label", `Minimize ${record.title}`);
+      minimizeButton.textContent = "—";
+
+      maximizeButton.className = "window-control window-maximize";
+      maximizeButton.type = "button";
+      maximizeButton.setAttribute("aria-label", `Maximize ${record.title}`);
+      maximizeButton.textContent = "□";
+
+      closeButton.className = "window-control window-close";
+      closeButton.type = "button";
+      closeButton.setAttribute("aria-label", `Close ${record.title}`);
+      closeButton.textContent = "×";
+
+      content.className = "window-content";
+      frame.className = "app-frame";
+      frame.title = record.title;
+
+      controls.append(minimizeButton, maximizeButton, closeButton);
+      titlebar.append(title, controls);
+      content.append(frame);
+      appWindow.append(titlebar, content, ...resizeHandles);
+
+      if (record.windowed) {
+        const availableWidth = Math.max(160, desktopRoot.clientWidth - 16);
+        const availableHeight = Math.max(120, desktopRoot.clientHeight - 16);
+        const requestedWidth = Number(options.width) || 1280;
+        const requestedHeight = Number(options.height) || 720;
+        const width = Math.min(Math.max(280, requestedWidth), availableWidth);
+        const height = Math.min(Math.max(190, requestedHeight), availableHeight);
+        const cascadeOffset = (appWindows.size % 7) * 24;
+        const centeredLeft = Math.max(8, (desktopRoot.clientWidth - width) / 2);
+        const centeredTop = Math.max(8, (desktopRoot.clientHeight - height) / 2);
+        const maximumLeft = Math.max(0, desktopRoot.clientWidth - width);
+        const maximumTop = Math.max(0, desktopRoot.clientHeight - height);
+
+        appWindow.style.width = `${width}px`;
+        appWindow.style.height = `${height}px`;
+        appWindow.style.left =
+          `${Math.min(centeredLeft + cascadeOffset, maximumLeft)}px`;
+        appWindow.style.top =
+          `${Math.min(centeredTop + cascadeOffset, maximumTop)}px`;
+      }
+
+      appWindow.addEventListener("pointerdown", () => {
+        if (activeWindowId !== record.id) {
+          focusWindow(record.id);
+        }
+      });
+
+      resizeHandles.forEach((handle) => {
+        handle.addEventListener("pointerdown", (event) => {
+          if (!record.windowed || record.layout !== "normal") return;
+
+          event.preventDefault();
+          event.stopPropagation();
+          focusWindow(record.id);
+          resizeState = {
+            id: record.id,
+            pointerId: event.pointerId,
+            corner: handle.dataset.resizeCorner,
+            startX: event.clientX,
+            startY: event.clientY,
+            startBounds: readWindowBounds(record),
+            handle
+          };
+          handle.setPointerCapture(event.pointerId);
+        });
+
+        handle.addEventListener("pointermove", (event) => {
+          if (
+            !resizeState ||
+            resizeState.id !== record.id ||
+            resizeState.handle !== handle ||
+            event.pointerId !== resizeState.pointerId
+          ) {
+            return;
+          }
+
+          const { corner, startBounds, startX, startY } = resizeState;
+          const deltaX = event.clientX - startX;
+          const deltaY = event.clientY - startY;
+          const minimumWidth = Math.min(
+            280,
+            Math.max(1, desktopRoot.clientWidth - 16)
+          );
+          const minimumHeight = Math.min(
+            190,
+            Math.max(1, desktopRoot.clientHeight - 16)
+          );
+          let left = startBounds.left;
+          let top = startBounds.top;
+          let width = startBounds.width;
+          let height = startBounds.height;
+
+          if (corner.endsWith("east")) {
+            width = Math.min(
+              Math.max(minimumWidth, startBounds.width + deltaX),
+              desktopRoot.clientWidth - startBounds.left
+            );
+          }
+
+          if (corner.endsWith("west")) {
+            left = Math.min(
+              Math.max(0, startBounds.left + deltaX),
+              startBounds.left + startBounds.width - minimumWidth
+            );
+            width = startBounds.width + startBounds.left - left;
+          }
+
+          if (corner.startsWith("south")) {
+            height = Math.min(
+              Math.max(minimumHeight, startBounds.height + deltaY),
+              desktopRoot.clientHeight - startBounds.top
+            );
+          }
+
+          if (corner.startsWith("north")) {
+            top = Math.min(
+              Math.max(0, startBounds.top + deltaY),
+              startBounds.top + startBounds.height - minimumHeight
+            );
+            height = startBounds.height + startBounds.top - top;
+          }
+
+          applyWindowBounds(record, { left, top, width, height });
+        });
+
+        function endWindowResize(event) {
+          if (
+            !resizeState ||
+            resizeState.id !== record.id ||
+            resizeState.handle !== handle ||
+            event.pointerId !== resizeState.pointerId
+          ) {
+            return;
+          }
+
+          if (handle.hasPointerCapture(event.pointerId)) {
+            handle.releasePointerCapture(event.pointerId);
+          }
+          resizeState = null;
+        }
+
+        handle.addEventListener("pointerup", endWindowResize);
+        handle.addEventListener("pointercancel", endWindowResize);
+      });
+
+      titlebar.addEventListener("pointerdown", (event) => {
+        if (
+          !record.windowed ||
+          record.layout !== "normal" ||
+          event.target.closest(".window-control")
+        ) {
+          return;
+        }
+
+        focusWindow(record.id);
+        const windowBounds = appWindow.getBoundingClientRect();
+        dragState = {
+          id: record.id,
+          pointerId: event.pointerId,
+          offsetX: event.clientX - windowBounds.left,
+          offsetY: event.clientY - windowBounds.top,
+          restoreBounds: readWindowBounds(record),
+          snapEdge: null,
+          titlebar
+        };
+        titlebar.setPointerCapture(event.pointerId);
+      });
+
+      titlebar.addEventListener("pointermove", (event) => {
+        if (
+          !dragState ||
+          dragState.id !== record.id ||
+          event.pointerId !== dragState.pointerId
+        ) {
+          return;
+        }
+
+        const maximumLeft = Math.max(
+          0,
+          desktopRoot.clientWidth - appWindow.offsetWidth
+        );
+        const maximumTop = Math.max(
+          0,
+          desktopRoot.clientHeight - appWindow.offsetHeight
+        );
+        const left = Math.min(
+          Math.max(0, event.clientX - dragState.offsetX),
+          maximumLeft
+        );
+        const top = Math.min(
+          Math.max(0, event.clientY - dragState.offsetY),
+          maximumTop
+        );
+
+        appWindow.style.left = `${left}px`;
+        appWindow.style.top = `${top}px`;
+        dragState.snapEdge = getSnapEdge(event.clientX, event.clientY);
+        showSnapPreview(dragState.snapEdge);
+      });
+
+      titlebar.addEventListener("dblclick", (event) => {
+        if (
+          record.layout === "normal" &&
+          !event.target.closest(".window-control")
+        ) {
+          event.preventDefault();
+          maximizeWindow(record.id);
+        }
+      });
+
+      function endWindowDrag(event, commitSnap) {
+        if (
+          !dragState ||
+          dragState.id !== record.id ||
+          event.pointerId !== dragState.pointerId
+        ) {
+          return;
+        }
+
+        const completedDrag = dragState;
+        if (titlebar.hasPointerCapture(event.pointerId)) {
+          titlebar.releasePointerCapture(event.pointerId);
+        }
+        showSnapPreview(null);
+        dragState = null;
+
+        if (commitSnap && completedDrag.snapEdge) {
+          snapWindow(
+            record.id,
+            completedDrag.snapEdge,
+            completedDrag.restoreBounds
+          );
+        }
+      }
+
+      titlebar.addEventListener("pointerup", (event) => {
+        endWindowDrag(event, true);
+      });
+      titlebar.addEventListener("pointercancel", (event) => {
+        endWindowDrag(event, false);
+      });
+      minimizeButton.addEventListener("click", () => minimizeWindow(record.id));
+      maximizeButton.addEventListener("click", () => maximizeWindow(record.id));
+      closeButton.addEventListener("click", () => closeWindow(record.id));
+
+      frame.addEventListener("load", () => {
+        frame.contentWindow.postMessage(
+          {
+            type: "os:app:ready",
+            app: {
+              id: record.id,
+              source: record.source,
+              title: record.title
+            }
+          },
+          "*"
+        );
+      });
+      frame.src = record.source;
+
+      record.element = appWindow;
+      record.frame = frame;
+      record.titleElement = title;
+      return appWindow;
+    }
+
+    function openApp(source, options = {}) {
+      if (typeof source !== "string" || !source.trim()) {
+        throw new TypeError("desktopShell.openApp requires an app HTML path.");
+      }
+
+      const resolvedSource = resolveAppSource(source);
+      if (options.singleton) {
+        const existingRecord = [...appWindows.values()].find(
+          (record) => record.source === resolvedSource
+        );
+        if (existingRecord) {
+          focusWindow(existingRecord.id);
+          return existingRecord.id;
+        }
+      }
+
+      const id = `app-window-${nextWindowNumber}`;
+      nextWindowNumber += 1;
+      const record = {
+        id,
+        source: resolvedSource,
+        title: options.title ?? "Application",
+        windowed: options.windowed !== false,
+        layout: options.windowed === false ? "fullscreen" : "normal",
+        minimized: false,
+        restoreBounds: null,
+        controlBar: options.controlBar ?? { visible: false },
+        zIndex: highestZIndex,
+        element: null,
+        frame: null,
+        titleElement: null
+      };
+
+      const appWindow = createWindowElement(record, options);
+      appWindows.set(id, record);
+      desktopRoot.append(appWindow);
+      focusWindow(id);
+      return id;
+    }
+
+    function closeActiveApp() {
+      if (activeWindowId) {
+        closeWindow(activeWindowId);
+      }
+    }
+
+    function setWindowTitle(id, title) {
+      const record = appWindows.get(id);
+      if (!record || typeof title !== "string" || !title.trim()) return;
+
+      record.title = title.trim();
+      record.titleElement.textContent = record.title;
+      record.frame.title = record.title;
+      record.element.setAttribute("aria-label", `${record.title} window`);
+      syncTaskbarApps();
+    }
+
+    window.desktopShell = Object.freeze({
+      openApp,
+      closeApp: closeActiveApp,
+      closeWindow,
+      focusWindow,
+      activateWindow: focusWindow,
+      minimizeWindow,
+      maximizeWindow,
+      restoreWindow,
+      snapWindow,
+      toggleWindow,
+      getActiveApp() {
+        const record = appWindows.get(activeWindowId);
+        if (!record) return null;
+
+        return {
+          id: record.id,
+          source: record.source,
+          title: record.title,
+          minimized: record.minimized,
+          layout: record.layout
+        };
+      },
+      getOpenApps: getTaskbarApps,
+      setControlBar(configuration = {}) {
+        const record = appWindows.get(activeWindowId);
+        if (record) {
+          record.controlBar = configuration;
+        }
+        updateControlBar(configuration);
+      },
+      showControlBar(menus) {
+        const configuration = { visible: true, menus };
+        const record = appWindows.get(activeWindowId);
+        if (record) {
+          record.controlBar = configuration;
+        }
+        updateControlBar(configuration);
+      },
+      hideControlBar() {
+        const configuration = { visible: false };
+        const record = appWindows.get(activeWindowId);
+        if (record) {
+          record.controlBar = configuration;
+        }
+        updateControlBar(configuration);
+      }
+    });
+
+    window.addEventListener("message", (event) => {
+      const message = event.data;
+      if (!message || typeof message !== "object") return;
+
+      const sourceRecord = [...appWindows.values()].find(
+        (record) => record.frame.contentWindow === event.source
+      );
+
+      if (sourceRecord) {
+        if (message.type === "os:control-bar:update") {
+          sourceRecord.controlBar = message.configuration ?? {};
+          if (sourceRecord.id === activeWindowId) {
+            updateControlBar(sourceRecord.controlBar);
+          }
+        }
+
+        if (message.type === "os:app:close") {
+          closeWindow(sourceRecord.id);
+        }
+
+        if (message.type === "os:app:set-title") {
+          setWindowTitle(sourceRecord.id, message.title);
+        }
+      }
+
+      if (
+        event.source === window.parent &&
+        message.type === "os:control-bar:action"
+      ) {
+        const activeRecord = appWindows.get(activeWindowId);
+        activeRecord?.frame.contentWindow.postMessage(message, "*");
+      }
+    });
+
+    window.addEventListener("blur", () => {
+      const focusedRecord = [...appWindows.values()].find(
+        (record) => record.frame === document.activeElement
+      );
+      if (focusedRecord && focusedRecord.id !== activeWindowId) {
+        focusWindow(focusedRecord.id);
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      appWindows.forEach(clampWindowPosition);
+    });
+
+    syncTaskbarApps();
+  </script>
+</body>
+</html>

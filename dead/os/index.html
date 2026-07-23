@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>theinternetisdead.org OS</title>
+  <style>
+    :root {
+      --control-bar-height: 40px;
+      --active-control-bar-height: 0px;
+      --taskbar-height: 44px;
+      --desktop-background: #09000f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--desktop-background);
+    }
+
+    body {
+      display: grid;
+      grid-template-rows:
+        var(--active-control-bar-height)
+        minmax(0, 1fr)
+        var(--taskbar-height);
+    }
+
+    body.control-bar-visible {
+      --active-control-bar-height: var(--control-bar-height);
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .control-bar-frame {
+      grid-row: 1;
+      align-self: start;
+      position: relative;
+      z-index: 3;
+      height: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    body.control-bar-visible .control-bar-frame {
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .desktop-frame {
+      grid-row: 2;
+      min-width: 0;
+      min-height: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .taskbar-frame {
+      grid-row: 3;
+      align-self: end;
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <iframe
+    class="control-bar-frame"
+    src="components/control-bar.html"
+    title="Control bar"
+    aria-hidden="true"
+    scrolling="no"
+  ></iframe>
+
+  <iframe
+    class="desktop-frame"
+    src="components/desktop.html"
+    title="Desktop"
+  ></iframe>
+
+  <iframe
+    class="taskbar-frame"
+    src="components/bottom-taskbar.html"
+    title="Bottom taskbar"
+    scrolling="no"
+  ></iframe>
+
+  <script>
+    const controlBarFrame = document.querySelector(".control-bar-frame");
+    const desktopFrame = document.querySelector(".desktop-frame");
+    const bottomTaskbarFrame = document.querySelector(".taskbar-frame");
+    const collapsedControlBarHeight = 40;
+    const taskbarHeight = 44;
+    let controlBarIsVisible = false;
+    let controlBarIsReady = false;
+    let configuredMenus = null;
+    let startMenuFrameIsOpen = false;
+    let taskbarIsReady = false;
+    let taskbarApps = [];
+    const pendingAppRequests = [];
+
+    function getActiveControlBarHeight() {
+      return controlBarIsVisible ? collapsedControlBarHeight : 0;
+    }
+
+    function sendMenusToControlBar() {
+      if (!controlBarIsReady || !Array.isArray(configuredMenus)) return;
+
+      controlBarFrame.contentWindow.postMessage(
+        {
+          type: "os:control-bar:set-menus",
+          menus: configuredMenus
+        },
+        "*"
+      );
+    }
+
+    function setControlBarVisible(visible) {
+      controlBarIsVisible = Boolean(visible);
+      document.body.classList.toggle(
+        "control-bar-visible",
+        controlBarIsVisible
+      );
+      controlBarFrame.setAttribute(
+        "aria-hidden",
+        String(!controlBarIsVisible)
+      );
+      controlBarFrame.style.height = controlBarIsVisible
+        ? `${collapsedControlBarHeight}px`
+        : "0px";
+
+      if (startMenuFrameIsOpen) {
+        window.setStartMenuFrameOpen(true);
+      }
+    }
+
+    function setControlBar(configuration = {}) {
+      if (Array.isArray(configuration.menus)) {
+        configuredMenus = configuration.menus;
+        sendMenusToControlBar();
+      }
+
+      setControlBarVisible(configuration.visible ?? true);
+    }
+
+    function sendTaskbarApps() {
+      if (!taskbarIsReady) return;
+
+      bottomTaskbarFrame.contentWindow.postMessage(
+        {
+          type: "os:taskbar:set-apps",
+          apps: taskbarApps
+        },
+        "*"
+      );
+    }
+
+    function setTaskbarApps(apps) {
+      if (!Array.isArray(apps)) return;
+
+      taskbarApps = apps.map((app) => ({ ...app }));
+      sendTaskbarApps();
+    }
+
+    window.setStartMenuFrameOpen = (open) => {
+      startMenuFrameIsOpen = open;
+      const expandedHeight = Math.max(
+        taskbarHeight,
+        window.innerHeight - getActiveControlBarHeight()
+      );
+
+      bottomTaskbarFrame.style.height = open
+        ? `${expandedHeight}px`
+        : `${taskbarHeight}px`;
+    };
+
+    window.addEventListener("resize", () => {
+      if (startMenuFrameIsOpen) {
+        window.setStartMenuFrameOpen(true);
+      }
+    });
+
+    controlBarFrame.addEventListener("load", () => {
+      controlBarIsReady = true;
+      sendMenusToControlBar();
+
+      const controlBarDocument = controlBarFrame.contentDocument;
+      if (!controlBarDocument) return;
+
+      function resizeControlBarFrame() {
+        if (!controlBarIsVisible) {
+          controlBarFrame.style.height = "0px";
+          return;
+        }
+
+        const activeMenu = controlBarDocument.querySelector(
+          ".menu.is-open, .menu:hover, .menu:focus-within"
+        );
+
+        if (!activeMenu) {
+          controlBarFrame.style.height = `${collapsedControlBarHeight}px`;
+          return;
+        }
+
+        const dropdown = activeMenu.querySelector(".dropdown");
+        const dropdownBottom = dropdown?.getBoundingClientRect().bottom ?? 0;
+        const availableHeight = window.innerHeight - taskbarHeight;
+        const expandedHeight = Math.min(
+          availableHeight,
+          Math.max(collapsedControlBarHeight, Math.ceil(dropdownBottom + 12))
+        );
+
+        controlBarFrame.style.height = `${expandedHeight}px`;
+      }
+
+      controlBarDocument.addEventListener("pointerover", (event) => {
+        if (event.target.closest?.(".menu")) {
+          resizeControlBarFrame();
+        }
+      });
+      controlBarDocument.addEventListener("pointerout", () => {
+        requestAnimationFrame(resizeControlBarFrame);
+      });
+      controlBarDocument.addEventListener("focusin", (event) => {
+        if (event.target.closest?.(".menu")) {
+          resizeControlBarFrame();
+        }
+      });
+      controlBarDocument.addEventListener("focusout", () => {
+        requestAnimationFrame(resizeControlBarFrame);
+      });
+
+      const menuBar = controlBarDocument.querySelector(".menu-bar");
+      if (menuBar) {
+        new MutationObserver(() => {
+          requestAnimationFrame(resizeControlBarFrame);
+        }).observe(menuBar, {
+          attributes: true,
+          attributeFilter: ["class", "aria-expanded"],
+          childList: true,
+          subtree: true
+        });
+      }
+
+      window.addEventListener("resize", resizeControlBarFrame);
+    });
+
+    desktopFrame.addEventListener("load", () => {
+      const desktopShell = desktopFrame.contentWindow.desktopShell;
+      if (!desktopShell) return;
+
+      pendingAppRequests.splice(0).forEach(({ source, options }) => {
+        desktopShell.openApp(source, options);
+      });
+    });
+
+    bottomTaskbarFrame.addEventListener("load", () => {
+      taskbarIsReady = true;
+      sendTaskbarApps();
+    });
+
+    window.addEventListener("message", (event) => {
+      const message = event.data;
+      if (!message || typeof message !== "object") return;
+
+      if (
+        event.source === desktopFrame.contentWindow &&
+        message.type === "os:control-bar:update"
+      ) {
+        setControlBar(message.configuration ?? {});
+      }
+
+      if (
+        event.source === desktopFrame.contentWindow &&
+        message.type === "os:taskbar:set-apps"
+      ) {
+        setTaskbarApps(message.apps ?? []);
+      }
+
+      if (
+        event.source === bottomTaskbarFrame.contentWindow &&
+        message.type === "os:taskbar:toggle-app"
+      ) {
+        desktopFrame.contentWindow.desktopShell?.toggleWindow(message.id);
+      }
+
+      if (
+        event.source === bottomTaskbarFrame.contentWindow &&
+        message.type === "os:taskbar:restore-app"
+      ) {
+        desktopFrame.contentWindow.desktopShell?.restoreWindow(message.id);
+      }
+
+      if (
+        event.source === bottomTaskbarFrame.contentWindow &&
+        message.type === "os:taskbar:maximize-app"
+      ) {
+        desktopFrame.contentWindow.desktopShell?.maximizeWindow(message.id);
+      }
+
+      if (
+        event.source === controlBarFrame.contentWindow &&
+        message.type === "os:control-bar:action"
+      ) {
+        desktopFrame.contentWindow.postMessage(message, "*");
+      }
+    });
+
+    window.osShell = Object.freeze({
+      setControlBar,
+      setTaskbarApps,
+      showControlBar(menus = configuredMenus) {
+        setControlBar({ visible: true, menus });
+      },
+      hideControlBar() {
+        setControlBarVisible(false);
+      },
+      openApp(source, options = {}) {
+        const desktopShell = desktopFrame.contentWindow.desktopShell;
+
+        if (!desktopShell) {
+          pendingAppRequests.push({ source, options });
+          return;
+        }
+
+        return desktopShell.openApp(source, options);
+      },
+      closeApp() {
+        desktopFrame.contentWindow.desktopShell?.closeApp();
+      },
+      activateAppWindow(id) {
+        desktopFrame.contentWindow.desktopShell?.activateWindow(id);
+      },
+      toggleAppWindow(id) {
+        desktopFrame.contentWindow.desktopShell?.toggleWindow(id);
+      },
+      minimizeAppWindow(id) {
+        desktopFrame.contentWindow.desktopShell?.minimizeWindow(id);
+      },
+      maximizeAppWindow(id) {
+        desktopFrame.contentWindow.desktopShell?.maximizeWindow(id);
+      },
+      restoreAppWindow(id) {
+        desktopFrame.contentWindow.desktopShell?.restoreWindow(id);
+      },
+      closeAppWindow(id) {
+        desktopFrame.contentWindow.desktopShell?.closeWindow(id);
+      }
+    });
+  </script>
+</body>
+</html>

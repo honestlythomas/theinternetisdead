@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Windows 98 Menu Bar</title>
+  <style>
+    :root {
+      --menu-height: 40px;
+      --theme-surface: #160020;
+      --theme-surface-raised: #2b073d;
+      --theme-text: #baff39;
+      --theme-edge-bright: #ff2bd6;
+      --theme-edge-light: #9d3dff;
+      --theme-edge-dark: #590a78;
+      --theme-edge-deep: #09000f;
+      --theme-selection: #c6ff00;
+      --theme-selection-text: #21002e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: var(--menu-height);
+      margin: 0;
+      overflow: visible;
+      background: transparent;
+      color: var(--theme-text);
+      font-family: "Courier New", Courier, monospace;
+      font-weight: 700;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    .dropdown::-webkit-scrollbar {
+      display: none;
+    }
+
+    .menu-bar {
+      position: relative;
+      z-index: 1000;
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      height: var(--menu-height);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      gap: 0;
+      padding: 3px 0;
+      background:
+        linear-gradient(180deg, rgba(43, 7, 61, 0.99), rgba(22, 0, 32, 0.99));
+      border-bottom: 1px solid var(--theme-edge-bright);
+      box-shadow:
+        inset 0 1px 0 rgba(157, 61, 255, 0.55),
+        inset 0 -2px 0 var(--theme-edge-deep),
+        0 2px 0 rgba(9, 0, 15, 0.7);
+    }
+
+    .menu {
+      position: relative;
+      flex: 0 0 auto;
+      min-width: 0;
+      height: 34px;
+    }
+
+    .menu-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      height: 34px;
+      padding: 7px;
+      border: 1px solid transparent;
+      border-radius: 0;
+      background: transparent;
+      color: var(--theme-text);
+      font: inherit;
+      font-size: 16px;
+      line-height: 18px;
+      letter-spacing: 0.02em;
+      text-align: center;
+      cursor: default;
+      user-select: none;
+      transition:
+        color 60ms linear,
+        background 60ms linear,
+        border-color 60ms linear;
+    }
+
+    .menu:hover > .menu-label,
+    .menu:focus-within > .menu-label {
+      border-top-color: var(--theme-edge-light);
+      border-left-color: var(--theme-edge-light);
+      border-right-color: var(--theme-edge-dark);
+      border-bottom-color: var(--theme-edge-dark);
+      background: var(--theme-surface-raised);
+      box-shadow:
+        inset 1px 1px 0 rgba(255, 43, 214, 0.18),
+        inset -1px -1px 0 rgba(9, 0, 15, 0.55);
+    }
+
+    .menu.is-open > .menu-label {
+      border-top-color: var(--theme-edge-deep);
+      border-left-color: var(--theme-edge-deep);
+      border-right-color: var(--theme-edge-light);
+      border-bottom-color: var(--theme-edge-light);
+      background: linear-gradient(
+        180deg,
+        var(--theme-surface-raised),
+        var(--theme-surface)
+      );
+      box-shadow:
+        inset 1px 1px 0 rgba(9, 0, 15, 0.9),
+        inset -1px -1px 0 rgba(157, 61, 255, 0.5);
+    }
+
+    .dropdown {
+      position: absolute;
+      z-index: 1001;
+      top: 100%;
+      left: 0;
+      display: block;
+      visibility: hidden;
+      width: max-content;
+      min-width: 270px;
+      max-width: calc(100vw - 8px);
+      max-height: none;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      list-style: none;
+      pointer-events: none;
+      opacity: 0;
+      background:
+        linear-gradient(180deg, rgba(48, 8, 68, 0.99), rgba(28, 2, 40, 0.99));
+      border-top: 2px solid var(--theme-edge-light);
+      border-left: 2px solid var(--theme-edge-light);
+      border-right: 2px solid var(--theme-edge-deep);
+      border-bottom: 2px solid var(--theme-edge-deep);
+      border-radius: 0;
+      box-shadow:
+        inset 1px 1px 0 rgba(255, 43, 214, 0.22),
+        inset -1px -1px 0 var(--theme-edge-deep),
+        4px 4px 0 rgba(9, 0, 15, 0.72),
+        9px 10px 22px rgba(9, 0, 15, 0.38);
+      transition:
+        visibility 0s linear 70ms,
+        opacity 70ms linear;
+    }
+
+    .menu:hover > .dropdown,
+    .menu:focus-within > .dropdown,
+    .menu.is-open > .dropdown {
+      visibility: visible;
+      pointer-events: auto;
+      opacity: 1;
+      transition-delay: 0s;
+    }
+
+    .dropdown a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 30px;
+      padding: 5px 9px;
+      border: 1px solid transparent;
+      border-radius: 0;
+      color: var(--theme-text);
+      font: inherit;
+      font-size: 15px;
+      line-height: 18px;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: default;
+      transition:
+        color 50ms linear,
+        background 50ms linear,
+        border-color 50ms linear;
+    }
+
+    .dropdown a:hover,
+    .dropdown a:focus {
+      outline: 0;
+      background: var(--theme-selection);
+      color: var(--theme-selection-text);
+      border-color: var(--theme-edge-bright);
+      box-shadow:
+        inset 1px 1px 0 rgba(255, 43, 214, 0.4),
+        inset -1px -1px 0 rgba(33, 0, 46, 0.35);
+    }
+
+    .dropdown a[aria-disabled="true"] {
+      pointer-events: none;
+      opacity: 0.42;
+    }
+
+    .shortcut {
+      margin-left: 30px;
+      opacity: 0.72;
+    }
+
+    .separator {
+      height: 2px;
+      margin: 2px 0;
+      border-top: 1px solid var(--theme-edge-dark);
+      border-bottom: 1px solid rgba(157, 61, 255, 0.45);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .menu-label,
+      .dropdown,
+      .dropdown a {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav aria-label="Application menu">
+    <ul class="menu-bar">
+      <li class="menu">
+        <button class="menu-label" type="button" aria-haspopup="true" aria-expanded="false">File</button>
+        <ul class="dropdown" role="menu">
+          <li><a href="#" role="menuitem">New <span class="shortcut">Ctrl+N</span></a></li>
+          <li><a href="#" role="menuitem">New Window <span class="shortcut">Ctrl+Shift+N</span></a></li>
+          <li><a href="#" role="menuitem">Open... <span class="shortcut">Ctrl+O</span></a></li>
+          <li><a href="#" role="menuitem">Open Recent</a></li>
+          <li><a href="#" role="menuitem">Close <span class="shortcut">Ctrl+W</span></a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">Save <span class="shortcut">Ctrl+S</span></a></li>
+          <li><a href="#" role="menuitem">Save-As...</a></li>
+          <li><a href="#" role="menuitem">Save All</a></li>
+          <li><a href="#" role="menuitem">Revert</a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">Import...</a></li>
+          <li><a href="#" role="menuitem">Export...</a></li>
+          <li><a href="#" role="menuitem">Properties</a></li>
+          <li><a href="#" role="menuitem">Page Setup...</a></li>
+          <li><a href="#" role="menuitem">Print Preview</a></li>
+          <li><a href="#" role="menuitem">Print... <span class="shortcut">Ctrl+P</span></a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">Exit <span class="shortcut">Alt+F4</span></a></li>
+        </ul>
+      </li>
+
+      <li class="menu">
+        <button class="menu-label" type="button" aria-haspopup="true" aria-expanded="false">Edit</button>
+        <ul class="dropdown" role="menu">
+          <li><a href="#" role="menuitem">Undo <span class="shortcut">Ctrl+Z</span></a></li>
+          <li><a href="#" role="menuitem">Redo <span class="shortcut">Ctrl+Y</span></a></li>
+          <li><a href="#" role="menuitem">Repeat</a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">Cut <span class="shortcut">Ctrl+X</span></a></li>
+          <li><a href="#" role="menuitem">Copy <span class="shortcut">Ctrl+C</span></a></li>
+          <li><a href="#" role="menuitem">Paste <span class="shortcut">Ctrl+V</span></a></li>
+          <li><a href="#" role="menuitem">Paste Special...</a></li>
+          <li><a href="#" role="menuitem">Delete <span class="shortcut">Del</span></a></li>
+          <li><a href="#" role="menuitem">Duplicate <span class="shortcut">Ctrl+D</span></a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">Select All <span class="shortcut">Ctrl+A</span></a></li>
+          <li><a href="#" role="menuitem">Deselect All</a></li>
+          <li><a href="#" role="menuitem">Invert Selection</a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">Find... <span class="shortcut">Ctrl+F</span></a></li>
+          <li><a href="#" role="menuitem">Find Next <span class="shortcut">F3</span></a></li>
+          <li><a href="#" role="menuitem">Replace... <span class="shortcut">Ctrl+H</span></a></li>
+          <li><a href="#" role="menuitem">Go To... <span class="shortcut">Ctrl+G</span></a></li>
+        </ul>
+      </li>
+
+      <li class="menu">
+        <button class="menu-label" type="button" aria-haspopup="true" aria-expanded="false">Settings</button>
+        <ul class="dropdown" role="menu">
+          <li><a href="#" role="menuitem">Preferences...</a></li>
+          <li><a href="#" role="menuitem">General...</a></li>
+          <li><a href="#" role="menuitem">Appearance...</a></li>
+          <li><a href="#" role="menuitem">Fonts...</a></li>
+          <li><a href="#" role="menuitem">Colors...</a></li>
+          <li><a href="#" role="menuitem">Language...</a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">Toolbar...</a></li>
+          <li><a href="#" role="menuitem">Status Bar...</a></li>
+          <li><a href="#" role="menuitem">Keyboard Shortcuts...</a></li>
+          <li><a href="#" role="menuitem">Mouse...</a></li>
+          <li><a href="#" role="menuitem">Sound...</a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">Network...</a></li>
+          <li><a href="#" role="menuitem">Privacy...</a></li>
+          <li><a href="#" role="menuitem">Security...</a></li>
+          <li><a href="#" role="menuitem">Updates...</a></li>
+          <li><a href="#" role="menuitem">Backup...</a></li>
+          <li><a href="#" role="menuitem">Restore Defaults...</a></li>
+        </ul>
+      </li>
+
+      <li class="menu">
+        <button class="menu-label" type="button" aria-haspopup="true" aria-expanded="false">Help</button>
+        <ul class="dropdown" role="menu">
+          <li><a href="#" role="menuitem">Help Topics <span class="shortcut">F1</span></a></li>
+          <li><a href="#" role="menuitem">Contents</a></li>
+          <li><a href="#" role="menuitem">Index</a></li>
+          <li><a href="#" role="menuitem">Search...</a></li>
+          <li><a href="#" role="menuitem">Keyboard Guide</a></li>
+          <li><a href="#" role="menuitem">Getting Started</a></li>
+          <li><a href="#" role="menuitem">Tips of the Day</a></li>
+          <li><a href="#" role="menuitem">Troubleshooting</a></li>
+          <li><a href="#" role="menuitem">Frequently Asked Questions</a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">Check for Updates...</a></li>
+          <li><a href="#" role="menuitem">Technical Support...</a></li>
+          <li><a href="#" role="menuitem">Send Feedback...</a></li>
+          <li><a href="#" role="menuitem">System Information...</a></li>
+          <li class="separator" role="separator"></li>
+          <li><a href="#" role="menuitem">License</a></li>
+          <li><a href="#" role="menuitem">Credits</a></li>
+          <li><a href="#" role="menuitem">About This Application...</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <script>
+    let menus = [];
+
+    function closeMenus(except = null) {
+      menus.forEach((menu) => {
+        if (menu === except) return;
+        menu.classList.remove("is-open");
+        menu.querySelector(".menu-label").setAttribute("aria-expanded", "false");
+      });
+    }
+
+    function slugify(value) {
+      return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, ".")
+        .replace(/^\.+|\.+$/g, "");
+    }
+
+    function sendAction(menuLabel, item) {
+      const itemLabel =
+        item.dataset.label ||
+        item.firstChild?.textContent?.trim() ||
+        item.textContent.trim();
+
+      window.parent.postMessage(
+        {
+          type: "os:control-bar:action",
+          action:
+            item.dataset.action ||
+            `${slugify(menuLabel)}.${slugify(itemLabel)}`,
+          menu: menuLabel,
+          label: itemLabel
+        },
+        "*"
+      );
+    }
+
+    function wireMenus() {
+      menus = [...document.querySelectorAll(".menu")];
+
+      menus.forEach((menu) => {
+        const label = menu.querySelector(".menu-label");
+        const menuLabel = label.textContent.trim();
+        const items = [...menu.querySelectorAll(".dropdown a")];
+
+        label.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const opening = !menu.classList.contains("is-open");
+          closeMenus(menu);
+          menu.classList.toggle("is-open", opening);
+          label.setAttribute("aria-expanded", String(opening));
+        });
+
+        label.addEventListener("keydown", (event) => {
+          if (
+            event.key === "ArrowDown" ||
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+            event.preventDefault();
+            closeMenus(menu);
+            menu.classList.add("is-open");
+            label.setAttribute("aria-expanded", "true");
+            items[0]?.focus();
+          }
+        });
+
+        items.forEach((item, index) => {
+          item.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (item.getAttribute("aria-disabled") === "true") return;
+
+            sendAction(menuLabel, item);
+            closeMenus();
+          });
+
+          item.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+              event.preventDefault();
+              const direction = event.key === "ArrowDown" ? 1 : -1;
+              items[(index + direction + items.length) % items.length].focus();
+            }
+          });
+        });
+      });
+    }
+
+    function renderMenus(menuDefinitions) {
+      const menuBar = document.querySelector(".menu-bar");
+      const fragment = document.createDocumentFragment();
+
+      menuDefinitions.forEach((menuDefinition) => {
+        if (!menuDefinition || typeof menuDefinition.label !== "string") return;
+
+        const menu = document.createElement("li");
+        const label = document.createElement("button");
+        const dropdown = document.createElement("ul");
+
+        menu.className = "menu";
+        label.className = "menu-label";
+        label.type = "button";
+        label.setAttribute("aria-haspopup", "true");
+        label.setAttribute("aria-expanded", "false");
+        label.textContent = menuDefinition.label;
+        dropdown.className = "dropdown";
+        dropdown.setAttribute("role", "menu");
+
+        const items = Array.isArray(menuDefinition.items)
+          ? menuDefinition.items
+          : [];
+
+        items.forEach((itemDefinition) => {
+          if (!itemDefinition) return;
+
+          const item = document.createElement("li");
+
+          if (itemDefinition.separator) {
+            item.className = "separator";
+            item.setAttribute("role", "separator");
+            dropdown.append(item);
+            return;
+          }
+
+          if (typeof itemDefinition.label !== "string") return;
+
+          const link = document.createElement("a");
+          link.href = "#";
+          link.setAttribute("role", "menuitem");
+          link.dataset.label = itemDefinition.label;
+          link.dataset.action =
+            itemDefinition.action ||
+            `${slugify(menuDefinition.label)}.${slugify(itemDefinition.label)}`;
+          link.append(document.createTextNode(itemDefinition.label));
+
+          if (typeof itemDefinition.shortcut === "string") {
+            const shortcut = document.createElement("span");
+            shortcut.className = "shortcut";
+            shortcut.textContent = itemDefinition.shortcut;
+            link.append(shortcut);
+          }
+
+          if (itemDefinition.disabled) {
+            link.setAttribute("aria-disabled", "true");
+          }
+
+          item.append(link);
+          dropdown.append(item);
+        });
+
+        menu.append(label, dropdown);
+        fragment.append(menu);
+      });
+
+      closeMenus();
+      menuBar.replaceChildren(fragment);
+      wireMenus();
+    }
+
+    window.controlBar = Object.freeze({
+      setMenus: renderMenus,
+      closeMenus
+    });
+
+    wireMenus();
+
+    window.addEventListener("message", (event) => {
+      const message = event.data;
+      if (
+        event.source === window.parent &&
+        message?.type === "os:control-bar:set-menus" &&
+        Array.isArray(message.menus)
+      ) {
+        renderMenus(message.menus);
+      }
+    });
+
+    document.addEventListener("click", () => closeMenus());
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        const openMenu = document.querySelector(".menu.is-open");
+        closeMenus();
+        openMenu?.querySelector(".menu-label").focus();
+      }
+    });
+  </script>
+</body>
+</html>
