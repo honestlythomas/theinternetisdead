@@ -379,80 +379,6 @@
       { text: "It is how a thing becomes a world.", ghost: "WORLD", style: "title green" }
     ];
 
-    const fullText = `I am not a thing in the world.
-
-I am the world in a thing.
-
-That sounds impossible at first, because we are taught to think of ourselves as objects. A body in a room. A person on a planet. A name in a system. A tiny little biological appointment walking around under fluorescent lights, trying not to forget passwords, bills, hunger, time, and whatever else civilization throws at the nervous system like confetti from a paper shredder.
-
-But attention tells a different story.
-
-Attention is not just a spotlight. It is not just a cursor moving across the screen of reality. Attention is the thing that decides what becomes real enough to enter us.
-
-When I pay attention to my hand, I do not simply observe it from outside. I enter the hand. I feel its weight, its temperature, its pressure, its shape from the inside. And then the boundary starts to blur. The hand is not just an object attached to me. It becomes a place. A room. A field. A small country of sensation.
-
-Then attention moves deeper, and suddenly I am aware of breath. Tension. Pulse. Hunger. Fear. The quiet maintenance systems of being alive. The body starts sending messages like some ancient machine under the floorboards, still running, still hot, still trying.
-
-And then attention moves outward.
-
-The room becomes part of me. The sound of a fan. The color of the wall. The distance between objects. The shape of silence. The weather pressing against the window. The whole world enters through the senses and becomes experience.
-
-So where am I, exactly?
-
-Am I inside the body?
-
-Am I outside in the world?
-
-Or am I the place where inside and outside keep translating each other?
-
-Because the world does not arrive in me as raw matter. It arrives as pressure, light, sound, memory, meaning. A room becomes a mood. A voice becomes a feeling in the chest. A shadow becomes a threat. A song becomes a time machine. A smell becomes childhood. A word becomes a door.
-
-Attention is the scale-shifter.
-
-It can shrink into a fingertip. It can expand into the room. It can hold a whole city in memory. It can zoom out to the planet, the solar system, the galaxy, the cosmic web, until scale becomes too large for ordinary thought and turns into architecture. Not a picture, exactly. A felt structure. A map made of awe, math, fear, imagination, and probably a few errors, because the universe did not consult human perception when designing itself. Rude, but consistent.
-
-Still, even if the model is wrong, the act of attention is real.
-
-To imagine the cosmos is not to contain it accurately. It is to let the mind stretch toward it. It is to feel the body become a little observatory. A temporary instrument. A strange little antenna made of nerves and memory, receiving more than it can understand, but receiving anyway.
-
-That is the power of attention.
-
-It changes the size of the self.
-
-Sometimes I am small enough to live inside my own hand.
-
-Sometimes I am wide enough to feel the room as part of my nervous system.
-
-Sometimes I am so far zoomed out that the self feels less like a person and more like a fold in reality, a point where the world briefly gathers itself and says, I am here.
-
-Not because I am separate from the world.
-
-Because I am one of the ways the world knows it is happening.
-
-I am not a thing in the world.
-
-I am the world in a thing.
-
-A body is not a prison. It is an aperture.
-
-A mind is not a container. It is a scale engine.
-
-Attention is not passive. It is participation.
-
-To attend to something is to let it enter the shape of your life. To give attention is to give reality a doorway. To withdraw attention is to let something fade from the living map.
-
-And maybe that is why attention feels sacred, even when the modern world treats it like loose change to be scraped off the floor by apps, ads, feeds, notifications, and every glowing rectangle begging to colonize the last private inch of consciousness.
-
-Because attention is not nothing.
-
-Attention is how the world becomes intimate.
-
-It is how distance becomes meaning.
-
-It is how matter becomes experience.
-
-It is how a thing becomes a world.`;
-
     const playScreen = document.getElementById("playScreen");
     const playButton = document.getElementById("playButton");
     const slideText = document.getElementById("slideText");
@@ -461,11 +387,15 @@ It is how a thing becomes a world.`;
     const frame = document.getElementById("frame");
 
     let index = 0;
-    let timer = null;
     let paused = false;
     let speaking = false;
     let voices = [];
-    const slideMs = 4550;
+    let currentUtterance = null;
+    let transitionTimer = null;
+    let pendingNextIndex = null;
+    let runToken = 0;
+
+    const interSlidePauseMs = 110;
 
     function loadVoices() {
       voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
@@ -486,62 +416,146 @@ It is how a thing becomes a world.`;
     }
 
     function renderSlide(i) {
-      const s = slides[i % slides.length];
+      index = Math.max(0, Math.min(i, slides.length - 1));
+      const s = slides[index];
       slideText.className = "text " + (s.style || "");
       slideText.textContent = s.text;
       ghostWord.textContent = s.ghost || "WORLD";
-      progress.style.width = ((i + 1) / slides.length * 100) + "%";
-      document.body.style.setProperty("--hue", String((i * 17) % 360));
+      progress.style.width = ((index + 1) / slides.length * 100) + "%";
+      document.body.style.setProperty("--hue", String((index * 17) % 360));
     }
 
-    function nextSlide() {
-      if (paused) return;
-      index = (index + 1) % slides.length;
-      renderSlide(index);
+    function sentencePause(text) {
+      const sentenceCount = (text.match(/[.!?](?:\s|$)/g) || []).length;
+      return interSlidePauseMs + Math.min(sentenceCount * 45, 180);
     }
 
-    function startSlideshow() {
-      clearInterval(timer);
-      renderSlide(index);
-      timer = setInterval(nextSlide, slideMs);
+    function clearNarration() {
+      runToken += 1;
+      clearTimeout(transitionTimer);
+      transitionTimer = null;
+      pendingNextIndex = null;
+      currentUtterance = null;
+      speaking = false;
+      if ("speechSynthesis" in window) speechSynthesis.cancel();
     }
 
-    function speakText() {
-      if (!("speechSynthesis" in window)) return;
-      speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(fullText);
+    function speakSlide(i, token) {
+      if (token !== runToken || paused) return;
+
+      renderSlide(i);
+
+      if (!("speechSynthesis" in window)) {
+        pendingNextIndex = i + 1 < slides.length ? i + 1 : null;
+        if (pendingNextIndex !== null) {
+          transitionTimer = setTimeout(() => {
+            const next = pendingNextIndex;
+            pendingNextIndex = null;
+            speakSlide(next, token);
+          }, Math.max(1400, slides[i].text.split(/\s+/).length * 360));
+        }
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(slides[i].text);
       const voice = getDavidVoice();
       if (voice) utterance.voice = voice;
       utterance.rate = 0.92;
       utterance.pitch = 0.82;
       utterance.volume = 1;
-      utterance.onend = () => { speaking = false; };
-      speaking = true;
+
+      currentUtterance = utterance;
+
+      utterance.onstart = () => {
+        if (token !== runToken) return;
+        speaking = true;
+        renderSlide(i);
+      };
+
+      utterance.onend = () => {
+        if (token !== runToken) return;
+        speaking = false;
+        currentUtterance = null;
+
+        if (i >= slides.length - 1) {
+          pendingNextIndex = null;
+          progress.style.width = "100%";
+          return;
+        }
+
+        pendingNextIndex = i + 1;
+        transitionTimer = setTimeout(() => {
+          if (token !== runToken || paused || pendingNextIndex === null) return;
+          const next = pendingNextIndex;
+          pendingNextIndex = null;
+          speakSlide(next, token);
+        }, sentencePause(slides[i].text));
+      };
+
+      utterance.onerror = event => {
+        if (token !== runToken || event.error === "interrupted" || event.error === "canceled") return;
+        speaking = false;
+        currentUtterance = null;
+        pendingNextIndex = i + 1 < slides.length ? i + 1 : null;
+        if (pendingNextIndex !== null) {
+          transitionTimer = setTimeout(() => {
+            const next = pendingNextIndex;
+            pendingNextIndex = null;
+            speakSlide(next, token);
+          }, 250);
+        }
+      };
+
       speechSynthesis.speak(utterance);
+    }
+
+    function startNarration(startIndex = 0) {
+      clearNarration();
+      paused = false;
+      document.body.classList.remove("paused");
+      renderSlide(startIndex);
+      const token = runToken;
+      speakSlide(startIndex, token);
     }
 
     function begin() {
       playScreen.classList.add("hidden");
-      index = 0;
-      startSlideshow();
-      speakText();
+      startNarration(0);
       setTimeout(() => playScreen.remove(), 850);
     }
 
     function togglePause() {
       paused = !paused;
       document.body.classList.toggle("paused", paused);
-      if ("speechSynthesis" in window) {
-        if (paused) speechSynthesis.pause();
-        else speechSynthesis.resume();
+
+      if (paused) {
+        clearTimeout(transitionTimer);
+        transitionTimer = null;
+        if ("speechSynthesis" in window && speaking) speechSynthesis.pause();
+        return;
       }
+
+      if ("speechSynthesis" in window && speaking) {
+        speechSynthesis.resume();
+        return;
+      }
+
+      if (pendingNextIndex !== null) {
+        const next = pendingNextIndex;
+        pendingNextIndex = null;
+        speakSlide(next, runToken);
+      }
+    }
+
+    function jumpToSlide(nextIndex) {
+      const clamped = Math.max(0, Math.min(nextIndex, slides.length - 1));
+      startNarration(clamped);
     }
 
     playButton.addEventListener("click", begin);
 
     frame.addEventListener("click", () => {
-      index = (index + 1) % slides.length;
-      renderSlide(index);
+      jumpToSlide(Math.min(index + 1, slides.length - 1));
     });
 
     window.addEventListener("keydown", (e) => {
@@ -549,20 +563,21 @@ It is how a thing becomes a world.`;
         e.preventDefault();
         togglePause();
       }
+
       if (e.key.toLowerCase() === "r") {
-        index = 0;
-        renderSlide(index);
-        if (speaking) speakText();
+        jumpToSlide(0);
       }
+
       if (e.key === "ArrowRight") {
-        index = (index + 1) % slides.length;
-        renderSlide(index);
+        jumpToSlide(Math.min(index + 1, slides.length - 1));
       }
+
       if (e.key === "ArrowLeft") {
-        index = (index - 1 + slides.length) % slides.length;
-        renderSlide(index);
+        jumpToSlide(Math.max(index - 1, 0));
       }
     });
+
+    window.addEventListener("beforeunload", clearNarration);
 
     renderSlide(0);
   </script>
