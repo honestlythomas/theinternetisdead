@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script src="/dead/js/shell-route.js"></script><meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <meta name="description" content="Dead David TTS is a text-to-speech browser extension with selection controls, voice options, and live word highlighting.">
+  <title>Dead David TTS browser extension</title>
+  <style>
+    html {
+      color-scheme: dark;
+      background: #000;
+      color: lime;
+      font: 16px/1.55 "Courier New", Courier, monospace;
+    }
+
+    body {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    a {
+      color: lime;
+    }
+
+    h1,
+    h2 {
+      line-height: 1.2;
+    }
+
+    h1 {
+      margin: 18px 0 8px;
+      font-size: clamp(28px, 6vw, 48px);
+    }
+
+    h2 {
+      margin: 34px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid darkgreen;
+      font-size: 21px;
+    }
+
+    p,
+    li {
+      max-width: 76ch;
+    }
+
+    .breadcrumb {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .version {
+      margin: 0 0 24px;
+      color: #9f9;
+    }
+
+    .download {
+      display: inline-block;
+      margin: 8px 0 12px;
+      padding: 12px 16px;
+      border: 1px solid lime;
+      background: #001600;
+      color: lime;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 4px 4px 0 darkgreen;
+    }
+
+    .download:hover,
+    .download:focus-visible {
+      background: lime;
+      color: #000;
+    }
+
+    .notice {
+      padding: 16px;
+      border: 1px solid darkgreen;
+      background: #001000;
+    }
+
+    code {
+      overflow-wrap: anywhere;
+      color: #c8ffc8;
+    }
+
+    ol,
+    ul {
+      padding-left: 24px;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 12px;
+      border-top: 1px solid darkgreen;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <p class="breadcrumb"><a href="/dead/downloads/">/dead/downloads/</a>dead-david-tss/</p>
+
+  <main>
+    <h1>Dead David TTS</h1>
+    <p class="version">Chromium/Edge extension · version 1.1.6</p>
+
+    <p>Dead David TTS reads selected webpage text aloud. It prefers the Microsoft David voice when that voice is installed, then falls back to the closest available voice supplied by your browser or operating system.</p>
+
+    <a class="download" href="/dead/downloads/dead-david-tss.zip" download>Download dead-david-tss.zip</a>
+    <p><small>ZIP size: 13 KB · SHA-256: <code>7b8ca5f41c85d2bb045177694625417b1e6ecbde069d05593a3abc3209383ad3</code></small></p>
+
+    <h2>What it does</h2>
+    <ul>
+      <li>Adds a floating play/stop control when you select text on a webpage.</li>
+      <li>Reads the current selection using the browser's built-in Web Speech API.</li>
+      <li>Prefers Microsoft David but lets you choose any available speech voice.</li>
+      <li>Provides adjustable speech rate and pitch.</li>
+      <li>Can highlight the current word while speech is playing.</li>
+      <li>Can apply optional lime-green and dark-purple selection colors.</li>
+      <li>Lets you drag the reader control and remembers its position.</li>
+      <li>Supports Shift+Space to read, pause, or resume selected text.</li>
+    </ul>
+
+    <h2>Install it</h2>
+    <ol>
+      <li>Download the ZIP and extract it.</li>
+      <li>Open <code>edge://extensions</code> or <code>chrome://extensions</code>.</li>
+      <li>Enable <strong>Developer mode</strong>.</li>
+      <li>Choose <strong>Load unpacked</strong>.</li>
+      <li>Select the extracted <code>dead-david-tts</code> folder.</li>
+      <li>Refresh any webpages that were already open.</li>
+    </ol>
+    <p>The extension cannot run on protected browser pages such as extension stores, settings pages, or some built-in PDF viewers.</p>
+
+    <h2>Privacy notice</h2>
+    <div class="notice">
+      <p><strong>Effective date:</strong> July 30, 2026</p>
+      <p>Dead David TTS does not contain analytics, advertising, tracking pixels, user accounts, or code that sends your selected text or settings to a server operated by theinternetisdead.</p>
+
+      <p><strong>Page access:</strong> The extension's content script is configured for all URLs and all frames so it can detect selected text and display reader controls on the pages where you use it. This is broad access. The extension reads the text you select and interacts with the visible page only to provide its reading, highlighting, and selection-control features.</p>
+
+      <p><strong>Speech processing:</strong> Selected text is passed to your browser's <code>speechSynthesis</code> implementation. Voice availability and whether speech is processed locally or by a service depend on the browser, operating system, and voice you choose. The extension itself does not transmit the text over the network.</p>
+
+      <p><strong>Local storage:</strong> Reader enabled/disabled state, voice choice, rate, pitch, highlighting preference, custom selection-color preference, and the floating control's position are saved with <code>chrome.storage.local</code> on your device. The extension does not request synchronized storage.</p>
+
+      <p><strong>Permissions:</strong> The manifest requests <code>activeTab</code> to contact the active page when you use popup controls and <code>storage</code> to remember local preferences. It does not request browsing history, cookies, downloads, location, camera, microphone, identity, or payment permissions.</p>
+
+      <p><strong>Retention and deletion:</strong> Local preferences remain until you change them, clear the extension's site data, or remove the extension. Uninstalling the extension removes its locally stored extension data according to your browser's behavior.</p>
+
+      <p><strong>Your choice:</strong> You can disable the reader from its popup, restrict its site access in your browser's extension settings, or uninstall it at any time. Avoid granting page access on sensitive sites if you are not comfortable with a text-reading extension running there.</p>
+    </div>
+
+    <h2>Package contents</h2>
+    <p>The download includes the Manifest V3 manifest, popup interface, page reader, icons, and README. The source is plain HTML, CSS, and JavaScript and can be inspected before loading it.</p>
+  </main>
+
+  <footer>
+    <a href="/dead/downloads/">Back to /dead/downloads/</a>
+  </footer>
+</body>
+</html>

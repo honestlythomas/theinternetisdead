@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script src="/dead/js/shell-route.js"></script><meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <title>/dead/downloads/</title>
+  <style>
+    html {
+      color-scheme: dark;
+      background: #000;
+      color: lime;
+      font: 16px/1.4 "Courier New", Courier, monospace;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: 22px;
+    }
+
+    ul {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      position: relative;
+      width: max-content;
+    }
+
+    a {
+      display: inline-block;
+      color: lime;
+      background: #000;
+      border: 1px solid darkgreen;
+      padding: 8px 10px;
+      font-weight: 700;
+    }
+
+    .thumb {
+      position: fixed;
+      top: 96px;
+      right: 24px;
+      z-index: 10;
+      display: none;
+      width: min(52vw, 960px);
+      aspect-ratio: 16 / 9;
+      border: 2px solid lime;
+      background: #000;
+      object-fit: cover;
+      pointer-events: none;
+      box-shadow: 0 0 0 4px #000, 0 0 32px rgba(0, 255, 0, 0.35);
+    }
+
+    li:hover .thumb,
+    li:focus-within .thumb {
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .thumb {
+        top: auto;
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>/dead/downloads/</h1>
+  <ul>
+    <li><a href="/dead/downloads/dead-david-tss/">dead-david-tss/</a></li>
+    <li><a href="/dead/downloads/dead-david-tss.zip" download>dead-david-tss.zip</a></li>
+  </ul>
+</body>
+</html>
