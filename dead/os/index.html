@@ -236,7 +236,7 @@
 <body>
   <iframe
     class="boot-screen-frame"
-    src="components/boot-screen.html"
+    data-src="components/boot-screen.html"
     title="System boot screen"
     scrolling="no"
   ></iframe>
@@ -434,6 +434,9 @@
     function revealOS() {
       if (nicknameScreenIsExiting) return;
       nicknameScreenIsExiting = true;
+
+      if (!nicknameScreenFrame.isConnected) return;
+
       nicknameScreenFrame.classList.add("is-exiting");
       nicknameScreenFrame.addEventListener("animationend", () => {
         nicknameScreenFrame.remove();
@@ -556,6 +559,26 @@
         window.setTaskbarPosition(message.position);
       }
     });
+
+    function getSavedNickname() {
+      try {
+        return normalizeNickname(localStorage.getItem(deadOSnickname));
+      } catch (error) {
+        console.warn("deadOS nickname could not be loaded.", error);
+        return "";
+      }
+    }
+
+    const savedNickname = getSavedNickname();
+
+    if (savedNickname) {
+      bootScreenIsGone = true;
+      bootScreenFrame.remove();
+      nicknameScreenFrame.remove();
+      mountOS(savedNickname);
+    } else {
+      bootScreenFrame.src = bootScreenFrame.dataset.src;
+    }
 
     window.osShell = Object.freeze({
       get nickname() {
