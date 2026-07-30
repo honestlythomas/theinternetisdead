@@ -33,6 +33,9 @@
 
     li {
       position: relative;
+      display: flex;
+      gap: 8px;
+      align-items: center;
       width: max-content;
     }
 
@@ -43,6 +46,11 @@
       border: 1px solid darkgreen;
       padding: 8px 10px;
       font-weight: 700;
+    }
+
+    a.download-link {
+      color: #ff3b3b;
+      border-color: #8b0000;
     }
 
     .thumb {
@@ -79,8 +87,10 @@
 <body>
   <h1>/dead/downloads/</h1>
   <ul>
-    <li><a href="/dead/downloads/dead-david-tss/">dead-david-tss/</a></li>
-    <li><a href="/dead/downloads/dead-david-tss.zip" download>dead-david-tss.zip</a></li>
+    <li>
+      <a href="/dead/downloads/dead-david-tss/">dead-david-tss/</a>
+      <a class="download-link" href="/dead/downloads/dead-david-tss.zip" download>dead-david-tss.zip</a>
+    </li>
   </ul>
 </body>
 </html>
