@@ -1,10 +1,123 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <script src="/dead/js/shell-route.js"></script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>/dead/videos/</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A self-contained visual archive of Honestly Thomas videos and Shorts.">
+  <title>Honestly Thomas // Dead Internet Archive</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="archive-data.js" defer></script>
+  <script src="app.js" defer></script>
 </head>
-<body></body>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="shell">
+    <header class="masthead">
+      <div class="axis-label axis-label--top" aria-hidden="true">Y:+01.000</div>
+      <div>
+        <p class="eyebrow">LOCAL_DB :: HT_MEDIA_INDEX</p>
+        <h1>Honestly Thomas <span>// archive</span></h1>
+        <p class="lede">A dead-internet visual wiki indexed from the local signal graveyard.</p>
+      </div>
+      <div class="system-readout" aria-label="Archive status">
+        <span><i class="status-dot"></i> STATIC LINK</span>
+        <span id="generatedAt">BUILD // —</span>
+        <span>NET_REQ // 0</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="database-strip" aria-label="Archive totals">
+        <div>
+          <span class="metric-label">ALL_RECORDS</span>
+          <strong id="totalCount">000</strong>
+        </div>
+        <div>
+          <span class="metric-label">VIDEOS</span>
+          <strong id="videoCount">000</strong>
+        </div>
+        <div>
+          <span class="metric-label">SHORTS</span>
+          <strong id="shortCount">000</strong>
+        </div>
+        <div class="database-strip__visible">
+          <span class="metric-label">VISIBLE_QUERY</span>
+          <strong id="visibleCount">000</strong>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Archive controls">
+        <div class="search-field">
+          <label for="searchInput">SEARCH_DATABASE</label>
+          <div class="search-input-wrap">
+            <span aria-hidden="true">&gt;_</span>
+            <input id="searchInput" type="search" autocomplete="off"
+              placeholder="title, ID, metadata…" aria-describedby="searchHint">
+          </div>
+          <small id="searchHint">FULL-TEXT // LIVE_INDEX</small>
+        </div>
+
+        <fieldset class="filter-group">
+          <legend>CONTENT_SET</legend>
+          <div class="segmented">
+            <button type="button" class="filter-button is-active" data-filter="All" aria-pressed="true">ALL</button>
+            <button type="button" class="filter-button" data-filter="Videos" aria-pressed="false">VIDEOS</button>
+            <button type="button" class="filter-button" data-filter="Shorts" aria-pressed="false">SHORTS</button>
+          </div>
+        </fieldset>
+
+        <div class="sort-group">
+          <label for="sortSelect">SORT_VECTOR</label>
+          <div class="sort-row">
+            <select id="sortSelect">
+              <option value="uploadDate">Upload date</option>
+              <option value="title">Title</option>
+              <option value="durationSeconds">Duration</option>
+              <option value="viewCount">View count</option>
+            </select>
+            <button type="button" id="directionButton" class="direction-button"
+              data-direction="desc" aria-label="Sort descending">
+              <span aria-hidden="true">↓</span> DESC
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div class="query-status" role="status" aria-live="polite">
+        <span id="queryReadout">QUERY // READY</span>
+        <span id="resultReadout">RETURNING 000 / 000</span>
+      </div>
+
+      <section id="archiveGrid" class="archive-grid" aria-label="Archive items"></section>
+
+      <section id="emptyState" class="empty-state" hidden>
+        <span aria-hidden="true">[ NULL_SET ]</span>
+        <h2>No records found</h2>
+        <p>Adjust the query or content set to recover the signal.</p>
+        <button type="button" id="resetButton">RESET_QUERY</button>
+      </section>
+    </main>
+
+    <footer>
+      <span>X:000.000 → X:∞</span>
+      <span>OFFLINE ARCHIVE // NO TRACKERS // NO EXTERNAL ASSETS</span>
+    </footer>
+  </div>
+
+  <dialog id="detailDialog" aria-labelledby="detailTitle">
+    <div class="dialog-frame">
+      <div class="dialog-toolbar">
+        <span id="dialogCoordinate">RECORD // —</span>
+        <button type="button" id="closeDialog" class="close-button" aria-label="Close details">[ ESC ] CLOSE</button>
+      </div>
+      <div id="detailContent"></div>
+    </div>
+  </dialog>
+
+  <noscript>
+    <div class="noscript">JavaScript is required to query this local archive.</div>
+  </noscript>
+</body>
 </html>

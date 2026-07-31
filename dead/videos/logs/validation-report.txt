@@ -1,0 +1,30 @@
+HONESTLY THOMAS // OFFLINE SITE VALIDATION
+
+[PASS] Required site files exist
+[PASS] Canonical data contains an item list
+[PASS] Displayed total is 386 // 386
+[PASS] Video total is 297 // 297
+[PASS] Short total is 89 // 89
+[PASS] Data stats match records // {'videos': 297, 'shorts': 89, 'total': 386}
+[PASS] Every item has a valid ISO upload date // []
+[PASS] All displayed identities are unique // 0 duplicate occurrences
+[PASS] Every ID is well formed
+[PASS] All thumbnail paths are safe and relative // []
+[PASS] Every item has a readable local JPEG // []
+[PASS] All titles round-trip from source as UTF-8 // []
+[PASS] No external HTML assets // []
+[PASS] No external CSS assets // []
+[PASS] Offline data transport is linked
+[PASS] Offline transport exactly matches canonical JSON
+[PASS] Application JavaScript parses
+[PASS] All required controls are present // []
+[PASS] Full-text index finds every ID and a title query // title query results=1
+[PASS] Classification filters return exact totals
+[PASS] All four sort vectors work ascending and descending // []
+[PASS] Every item has detail-view data and a valid source URL
+[PASS] Source archive fingerprint remains unchanged // expected={'file_count': 783, 'fingerprint_sha256': '4910790aabe807d70b0ba4b7b57826dc6f3c5ea931051801627301f219e0cf5c', 'total_bytes': 85180246} current={'file_count': 783, 'total_bytes': 85180246, 'fingerprint_sha256': '4910790aabe807d70b0ba4b7b57826dc6f3c5ea931051801627301f219e0cf5c'}
+
+Checks passed: 23
+Checks failed: 0
+Unicode titles detected and preserved: 59
+Browser note: direct file:// navigation was blocked by the in-app browser security policy; offline behavior was validated structurally against the generated transport and parsed application code.
