@@ -1,6 +1,6 @@
 {
   "title": "Channel Feed",
-  "generated_at": "2026-08-05T02:46:34.360006Z",
+  "generated_at": "2026-08-06T02:49:51.872540Z",
   "channels": [
     {
       "url": "https://www.youtube.com/@Honestly_Thomas/videos",
@@ -21,12 +21,220 @@
   ],
   "entries": [
     {
+      "id": "lpYHMyW7vVk",
+      "url": "https://www.youtube.com/watch?v=lpYHMyW7vVk",
+      "title": "These People Make Me Sick",
+      "description": "This video is about the people and institutions who claim to care while repeatedly shifting responsibility back onto the person asking for help.\n\nI am exhausted from having my needs treated as character flaws, my emotional reactions used to erase the conditions causing them, and every request for support answered with another referral, intake form, waiting list, or demand that I coordinate my own rescue.\n\nThis is not a threat, and it is not an attack on care itself. It is a record of what happens when \u201csupport\u201d becomes surveillance, containment, blame-shifting, and endless administrative labour. Good intentions do not erase neglect. Shelter is not the same as a life. Dependency should never be used to silence someone.\n\nI am still here. I still have a voice. I am done allowing politeness, policy, and professional distance to disguise real harm.\n\n#InstitutionalNeglect #DisabilityRights #EmotionalAbuse #MentalHealthAdvocacy #CoerciveCare #Accountability #HonestlyThomas",
+      "duration": 353,
+      "view_count": 4,
+      "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20260805",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/lpYHMyW7vVk/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/lpYHMyW7vVk/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
       "id": "Yv1k2PfS4aY",
       "url": "https://www.youtube.com/watch?v=Yv1k2PfS4aY",
       "title": "Can You Forgive Me?",
       "description": "The first 54 seconds of \u201cForgive Me\u201d by Infected Mushroom, set against an uncanny descent into a recursive corridor of neon infinity-mirror hallucinations.\n\nA psychedelic tunnel folding inward forever, where rainbow geometry, digital darkness, and tiny signs of something watching collide somewhere beyond the edge of perception.\n\nNo destination. No exit. Just the algorithm staring back.\n\n#InfectedMushroom #ForgiveMe #PsychedelicArt #GlitchArt #InfinityMirror #NeonArt #VisualTrip #DigitalHallucination #TrippyVisuals #YouTubeShorts",
       "duration": 0,
-      "view_count": 68,
+      "view_count": 67,
       "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -234,7 +442,7 @@
       "title": "Who I Am (Honestly) by Thomas Harrison",
       "description": "This is an attempt to describe who I am in my own words, outside the diagnoses, records, assumptions, and institutional categories that have so often spoken over me.\n\nI am Thomas Harrison: an interdisciplinary artist, rapper, video essayist, visual thinker, cultural critic, digital archivist, and lifelong learner. My work moves through music, mythology, psychology, internet culture, memory, humour, technology, symbolism, and lived experience because I do not experience those things as separate subjects.\n\nI have spent much of my life being evaluated, interpreted, corrected, managed, and redirected. What I have needed is something different: to be received as a full human being, to have somewhere meaningful for my abilities to contribute, and to be supported in building a life rather than endlessly assessed from the outside.\n\nThis video is about the knowledge, art, anger, tenderness, contradictions, and symbolic perception I carry. It is about why creativity is not proof that I can survive without support. It is about wanting placement, purpose, reciprocity, belonging, and a life capable of receiving what I have spent years creating in isolation.\n\nI am not a vacant space awaiting instruction.\n\nI am a human being carrying a body of knowledge, art, memory, and perception.\n\nI need a life capable of receiving it.\n\nWritten and presented by Thomas Harrison.\n\n#WhoIAm #HonestlyThomas #InterdisciplinaryArtist #NeurodivergentArtist #ArtistResearcher #VideoEssay #LivedExperience #SelfAdvocacy #CreativeIdentity #JungianSemiotics",
       "duration": 699,
-      "view_count": 18,
+      "view_count": 24,
       "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -858,7 +1066,7 @@
       "title": "How RNGsus Doomed Humanity (SHORT VERSION)",
       "description": "RNGsus returns for the compressed version of the digital apocalypse.\n\nFrom early internet chaos to algorithmic collapse, divine indifference, and the cloud catching fire, this is How RNGsus Doomed Humanity at maximum velocity.\n\nWatch the full meme story here:\n\u00a0\u00a0\u00a0\u2022\u00a0How\u00a0RNGsus\u00a0Doomed\u00a0Humanity\u00a0(FULL\u00a0MEME\u00a0STORY)\u00a0\u00a0\n\n#RNGsus #MemeStory #InternetCulture #DigitalDecay #YouTubeShorts #brainrot",
       "duration": 0,
-      "view_count": 6,
+      "view_count": 5,
       "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1066,7 +1274,7 @@
       "title": "Political Discourse in 2026 (FART SONG)",
       "description": "Peter Griffin and Michael Moore engage in the only political debate format honest enough for 2026: a fart battle.\n\nNo policy. No substance. No listening. Just two sides making increasingly loud noises while everyone pretends something meaningful is happening.\n\nPolitical discourse in 2026 is not a conversation. It is a compressed, purple-green cacophony of farts uploaded from the bottom of a lake.\n\n#PoliticalDiscourse #Satire #FamilyGuy #MichaelMoore #YouTubeShorts #Politics2026 #Brainrot",
       "duration": 0,
-      "view_count": 665,
+      "view_count": 666,
       "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2730,7 +2938,7 @@
       "title": "Respect to Rhymesayers",
       "description": "Dilated Peoples - Show Me The Way short. For the days when you don't feel like waking up because no one is around or gives a f*** about you.",
       "duration": 0,
-      "view_count": 79,
+      "view_count": 80,
       "channel": "\ud83c\udf41\ud835\ude77\ud835\ude98\ud835\ude97\ud835\ude8e\ud835\ude9c\ud835\ude9d\ud835\ude95y_\ud835\ude83\ud835\ude91\ud835\ude98\ud835\ude96\ud835\ude8a\ud835\ude9c\ud83d\udc7d(\ud835\ude83\ud835\ude8e\ud835\ude94\ud835\ude9d\ud835\ude92\ud835\ude9d\ud835\ude8e)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -6890,7 +7098,7 @@
       "title": "Is the grizzly reaper mowing?",
       "description": "Yes and this is what you get.",
       "duration": 65,
-      "view_count": 164,
+      "view_count": 166,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -38175,7 +38383,7 @@
       "title": "\ud83d\udc38 OSRS Alt Account Trap Dance Phonk Goblin Running Man",
       "description": "",
       "duration": 24,
-      "view_count": 5,
+      "view_count": 7,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -42959,7 +43167,7 @@
       "title": "The MOST Oldschool RuneScape Video Ever OSRS on CRT TV",
       "description": "Old School RuneScape on a CRT TV because apparently nostalgia wasn\u2019t blurry, heavy, and cursed enough already.\n\nThis is the most oldschool RuneScape video I could physically assemble without mailing myself back to 2007, eating pizza rolls, and getting scammed outside Varrock West Bank. OSRS already lives in a weird pocket dimension of memory, but running it through a CRT makes it feel like the game is being broadcast from a basement server powered by childhood and dust.\n\nA tiny digital relic.\nA medieval point-and-click ghost.\nA monitor heavy enough to win a boss fight.\n\nMore haunted internet debris:\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #OldSchoolRuneScape #OSRS #RuneScape #RetroGaming #CRTV #InternetNostalgia #OldInternet #GamingNostalgia",
       "duration": 129,
-      "view_count": 28,
+      "view_count": 29,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -56063,7 +56271,7 @@
       "title": "Minecraft Physics Mod Ocean Waves Shader Mod Showcase",
       "description": "Minecraft water has officially escaped the bathtub.\n\nThis physics mod adds actual choppy ocean waves, which makes the whole game feel less like a block world and more like a very confused nature documentary. I\u2019m just cruising around watching the ocean behave like it got updated by Poseidon after drinking too much shader juice.\n\nPart shader showcase, part Minecraft fever dream, part \u201cwhy does this look better than real life sometimes.\u201d\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #Minecraft #MinecraftMods #Shaders #PhysicsMod #RetroGaming #WeirdInternet",
       "duration": 60,
-      "view_count": 2,
+      "view_count": 3,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -76051,7 +76259,7 @@
       "title": "Canadian Flag Waving in the Wind - Peaceful Outdoor Ambience\ud83c\udf41",
       "description": "Filming anything that moves for the sole purpose of uploading to YouTube, and this time it just happened to be national pride.\n\nCanadian flag waving in the wind. Peaceful outdoor ambience, trees, sunlight, and twelve seconds of maple leaf footage preserved because apparently the archive demanded tribute.\n\nSimple clip. Calm vibes. Canada detected.\n\nMore tiny archive fragments:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #Canada #CanadianFlag #OutdoorAmbience #NatureSounds #Archive",
       "duration": 12,
-      "view_count": 33,
+      "view_count": 34,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -88408,7 +88616,7 @@
       "title": "The Caesars - Jerk It Out Instrumental (Karaoke)",
       "description": "Wind me up put me down start me up and watch me go!",
       "duration": 199,
-      "view_count": 345,
+      "view_count": 346,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -94440,7 +94648,7 @@
       "title": "JOE ROGAN x MF DOOM x RAP SNITCH KNISHES",
       "description": "#voiceai #joerogan #mfdoom",
       "duration": 173,
-      "view_count": 80,
+      "view_count": 81,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -97768,7 +97976,7 @@
       "title": "AVGN Gilbert Gottfried Fred Fuchs VHS",
       "description": "#voiceai #avgn",
       "duration": 82,
-      "view_count": 392,
+      "view_count": 393,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -104737,7 +104945,7 @@
       "title": "could I interest you in everything all of the time",
       "description": "apathys a tragedy and boredom is a crime\nanything and everything all of the time.",
       "duration": 24,
-      "view_count": 185,
+      "view_count": 187,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -105569,7 +105777,7 @@
       "title": "FRED needs your help",
       "description": "no description necessary",
       "duration": 43,
-      "view_count": 64,
+      "view_count": 65,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
