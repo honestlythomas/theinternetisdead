@@ -12,231 +12,167 @@
     :root {
       color-scheme: dark;
       --void: #000;
-      --ink: #d9ffd5;
+      --panel: #020702;
+      --ink: #ddffda;
       --green: #42ff19;
       --dim: #168609;
       --magenta: #ff00d4;
-      --red: #ff3232;
+      --red: #ff3b3b;
       --amber: #ffd000;
-      --line: rgba(66, 255, 25, 0.28);
+      --line: rgba(66, 255, 25, 0.32);
     }
 
     * {
       box-sizing: border-box;
     }
 
-    html {
-      min-height: 100%;
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
       background: var(--void);
     }
 
     body {
       min-width: 280px;
-      min-height: 100svh;
-      margin: 0;
-      overflow-x: hidden;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255, 0, 212, 0.09), transparent 36rem),
-        radial-gradient(circle at 100% 100%, rgba(66, 255, 25, 0.08), transparent 30rem),
-        #000;
       color: var(--ink);
       font-family: "Courier New", Courier, monospace;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent 0 2px,
-        rgba(0, 0, 0, 0.22) 2px 4px
-      );
-      opacity: 0.48;
-    }
-
-    .threshold {
-      position: relative;
-      display: grid;
-      width: 100%;
-      min-height: 100svh;
-      grid-template-columns: clamp(10px, 1.6vw, 24px) minmax(0, 1fr);
-      isolation: isolate;
-    }
-
-    .signal-rail {
-      position: relative;
-      border-right: 1px solid var(--line);
-      background:
-        repeating-linear-gradient(
-          180deg,
-          var(--green) 0 8px,
-          transparent 8px 15px,
-          var(--magenta) 15px 17px,
-          transparent 17px 29px
-        );
-      opacity: 0.75;
-      box-shadow: 0 0 22px rgba(66, 255, 25, 0.28);
-    }
-
-    .signal-rail::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(transparent, #fff, transparent);
-      transform: translateY(-100%);
-      animation: rail-scan 5s linear infinite;
-      opacity: 0.46;
     }
 
     .screen {
       position: relative;
       display: grid;
-      min-height: 100svh;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       grid-template-rows: auto minmax(0, 1fr) auto;
+      overflow: hidden;
       padding:
-        max(18px, env(safe-area-inset-top))
-        max(20px, env(safe-area-inset-right))
-        max(18px, env(safe-area-inset-bottom))
-        max(20px, env(safe-area-inset-left));
+        max(12px, env(safe-area-inset-top))
+        max(14px, env(safe-area-inset-right))
+        max(12px, env(safe-area-inset-bottom))
+        max(14px, env(safe-area-inset-left));
+      background:
+        linear-gradient(90deg, rgba(255, 0, 212, 0.035), transparent 30%, transparent 70%, rgba(66, 255, 25, 0.035)),
+        radial-gradient(circle at 50% 0%, rgba(255, 0, 212, 0.09), transparent 44%),
+        radial-gradient(circle at 50% 110%, rgba(66, 255, 25, 0.08), transparent 45%),
+        #000;
     }
 
-    .screen::before,
-    .screen::after {
+    .screen::before {
       content: "";
       position: absolute;
-      z-index: -1;
+      inset: 8px;
       border: 1px solid var(--line);
       pointer-events: none;
     }
 
-    .screen::before {
-      inset: clamp(12px, 2.2vw, 32px);
-    }
-
-    .screen::after {
-      inset: clamp(20px, 3.5vw, 52px);
-      border-color: rgba(255, 0, 212, 0.13);
-    }
-
     .topline,
     .bottomline {
+      position: relative;
+      z-index: 1;
       display: flex;
+      min-width: 0;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       color: var(--green);
-      font-size: clamp(9px, 1.1vw, 12px);
+      font-size: clamp(8px, 0.85vw, 11px);
       font-weight: 700;
-      letter-spacing: 0.13em;
-      line-height: 1.3;
+      letter-spacing: 0.11em;
+      line-height: 1.2;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .topline {
-      padding-bottom: 16px;
+      padding: 4px 7px 10px;
     }
 
     .bottomline {
-      padding-top: 16px;
+      padding: 10px 7px 4px;
       color: var(--dim);
     }
 
-    .pulse {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+    .warning-label {
       color: var(--red);
     }
 
-    .pulse::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      flex: 0 0 auto;
-      border-radius: 50%;
-      background: currentColor;
-      box-shadow: 0 0 12px currentColor;
-      animation: pulse 1.25s steps(1, end) infinite;
-    }
-
     .warning {
+      position: relative;
+      z-index: 1;
       display: grid;
-      width: min(1180px, 100%);
+      width: min(1120px, calc(100% - 24px));
+      min-height: 0;
       margin: auto;
-      grid-template-columns: minmax(0, 1.25fr) minmax(250px, 0.75fr);
-      gap: clamp(28px, 6vw, 88px);
+      grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
+      gap: clamp(24px, 5vw, 70px);
       align-items: center;
-      padding: clamp(28px, 5vh, 64px) clamp(12px, 5vw, 72px);
     }
 
     .warning-code {
-      margin: 0 0 12px;
+      margin: 0 0 clamp(7px, 1.2vh, 12px);
       color: var(--amber);
-      font-size: clamp(11px, 1.35vw, 15px);
+      font-size: clamp(9px, 1vw, 13px);
       font-weight: 700;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
     }
 
     h1 {
-      max-width: 11ch;
       margin: 0;
       color: #fff;
-      font-size: clamp(48px, 9vw, 126px);
+      font-size: clamp(54px, 8vw, 112px);
       font-weight: 900;
       letter-spacing: -0.085em;
-      line-height: 0.78;
+      line-height: 0.82;
       text-transform: uppercase;
       text-shadow:
-        3px 0 0 var(--red),
-        -3px 0 0 var(--magenta),
-        0 0 28px rgba(66, 255, 25, 0.38);
-      animation: signal-failure 8s steps(1, end) infinite;
+        2px 0 0 var(--red),
+        -2px 0 0 var(--magenta),
+        0 0 24px rgba(66, 255, 25, 0.3);
     }
 
     .subhead {
-      max-width: 58ch;
-      margin: clamp(24px, 4vh, 42px) 0 0;
-      border-left: 4px solid var(--magenta);
-      padding-left: 17px;
+      max-width: 54ch;
+      margin: clamp(16px, 2.6vh, 28px) 0 0;
+      border-left: 3px solid var(--magenta);
+      padding-left: 14px;
       color: var(--green);
-      font-size: clamp(14px, 1.55vw, 20px);
+      font-size: clamp(12px, 1.28vw, 17px);
       font-weight: 700;
-      line-height: 1.5;
+      line-height: 1.42;
     }
 
     .transmission {
       position: relative;
       border: 1px solid var(--line);
-      padding: clamp(22px, 3.5vw, 38px);
-      background: rgba(0, 8, 0, 0.82);
-      box-shadow:
-        inset 0 0 36px rgba(66, 255, 25, 0.045),
-        0 0 28px rgba(0, 0, 0, 0.88);
+      padding: clamp(18px, 2.7vw, 30px);
+      background: rgba(0, 8, 0, 0.9);
+      box-shadow: inset 0 0 28px rgba(66, 255, 25, 0.035);
     }
 
     .transmission::before {
       content: "TRANSMISSION / PERSONAL.OS";
       position: absolute;
       top: 0;
-      left: 14px;
-      padding: 0 7px;
+      left: 12px;
+      padding: 0 6px;
       background: #000;
       color: var(--magenta);
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       transform: translateY(-50%);
     }
 
     .transmission p {
-      margin: 0 0 1em;
+      margin: 0 0 0.82em;
       color: var(--ink);
-      font-size: clamp(12px, 1.18vw, 16px);
-      line-height: 1.62;
+      font-size: clamp(11px, 1vw, 14px);
+      line-height: 1.48;
     }
 
     .transmission p:last-of-type {
@@ -255,29 +191,26 @@
     .actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 24px;
+      gap: 8px;
+      margin-top: clamp(14px, 2vh, 20px);
     }
 
     .action {
       display: flex;
-      min-height: 52px;
+      min-height: 44px;
       align-items: center;
       justify-content: center;
       border: 1px solid var(--green);
-      padding: 11px 14px;
+      padding: 9px 11px;
       background: #000;
       color: var(--green);
-      font-size: clamp(10px, 1vw, 13px);
+      font-size: clamp(9px, 0.85vw, 12px);
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
+      line-height: 1.25;
       text-align: center;
       text-decoration: none;
       text-transform: uppercase;
-      transition:
-        color 120ms ease,
-        background 120ms ease,
-        box-shadow 120ms ease;
     }
 
     .action.secondary {
@@ -289,179 +222,217 @@
     .action:focus-visible {
       background: var(--green);
       color: #000;
-      box-shadow: 0 0 20px rgba(66, 255, 25, 0.38);
       outline: 2px solid #fff;
-      outline-offset: 3px;
-      text-shadow: none;
+      outline-offset: 2px;
     }
 
     .action.secondary:hover,
     .action.secondary:focus-visible {
       background: var(--magenta);
       color: #000;
-      box-shadow: 0 0 20px rgba(255, 0, 212, 0.34);
     }
 
-    @keyframes pulse {
-      0%,
-      65% { opacity: 1; }
-      66%,
-      100% { opacity: 0.22; }
-    }
-
-    @keyframes rail-scan {
-      to { transform: translateY(100%); }
-    }
-
-    @keyframes signal-failure {
-      0%,
-      92%,
-      95%,
-      100% { transform: translate(0); filter: none; }
-      93% { transform: translate(-2px, 1px) skewX(-1deg); filter: brightness(1.35); }
-      94% { transform: translate(3px, -1px) skewX(2deg); filter: contrast(1.8); }
-    }
-
-    @media (max-width: 820px) {
-      .warning {
-        grid-template-columns: 1fr;
-        align-content: center;
-        gap: 42px;
-        padding-block: 38px;
-      }
-
-      h1 {
-        max-width: none;
-        font-size: clamp(48px, 15vw, 92px);
-      }
-    }
-
-    @media (max-width: 500px) {
+    @media (max-width: 760px) {
       .screen {
-        min-height: 100svh;
-        padding: 16px 15px;
+        padding: 10px 11px;
       }
 
       .screen::before {
-        inset: 7px;
-      }
-
-      .screen::after {
-        display: none;
+        inset: 5px;
       }
 
       .warning {
-        gap: 32px;
-        padding: 28px 7px;
+        width: calc(100% - 12px);
+        grid-template-columns: 1fr;
+        gap: clamp(14px, 2.8vh, 24px);
+        align-content: center;
+      }
+
+      .warning-code {
+        margin-bottom: 5px;
+        font-size: 8px;
       }
 
       h1 {
+        font-size: clamp(40px, 12.5vw, 66px);
         line-height: 0.84;
       }
 
       .subhead {
-        margin-top: 22px;
+        margin-top: clamp(9px, 1.8vh, 15px);
+        padding-left: 10px;
+        font-size: clamp(9px, 2.75vw, 12px);
+        line-height: 1.3;
+      }
+
+      .transmission {
+        padding: clamp(13px, 3.5vw, 19px);
+      }
+
+      .transmission p {
+        margin-bottom: 0.58em;
+        font-size: clamp(8px, 2.42vw, 10.5px);
+        line-height: 1.32;
       }
 
       .actions {
-        grid-template-columns: 1fr;
+        margin-top: clamp(9px, 1.5vh, 13px);
       }
 
+      .action {
+        min-height: 38px;
+        padding: 6px 8px;
+        font-size: clamp(7px, 2.15vw, 9px);
+      }
+
+      .topline,
+      .bottomline {
+        padding-inline: 3px;
+        font-size: 7px;
+      }
+    }
+
+    @media (max-width: 420px) {
       .topline span:last-child,
       .bottomline span:last-child {
         display: none;
       }
+
+      .actions {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .action {
+        min-height: 34px;
+      }
     }
 
-    @media (max-height: 760px) and (min-width: 821px) {
+    @media (max-height: 650px) and (max-width: 760px) {
       .warning {
-        padding-block: 22px;
+        gap: 10px;
+      }
+
+      .warning-code {
+        display: none;
       }
 
       h1 {
-        font-size: clamp(52px, 8vw, 92px);
+        font-size: clamp(34px, 10.5vw, 50px);
       }
 
       .subhead {
-        margin-top: 24px;
+        margin-top: 7px;
+        font-size: clamp(8px, 2.25vw, 10px);
       }
 
       .transmission {
-        padding-block: 22px;
+        padding: 11px 13px;
       }
 
       .transmission p {
-        font-size: clamp(11px, 1.05vw, 14px);
-        line-height: 1.48;
+        margin-bottom: 0.42em;
+        font-size: clamp(7px, 2.05vw, 9px);
+        line-height: 1.22;
+      }
+
+      .actions {
+        margin-top: 7px;
+      }
+
+      .action {
+        min-height: 29px;
+        padding: 4px 6px;
+      }
+
+      .bottomline {
+        display: none;
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation: none !important;
-        scroll-behavior: auto !important;
+    @media (max-height: 600px) and (min-width: 761px) {
+      .warning {
+        gap: 28px;
+      }
+
+      h1 {
+        font-size: clamp(50px, 7vw, 78px);
+      }
+
+      .subhead {
+        margin-top: 14px;
+      }
+
+      .transmission {
+        padding: 16px 20px;
+      }
+
+      .transmission p {
+        font-size: 10px;
+        line-height: 1.3;
+      }
+
+      .actions {
+        margin-top: 10px;
+      }
+
+      .bottomline {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
-  <main class="threshold">
-    <div class="signal-rail" aria-hidden="true"></div>
+  <main class="screen" aria-labelledby="warning-title">
+    <header class="topline">
+      <span class="warning-label">⚠ Threshold warning</span>
+      <span>theinternetisdead.org // signal detected</span>
+    </header>
 
-    <section class="screen" aria-labelledby="warning-title">
-      <header class="topline">
-        <span class="pulse">Threshold warning</span>
-        <span>theinternetisdead.org // signal detected</span>
-      </header>
+    <div class="warning">
+      <section class="warning-heading">
+        <p class="warning-code">Recursive material ahead</p>
+        <h1 id="warning-title">Enter With<br>Context</h1>
+        <p class="subhead">
+          This site contains recursive art and a weighty symbolic language forged through
+          isolation in the midst of the world we live in.
+        </p>
+      </section>
 
-      <div class="warning">
-        <div class="warning-heading">
-          <p class="warning-code">⚠ Recursive material ahead</p>
-          <h1 id="warning-title">Enter<br>With<br>Context</h1>
-          <p class="subhead">
-            This site contains recursive art and a weighty symbolic language forged through
-            isolation in the midst of the world we live in.
-          </p>
-        </div>
+      <article class="transmission">
+        <p>
+          What follows explores the digital decay of identity: the self fragmented into files,
+          records, diagnoses, usernames, evidence and signals—and the role institutions can play
+          in dehumanizing the people they were constructed to help.
+        </p>
 
-        <article class="transmission">
-          <p>
-            What follows explores the digital decay of identity: the self fragmented into files,
-            records, diagnoses, usernames, evidence and signals—and the role institutions can play
-            in dehumanizing the very people they were constructed to help.
-          </p>
+        <p>
+          You may encounter flashing imagery, unexpected sound, dense symbolism, personal
+          testimony, gallows humour and artifacts that refuse to explain themselves only once.
+        </p>
 
-          <p>
-            You may encounter flashing imagery, unexpected sound, dense symbolism, personal
-            testimony, gallows humour, abandoned interfaces and artifacts that refuse to explain
-            themselves only once.
-          </p>
+        <p>
+          This website is art first and foremost. It is also a personal symbolic operating system:
+          a place where one life and its creative effort can be archived, processed, translated
+          and made visible.
+        </p>
 
-          <p>
-            This website is art first and foremost. It is also a personal symbolic operating
-            system: a place where one life and its creative effort can be archived, processed,
-            translated and made visible.
-          </p>
+        <p class="declaration">
+          This is my place on the internet to <strong>prove I exist</strong> and document my
+          experience as if it mattered.
+        </p>
 
-          <p class="declaration">
-            This is my place on the internet to <strong>prove I exist</strong> and document my
-            experience as if it mattered.
-          </p>
+        <nav class="actions" aria-label="Continue into the site">
+          <a class="action" href="/dead/experiments/">Enter the recursive archive</a>
+          <a class="action secondary" href="/help/">Read the documented signal</a>
+        </nav>
+      </article>
+    </div>
 
-          <nav class="actions" aria-label="Continue into the site">
-            <a class="action" href="/dead/experiments/">Enter the recursive archive</a>
-            <a class="action secondary" href="/help/">Read the documented signal</a>
-          </nav>
-        </article>
-      </div>
-
-      <footer class="bottomline">
-        <span>Identity checksum: unresolved</span>
-        <span>Art survives the system that names it</span>
-      </footer>
-    </section>
+    <footer class="bottomline">
+      <span>Identity checksum: unresolved</span>
+      <span>Art survives the system that names it</span>
+    </footer>
   </main>
 </body>
 </html>
