@@ -1,68 +1,383 @@
-# 💀 THE INTERNET IS DEAD 🪦
-
-> You found the source code.  
-> Whether that was intentional remains unclear.
-
-This repository contains **[theinternetisdead.org](https://theinternetisdead.org)**—a living archive disguised as a dead website.
-
-It is part digital graveyard, part experimental art project, part personal broadcast from somewhere beyond the clean and optimized web. Old pages linger beside new mutations. Ghosts count themselves. Interfaces breathe, speak, melt, remember and occasionally resist being understood.
-
-## What Is This Place?
-
-The site is an ongoing collection of:
-
-- Web experiments and digital artifacts
-- Glitch art, sound, writing and strange transmissions
-- Forgotten aesthetics from older versions of the internet
-- Interactive pages that may behave differently than expected
-- Archives of things that were deleted, abandoned or transformed
-- Jokes with uncomfortable amounts of sincerity hidden inside them
-
-Some parts are polished.  
-Some parts are ruins.  
-Some parts are both.
-
-## What Should You Expect?
-
-Expect flashing colours, animated backgrounds, unexpected audio, synthetic voices, broken-looking interfaces, obsolete design language and navigation that sometimes feels more like exploration than browsing.
-
-Headphones are optional. Curiosity is recommended.
-
-The site is designed as an experience—not merely a collection of pages. If something appears haunted, misplaced or strangely alive, it may be functioning exactly as intended.
-
-## Enter the Site
-
-### [☠ Visit theinternetisdead.org](https://theinternetisdead.org)
-
-Do not expect a map.
-
-## Download the Archive
-
-A downloadable snapshot of the complete site is available here:
-
-### [Download Full Site Repo](https://main.theinternetisdead.zip)
-
-The archive may outlive the version currently online.  
-Or the online version may already have escaped it.
-
-## A Note for Archaeologists
-
-This repository contains active work, abandoned pathways, archived homepages and experiments in various states of decay. Its history is part of the project.
-
-If you are reading the source to discover who made this, you may find evidence—but not necessarily an answer.
-
-The person behind it has left fingerprints everywhere.
-
-A name would only make the mystery smaller.
-
+---
+title: THE INTERNET IS DEAD
 ---
 
-```text
-CONNECTION ESTABLISHED
-SIGNAL UNSTABLE
-GHOSTS ONLINE: ?
-LAST TRANSMISSION: STILL IN PROGRESS
-```
+<style>
+  :root {
+    color-scheme: dark;
+    --void: #000;
+    --terminal: #020502;
+    --phosphor: #39ff14;
+    --phosphor-dim: #168a0a;
+    --signal: #ff00ff;
+    --warning: #ff3131;
+    --ghost: #d8ffd2;
+  }
 
-© THE INTERNET IS DEAD  
-All ghosts remain with their original owners.
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+    margin: 0;
+    background:
+      radial-gradient(circle at 50% -20%, rgba(57, 255, 20, 0.13), transparent 45%),
+      repeating-linear-gradient(0deg, rgba(57, 255, 20, 0.025) 0 1px, transparent 1px 4px),
+      var(--void);
+    color: var(--phosphor);
+  }
+
+  body {
+    font-family: "Courier New", Courier, monospace;
+    text-shadow: 0 0 7px rgba(57, 255, 20, 0.46);
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(0, 0, 0, 0.22) 2px 4px
+    );
+    opacity: 0.32;
+  }
+
+  .site-header,
+  .site-footer {
+    display: none;
+  }
+
+  .page-content,
+  .wrapper {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .haunted-terminal {
+    position: relative;
+    width: min(920px, calc(100% - 28px));
+    margin: clamp(18px, 5vw, 64px) auto;
+    border: 1px solid var(--phosphor-dim);
+    background: rgba(0, 6, 0, 0.94);
+    box-shadow:
+      0 0 0 1px #000,
+      0 0 32px rgba(57, 255, 20, 0.17),
+      inset 0 0 48px rgba(57, 255, 20, 0.035);
+    overflow: hidden;
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid var(--phosphor-dim);
+    padding: 9px 12px;
+    background: rgba(57, 255, 20, 0.07);
+    color: var(--ghost);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .terminal-lights {
+    color: var(--warning);
+    text-shadow:
+      18px 0 var(--signal),
+      36px 0 var(--phosphor);
+  }
+
+  .terminal-body {
+    padding: clamp(20px, 5vw, 54px);
+  }
+
+  h1,
+  h2 {
+    font-family: "Courier New", Courier, monospace;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    position: relative;
+    margin: 0 0 12px;
+    color: var(--ghost);
+    font-size: clamp(34px, 8vw, 76px);
+    line-height: 0.95;
+    letter-spacing: -0.07em;
+    text-shadow:
+      2px 0 var(--warning),
+      -2px 0 var(--signal),
+      0 0 18px rgba(57, 255, 20, 0.58);
+    animation: signal-drift 5.8s steps(1, end) infinite;
+  }
+
+  h2 {
+    margin: 42px 0 14px;
+    border-left: 4px solid var(--signal);
+    padding-left: 12px;
+    color: var(--phosphor);
+    font-size: clamp(18px, 3.6vw, 25px);
+    letter-spacing: 0.08em;
+  }
+
+  p,
+  li {
+    color: var(--ghost);
+    line-height: 1.68;
+  }
+
+  a {
+    color: var(--phosphor);
+    font-weight: 700;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+
+  a:hover,
+  a:focus {
+    color: #000;
+    background: var(--phosphor);
+    text-shadow: none;
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+
+  .boot-line,
+  .whisper {
+    color: var(--phosphor);
+  }
+
+  .boot-line::before {
+    content: "> ";
+    color: var(--signal);
+  }
+
+  .whisper {
+    margin: 0 0 34px;
+    font-size: 14px;
+    opacity: 0.82;
+  }
+
+  .whisper::after {
+    content: "█";
+    margin-left: 5px;
+    animation: cursor-blink 900ms steps(1, end) infinite;
+  }
+
+  .manifest {
+    margin: 26px 0;
+    border: 1px dashed var(--phosphor-dim);
+    padding: 18px 20px;
+    background: rgba(57, 255, 20, 0.025);
+  }
+
+  .manifest ul {
+    margin: 0;
+    padding-left: 22px;
+  }
+
+  .manifest li::marker {
+    color: var(--signal);
+  }
+
+  .ruins {
+    color: var(--phosphor);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .portal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .portal {
+    display: flex;
+    min-height: 74px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--phosphor-dim);
+    padding: 14px;
+    background: #000;
+    color: var(--phosphor);
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    box-shadow: inset 0 0 18px rgba(57, 255, 20, 0.04);
+  }
+
+  .portal.danger {
+    border-color: #760076;
+    color: #ff66ff;
+  }
+
+  .archaeology {
+    border-top: 1px solid var(--phosphor-dim);
+    margin-top: 46px;
+    padding-top: 6px;
+  }
+
+  .status-screen {
+    margin: 42px 0 8px;
+    border: 1px solid var(--phosphor-dim);
+    padding: 17px;
+    background: #000;
+    color: var(--phosphor);
+    line-height: 1.65;
+    white-space: pre-wrap;
+    box-shadow: inset 0 0 24px rgba(57, 255, 20, 0.08);
+  }
+
+  .status-screen .unstable {
+    color: var(--warning);
+  }
+
+  .terminal-footer {
+    border-top: 1px solid var(--phosphor-dim);
+    padding: 15px;
+    color: var(--phosphor-dim);
+    font-size: 12px;
+    text-align: center;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @keyframes cursor-blink {
+    0%,
+    48% { opacity: 1; }
+    49%,
+    100% { opacity: 0; }
+  }
+
+  @keyframes signal-drift {
+    0%,
+    92%,
+    100% { transform: translate(0); }
+    93% { transform: translate(-1px, 1px) skewX(-1deg); }
+    94% { transform: translate(2px, -1px) skewX(2deg); }
+    95% { transform: translate(0); }
+  }
+
+  @media (max-width: 640px) {
+    .terminal-bar {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .portal-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+    }
+  }
+</style>
+
+<main class="haunted-terminal">
+  <header class="terminal-bar">
+    <span>theinternetisdead.org :: unauthorized terminal</span>
+    <span class="terminal-lights">●</span>
+  </header>
+
+  <article class="terminal-body">
+    <h1>💀 The Internet<br>Is Dead 🪦</h1>
+
+    <p class="whisper">You found the source code. Whether that was intentional remains unclear.</p>
+
+    <p class="boot-line">Mounting a living archive disguised as a dead website...</p>
+
+    <p>
+      This repository contains
+      <strong><a href="https://theinternetisdead.org">theinternetisdead.org</a></strong>—part digital
+      graveyard, part experimental art project, part personal broadcast from somewhere beyond the
+      clean and optimized web. Old pages linger beside new mutations. Ghosts count themselves.
+      Interfaces breathe, speak, melt, remember and occasionally resist being understood.
+    </p>
+
+    <h2>What Is This Place?</h2>
+
+    <section class="manifest">
+      <ul>
+        <li>Web experiments and digital artifacts</li>
+        <li>Glitch art, sound, writing and strange transmissions</li>
+        <li>Forgotten aesthetics from older versions of the internet</li>
+        <li>Interactive pages that may behave differently than expected</li>
+        <li>Archives of things that were deleted, abandoned or transformed</li>
+        <li>Jokes with uncomfortable amounts of sincerity hidden inside them</li>
+      </ul>
+    </section>
+
+    <p class="ruins">
+      Some parts are polished.<br>
+      Some parts are ruins.<br>
+      Some parts are both.
+    </p>
+
+    <h2>What Should You Expect?</h2>
+
+    <p>
+      Expect flashing colours, animated backgrounds, unexpected audio, synthetic voices,
+      broken-looking interfaces, obsolete design language and navigation that sometimes feels
+      more like exploration than browsing.
+    </p>
+
+    <p>Headphones are optional. Curiosity is recommended.</p>
+
+    <p>
+      The site is designed as an experience—not merely a collection of pages. If something appears
+      haunted, misplaced or strangely alive, it may be functioning exactly as intended.
+    </p>
+
+    <h2>Available Portals</h2>
+
+    <nav class="portal-grid" aria-label="Site portals">
+      <a class="portal" href="https://theinternetisdead.org/help/">☠ Enter the Help Archive</a>
+      <a class="portal danger" href="https://main.theinternetisdead.zip">⇩ Download Full Site Repo</a>
+    </nav>
+
+    <p>Do not expect a map.</p>
+
+    <section class="archaeology">
+      <h2>A Note for Archaeologists</h2>
+
+      <p>
+        This repository contains active work, abandoned pathways, archived homepages and experiments
+        in various states of decay. Its history is part of the project.
+      </p>
+
+      <p>
+        If you are reading the source to discover who made this, you may find evidence—but not
+        necessarily an answer.
+      </p>
+
+      <p>The person behind it has left fingerprints everywhere.</p>
+      <p><strong>A name would only make the mystery smaller.</strong></p>
+    </section>
+
+    <div class="status-screen" role="status">CONNECTION ESTABLISHED
+<span class="unstable">SIGNAL UNSTABLE</span>
+GHOSTS ONLINE: ?
+LAST TRANSMISSION: STILL IN PROGRESS</div>
+  </article>
+
+  <footer class="terminal-footer">
+    © THE INTERNET IS DEAD :: ALL GHOSTS REMAIN WITH THEIR ORIGINAL OWNERS
+  </footer>
+</main>
