@@ -238,18 +238,90 @@
 
   const slideFrames = direction => {
     const vectors = {
-      up: ["0", "-105vh"], down: ["0", "105vh"],
-      left: ["-105vw", "0"], right: ["105vw", "0"]
+      up: ["0", "-100vh"], down: ["0", "100vh"],
+      left: ["-100vw", "0"], right: ["100vw", "0"]
     };
     const [x, y] = vectors[direction];
     const displacement = `translate3d(${x},${y},0)`;
     return {
-      out: [{ transform: "translate3d(0,0,0)", opacity: 1 }, { transform: displacement, opacity: .15 }],
-      in: [{ transform: displacement, opacity: .15 }, { transform: "translate3d(0,0,0)", opacity: 1 }]
+      out: [{ transform: "translate3d(0,0,0)", opacity: 1 }, { transform: displacement, opacity: 1 }],
+      in: [{ transform: displacement, opacity: 1 }, { transform: "translate3d(0,0,0)", opacity: 1 }]
     };
   };
 
-  const playSlide = (direction, phase, options = {}) => {
+  const oppositeSlideFrames = direction => {
+    const vectors = {
+      up: ["0", "100vh"], down: ["0", "-100vh"],
+      left: ["100vw", "0"], right: ["-100vw", "0"]
+    };
+    const [x, y] = vectors[direction];
+    return [
+      { transform: `translate3d(${x},${y},0)`, opacity: 1 },
+      { transform: "translate3d(0,0,0)", opacity: 1 }
+    ];
+  };
+
+  const loadSlidePreview = (url, timeout = 4000) => new Promise(resolve => {
+    const frame = document.createElement("iframe");
+    frame.dataset.pageTransitionOverlay = "";
+    frame.dataset.pageTransitionPreview = "";
+    frame.setAttribute("aria-hidden", "true");
+    frame.tabIndex = -1;
+    Object.assign(frame.style, {
+      position: "fixed",
+      inset: "0",
+      zIndex: "2147483646",
+      width: "100vw",
+      height: "100vh",
+      height: "100dvh",
+      border: "0",
+      margin: "0",
+      visibility: "hidden",
+      background: "#000",
+      pointerEvents: "none",
+      willChange: "transform"
+    });
+
+    let settled = false;
+    const finish = loaded => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      resolve({ frame, loaded });
+    };
+    const timer = window.setTimeout(() => finish(false), timeout);
+    frame.addEventListener("load", () => finish(true), { once: true });
+    document.body.appendChild(frame);
+    frame.src = url.href;
+  });
+
+  const playSeamlessSlide = async (direction, options, context) => {
+    const duration = options.duration ?? 900;
+    const root = transitionRoot(options);
+    lockPage(root);
+
+    const { frame, loaded } = await loadSlidePreview(context.url, options.loadTimeout ?? 4000);
+    if (!loaded) {
+      frame.remove();
+      const frames = slideFrames(direction);
+      return playRootEffect("out", options, frames.out, frames.in, { duration, easing: "cubic-bezier(.76,0,.24,1)" });
+    }
+
+    const oldFrames = slideFrames(direction).out;
+    const newFrames = oppositeSlideFrames(direction);
+    frame.style.transform = newFrames[0].transform;
+    frame.style.visibility = "visible";
+
+    const timing = { duration, easing: "cubic-bezier(.76,0,.24,1)", fill: "both" };
+    const oldAnimation = trackAnimation(root.animate(oldFrames, timing));
+    const newAnimation = trackAnimation(frame.animate(newFrames, timing));
+    await Promise.all([waitFor(oldAnimation), waitFor(newAnimation)]);
+  };
+
+  const playSlide = (direction, phase, options = {}, context) => {
+    if (phase === "out" && context?.url) {
+      return playSeamlessSlide(direction, options, context);
+    }
     const frames = slideFrames(direction);
     return playRootEffect(phase, options, frames.out, frames.in, { duration: 850, easing: "cubic-bezier(.76,0,.24,1)" });
   };
@@ -314,17 +386,19 @@
       leaving = true;
       const definition = transitions.get(rule.transition);
       const settings = { ...rule.options, ...options };
-      sessionStorage.setItem(HANDOFF_KEY, JSON.stringify({
+      const handoff = {
         from,
         to,
         transition: rule.transition,
         options: settings,
+        skipIncoming: definition.skipIncoming === true,
         createdAt: Date.now()
-      }));
+      };
 
       try {
         await definition.out(settings, { from, to, url });
       } finally {
+        sessionStorage.setItem(HANDOFF_KEY, JSON.stringify(handoff));
         window.location.assign(url.href);
       }
     },
@@ -347,7 +421,8 @@
 
   ["up", "down", "left", "right"].forEach(direction => {
     api.register(`slide-${direction}`, {
-      out: options => playSlide(direction, "out", options),
+      skipIncoming: true,
+      out: (options, context) => playSlide(direction, "out", options, context),
       in: options => playSlide(direction, "in", options)
     });
   });
@@ -404,6 +479,8 @@
   });
 
   const receiveHandoff = async () => {
+    if (window.frameElement?.hasAttribute("data-page-transition-preview")) return;
+
     let handoff;
     try {
       handoff = JSON.parse(sessionStorage.getItem(HANDOFF_KEY));
@@ -416,6 +493,7 @@
     sessionStorage.removeItem(HANDOFF_KEY);
     if (Date.now() - handoff.createdAt > HANDOFF_MAX_AGE) return;
     if (cleanPath(window.location.href) !== cleanPath(handoff.to)) return;
+    if (handoff.skipIncoming) return;
 
     const definition = transitions.get(handoff.transition);
     if (definition) await definition.in(handoff.options || {}, handoff);
