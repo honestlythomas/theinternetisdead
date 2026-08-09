@@ -133,6 +133,18 @@
       text-shadow: 0 0 8px #000;
     }
 
+    .portal-button .destination-label {
+      min-width: 0;
+      aspect-ratio: auto;
+      border: 0;
+      border-radius: 0;
+      padding: .35em .55em;
+      background: rgba(0, 0, 0, .78);
+      font-size: clamp(10px, 1.8vmin, 18px);
+      letter-spacing: .04em;
+      line-height: 1;
+    }
+
     .portal-button:hover,
     .portal-button:focus-visible {
       border-color: var(--magenta);
@@ -364,13 +376,13 @@
   </style>
 </head>
 <body>
-  <nav class="compass" aria-label="Cardinal portals back to the splash page">
+  <nav class="compass" aria-label="Portal navigation">
     <a class="portal-button north" href="/" data-transition="slide-down" aria-label="Return through the north portal">
       <span>↑</span>
     </a>
 
-    <a class="portal-button east" href="/" data-transition="slide-left" aria-label="Return through the east portal">
-      <span>→</span>
+    <a class="portal-button east" href="/dead/experiments/" data-transition="slide-left" aria-label="Open Experiments">
+      <span class="destination-label">Experiments</span>
     </a>
 
     <button class="core" id="open-portal" type="button" aria-expanded="false" aria-label="Open Portal and release the direction portals">
@@ -386,8 +398,8 @@
       <span>↓</span>
     </a>
 
-    <a class="portal-button west" href="/" data-transition="slide-right" aria-label="Return through the west portal">
-      <span>←</span>
+    <a class="portal-button west" href="/dead/games/" data-transition="slide-right" aria-label="Open Games">
+      <span class="destination-label">Games</span>
     </a>
   </nav>
 
