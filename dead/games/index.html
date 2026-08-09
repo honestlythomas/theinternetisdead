@@ -135,7 +135,11 @@
         0 0 34px rgba(114, 255, 25, .2),
         inset 0 0 32px rgba(0, 0, 0, .45);
       color: var(--green);
+      cursor: pointer;
+      font: inherit;
+      padding: 0;
       text-decoration: none;
+      appearance: none;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -498,9 +502,7 @@
       <a class="portal-button north" href="/dead/games/shooter-game/" data-transition="slide-down" aria-label="Open Shooter Game">
       </a>
 
-      <a class="portal-button east" href="/portal/" data-transition="slide-left" aria-label="Return to the Recursive Portal">
-        <span aria-hidden="true">→</span>
-      </a>
+      <button class="portal-button east" type="button" aria-label="Static portal"></button>
 
       <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the game portals">
         <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
