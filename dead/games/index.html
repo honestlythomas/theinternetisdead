@@ -194,7 +194,7 @@
     .northwest {
       grid-column: 1;
       grid-row: 1;
-      --portal-image: url("/dead/assets/images/static.gif");
+      --portal-image: url("/dead/games/thumbnails/shooter-game.png");
       --from-x: 134%;
       --from-y: 134%;
       --over-x: -7%;
@@ -206,7 +206,7 @@
     .north {
       grid-column: 2;
       grid-row: 1;
-      --portal-image: url("/dead/games/thumbnails/shooter-game.png");
+      --portal-image: url("/dead/games/thumbnails/inferno-trainer.png");
       --from-x: 0%;
       --from-y: 134%;
       --over-x: 0%;
@@ -218,7 +218,7 @@
     .northeast {
       grid-column: 3;
       grid-row: 1;
-      --portal-image: url("/dead/assets/images/static.gif");
+      --portal-image: url("/dead/games/thumbnails/tektite-3D-game.png");
       --from-x: -134%;
       --from-y: 134%;
       --over-x: 7%;
@@ -230,7 +230,7 @@
     .west {
       grid-column: 1;
       grid-row: 2;
-      --portal-image: url("/dead/games/thumbnails/inferno-trainer.png");
+      --portal-image: url("/dead/assets/images/static.gif");
       --from-x: 134%;
       --from-y: 0%;
       --over-x: -10%;
@@ -266,7 +266,7 @@
     .south {
       grid-column: 2;
       grid-row: 3;
-      --portal-image: url("/dead/games/thumbnails/tektite-3D-game.png");
+      --portal-image: url("/dead/assets/images/static.gif");
       --from-x: 0%;
       --from-y: -134%;
       --over-x: 0%;
@@ -630,10 +630,10 @@
         <line x1="50" y1="50" x2="83.33" y2="83.33"></line>
       </svg>
 
-      <span class="portal-button northwest is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
-      <a class="portal-button north" href="/dead/games/shooter-game/" data-transition="slide-down" aria-label="Open Shooter Game"><span class="destination-label">Shooter Game</span></a>
-      <span class="portal-button northeast is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
-      <a class="portal-button west" href="/dead/games/inferno-trainer/" data-transition="slide-right" aria-label="Open Inferno Trainer"><span class="destination-label">Inferno Trainer</span></a>
+      <a class="portal-button northwest" href="/dead/games/shooter-game/" data-transition="swirl" aria-label="Open Shooter Game"><span class="destination-label">Shooter Game</span></a>
+      <a class="portal-button north" href="/dead/games/inferno-trainer/" data-transition="slide-down" aria-label="Open Inferno Trainer"><span class="destination-label">Inferno Trainer</span></a>
+      <a class="portal-button northeast" href="/dead/games/tektite-3D-game/" data-transition="swirl" aria-label="Open Tektite 3D Game"><span class="destination-label">Tektite 3D Game</span></a>
+      <span class="portal-button west is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
 
       <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the game portals">
         <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
@@ -646,7 +646,7 @@
 
       <span class="portal-button east is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
       <span class="portal-button southwest is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
-      <a class="portal-button south" href="/dead/games/tektite-3D-game/" data-transition="slide-up" aria-label="Open Tektite 3D Game"><span class="destination-label">Tektite 3D Game</span></a>
+      <span class="portal-button south is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
       <span class="portal-button southeast is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
     </nav>
 
