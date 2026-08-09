@@ -15,8 +15,6 @@
   const HANDOFF_MAX_AGE = 30000;
   const transitions = new Map();
   const routes = [];
-  const keyBindings = new Map();
-  const heldKeys = new Set();
   const activeAnimations = new Set();
   let leaving = false;
 
@@ -229,11 +227,6 @@
       return api;
     },
 
-    bindKey(key, transition, options = {}) {
-      keyBindings.set(key, { transition, options });
-      return api;
-    },
-
     removeRoute(from, to) {
       for (let index = routes.length - 1; index >= 0; index -= 1) {
         if (routes[index].from === from && routes[index].to === to) routes.splice(index, 1);
@@ -278,8 +271,7 @@
     },
 
     transitions,
-    routes,
-    keyBindings
+    routes
   };
 
   window.PageTransitions = api;
@@ -311,29 +303,12 @@
     in: options => playCrt("in", options)
   });
 
-  api
-    .bindKey("s", "swirl", { duration: 2500 })
-    .bindKey("g", "glitch-disintegrate")
-    .bindKey("ArrowUp", "slide-up")
-    .bindKey("ArrowDown", "slide-down")
-    .bindKey("ArrowLeft", "slide-left")
-    .bindKey("ArrowRight", "slide-right")
-    .bindKey("v", "void-iris")
-    .bindKey("c", "crt-collapse");
-
-  window.addEventListener("keydown", event => {
-    if (!event.repeat) heldKeys.add(event.key.length === 1 ? event.key.toLowerCase() : event.key);
-  });
-  window.addEventListener("keyup", event => heldKeys.delete(event.key.length === 1 ? event.key.toLowerCase() : event.key));
-  window.addEventListener("blur", () => heldKeys.clear());
-
   // Browsers may restore a transitioned-out page from the back/forward cache.
   // Put it back into a clean, fully visible state instead of preserving the
   // final frame of its outgoing animation.
   window.addEventListener("pageshow", event => {
     if (!event.persisted) return;
     leaving = false;
-    heldKeys.clear();
     activeAnimations.forEach(animation => animation.cancel());
     activeAnimations.clear();
     document.querySelectorAll("[data-page-transition-overlay]").forEach(overlay => overlay.remove());
@@ -342,6 +317,16 @@
 
   document.addEventListener("click", event => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+    const launcher = event.target.closest("[data-transition-destination]");
+    if (launcher) {
+      event.preventDefault();
+      const selector = document.getElementById(launcher.dataset.transitionSelect);
+      const transition = selector?.value || undefined;
+      api.navigate(launcher.dataset.transitionDestination, transition);
+      return;
+    }
+
     const anchor = event.target.closest("a[href]");
     if (!anchor || anchor.target || anchor.hasAttribute("download") || anchor.dataset.noTransition !== undefined) return;
 
@@ -349,10 +334,9 @@
     if (destination.origin !== window.location.origin || destination.protocol !== window.location.protocol) return;
     if (destination.pathname === window.location.pathname && destination.search === window.location.search) return;
 
-    const heldBinding = [...heldKeys].map(key => keyBindings.get(key)).find(Boolean);
-    const rule = heldBinding || (anchor.dataset.transition
+    const rule = anchor.dataset.transition
       ? { transition: anchor.dataset.transition, options: {} }
-      : findRoute(cleanPath(window.location.href), cleanPath(destination.href)));
+      : findRoute(cleanPath(window.location.href), cleanPath(destination.href));
     if (!rule) return;
 
     event.preventDefault();

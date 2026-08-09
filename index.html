@@ -106,8 +106,7 @@
     }
 
     .eyebrow,
-    .status,
-    .key-hint {
+    .status {
       margin: 0;
       color: var(--green);
       font-size: clamp(8px, .75vw, 11px);
@@ -190,6 +189,34 @@
       text-align: center;
       text-decoration: none;
       text-transform: uppercase;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .portal-launcher {
+      display: grid;
+      min-width: 0;
+      grid-template-columns: minmax(0, 1fr) 44px;
+      gap: 6px;
+    }
+
+    .portal-select {
+      width: 100%;
+      min-width: 0;
+      appearance: auto;
+      text-align: center;
+    }
+
+    .portal-select option {
+      background: #020302;
+      color: var(--green);
+    }
+
+    .go {
+      width: 44px;
+      min-height: 44px;
+      padding: 0;
+      aspect-ratio: 1;
     }
 
     .action.secondary { border-color: var(--magenta); color: #ff7ae7; }
@@ -197,17 +224,6 @@
     .action:focus-visible { background: var(--green); color: #000; outline: 2px solid #fff; outline-offset: 2px; }
     .action.secondary:hover,
     .action.secondary:focus-visible { background: var(--magenta); color: #000; }
-
-    .key-hint {
-      color: #6f9e67;
-      letter-spacing: .06em;
-      text-align: center;
-    }
-
-    .key-hint kbd {
-      color: #baff9f;
-      font: inherit;
-    }
 
     .status {
       position: absolute;
@@ -251,12 +267,15 @@
       .statement { max-width: 55ch; color: #f0f7ed; font-size: clamp(8px, 2.3vw, 10.5px); line-height: 1.34; }
       .warning { padding: 6px 8px; background: rgba(0, 0, 0, .55); font-size: clamp(7px, 2vw, 9px); }
       .action { min-height: 37px; padding: 6px 7px; font-size: clamp(7px, 2.2vw, 9px); }
-      .key-hint { font-size: 6.5px; }
+      .portal-launcher { grid-template-columns: minmax(0, 1fr) 37px; }
+      .go { width: 37px; min-height: 37px; }
     }
 
     @media (max-width: 400px) {
       .actions { grid-template-columns: 1fr; gap: 5px; }
       .action { min-height: 31px; }
+      .portal-launcher { grid-template-columns: minmax(0, 1fr) 31px; }
+      .go { width: 31px; min-height: 31px; }
     }
 
     @media (max-height: 650px) {
@@ -264,7 +283,6 @@
       .statement { line-height: 1.27; }
       .warning { padding-block: 5px; }
       .action { min-height: 31px; padding-block: 5px; }
-      .key-hint { font-size: 6px; }
     }
 
     @media (max-height: 520px) and (min-width: 761px) {
@@ -302,15 +320,26 @@
       </p>
 
       <nav class="actions" aria-label="Enter or inspect the project">
-        <a class="action" id="portal-entry" href="/portal/"
-           title="Hold a transition key while clicking: S swirl · G glitch · arrow keys slide · V void iris · C CRT collapse"
-           aria-description="Hold S, G, an arrow key, V, or C while clicking to choose a transition.">Enter Recursive Portal</a>
+        <div class="portal-launcher">
+          <label for="portal-transition" hidden>Choose a portal transition</label>
+          <select class="action portal-select" id="portal-transition">
+            <option value="">Enter Recursive Portal</option>
+            <option value="swirl">Swirl</option>
+            <option value="glitch-disintegrate">Glitch Disintegration</option>
+            <option value="slide-up">Slide Up</option>
+            <option value="slide-down">Slide Down</option>
+            <option value="slide-left">Slide Left</option>
+            <option value="slide-right">Slide Right</option>
+            <option value="void-iris">Void Iris</option>
+            <option value="crt-collapse">CRT Collapse</option>
+          </select>
+          <button class="action go" id="portal-go" type="button"
+                  data-transition-select="portal-transition"
+                  data-transition-destination="/portal/"
+                  aria-label="Enter Recursive Portal using the selected transition">GO</button>
+        </div>
         <a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a>
       </nav>
-
-      <p class="key-hint" aria-label="Optional transition keys">
-        Hold + click: <kbd>S</kbd> swirl / <kbd>G</kbd> glitch / <kbd>↑ ↓ ← →</kbd> slide / <kbd>V</kbd> void / <kbd>C</kbd> CRT
-      </p>
     </section>
 
     <figure class="portrait">
