@@ -284,6 +284,7 @@
       font: 900 clamp(21px, 3.75vmin, 36px) / 1.05 "Courier New", Courier, monospace;
       letter-spacing: .08em;
       text-align: center;
+      text-decoration: none;
       text-transform: uppercase;
       text-shadow: 0 0 8px #000;
       isolation: isolate;
@@ -501,14 +502,14 @@
         <span aria-hidden="true">→</span>
       </a>
 
-      <button class="core" id="open-portal" type="button" aria-expanded="false" aria-label="Open Portal and release the game portals">
+      <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the game portals">
         <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
           <path class="vortex-tendril vortex-red"></path>
           <path class="vortex-tendril vortex-green"></path>
           <path class="vortex-tendril vortex-blue"></path>
         </svg>
         <span class="core-label">Open<br>Portal</span>
-      </button>
+      </a>
 
       <a class="portal-button south" href="/dead/games/tektite-3D-game/" data-transition="slide-up" aria-label="Open Tektite 3D Game">
       </a>
@@ -587,19 +588,22 @@
             if (portalIsOpen) compass.classList.remove("portal-opening");
           }, 1550);
         }
-        coreLabel.innerHTML = "Close<br>Portal";
+        coreLabel.textContent = "Portal";
         openPortal.setAttribute("aria-expanded", "true");
+        openPortal.setAttribute("aria-label", "Return to the Recursive Portal");
       } else if (animate) {
         void compass.offsetWidth;
         compass.classList.add("portal-closing");
         coreLabel.innerHTML = "Open<br>Portal";
         openPortal.setAttribute("aria-expanded", "false");
+        openPortal.setAttribute("aria-label", "Open Portal and release the game portals");
         closeTimer = window.setTimeout(() => {
           if (!portalIsOpen) compass.classList.remove("portal-closing");
         }, 980);
       } else {
         coreLabel.innerHTML = "Open<br>Portal";
         openPortal.setAttribute("aria-expanded", "false");
+        openPortal.setAttribute("aria-label", "Open Portal and release the game portals");
       }
 
       savePortalState(portalIsOpen);
@@ -674,8 +678,11 @@
       positionLensFromFrame(event.data);
     });
 
-    openPortal.addEventListener("click", () => {
-      setPortalState(!portalIsOpen, { animate: true });
+    openPortal.addEventListener("click", event => {
+      if (portalIsOpen) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setPortalState(true, { animate: true });
     });
 
     setPortalState(readPortalState());
