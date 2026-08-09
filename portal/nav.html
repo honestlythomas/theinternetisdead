@@ -142,7 +142,7 @@
     .portal-opening .portal-button {
       visibility: visible;
       pointer-events: auto;
-      animation: portal-emerge 1050ms cubic-bezier(.12, .72, .18, 1.12) var(--delay) both;
+      animation: portal-emerge 1050ms cubic-bezier(.12, .72, .18, 1.12) calc(var(--delay) + 240ms) both;
     }
 
     @keyframes portal-emerge {
@@ -193,26 +193,40 @@
 
     .core-vortex {
       position: absolute;
-      inset: -34%;
+      inset: -50%;
       z-index: -1;
-      border-radius: 50%;
-      background: conic-gradient(from 0deg, #ff1744, #ffea00, #00ff78, #00d9ff, #315bff, #d600ff, #ff1744);
-      opacity: .88;
-      filter: blur(4px) saturate(1.8);
-      -webkit-mask: radial-gradient(circle, transparent 0 27%, #000 40% 58%, transparent 72%);
-      mask: radial-gradient(circle, transparent 0 27%, #000 40% 58%, transparent 72%);
+      width: 200%;
+      height: 200%;
+      overflow: visible;
+      opacity: .9;
+      filter: saturate(1.5);
       transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin));
       animation: vortex-spin 1650ms linear infinite;
-      will-change: transform, filter;
+      transform-origin: center;
+      will-change: transform, filter, opacity;
     }
 
-    .core-vortex::after {
-      content: "";
-      position: absolute;
-      inset: 15%;
-      border-radius: inherit;
-      background: repeating-conic-gradient(from 15deg, transparent 0 8deg, rgba(255,255,255,.8) 8deg 11deg, transparent 11deg 19deg);
+    .vortex-tendril {
+      fill: none;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
       mix-blend-mode: screen;
+    }
+
+    .vortex-red {
+      stroke: #ff1744;
+      filter: drop-shadow(0 0 4px #ff1744);
+    }
+
+    .vortex-green {
+      stroke: #42ff55;
+      filter: drop-shadow(0 0 4px #42ff55);
+    }
+
+    .vortex-blue {
+      stroke: #18a8ff;
+      filter: drop-shadow(0 0 4px #18a8ff);
     }
 
     .core-label {
@@ -229,12 +243,42 @@
     }
 
     .portal-opening .core-vortex {
-      animation-duration: 520ms;
-      filter: blur(2px) saturate(2.8) brightness(1.5);
+      animation:
+        vortex-open 1250ms cubic-bezier(.1, .76, .18, 1) both,
+        vortex-spin 420ms linear infinite;
+    }
+
+    .portal-opening .core {
+      animation: core-open 1250ms cubic-bezier(.12, .72, .18, 1) both;
     }
 
     @keyframes vortex-spin {
       to { --vortex-spin: 360deg; }
+    }
+
+    @keyframes vortex-open {
+      0% {
+        opacity: .78;
+        filter: saturate(1.4) brightness(1);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(.72);
+      }
+      48% {
+        opacity: 1;
+        filter: saturate(2.4) brightness(1.65);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(2.45);
+      }
+      100% {
+        opacity: .96;
+        filter: saturate(1.9) brightness(1.25);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
+      }
+    }
+
+    @keyframes core-open {
+      0% { transform: scale(1); }
+      42% { transform: scale(2.2); }
+      68% { transform: scale(1.28); }
+      100% { transform: scale(1.08); }
     }
 
     @media (max-width: 520px) {
@@ -253,8 +297,12 @@
       <span>→</span>
     </a>
 
-    <button class="core" id="open-portal" type="button" aria-label="Open Portal and release the direction portals">
-      <span class="core-vortex" aria-hidden="true"></span>
+    <button class="core" id="open-portal" type="button" aria-expanded="false" aria-label="Open Portal and release the direction portals">
+      <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
+        <path class="vortex-tendril vortex-red"></path>
+        <path class="vortex-tendril vortex-green"></path>
+        <path class="vortex-tendril vortex-blue"></path>
+      </svg>
       <span class="core-label">Open<br>Portal</span>
     </button>
 
@@ -270,9 +318,28 @@
   <script>
     const compass = document.querySelector(".compass");
     const openPortal = document.getElementById("open-portal");
+    const tendrils = document.querySelectorAll(".vortex-tendril");
     let pointerFrame = 0;
     let pointerX = 0;
     let pointerY = 0;
+
+    const makeSpiral = phase => {
+      const points = [];
+      const steps = 260;
+      for (let step = 0; step <= steps; step++) {
+        const progress = step / steps;
+        const angle = progress * Math.PI * 10 + phase;
+        const radius = 4 + progress * 98;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        points.push(`${step ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`);
+      }
+      return points.join(" ");
+    };
+
+    tendrils.forEach((tendril, index) => {
+      tendril.setAttribute("d", makeSpiral(index * Math.PI * 2 / tendrils.length));
+    });
 
     const publishPointer = () => {
       pointerFrame = 0;
@@ -299,6 +366,7 @@
       compass.classList.remove("portal-opening");
       void compass.offsetWidth;
       compass.classList.add("portal-opening");
+      openPortal.setAttribute("aria-expanded", "true");
     });
 
     document.addEventListener("click", event => {
