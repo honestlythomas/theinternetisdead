@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Portal Navigation</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --green: #72ff19;
+      --magenta: #ff2bd6;
+      --line: rgba(114, 255, 25, .32);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    body {
+      color: var(--green);
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    .compass {
+      position: relative;
+      display: grid;
+      width: 100%;
+      height: 100%;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      place-items: center;
+    }
+
+    .compass::before,
+    .compass::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .compass::before {
+      top: 50%;
+      left: 8%;
+      width: 84%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line), transparent);
+    }
+
+    .compass::after {
+      top: 8%;
+      left: 50%;
+      width: 1px;
+      height: 84%;
+      background: linear-gradient(180deg, transparent, var(--line), transparent);
+    }
+
+    .portal-button {
+      position: relative;
+      display: grid;
+      width: min(25vmin, 210px);
+      aspect-ratio: 1;
+      place-items: center;
+      overflow: hidden;
+      border: 2px solid var(--green);
+      border-radius: 50%;
+      background:
+        linear-gradient(rgba(0, 0, 0, .12), rgba(0, 0, 0, .12)),
+        url("/dead/assets/images/static.gif") center / cover no-repeat;
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, .85),
+        0 0 0 5px rgba(114, 255, 25, .3),
+        0 0 34px rgba(114, 255, 25, .2),
+        inset 0 0 32px rgba(0, 0, 0, .45);
+      color: var(--green);
+      text-decoration: none;
+      transform: translateZ(0);
+    }
+
+    .portal-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .3) 3px 4px),
+        radial-gradient(circle, transparent 38%, rgba(0, 0, 0, .58) 100%);
+    }
+
+    .portal-button span {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      min-width: 46%;
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .76);
+      font-size: clamp(10px, 2.2vmin, 20px);
+      font-weight: 900;
+      text-shadow: 0 0 8px #000;
+    }
+
+    .portal-button:hover,
+    .portal-button:focus-visible {
+      border-color: var(--magenta);
+      color: #ff8deb;
+      outline: 2px solid #fff;
+      outline-offset: 6px;
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, .85),
+        0 0 0 5px rgba(255, 43, 214, .45),
+        0 0 48px rgba(255, 43, 214, .42);
+    }
+
+    .north { grid-column: 2; grid-row: 1; }
+    .east  { grid-column: 3; grid-row: 2; }
+    .south { grid-column: 2; grid-row: 3; }
+    .west  { grid-column: 1; grid-row: 2; }
+
+    .core {
+      grid-column: 2;
+      grid-row: 2;
+      display: grid;
+      width: min(17vmin, 140px);
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid rgba(255, 43, 214, .5);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 0, 0, .92), rgba(0, 0, 0, .55) 68%, transparent 70%);
+      color: var(--green);
+      font-size: clamp(7px, 1.25vmin, 12px);
+      font-weight: 700;
+      letter-spacing: .08em;
+      line-height: 1.35;
+      text-align: center;
+      text-transform: uppercase;
+      text-shadow: 0 0 8px #000;
+    }
+
+    @media (max-width: 520px) {
+      .portal-button { width: 27vmin; }
+      .core { width: 19vmin; font-size: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="compass" aria-label="Cardinal portals back to the splash page">
+    <a class="portal-button north" href="/" data-transition="slide-down" aria-label="Return through the north portal">
+      <span>↑</span>
+    </a>
+
+    <a class="portal-button east" href="/" data-transition="slide-left" aria-label="Return through the east portal">
+      <span>→</span>
+    </a>
+
+    <div class="core" aria-hidden="true">Recursive<br>Portal</div>
+
+    <a class="portal-button south" href="/" data-transition="slide-up" aria-label="Return through the south portal">
+      <span>↓</span>
+    </a>
+
+    <a class="portal-button west" href="/" data-transition="slide-right" aria-label="Return through the west portal">
+      <span>←</span>
+    </a>
+  </nav>
+
+  <script>
+    document.addEventListener("click", event => {
+      const portal = event.target.closest("a[data-transition]");
+      if (!portal) return;
+      event.preventDefault();
+
+      const transition = portal.dataset.transition;
+      try {
+        if (window.parent !== window && window.parent.PageTransitions) {
+          window.parent.PageTransitions.navigate(portal.href, transition);
+          return;
+        }
+      } catch (_) {}
+
+      window.top.location.assign(portal.href);
+    });
+  </script>
+</body>
+</html>
