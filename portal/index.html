@@ -45,20 +45,21 @@
     }
 
     .navigation {
-      top: 50%;
+      top: 54%;
       left: 50%;
       z-index: 1;
-      width: min(94vmin, 820px);
-      height: min(94vmin, 820px);
+      width: min(84vmin, 760px);
+      height: min(84vmin, 760px);
       background: transparent;
       transform: translate(-50%, -50%);
     }
 
-    .home-link {
+    .home-link,
+    .page-title {
       position: absolute;
       top: max(16px, env(safe-area-inset-top));
-      left: max(16px, env(safe-area-inset-left));
       z-index: 2;
+      margin: 0;
       color: #72ff19;
       font-family: "Courier New", Courier, monospace;
       font-size: clamp(16px, 2vw, 24px);
@@ -68,6 +69,16 @@
       text-decoration: underline;
       text-underline-offset: .2em;
       text-shadow: 0 2px 8px #000, 0 0 12px rgba(114, 255, 25, .38);
+    }
+
+    .home-link {
+      left: max(16px, env(safe-area-inset-left));
+    }
+
+    .page-title {
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
     }
 
     .home-link:visited {
@@ -105,8 +116,9 @@
 
     @media (max-width: 520px) {
       .navigation {
-        width: 98vmin;
-        height: 98vmin;
+        top: 55%;
+        width: 88vmin;
+        height: 88vmin;
       }
     }
   </style>
@@ -123,6 +135,7 @@
             allowtransparency="true"></iframe>
 
     <a class="home-link" href="/">theinternetisdead.org</a>
+    <h1 class="page-title">Portal</h1>
     <div class="cursor-lens" aria-hidden="true"></div>
   </main>
 

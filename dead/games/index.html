@@ -62,11 +62,11 @@
 
     .navigation {
       position: absolute;
-      top: 50%;
+      top: 54%;
       left: 50%;
       z-index: 1;
-      width: min(94vmin, 820px);
-      height: min(94vmin, 820px);
+      width: min(84vmin, 760px);
+      height: min(84vmin, 760px);
       background: transparent;
       transform: translate(-50%, -50%);
       isolation: isolate;
@@ -120,7 +120,7 @@
     .portal-button {
       position: relative;
       display: grid;
-      width: min(25vmin, 210px);
+      width: min(22vmin, 190px);
       aspect-ratio: 1;
       place-items: center;
       overflow: hidden;
@@ -275,7 +275,7 @@
       grid-column: 2;
       grid-row: 2;
       display: grid;
-      width: min(17vmin, 140px);
+      width: min(15vmin, 125px);
       aspect-ratio: 1;
       place-items: center;
       overflow: hidden;
@@ -437,12 +437,14 @@
       100% { transform: scale(3); }
     }
 
-    .home-link {
+    .home-link,
+    .page-title {
       position: absolute;
       top: max(16px, env(safe-area-inset-top));
-      left: max(16px, env(safe-area-inset-left));
       z-index: 2;
+      margin: 0;
       color: var(--green);
+      font-family: "Courier New", Courier, monospace;
       font-size: clamp(16px, 2vw, 24px);
       font-style: italic;
       font-weight: 700;
@@ -450,6 +452,16 @@
       text-decoration: underline;
       text-underline-offset: .2em;
       text-shadow: 0 2px 8px #000, 0 0 12px rgba(114, 255, 25, .38);
+    }
+
+    .home-link {
+      left: max(16px, env(safe-area-inset-left));
+    }
+
+    .page-title {
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
     }
 
     .home-link:visited { color: var(--green); }
@@ -483,12 +495,13 @@
 
     @media (max-width: 520px) {
       .navigation {
-        width: 98vmin;
-        height: 98vmin;
+        top: 55%;
+        width: 88vmin;
+        height: 88vmin;
       }
 
-      .portal-button { width: 27vmin; }
-      .core { width: 19vmin; font-size: clamp(15px, 3.7vmin, 24px); }
+      .portal-button { width: 23vmin; }
+      .core { width: 16vmin; font-size: clamp(15px, 3.7vmin, 24px); }
     }
   </style>
 </head>
@@ -521,6 +534,7 @@
     </nav>
 
     <a class="home-link" href="/">theinternetisdead.org</a>
+    <h1 class="page-title">Games</h1>
     <div class="cursor-lens" aria-hidden="true"></div>
   </main>
 
