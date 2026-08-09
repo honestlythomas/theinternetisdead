@@ -552,13 +552,13 @@
         <span class="destination-label">Experiments</span>
       </a>
 
-      <button class="core" id="open-portal" type="button" aria-expanded="false" aria-label="Open Portal and release the direction portals">
+      <button class="core" id="open-portal" type="button" aria-expanded="false" aria-label="Enter Portal and release the direction portals">
         <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
           <path class="vortex-tendril vortex-red"></path>
           <path class="vortex-tendril vortex-green"></path>
           <path class="vortex-tendril vortex-blue"></path>
         </svg>
-        <span class="core-label">Open<br>Portal</span>
+        <span class="core-label">Enter</span>
       </button>
 
       <a class="portal-button south" href="/" data-transition="slide-up" aria-label="Return through the south portal">
@@ -642,22 +642,22 @@
             if (portalIsOpen) compass.classList.remove("portal-opening");
           }, 1550);
         }
-        coreLabel.innerHTML = "Close<br>Portal";
+        coreLabel.textContent = "Exit";
         openPortal.setAttribute("aria-expanded", "true");
-        openPortal.setAttribute("aria-label", "Close Portal and hide the direction portals");
+        openPortal.setAttribute("aria-label", "Exit Portal and hide the direction portals");
       } else if (animate) {
         void compass.offsetWidth;
         compass.classList.add("portal-closing");
-        coreLabel.innerHTML = "Open<br>Portal";
+        coreLabel.textContent = "Enter";
         openPortal.setAttribute("aria-expanded", "false");
-        openPortal.setAttribute("aria-label", "Open Portal and release the direction portals");
+        openPortal.setAttribute("aria-label", "Enter Portal and release the direction portals");
         closeTimer = window.setTimeout(() => {
           if (!portalIsOpen) compass.classList.remove("portal-closing");
         }, 980);
       } else {
-        coreLabel.innerHTML = "Open<br>Portal";
+        coreLabel.textContent = "Enter";
         openPortal.setAttribute("aria-expanded", "false");
-        openPortal.setAttribute("aria-label", "Open Portal and release the direction portals");
+        openPortal.setAttribute("aria-label", "Enter Portal and release the direction portals");
       }
 
       savePortalState(portalIsOpen);
