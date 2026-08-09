@@ -145,6 +145,12 @@
       animation: portal-emerge 1050ms cubic-bezier(.12, .72, .18, 1.12) calc(var(--delay) + 240ms) both;
     }
 
+    .portal-closing .portal-button {
+      visibility: visible;
+      pointer-events: none;
+      animation: portal-emerge 720ms cubic-bezier(.62, 0, .88, .38) calc(210ms - var(--delay)) reverse both;
+    }
+
     @keyframes portal-emerge {
       0% {
         opacity: 0;
@@ -176,19 +182,22 @@
       border-radius: 50%;
       padding: 0;
       background: radial-gradient(circle, #000 0 34%, rgba(0, 0, 0, .78) 52%, transparent 72%);
-      color: var(--green);
+      color: #fff;
       cursor: pointer;
-      font-size: clamp(7px, 1.25vmin, 12px);
+      font-size: clamp(21px, 3.75vmin, 36px);
       font-family: inherit;
-      font-weight: 700;
+      font-weight: 900;
       letter-spacing: .08em;
-      line-height: 1.35;
+      line-height: 1.05;
       text-align: center;
       text-transform: uppercase;
       text-shadow: 0 0 8px #000;
       isolation: isolate;
       appearance: none;
-      box-shadow: 0 0 28px rgba(255, 43, 214, .22);
+      outline: 2px solid #fff;
+      outline-offset: 6px;
+      box-shadow: 0 0 48px rgba(0, 217, 255, .46);
+      transition: outline-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
     }
 
     .core-vortex {
@@ -236,10 +245,9 @@
 
     .core:hover,
     .core:focus-visible {
-      outline: 2px solid #fff;
-      outline-offset: 6px;
-      color: #fff;
-      box-shadow: 0 0 48px rgba(0, 217, 255, .46);
+      outline-color: var(--green);
+      color: var(--green);
+      box-shadow: 0 0 64px rgba(114, 255, 25, .58);
     }
 
     .portal-opening .core-vortex {
@@ -250,6 +258,16 @@
 
     .portal-opening .core {
       animation: core-open 1250ms cubic-bezier(.12, .72, .18, 1) both;
+    }
+
+    .portal-closing .core-vortex {
+      animation:
+        vortex-close 930ms cubic-bezier(.62, 0, .88, .38) both,
+        vortex-spin 360ms linear infinite;
+    }
+
+    .portal-closing .core {
+      animation: core-close 930ms cubic-bezier(.62, 0, .88, .38) both;
     }
 
     @keyframes vortex-spin {
@@ -281,9 +299,33 @@
       100% { transform: scale(1.08); }
     }
 
+    @keyframes vortex-close {
+      0% {
+        opacity: .96;
+        filter: saturate(1.9) brightness(1.25);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
+      }
+      38% {
+        opacity: 1;
+        filter: saturate(2.5) brightness(1.7);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(2.1);
+      }
+      100% {
+        opacity: .9;
+        filter: saturate(1.5) brightness(1);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1);
+      }
+    }
+
+    @keyframes core-close {
+      0% { transform: scale(1.08); }
+      38% { transform: scale(1.7); }
+      100% { transform: scale(1); }
+    }
+
     @media (max-width: 520px) {
       .portal-button { width: 27vmin; }
-      .core { width: 19vmin; font-size: 6px; }
+      .core { width: 19vmin; font-size: clamp(15px, 3.7vmin, 24px); }
     }
   </style>
 </head>
@@ -318,10 +360,13 @@
   <script>
     const compass = document.querySelector(".compass");
     const openPortal = document.getElementById("open-portal");
+    const coreLabel = openPortal.querySelector(".core-label");
     const tendrils = document.querySelectorAll(".vortex-tendril");
     let pointerFrame = 0;
     let pointerX = 0;
     let pointerY = 0;
+    let portalIsOpen = false;
+    let closeTimer = 0;
 
     const makeSpiral = phase => {
       const points = [];
@@ -363,9 +408,26 @@
     });
 
     openPortal.addEventListener("click", () => {
-      compass.classList.remove("portal-opening");
+      window.clearTimeout(closeTimer);
+
+      if (portalIsOpen) {
+        portalIsOpen = false;
+        compass.classList.remove("portal-opening", "portal-closing");
+        void compass.offsetWidth;
+        compass.classList.add("portal-closing");
+        coreLabel.innerHTML = "Open<br>Portal";
+        openPortal.setAttribute("aria-expanded", "false");
+        closeTimer = window.setTimeout(() => {
+          if (!portalIsOpen) compass.classList.remove("portal-closing");
+        }, 980);
+        return;
+      }
+
+      portalIsOpen = true;
+      compass.classList.remove("portal-opening", "portal-closing");
       void compass.offsetWidth;
       compass.classList.add("portal-opening");
+      coreLabel.innerHTML = "Close<br>Portal";
       openPortal.setAttribute("aria-expanded", "true");
     });
 
