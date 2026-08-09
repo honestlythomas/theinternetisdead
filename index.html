@@ -169,7 +169,7 @@
 
     .actions {
       display: grid;
-      grid-template-columns: 1.08fr .92fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
     }
 
@@ -193,13 +193,6 @@
       cursor: pointer;
     }
 
-    .portal-launcher {
-      display: grid;
-      min-width: 0;
-      grid-template-columns: minmax(0, 1fr) 44px;
-      gap: 6px;
-    }
-
     .portal-select {
       width: 100%;
       min-width: 0;
@@ -213,10 +206,10 @@
     }
 
     .go {
-      width: 44px;
+      grid-column: 1 / -1;
+      width: 100%;
       min-height: 44px;
-      padding: 0;
-      aspect-ratio: 1;
+      aspect-ratio: auto;
     }
 
     .action.secondary { border-color: var(--magenta); color: #ff7ae7; }
@@ -267,15 +260,11 @@
       .statement { max-width: 55ch; color: #f0f7ed; font-size: clamp(8px, 2.3vw, 10.5px); line-height: 1.34; }
       .warning { padding: 6px 8px; background: rgba(0, 0, 0, .55); font-size: clamp(7px, 2vw, 9px); }
       .action { min-height: 37px; padding: 6px 7px; font-size: clamp(7px, 2.2vw, 9px); }
-      .portal-launcher { grid-template-columns: minmax(0, 1fr) 37px; }
-      .go { width: 37px; min-height: 37px; }
     }
 
     @media (max-width: 400px) {
-      .actions { grid-template-columns: 1fr; gap: 5px; }
+      .actions { gap: 5px; }
       .action { min-height: 31px; }
-      .portal-launcher { grid-template-columns: minmax(0, 1fr) 31px; }
-      .go { width: 31px; min-height: 31px; }
     }
 
     @media (max-height: 650px) {
@@ -320,24 +309,22 @@
       </p>
 
       <nav class="actions" aria-label="Enter or inspect the project">
-        <div class="portal-launcher">
-          <label for="portal-transition" hidden>Choose a portal transition</label>
-          <select class="action portal-select" id="portal-transition"
-                  data-arrow-transition-destination="/portal/"
-                  title="Choose Arrow Keys, then press an arrow key to enter in that direction">
-            <option value="">Enter Recursive Portal</option>
-            <option value="swirl">Swirl</option>
-            <option value="glitch-disintegrate">Glitch Disintegration</option>
-            <option value="arrow-keys">Arrow Keys</option>
-            <option value="void-iris">Void Iris</option>
-            <option value="crt-collapse">CRT Collapse</option>
-          </select>
-          <a class="action go" id="portal-go" href="/portal/"
-             data-transition-select="portal-transition"
-             data-transition-destination="/portal/"
-             aria-label="Enter Recursive Portal using the selected transition">GO</a>
-        </div>
+        <label for="portal-transition" hidden>Choose a portal transition</label>
+        <select class="action portal-select" id="portal-transition"
+                data-arrow-transition-destination="/portal/"
+                title="Choose Arrow Keys, then press an arrow key to enter in that direction">
+          <option value="">Enter Recursive Portal</option>
+          <option value="swirl">Swirl</option>
+          <option value="glitch-disintegrate">Glitch Disintegration</option>
+          <option value="arrow-keys">Arrow Keys</option>
+          <option value="void-iris">Void Iris</option>
+          <option value="crt-collapse">CRT Collapse</option>
+        </select>
         <a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a>
+        <a class="action go" id="portal-go" href="/portal/"
+           data-transition-select="portal-transition"
+           data-transition-destination="/portal/"
+           aria-label="Enter Recursive Portal using the selected transition">GO</a>
       </nav>
     </section>
 
