@@ -11,6 +11,14 @@
       --green: #72ff19;
       --magenta: #ff2bd6;
       --line: rgba(114, 255, 25, .32);
+      --vortex-x: 0px;
+      --vortex-y: 0px;
+    }
+
+    @property --vortex-spin {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
     }
 
     * { box-sizing: border-box; }
@@ -83,6 +91,7 @@
       color: var(--green);
       text-decoration: none;
       transform: translateZ(0);
+      will-change: transform, opacity;
     }
 
     .portal-button::before {
@@ -122,29 +131,105 @@
         0 0 48px rgba(255, 43, 214, .42);
     }
 
-    .north { grid-column: 2; grid-row: 1; }
-    .east  { grid-column: 3; grid-row: 2; }
-    .south { grid-column: 2; grid-row: 3; }
-    .west  { grid-column: 1; grid-row: 2; }
+    .north { grid-column: 2; grid-row: 1; --from-x: 0%; --from-y: 134%; --over-x: 0%; --over-y: -10%; --spiral: -620deg; --delay: 0ms; }
+    .east  { grid-column: 3; grid-row: 2; --from-x: -134%; --from-y: 0%; --over-x: 10%; --over-y: 0%; --spiral: 620deg; --delay: 70ms; }
+    .south { grid-column: 2; grid-row: 3; --from-x: 0%; --from-y: -134%; --over-x: 0%; --over-y: 10%; --spiral: -620deg; --delay: 140ms; }
+    .west  { grid-column: 1; grid-row: 2; --from-x: 134%; --from-y: 0%; --over-x: -10%; --over-y: 0%; --spiral: 620deg; --delay: 210ms; }
+
+    .portal-opening .portal-button {
+      animation: portal-emerge 1050ms cubic-bezier(.12, .72, .18, 1.12) var(--delay) both;
+    }
+
+    @keyframes portal-emerge {
+      0% {
+        opacity: 0;
+        transform: translate3d(var(--from-x), var(--from-y), 0) rotate(var(--spiral)) scale(.02);
+        filter: brightness(3) saturate(2.5);
+      }
+      58% {
+        opacity: 1;
+        transform: translate3d(var(--over-x), var(--over-y), 0) rotate(-26deg) scale(1.12);
+        filter: brightness(1.4) saturate(1.6);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+        filter: none;
+      }
+    }
 
     .core {
+      position: relative;
       grid-column: 2;
       grid-row: 2;
       display: grid;
       width: min(17vmin, 140px);
       aspect-ratio: 1;
       place-items: center;
-      border: 1px solid rgba(255, 43, 214, .5);
+      overflow: visible;
+      border: 1px solid rgba(255, 43, 214, .7);
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 0, 0, .92), rgba(0, 0, 0, .55) 68%, transparent 70%);
+      padding: 0;
+      background: radial-gradient(circle, #000 0 34%, rgba(0, 0, 0, .78) 52%, transparent 72%);
       color: var(--green);
+      cursor: pointer;
       font-size: clamp(7px, 1.25vmin, 12px);
+      font-family: inherit;
       font-weight: 700;
       letter-spacing: .08em;
       line-height: 1.35;
       text-align: center;
       text-transform: uppercase;
       text-shadow: 0 0 8px #000;
+      isolation: isolate;
+      appearance: none;
+      box-shadow: 0 0 28px rgba(255, 43, 214, .22);
+    }
+
+    .core-vortex {
+      position: absolute;
+      inset: -34%;
+      z-index: -1;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #ff1744, #ffea00, #00ff78, #00d9ff, #315bff, #d600ff, #ff1744);
+      opacity: .88;
+      filter: blur(4px) saturate(1.8);
+      -webkit-mask: radial-gradient(circle, transparent 0 27%, #000 40% 58%, transparent 72%);
+      mask: radial-gradient(circle, transparent 0 27%, #000 40% 58%, transparent 72%);
+      transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin));
+      animation: vortex-spin 1650ms linear infinite;
+      will-change: transform, filter;
+    }
+
+    .core-vortex::after {
+      content: "";
+      position: absolute;
+      inset: 15%;
+      border-radius: inherit;
+      background: repeating-conic-gradient(from 15deg, transparent 0 8deg, rgba(255,255,255,.8) 8deg 11deg, transparent 11deg 19deg);
+      mix-blend-mode: screen;
+    }
+
+    .core-label {
+      position: relative;
+      z-index: 1;
+    }
+
+    .core:hover,
+    .core:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 6px;
+      color: #fff;
+      box-shadow: 0 0 48px rgba(0, 217, 255, .46);
+    }
+
+    .portal-opening .core-vortex {
+      animation-duration: 520ms;
+      filter: blur(2px) saturate(2.8) brightness(1.5);
+    }
+
+    @keyframes vortex-spin {
+      to { --vortex-spin: 360deg; }
     }
 
     @media (max-width: 520px) {
@@ -163,7 +248,10 @@
       <span>→</span>
     </a>
 
-    <div class="core" aria-hidden="true">Recursive<br>Portal</div>
+    <button class="core" id="open-portal" type="button" aria-label="Open Portal and release the direction portals">
+      <span class="core-vortex" aria-hidden="true"></span>
+      <span class="core-label">Open<br>Portal</span>
+    </button>
 
     <a class="portal-button south" href="/" data-transition="slide-up" aria-label="Return through the south portal">
       <span>↓</span>
@@ -175,6 +263,39 @@
   </nav>
 
   <script>
+    const compass = document.querySelector(".compass");
+    const openPortal = document.getElementById("open-portal");
+    let pointerFrame = 0;
+    let pointerX = 0;
+    let pointerY = 0;
+
+    const publishPointer = () => {
+      pointerFrame = 0;
+      document.documentElement.style.setProperty("--vortex-x", `${-pointerX * 15}px`);
+      document.documentElement.style.setProperty("--vortex-y", `${-pointerY * 15}px`);
+      try {
+        window.parent.postMessage({ type: "portal-pointer", x: pointerX, y: pointerY }, window.location.origin);
+      } catch (_) {}
+    };
+
+    window.addEventListener("pointermove", event => {
+      pointerX = Math.max(-1, Math.min(1, event.clientX / window.innerWidth * 2 - 1));
+      pointerY = Math.max(-1, Math.min(1, event.clientY / window.innerHeight * 2 - 1));
+      if (!pointerFrame) pointerFrame = requestAnimationFrame(publishPointer);
+    });
+
+    window.addEventListener("pointerleave", () => {
+      pointerX = 0;
+      pointerY = 0;
+      if (!pointerFrame) pointerFrame = requestAnimationFrame(publishPointer);
+    });
+
+    openPortal.addEventListener("click", () => {
+      compass.classList.remove("portal-opening");
+      void compass.offsetWidth;
+      compass.classList.add("portal-opening");
+    });
+
     document.addEventListener("click", event => {
       const portal = event.target.closest("a[data-transition]");
       if (!portal) return;
