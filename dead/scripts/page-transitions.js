@@ -107,42 +107,101 @@
   const playSwirl = async (direction, options = {}) => {
     const duration = options.duration ?? 2500;
     const root = transitionRoot(options);
-    const overlay = makeOverlay();
     const outgoing = direction === "out";
-    const easing = outgoing
-      ? "cubic-bezier(.72,0,.94,.56)"
-      : "cubic-bezier(.08,.58,.28,1)";
-
     lockPage(root);
 
-    const rootFrames = outgoing ? [
-      { opacity: 1, transform: "rotate(0deg) scale(1)", filter: "saturate(1) contrast(1)" },
-      { opacity: 1, transform: "rotate(36deg) scale(1.06)", filter: "saturate(1.35) contrast(1.08)", offset: .24 },
-      { opacity: .92, transform: "rotate(430deg) scale(.48)", filter: "saturate(1.8) contrast(1.18) blur(.5px)", offset: .72 },
-      { opacity: 0, transform: "rotate(745deg) scale(.015)", filter: "saturate(2.2) contrast(1.3) blur(2px)" }
-    ] : [
-      { opacity: 0, transform: "rotate(-745deg) scale(.015)", filter: "saturate(2.2) contrast(1.3) blur(2px)" },
-      { opacity: .92, transform: "rotate(-430deg) scale(.48)", filter: "saturate(1.8) contrast(1.18) blur(.5px)", offset: .28 },
-      { opacity: 1, transform: "rotate(-36deg) scale(1.06)", filter: "saturate(1.35) contrast(1.08)", offset: .76 },
-      { opacity: 1, transform: "rotate(0deg) scale(1)", filter: "none" }
-    ];
+    const vortex = document.createElement("div");
+    vortex.setAttribute("aria-hidden", "true");
+    vortex.dataset.pageTransitionOverlay = "";
+    Object.assign(vortex.style, {
+      position: "fixed",
+      inset: "0",
+      zIndex: "2147483647",
+      overflow: "hidden",
+      pointerEvents: "none",
+      background: "#000",
+      perspective: "900px"
+    });
 
-    const overlayFrames = outgoing ? [
-      { opacity: 0, transform: "scale(.1) rotate(0deg)" },
-      { opacity: .46, offset: .55 },
-      { opacity: 1, transform: "scale(3) rotate(745deg)" }
-    ] : [
-      { opacity: 1, transform: "scale(3) rotate(-745deg)" },
-      { opacity: .46, offset: .45 },
-      { opacity: 0, transform: "scale(.1) rotate(0deg)" }
-    ];
+    const maxRadius = Math.hypot(window.innerWidth * .5, window.innerHeight * .52);
+    const ringCount = window.innerWidth < 700 ? 18 : 28;
+    const ringWidth = maxRadius / ringCount;
+    const animations = [];
 
-    const rootAnimation = trackAnimation(root.animate(rootFrames, { duration, easing, fill: "both" }));
-    const overlayAnimation = trackAnimation(overlay.animate(overlayFrames, { duration, easing: outgoing ? "ease-in" : "ease-out", fill: "both" }));
-    await Promise.all([waitFor(rootAnimation), waitFor(overlayAnimation)]);
+    for (let index = ringCount - 1; index >= 0; index -= 1) {
+      const inner = index * ringWidth;
+      const outer = (index + 1) * ringWidth + 2;
+      const depth = 1 - (inner + outer) * .5 / maxRadius;
+      const clone = root.cloneNode(true);
+      clone.removeAttribute("id");
+      clone.removeAttribute("data-transition-root");
+      clone.querySelectorAll("[id]").forEach(element => element.removeAttribute("id"));
+      clone.querySelectorAll("script").forEach(element => element.remove());
+      Object.assign(clone.style, {
+        position: "absolute",
+        inset: "0",
+        width: "100vw",
+        height: "100dvh",
+        margin: "0",
+        transformOrigin: "50% 52%",
+        willChange: "transform, filter, opacity",
+        backfaceVisibility: "hidden"
+      });
+
+      const mask = `radial-gradient(circle at 50% 52%, transparent ${Math.max(0, inner - 1)}px, #000 ${inner}px, #000 ${outer}px, transparent ${outer + 1}px)`;
+      clone.style.maskImage = mask;
+      clone.style.webkitMaskImage = mask;
+      vortex.appendChild(clone);
+
+      const finalTurn = 510 + depth * depth * 1680;
+      const halfTurn = 72 + depth * depth * 520;
+      const directionSign = index % 7 === 0 ? .92 : 1;
+      const frames = outgoing ? [
+        { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", filter: "none", opacity: 1 },
+        { transform: `translate3d(0,1vh,0) rotate(${(10 + depth * 42) * directionSign}deg) scale(${1.015 + depth * .045})`, filter: `saturate(${1 + depth * .4})`, opacity: 1, offset: .18 },
+        { transform: `translate3d(0,5vh,0) rotate(${halfTurn * directionSign}deg) scale(${.82 - depth * .18})`, filter: `saturate(${1.3 + depth}) contrast(${1.05 + depth * .3})`, opacity: .98, offset: .56 },
+        { transform: `translate3d(0,14vh,0) rotate(${finalTurn * directionSign}deg) scale(.006)`, filter: "saturate(2.6) contrast(1.5) blur(1.5px)", opacity: 0 }
+      ] : [
+        { transform: `translate3d(0,14vh,0) rotate(${-finalTurn * directionSign}deg) scale(.006)`, filter: "saturate(2.6) contrast(1.5) blur(1.5px)", opacity: 0 },
+        { transform: `translate3d(0,5vh,0) rotate(${-halfTurn * directionSign}deg) scale(${.82 - depth * .18})`, filter: `saturate(${1.3 + depth}) contrast(${1.05 + depth * .3})`, opacity: .98, offset: .44 },
+        { transform: `translate3d(0,1vh,0) rotate(${-(10 + depth * 42) * directionSign}deg) scale(${1.015 + depth * .045})`, filter: `saturate(${1 + depth * .4})`, opacity: 1, offset: .82 },
+        { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", filter: "none", opacity: 1 }
+      ];
+
+      animations.push(trackAnimation(clone.animate(frames, {
+        duration,
+        easing: outgoing ? "cubic-bezier(.58,0,.96,.55)" : "cubic-bezier(.08,.62,.22,1)",
+        fill: "both"
+      })));
+    }
+
+    const drain = document.createElement("div");
+    Object.assign(drain.style, {
+      position: "absolute",
+      inset: "0",
+      zIndex: String(ringCount + 1),
+      transformOrigin: "50% 52%",
+      background: "repeating-conic-gradient(from 0deg at 50% 52%, transparent 0 9deg, rgba(114,255,25,.12) 9deg 11deg, transparent 11deg 20deg), radial-gradient(circle at 50% 52%, #000 0 3%, rgba(0,0,0,.92) 5%, rgba(0,0,0,.45) 11%, transparent 27%)"
+    });
+    vortex.appendChild(drain);
+    document.body.appendChild(vortex);
+
+    const rootAnimation = trackAnimation(root.animate([{ opacity: 0 }, { opacity: 0 }], { duration, fill: "both" }));
+    animations.push(rootAnimation);
+    animations.push(trackAnimation(drain.animate(outgoing ? [
+      { opacity: .12, transform: "rotate(0deg) scale(.5)" },
+      { opacity: .72, transform: "rotate(260deg) scale(1.25)", offset: .55 },
+      { opacity: 1, transform: "rotate(940deg) scale(3.4)" }
+    ] : [
+      { opacity: 1, transform: "rotate(-940deg) scale(3.4)" },
+      { opacity: .72, transform: "rotate(-260deg) scale(1.25)", offset: .45 },
+      { opacity: 0, transform: "rotate(0deg) scale(.5)" }
+    ], { duration, easing: outgoing ? "ease-in" : "ease-out", fill: "both" })));
+
+    await Promise.all(animations.map(waitFor));
 
     if (!outgoing) {
-      finishIncoming(root, [rootAnimation, overlayAnimation], [overlay]);
+      finishIncoming(root, animations, [vortex]);
     }
   };
 
