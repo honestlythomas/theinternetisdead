@@ -455,10 +455,10 @@
     if (!selector || selector.value !== "arrow-keys") return;
 
     const arrowTransitions = {
-      ArrowUp: "slide-up",
-      ArrowDown: "slide-down",
-      ArrowLeft: "slide-left",
-      ArrowRight: "slide-right"
+      ArrowUp: "slide-down",
+      ArrowDown: "slide-up",
+      ArrowLeft: "slide-right",
+      ArrowRight: "slide-left"
     };
     const transition = arrowTransitions[event.key];
     if (!transition) return;
