@@ -320,9 +320,10 @@
 
     const launcher = event.target.closest("[data-transition-destination]");
     if (launcher) {
-      event.preventDefault();
       const selector = document.getElementById(launcher.dataset.transitionSelect);
       const transition = selector?.value || undefined;
+      if (!transition) return;
+      event.preventDefault();
       api.navigate(launcher.dataset.transitionDestination, transition);
       return;
     }
