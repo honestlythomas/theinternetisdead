@@ -53,6 +53,7 @@
       position: absolute;
       z-index: -1;
       pointer-events: none;
+      transition: width 180ms ease, height 180ms ease, background 180ms ease;
     }
 
     .compass::before {
@@ -69,6 +70,16 @@
       width: 1px;
       height: 84%;
       background: linear-gradient(180deg, transparent, var(--line), transparent);
+    }
+
+    .compass.portal-opening::before {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--magenta), transparent);
+    }
+
+    .compass.portal-opening::after {
+      width: 3px;
+      background: linear-gradient(180deg, transparent, var(--magenta), transparent);
     }
 
     .portal-button {
