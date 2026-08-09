@@ -89,17 +89,13 @@
       flex-direction: column;
       justify-content: flex-start;
       gap: 0;
-      overflow-y: auto;
+      overflow: hidden;
       padding: var(--identity-pad-top) var(--identity-pad-right) var(--identity-pad-bottom) var(--identity-pad-left);
-      -ms-overflow-style: none;
-      scrollbar-width: none;
       background:
         radial-gradient(circle at 8% 16%, rgba(255, 43, 214, .12), transparent 29%),
         radial-gradient(circle at 75% 90%, rgba(114, 255, 25, .09), transparent 34%),
         #020302;
     }
-
-    .identity::-webkit-scrollbar { display: none; }
 
     .identity::before {
       content: "";
