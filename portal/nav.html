@@ -369,6 +369,7 @@
     let pointerX = 0;
     let pointerY = 0;
     let pointerActive = false;
+    let pointerType = "mouse";
     let portalIsOpen = false;
     let closeTimer = 0;
 
@@ -398,21 +399,31 @@
         window.parent.postMessage({
           type: "portal-pointer",
           active: pointerActive,
+          pointerType,
           x: pointerX,
           y: pointerY
         }, window.location.origin);
       } catch (_) {}
     };
 
-    window.addEventListener("pointermove", event => {
-      pointerActive = true;
+    const updatePointer = (event, active = true) => {
+      pointerActive = active;
+      pointerType = event.pointerType || pointerType;
       pointerX = Math.max(-1, Math.min(1, event.clientX / window.innerWidth * 2 - 1));
       pointerY = Math.max(-1, Math.min(1, event.clientY / window.innerHeight * 2 - 1));
       if (!pointerFrame) pointerFrame = requestAnimationFrame(publishPointer);
-    });
+    };
 
-    window.addEventListener("pointerleave", () => {
+    window.addEventListener("pointermove", event => updatePointer(event));
+    window.addEventListener("pointerdown", event => updatePointer(event));
+    window.addEventListener("pointerup", event => {
+      if (event.pointerType !== "mouse") updatePointer(event, false);
+    });
+    window.addEventListener("pointercancel", event => updatePointer(event, false));
+
+    window.addEventListener("pointerleave", event => {
       pointerActive = false;
+      pointerType = event.pointerType || pointerType;
       pointerX = 0;
       pointerY = 0;
       if (!pointerFrame) pointerFrame = requestAnimationFrame(publishPointer);

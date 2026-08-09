@@ -75,6 +75,29 @@
       text-underline-offset: .2em;
     }
 
+    .cursor-lens {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 3;
+      width: 50px;
+      height: 50px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .001);
+      -webkit-backdrop-filter: invert(1);
+      backdrop-filter: invert(1);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 80ms linear;
+      will-change: transform, opacity;
+    }
+
+    .cursor-lens.is-visible {
+      opacity: 1;
+    }
+
     @media (max-width: 520px) {
       .navigation {
         width: 98vmin;
@@ -86,27 +109,76 @@
 <body>
   <main class="portal" data-transition-root>
     <iframe class="starfield"
-            src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-2"
+            src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-3"
             title="Animated starfield background"></iframe>
 
     <iframe class="navigation"
-            src="/portal/nav.html?v=20260809-2"
+            src="/portal/nav.html?v=20260809-3"
             title="Cardinal portal navigation"
             allowtransparency="true"></iframe>
 
     <a class="home-link" href="/">theinternetisdead.org</a>
+    <div class="cursor-lens" aria-hidden="true"></div>
   </main>
 
   <script>
+    const portal = document.querySelector(".portal");
     const starfield = document.querySelector(".starfield");
     const navigation = document.querySelector(".navigation");
+    const cursorLens = document.querySelector(".cursor-lens");
+    let touchHideTimer = 0;
+
+    const positionLens = (clientX, clientY, pointerType = "mouse", active = true) => {
+      window.clearTimeout(touchHideTimer);
+
+      if (active) {
+        cursorLens.style.transform = `translate3d(${clientX}px, ${clientY}px, 0) translate(-50%, -50%)`;
+        cursorLens.classList.add("is-visible");
+        return;
+      }
+
+      const hide = () => cursorLens.classList.remove("is-visible");
+      if (pointerType === "touch") touchHideTimer = window.setTimeout(hide, 180);
+      else hide();
+    };
+
+    const positionLensFromFrame = (frame, data) => {
+      const rect = frame.getBoundingClientRect();
+      const x = Math.max(-1, Math.min(1, Number(data.x) || 0));
+      const y = Math.max(-1, Math.min(1, Number(data.y) || 0));
+      positionLens(
+        rect.left + (x + 1) * rect.width / 2,
+        rect.top + (y + 1) * rect.height / 2,
+        data.pointerType || "mouse",
+        Boolean(data.active)
+      );
+    };
+
+    const updateParentLens = (event, active = true) => {
+      positionLens(event.clientX, event.clientY, event.pointerType || "mouse", active);
+    };
+
+    portal.addEventListener("pointermove", event => updateParentLens(event), { passive: true });
+    portal.addEventListener("pointerdown", event => updateParentLens(event), { passive: true });
+    portal.addEventListener("pointerup", event => {
+      if (event.pointerType !== "mouse") updateParentLens(event, false);
+    }, { passive: true });
+    portal.addEventListener("pointercancel", event => updateParentLens(event, false), { passive: true });
+    window.addEventListener("blur", () => cursorLens.classList.remove("is-visible"));
 
     window.addEventListener("message", event => {
-      if (event.origin !== window.location.origin || event.source !== navigation.contentWindow) return;
-      if (!event.data || event.data.type !== "portal-pointer") return;
+      if (event.origin !== window.location.origin || !event.data) return;
+
+      if (event.source === starfield.contentWindow && event.data.type === "portal-surface-pointer") {
+        positionLensFromFrame(starfield, event.data);
+        return;
+      }
+
+      if (event.source !== navigation.contentWindow || event.data.type !== "portal-pointer") return;
 
       const x = Math.max(-1, Math.min(1, Number(event.data.x) || 0));
       const y = Math.max(-1, Math.min(1, Number(event.data.y) || 0));
+      positionLensFromFrame(navigation, event.data);
       starfield.contentWindow.postMessage({
         type: "portal-starfield-parallax",
         active: Boolean(event.data.active),

@@ -94,6 +94,11 @@ let time = 0;
 let last = performance.now();
 let externalParallaxActive = false;
 let externalParallaxX = 0;
+let surfacePointerFrame = 0;
+let surfacePointerActive = false;
+let surfacePointerType = "mouse";
+let surfacePointerX = 0;
+let surfacePointerY = 0;
 
 // In the original game this value was passed into updateStarfield().
 // This preserves the same visual scale for the menu/start-screen idle sway.
@@ -109,6 +114,42 @@ window.addEventListener("message", event => {
 
   externalParallaxActive = Boolean(event.data.active);
   externalParallaxX = Math.max(-1, Math.min(1, Number(event.data.x) || 0));
+});
+
+function publishSurfacePointer(){
+  surfacePointerFrame = 0;
+  try {
+    window.parent.postMessage({
+      type: "portal-surface-pointer",
+      active: surfacePointerActive,
+      pointerType: surfacePointerType,
+      x: surfacePointerX,
+      y: surfacePointerY
+    }, window.location.origin);
+  } catch (_) {}
+}
+
+function updateSurfacePointer(event, active = true){
+  surfacePointerActive = active;
+  surfacePointerType = event.pointerType || surfacePointerType;
+  surfacePointerX = Math.max(-1, Math.min(1, event.clientX / window.innerWidth * 2 - 1));
+  surfacePointerY = Math.max(-1, Math.min(1, event.clientY / window.innerHeight * 2 - 1));
+  externalParallaxActive = active;
+  externalParallaxX = surfacePointerX;
+  if (!surfacePointerFrame) surfacePointerFrame = requestAnimationFrame(publishSurfacePointer);
+}
+
+window.addEventListener("pointermove", event => updateSurfacePointer(event));
+window.addEventListener("pointerdown", event => updateSurfacePointer(event));
+window.addEventListener("pointerup", event => {
+  if (event.pointerType !== "mouse") updateSurfacePointer(event, false);
+});
+window.addEventListener("pointercancel", event => updateSurfacePointer(event, false));
+window.addEventListener("pointerleave", event => {
+  surfacePointerActive = false;
+  surfacePointerType = event.pointerType || surfacePointerType;
+  externalParallaxActive = false;
+  if (!surfacePointerFrame) surfacePointerFrame = requestAnimationFrame(publishSurfacePointer);
 });
 
 function resetStarfield(){
