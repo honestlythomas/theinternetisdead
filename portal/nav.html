@@ -391,8 +391,8 @@
 
     const publishPointer = () => {
       pointerFrame = 0;
-      document.documentElement.style.setProperty("--vortex-x", `${-pointerX * 15}px`);
-      document.documentElement.style.setProperty("--vortex-y", `${-pointerY * 15}px`);
+      document.documentElement.style.setProperty("--vortex-x", `${pointerX * 15}px`);
+      document.documentElement.style.setProperty("--vortex-y", `${pointerY * 15}px`);
       try {
         window.parent.postMessage({ type: "portal-pointer", x: pointerX, y: pointerY }, window.location.origin);
       } catch (_) {}
