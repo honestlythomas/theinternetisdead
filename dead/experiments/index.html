@@ -636,6 +636,7 @@
     <select class="page-select" id="experiment-page" aria-label="Experiment portal page">
       <option value="1">Page 1</option>
       <option value="2">Page 2</option>
+      <option value="3">Page 3</option>
     </select>
     <div class="cursor-lens" aria-hidden="true"></div>
   </main>
@@ -673,6 +674,14 @@
         ["Multimedia Editor", "/dead/experiments/multimedia-editor/", "/dead/experiments/thumbnails/multimedia-editor/index.png"],
         ["Music Crunchifier", "/dead/experiments/music-crunchifier/", "/dead/experiments/thumbnails/music-crunchifier/index.png"],
         ["Music Player", "/dead/experiments/music-player/", "/dead/experiments/thumbnails/music-player/index.png"]
+      ],
+      [
+        ["PDF Viewer", "/dead/experiments/pdf-viewer/", "/dead/experiments/thumbnails/pdf-viewer/index.png"],
+        ["Photosphere", "/dead/experiments/photosphere/", "/dead/experiments/thumbnails/photosphere/index.png"],
+        ["Sound Machine", "/dead/experiments/sound-machine/", "/dead/experiments/thumbnails/sound-machine/index.png"],
+        ["Stacks", "/dead/experiments/stacks/", "/dead/experiments/thumbnails/stacks/index.png"],
+        ["Weird Secret", "/dead/experiments/weird-secret/", "/dead/experiments/thumbnails/weird-secret/index.png"],
+        ["World in Thing", "/dead/experiments/world-in-thing/", "/dead/experiments/thumbnails/world-in-thing/index.png"]
       ]
     ];
     let pointerFrame = 0;
@@ -707,7 +716,8 @@
 
     const readExperimentPage = () => {
       try {
-        return window.localStorage.getItem(pageStateKey) === "2" ? 1 : 0;
+        const storedPage = Number(window.localStorage.getItem(pageStateKey)) - 1;
+        return storedPage >= 0 && storedPage < experimentPages.length ? storedPage : 0;
       } catch (_) {
         return 0;
       }
@@ -720,7 +730,7 @@
     };
 
     const renderExperimentPage = pageIndex => {
-      const normalizedPage = pageIndex === 1 ? 1 : 0;
+      const normalizedPage = Math.max(0, Math.min(experimentPages.length - 1, Number(pageIndex) || 0));
       const entries = experimentPages[normalizedPage];
       pageSelect.value = String(normalizedPage + 1);
 
