@@ -618,7 +618,7 @@
             src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-3"
             title="Animated starfield background"></iframe>
 
-    <nav class="navigation compass" aria-label="Favorites portal navigation">
+    <nav class="navigation compass portal-open" aria-label="Favorites portal navigation">
       <svg class="portal-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
         <line x1="50" y1="50" x2="16.67" y2="16.67"></line>
         <line x1="50" y1="50" x2="50" y2="16.67"></line>
@@ -635,13 +635,13 @@
       <a class="portal-button northeast is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
       <a class="portal-button west is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
 
-      <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the favorite portals">
+      <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="true" aria-label="Return to the Recursive Portal">
         <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
           <path class="vortex-tendril vortex-red"></path>
           <path class="vortex-tendril vortex-green"></path>
           <path class="vortex-tendril vortex-blue"></path>
         </svg>
-        <span class="core-label">Open<br>Portal</span>
+        <span class="core-label">Portal</span>
       </a>
 
       <a class="portal-button east is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
@@ -785,13 +785,7 @@
       pageCycleTimer = window.setTimeout(() => compass.classList.remove("portal-page-cycling"), 580);
     };
 
-    const readPortalState = () => {
-      try {
-        return window.localStorage.getItem(portalStateKey) === "true";
-      } catch (_) {
-        return false;
-      }
-    };
+    const readPortalState = () => true;
 
     const savePortalState = open => {
       try {
