@@ -56,6 +56,27 @@
       transform: translate(-50%, -50%);
     }
 
+    .home-link {
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      left: max(16px, env(safe-area-inset-left));
+      z-index: 2;
+      color: #fff;
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(16px, 2vw, 24px);
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      text-shadow: 0 2px 8px #000, 0 0 12px rgba(255, 255, 255, .28);
+    }
+
+    .home-link:hover,
+    .home-link:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: .2em;
+    }
+
     @media (max-width: 520px) {
       .navigation {
         width: 98vmin;
@@ -74,6 +95,8 @@
             src="/portal/nav.html"
             title="Cardinal portal navigation"
             allowtransparency="true"></iframe>
+
+    <a class="home-link" href="/">theinternetisdead.org</a>
   </main>
 
   <script>
