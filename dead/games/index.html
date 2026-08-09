@@ -82,39 +82,26 @@
       place-items: center;
     }
 
-    .compass::before,
-    .compass::after {
-      content: "";
+    .portal-lines {
       position: absolute;
+      inset: 8%;
       z-index: -1;
-      pointer-events: none;
-      transition: width 180ms ease, height 180ms ease, background 180ms ease;
-    }
-
-    .compass::before {
-      top: 50%;
-      left: 8%;
       width: 84%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--line), transparent);
-    }
-
-    .compass::after {
-      top: 8%;
-      left: 50%;
-      width: 1px;
       height: 84%;
-      background: linear-gradient(180deg, transparent, var(--line), transparent);
+      overflow: visible;
+      pointer-events: none;
     }
 
-    .compass.portal-open::before {
-      height: 3px;
-      background: linear-gradient(90deg, transparent, var(--magenta), transparent);
+    .portal-lines line {
+      stroke: var(--line);
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+      transition: stroke 180ms ease, stroke-width 180ms ease;
     }
 
-    .compass.portal-open::after {
-      width: 3px;
-      background: linear-gradient(180deg, transparent, var(--magenta), transparent);
+    .portal-open .portal-lines line {
+      stroke: var(--magenta);
+      stroke-width: 3;
     }
 
     .portal-button {
@@ -199,6 +186,23 @@
         0 0 48px rgba(255, 43, 214, .42);
     }
 
+    .portal-open .portal-button.is-empty {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .northwest {
+      grid-column: 1;
+      grid-row: 1;
+      --portal-image: url("/dead/assets/images/static.gif");
+      --from-x: 134%;
+      --from-y: 134%;
+      --over-x: -7%;
+      --over-y: -7%;
+      --spiral: 620deg;
+      --delay: 0ms;
+    }
+
     .north {
       grid-column: 2;
       grid-row: 1;
@@ -208,31 +212,19 @@
       --over-x: 0%;
       --over-y: -10%;
       --spiral: -620deg;
-      --delay: 0ms;
+      --delay: 45ms;
     }
 
-    .east {
+    .northeast {
       grid-column: 3;
-      grid-row: 2;
+      grid-row: 1;
       --portal-image: url("/dead/assets/images/static.gif");
       --from-x: -134%;
-      --from-y: 0%;
-      --over-x: 10%;
-      --over-y: 0%;
-      --spiral: 620deg;
-      --delay: 70ms;
-    }
-
-    .south {
-      grid-column: 2;
-      grid-row: 3;
-      --portal-image: url("/dead/games/thumbnails/tektite-3D-game.png");
-      --from-x: 0%;
-      --from-y: -134%;
-      --over-x: 0%;
-      --over-y: 10%;
+      --from-y: 134%;
+      --over-x: 7%;
+      --over-y: -7%;
       --spiral: -620deg;
-      --delay: 140ms;
+      --delay: 90ms;
     }
 
     .west {
@@ -244,7 +236,55 @@
       --over-x: -10%;
       --over-y: 0%;
       --spiral: 620deg;
-      --delay: 210ms;
+      --delay: 135ms;
+    }
+
+    .east {
+      grid-column: 3;
+      grid-row: 2;
+      --portal-image: url("/dead/assets/images/static.gif");
+      --from-x: -134%;
+      --from-y: 0%;
+      --over-x: 10%;
+      --over-y: 0%;
+      --spiral: 620deg;
+      --delay: 180ms;
+    }
+
+    .southwest {
+      grid-column: 1;
+      grid-row: 3;
+      --portal-image: url("/dead/assets/images/static.gif");
+      --from-x: 134%;
+      --from-y: -134%;
+      --over-x: -7%;
+      --over-y: 7%;
+      --spiral: -620deg;
+      --delay: 225ms;
+    }
+
+    .south {
+      grid-column: 2;
+      grid-row: 3;
+      --portal-image: url("/dead/games/thumbnails/tektite-3D-game.png");
+      --from-x: 0%;
+      --from-y: -134%;
+      --over-x: 0%;
+      --over-y: 10%;
+      --spiral: -620deg;
+      --delay: 270ms;
+    }
+
+    .southeast {
+      grid-column: 3;
+      grid-row: 3;
+      --portal-image: url("/dead/assets/images/static.gif");
+      --from-x: -134%;
+      --from-y: -134%;
+      --over-x: 7%;
+      --over-y: 7%;
+      --spiral: 620deg;
+      --delay: 315ms;
     }
 
     .portal-open .portal-button {
@@ -267,6 +307,11 @@
       animation: portal-emerge 720ms cubic-bezier(.62, 0, .88, .38) calc(210ms - var(--delay)) reverse both;
     }
 
+    .portal-open.portal-page-cycling .portal-button {
+      pointer-events: none;
+      animation: portal-page-cycle 560ms cubic-bezier(.55, 0, .2, 1) both;
+    }
+
     @keyframes portal-emerge {
       0% {
         opacity: 0;
@@ -281,6 +326,29 @@
       100% {
         opacity: 1;
         transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+        filter: none;
+      }
+    }
+
+    @keyframes portal-page-cycle {
+      0% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+        filter: none;
+      }
+      48% {
+        opacity: 0;
+        transform: rotate(180deg) scale(.08);
+        filter: brightness(2.4) saturate(2);
+      }
+      52% {
+        opacity: 0;
+        transform: rotate(-180deg) scale(.08);
+        filter: brightness(2.4) saturate(2);
+      }
+      100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
         filter: none;
       }
     }
@@ -453,7 +521,8 @@
     }
 
     .home-link,
-    .page-title {
+    .page-title,
+    .page-select {
       position: absolute;
       top: max(16px, env(safe-area-inset-top));
       z-index: 2;
@@ -477,6 +546,29 @@
       left: 50%;
       transform: translateX(-50%);
       pointer-events: none;
+    }
+
+    .page-select {
+      right: max(16px, env(safe-area-inset-right));
+      border: 0;
+      border-radius: 0;
+      padding: 0 .15em .1em;
+      background: #000;
+      cursor: pointer;
+    }
+
+    .page-select:hover,
+    .page-select:focus-visible {
+      color: var(--magenta);
+      outline: 1px solid var(--magenta);
+      outline-offset: 4px;
+    }
+
+    .page-select option {
+      color: var(--green);
+      background: #000;
+      font-style: normal;
+      font-weight: 700;
     }
 
     .home-link:visited { color: var(--green); }
@@ -527,13 +619,21 @@
             title="Animated starfield background"></iframe>
 
     <nav class="navigation compass" aria-label="Games portal navigation">
-      <a class="portal-button north" href="/dead/games/shooter-game/" data-transition="slide-down" aria-label="Open Shooter Game">
-        <span class="destination-label">Shooter Game</span>
-      </a>
+      <svg class="portal-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <line x1="50" y1="50" x2="16.67" y2="16.67"></line>
+        <line x1="50" y1="50" x2="50" y2="16.67"></line>
+        <line x1="50" y1="50" x2="83.33" y2="16.67"></line>
+        <line x1="50" y1="50" x2="16.67" y2="50"></line>
+        <line x1="50" y1="50" x2="83.33" y2="50"></line>
+        <line x1="50" y1="50" x2="16.67" y2="83.33"></line>
+        <line x1="50" y1="50" x2="50" y2="83.33"></line>
+        <line x1="50" y1="50" x2="83.33" y2="83.33"></line>
+      </svg>
 
-      <button class="portal-button east" type="button" aria-label="Static portal">
-        <span class="destination-label">Static</span>
-      </button>
+      <span class="portal-button northwest is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
+      <a class="portal-button north" href="/dead/games/shooter-game/" data-transition="slide-down" aria-label="Open Shooter Game"><span class="destination-label">Shooter Game</span></a>
+      <span class="portal-button northeast is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
+      <a class="portal-button west" href="/dead/games/inferno-trainer/" data-transition="slide-right" aria-label="Open Inferno Trainer"><span class="destination-label">Inferno Trainer</span></a>
 
       <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the game portals">
         <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
@@ -544,13 +644,10 @@
         <span class="core-label">Open<br>Portal</span>
       </a>
 
-      <a class="portal-button south" href="/dead/games/tektite-3D-game/" data-transition="slide-up" aria-label="Open Tektite 3D Game">
-        <span class="destination-label">Tektite 3D Game</span>
-      </a>
-
-      <a class="portal-button west" href="/dead/games/inferno-trainer/" data-transition="slide-right" aria-label="Open Inferno Trainer">
-        <span class="destination-label">Inferno Trainer</span>
-      </a>
+      <span class="portal-button east is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
+      <span class="portal-button southwest is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
+      <a class="portal-button south" href="/dead/games/tektite-3D-game/" data-transition="slide-up" aria-label="Open Tektite 3D Game"><span class="destination-label">Tektite 3D Game</span></a>
+      <span class="portal-button southeast is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
     </nav>
 
     <a class="home-link" href="/">theinternetisdead.org</a>
@@ -622,7 +719,7 @@
           compass.classList.add("portal-opening");
           openTimer = window.setTimeout(() => {
             if (portalIsOpen) compass.classList.remove("portal-opening");
-          }, 1550);
+          }, 1650);
         }
         coreLabel.textContent = "Portal";
         openPortal.setAttribute("aria-expanded", "true");
