@@ -754,6 +754,7 @@
         if (!entry) {
           slot.removeAttribute("href");
           slot.removeAttribute("data-transition");
+          slot.removeAttribute("data-favorite-image");
           slot.setAttribute("aria-label", "Empty portal");
           slot.setAttribute("tabindex", "-1");
           slot.style.setProperty("--portal-image", 'url("/dead/assets/images/static.gif")');
@@ -764,6 +765,7 @@
         const [name, href, thumbnail] = entry;
         slot.href = href;
         slot.dataset.transition = slotTransitions[index];
+        slot.dataset.favoriteImage = thumbnail;
         slot.setAttribute("aria-label", `Open ${name}`);
         slot.removeAttribute("tabindex");
         slot.style.setProperty("--portal-image", `url("${thumbnail}")`);
@@ -938,6 +940,7 @@
       window.location.assign(destination.href);
     });
   </script>
+  <script src="/dead/scripts/favorites.js?v=20260809-1"></script>
   <script src="/dead/scripts/page-transitions.js?v=20260809-7"></script>
 </body>
 </html>

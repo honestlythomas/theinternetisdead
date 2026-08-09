@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-favorites-page>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <meta name="color-scheme" content="dark">
-  <title>Games Portal</title>
+  <title>Favorites Portal</title>
   <style>
     :root {
       color-scheme: dark;
@@ -194,7 +194,7 @@
     .northwest {
       grid-column: 1;
       grid-row: 1;
-      --portal-image: url("/dead/games/thumbnails/shooter-game.png");
+      --portal-image: url("/dead/assets/images/static.gif");
       --from-x: 134%;
       --from-y: 134%;
       --over-x: -7%;
@@ -206,7 +206,7 @@
     .north {
       grid-column: 2;
       grid-row: 1;
-      --portal-image: url("/dead/games/thumbnails/inferno-trainer.png");
+      --portal-image: url("/dead/assets/images/static.gif");
       --from-x: 0%;
       --from-y: 134%;
       --over-x: 0%;
@@ -218,7 +218,7 @@
     .northeast {
       grid-column: 3;
       grid-row: 1;
-      --portal-image: url("/dead/games/thumbnails/tektite-3D-game.png");
+      --portal-image: url("/dead/assets/images/static.gif");
       --from-x: -134%;
       --from-y: 134%;
       --over-x: 7%;
@@ -618,7 +618,7 @@
             src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-3"
             title="Animated starfield background"></iframe>
 
-    <nav class="navigation compass" aria-label="Games portal navigation">
+    <nav class="navigation compass" aria-label="Favorites portal navigation">
       <svg class="portal-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
         <line x1="50" y1="50" x2="16.67" y2="16.67"></line>
         <line x1="50" y1="50" x2="50" y2="16.67"></line>
@@ -630,12 +630,12 @@
         <line x1="50" y1="50" x2="83.33" y2="83.33"></line>
       </svg>
 
-      <a class="portal-button northwest" href="/dead/games/shooter-game/" data-transition="swirl" aria-label="Open Shooter Game"><span class="destination-label">Shooter Game</span></a>
-      <a class="portal-button north" href="/dead/games/inferno-trainer/" data-transition="slide-down" aria-label="Open Inferno Trainer"><span class="destination-label">Inferno Trainer</span></a>
-      <a class="portal-button northeast" href="/dead/games/tektite-3D-game/" data-transition="swirl" aria-label="Open Tektite 3D Game"><span class="destination-label">Tektite 3D Game</span></a>
-      <span class="portal-button west is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
+      <a class="portal-button northwest is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
+      <a class="portal-button north is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
+      <a class="portal-button northeast is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
+      <a class="portal-button west is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
 
-      <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the game portals">
+      <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the favorite portals">
         <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
           <path class="vortex-tendril vortex-red"></path>
           <path class="vortex-tendril vortex-green"></path>
@@ -644,20 +644,21 @@
         <span class="core-label">Open<br>Portal</span>
       </a>
 
-      <span class="portal-button east is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
-      <span class="portal-button southwest is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
-      <span class="portal-button south is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
-      <span class="portal-button southeast is-empty" aria-label="Empty portal"><span class="destination-label">Empty</span></span>
+      <a class="portal-button east is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
+      <a class="portal-button southwest is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
+      <a class="portal-button south is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
+      <a class="portal-button southeast is-empty" aria-label="Empty favorite portal" tabindex="-1"><span class="destination-label">Empty</span></a>
     </nav>
 
     <a class="home-link" href="/">theinternetisdead.org</a>
-    <h1 class="page-title">Games</h1>
-    <select class="page-select" id="game-page" aria-label="Game portal page">
+    <h1 class="page-title">Favorites</h1>
+    <select class="page-select" id="favorite-page" aria-label="Favorite portal page">
       <option value="1">Page 1/1</option>
     </select>
     <div class="cursor-lens" aria-hidden="true"></div>
   </main>
 
+  <script src="/dead/scripts/favorites.js?v=20260809-1"></script>
   <script>
     const portal = document.querySelector(".portal");
     const starfield = document.querySelector(".starfield");
@@ -666,7 +667,12 @@
     const openPortal = document.getElementById("open-portal");
     const coreLabel = openPortal.querySelector(".core-label");
     const tendrils = document.querySelectorAll(".vortex-tendril");
-    const portalStateKey = "theinternetisdead:games:portal-open";
+    const portalSlots = [...document.querySelectorAll(".portal-button")];
+    const pageSelect = document.getElementById("favorite-page");
+    const portalStateKey = "theinternetisdead:favorites:portal-open";
+    const pageStateKey = "theinternetisdead:favorites:page";
+    const pageSize = 8;
+    const slotTransitions = ["swirl", "slide-down", "swirl", "slide-right", "slide-left", "swirl", "slide-up", "swirl"];
     let pointerFrame = 0;
     let pointerX = 0;
     let pointerY = 0;
@@ -675,6 +681,8 @@
     let portalIsOpen = false;
     let openTimer = 0;
     let closeTimer = 0;
+    let pageCycleTimer = 0;
+    let pageSwapTimer = 0;
     let touchHideTimer = 0;
 
     const makeSpiral = phase => {
@@ -694,6 +702,88 @@
     tendrils.forEach((tendril, index) => {
       tendril.setAttribute("d", makeSpiral(index * Math.PI * 2 / tendrils.length));
     });
+
+    const readFavoritePage = () => {
+      try {
+        const storedPage = Number(window.localStorage.getItem(pageStateKey)) - 1;
+        return storedPage >= 0 ? storedPage : 0;
+      } catch (_) {
+        return 0;
+      }
+    };
+
+    const saveFavoritePage = pageIndex => {
+      try {
+        window.localStorage.setItem(pageStateKey, String(pageIndex + 1));
+      } catch (_) {}
+    };
+
+    const rebuildPageOptions = (totalPages, selectedPage) => {
+      if (pageSelect.options.length !== totalPages) {
+        pageSelect.replaceChildren(...Array.from({ length: totalPages }, (_, index) => {
+          const option = document.createElement("option");
+          option.value = String(index + 1);
+          option.textContent = `Page ${index + 1}/${totalPages}`;
+          return option;
+        }));
+      } else {
+        [...pageSelect.options].forEach((option, index) => {
+          option.textContent = `Page ${index + 1}/${totalPages}`;
+        });
+      }
+      pageSelect.value = String(selectedPage + 1);
+    };
+
+    const renderFavoritePage = pageIndex => {
+      const favorites = window.FavoriteOrbs?.read() || [];
+      const totalPages = Math.max(1, Math.ceil(favorites.length / pageSize));
+      const normalizedPage = Math.max(0, Math.min(totalPages - 1, Number(pageIndex) || 0));
+      const entries = favorites.slice(normalizedPage * pageSize, (normalizedPage + 1) * pageSize);
+      rebuildPageOptions(totalPages, normalizedPage);
+      pageSelect.value = String(normalizedPage + 1);
+
+      portalSlots.forEach((slot, index) => {
+        const entry = entries[index];
+        const label = slot.querySelector(".destination-label");
+        if (!entry) {
+          slot.removeAttribute("href");
+          slot.removeAttribute("data-transition");
+          slot.classList.add("is-empty");
+          slot.setAttribute("aria-label", "Empty favorite portal");
+          slot.setAttribute("tabindex", "-1");
+          slot.style.setProperty("--portal-image", 'url("/dead/assets/images/static.gif")');
+          label.textContent = "Empty";
+          return;
+        }
+
+        slot.href = entry.href;
+        slot.dataset.transition = entry.transition || slotTransitions[index];
+        slot.classList.remove("is-empty");
+        slot.setAttribute("aria-label", `Open ${entry.title}`);
+        slot.removeAttribute("tabindex");
+        slot.style.setProperty("--portal-image", `url("${entry.image}")`);
+        label.textContent = entry.title;
+      });
+
+      saveFavoritePage(normalizedPage);
+      return normalizedPage;
+    };
+
+    const selectFavoritePage = (pageIndex, animate = false) => {
+      window.clearTimeout(pageCycleTimer);
+      window.clearTimeout(pageSwapTimer);
+      compass.classList.remove("portal-page-cycling");
+
+      if (!animate || !portalIsOpen) {
+        renderFavoritePage(pageIndex);
+        return;
+      }
+
+      void compass.offsetWidth;
+      compass.classList.add("portal-page-cycling");
+      pageSwapTimer = window.setTimeout(() => renderFavoritePage(pageIndex), 270);
+      pageCycleTimer = window.setTimeout(() => compass.classList.remove("portal-page-cycling"), 580);
+    };
 
     const readPortalState = () => {
       try {
@@ -732,14 +822,14 @@
         compass.classList.add("portal-closing");
         coreLabel.innerHTML = "Open<br>Portal";
         openPortal.setAttribute("aria-expanded", "false");
-        openPortal.setAttribute("aria-label", "Open Portal and release the game portals");
+        openPortal.setAttribute("aria-label", "Open Portal and release the favorite portals");
         closeTimer = window.setTimeout(() => {
           if (!portalIsOpen) compass.classList.remove("portal-closing");
         }, 980);
       } else {
         coreLabel.innerHTML = "Open<br>Portal";
         openPortal.setAttribute("aria-expanded", "false");
-        openPortal.setAttribute("aria-label", "Open Portal and release the game portals");
+        openPortal.setAttribute("aria-label", "Open Portal and release the favorite portals");
       }
 
       savePortalState(portalIsOpen);
@@ -806,7 +896,14 @@
     });
 
     window.addEventListener("blur", () => cursorLens.classList.remove("is-visible"));
-    window.addEventListener("pageshow", () => setPortalState(readPortalState()));
+    window.addEventListener("pageshow", () => {
+      setPortalState(readPortalState());
+      selectFavoritePage(readFavoritePage());
+    });
+    window.addEventListener("favoriteorbschange", () => selectFavoritePage(readFavoritePage()));
+    window.addEventListener("storage", event => {
+      if (event.key === window.FavoriteOrbs?.storageKey) selectFavoritePage(readFavoritePage());
+    });
 
     window.addEventListener("message", event => {
       if (event.origin !== window.location.origin || event.source !== starfield.contentWindow || !event.data) return;
@@ -821,6 +918,11 @@
       setPortalState(true, { animate: true });
     });
 
+    pageSelect.addEventListener("change", () => {
+      selectFavoritePage(Number(pageSelect.value) - 1, true);
+    });
+
+    selectFavoritePage(readFavoritePage());
     setPortalState(readPortalState());
 
     document.addEventListener("click", event => {
@@ -836,7 +938,6 @@
       window.location.assign(destination.href);
     });
   </script>
-  <script src="/dead/scripts/favorites.js?v=20260809-1"></script>
   <script src="/dead/scripts/page-transitions.js?v=20260809-7"></script>
 </body>
 </html>
