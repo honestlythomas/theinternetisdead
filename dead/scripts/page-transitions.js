@@ -449,6 +449,24 @@
     unlockPage(transitionRoot({}));
   });
 
+  window.addEventListener("keydown", event => {
+    if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+    const selector = document.querySelector('[data-arrow-transition-destination]');
+    if (!selector || selector.value !== "arrow-keys") return;
+
+    const arrowTransitions = {
+      ArrowUp: "slide-up",
+      ArrowDown: "slide-down",
+      ArrowLeft: "slide-left",
+      ArrowRight: "slide-right"
+    };
+    const transition = arrowTransitions[event.key];
+    if (!transition) return;
+
+    event.preventDefault();
+    api.navigate(selector.dataset.arrowTransitionDestination, transition);
+  });
+
   document.addEventListener("click", event => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
@@ -457,6 +475,11 @@
       const selector = document.getElementById(launcher.dataset.transitionSelect);
       const transition = selector?.value || undefined;
       if (!transition) return;
+      if (transition === "arrow-keys") {
+        event.preventDefault();
+        selector.focus();
+        return;
+      }
       event.preventDefault();
       api.navigate(launcher.dataset.transitionDestination, transition);
       return;
