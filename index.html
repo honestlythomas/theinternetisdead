@@ -83,8 +83,9 @@
       min-width: 0;
       min-height: 0;
       flex-direction: column;
-      justify-content: center;
-      gap: clamp(10px, 1.8vh, 18px);
+      justify-content: flex-start;
+      gap: 0;
+      overflow-y: auto;
       padding:
         max(18px, env(safe-area-inset-top))
         clamp(24px, 4.4vw, 76px)
@@ -105,8 +106,25 @@
       pointer-events: none;
     }
 
-    .eyebrow,
-    .status {
+    .splash-banner {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 1;
+      flex: 0 0 auto;
+      border-bottom: 3px solid #fff;
+      object-fit: cover;
+    }
+
+    .identity-content {
+      display: flex;
+      min-width: 0;
+      flex: 0 0 auto;
+      flex-direction: column;
+      gap: clamp(10px, 1.8vh, 18px);
+      padding-top: clamp(12px, 2vh, 20px);
+    }
+
+    .eyebrow {
       margin: 0;
       color: var(--green);
       font-size: clamp(8px, .75vw, 11px);
@@ -218,14 +236,6 @@
     .action.secondary:hover,
     .action.secondary:focus-visible { background: var(--magenta); color: #000; }
 
-    .status {
-      position: absolute;
-      top: max(16px, env(safe-area-inset-top));
-      right: clamp(20px, 3vw, 48px);
-      color: var(--green-dim);
-      letter-spacing: .08em;
-    }
-
     @media (max-width: 760px) {
       .splash { display: block; }
 
@@ -245,15 +255,14 @@
 
       .identity {
         height: 100%;
-        justify-content: flex-end;
-        gap: clamp(6px, 1.35vh, 10px);
+        justify-content: flex-start;
         padding: max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
         background: transparent;
         text-shadow: 0 1px 4px #000;
       }
 
       .identity::before { inset: 6px; border-color: rgba(114, 255, 25, .28); }
-      .status { top: 13px; right: 14px; font-size: 7px; }
+      .identity-content { gap: clamp(6px, 1.35vh, 10px); padding-top: 10px; }
       .eyebrow { font-size: 7px; }
       h1 { font-size: clamp(42px, 14vw, 70px); }
       .discipline { max-width: 42ch; font-size: clamp(9px, 2.65vw, 12px); line-height: 1.28; }
@@ -268,7 +277,7 @@
     }
 
     @media (max-height: 650px) {
-      .identity { gap: 6px; }
+      .identity-content { gap: 6px; }
       .statement { line-height: 1.27; }
       .warning { padding-block: 5px; }
       .action { min-height: 31px; padding-block: 5px; }
@@ -286,46 +295,50 @@
 <body>
   <main class="splash" data-transition-root aria-labelledby="artist-name">
     <section class="identity">
-      <p class="status">Signal source: Muskoka, Ontario, Canada</p>
-      <p class="eyebrow">Thomas Harrison // Honestly Thomas // Tektite</p>
+      <img class="splash-banner" src="/dead/assets/images/muskoka-glitch-banner.webp"
+           alt="A glitch-saturated panoramic view of Muskoka water, trees, rocks and a bridge.">
 
-      <h1 id="artist-name">Honestly<span>Thomas</span></h1>
+      <div class="identity-content">
+        <p class="eyebrow">Thomas Harrison // Honestly Thomas // Tektite</p>
 
-      <p class="discipline">
-        Neurodivergent Canadian interdisciplinary artist working across rap, video,
-        writing, code, web design, games and experimental media.
-      </p>
+        <h1 id="artist-name">Honestly<span>Thomas</span></h1>
 
-      <p class="statement">
-        <strong>theinternetisdead.org</strong> is art first: a recursive archive of web-native
-        grief, absurdity, identity and survival. It is also my personal symbolic operating
-        system—a place to gather the work, document the experience, and leave proof that I
-        was here and that it mattered.
-      </p>
+        <p class="discipline">
+          Neurodivergent Canadian interdisciplinary artist working across rap, video,
+          writing, code, web design, games and experimental media.
+        </p>
 
-      <p class="warning">
-        ⚠ Enter expecting haunted interfaces, dense symbolism, flashing imagery, unexpected
-        sound, gallows humour, unfinished ruins and sincerity hiding inside the debris.
-      </p>
+        <p class="statement">
+          <strong>theinternetisdead.org</strong> is art first: a recursive archive of web-native
+          grief, absurdity, identity and survival. It is also my personal symbolic operating
+          system—a place to gather the work, document the experience, and leave proof that I
+          was here and that it mattered.
+        </p>
 
-      <nav class="actions" aria-label="Enter or inspect the project">
-        <label for="portal-transition" hidden>Choose a portal transition</label>
-        <select class="action portal-select" id="portal-transition"
-                data-arrow-transition-destination="/portal/"
-                title="Choose Arrow Keys, then press an arrow key to enter in that direction">
-          <option value="">Enter Recursive Portal</option>
-          <option value="swirl">Swirl</option>
-          <option value="glitch-disintegrate">Glitch Disintegration</option>
-          <option value="arrow-keys">Arrow Keys</option>
-          <option value="void-iris">Void Iris</option>
-          <option value="crt-collapse">CRT Collapse</option>
-        </select>
-        <a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a>
-        <a class="action go" id="portal-go" href="/portal/"
-           data-transition-select="portal-transition"
-           data-transition-destination="/portal/"
-           aria-label="Enter Recursive Portal using the selected transition">GO</a>
-      </nav>
+        <p class="warning">
+          ⚠ Enter expecting haunted interfaces, dense symbolism, flashing imagery, unexpected
+          sound, gallows humour, unfinished ruins and sincerity hiding inside the debris.
+        </p>
+
+        <nav class="actions" aria-label="Enter or inspect the project">
+          <label for="portal-transition" hidden>Choose a portal transition</label>
+          <select class="action portal-select" id="portal-transition"
+                  data-arrow-transition-destination="/portal/"
+                  title="Choose Arrow Keys, then press an arrow key to enter in that direction">
+            <option value="">Enter Recursive Portal</option>
+            <option value="swirl">Swirl</option>
+            <option value="glitch-disintegrate">Glitch Disintegration</option>
+            <option value="arrow-keys">Arrow Keys</option>
+            <option value="void-iris">Void Iris</option>
+            <option value="crt-collapse">CRT Collapse</option>
+          </select>
+          <a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a>
+          <a class="action go" id="portal-go" href="/portal/"
+             data-transition-select="portal-transition"
+             data-transition-destination="/portal/"
+             aria-label="Enter Recursive Portal using the selected transition">GO</a>
+        </nav>
+      </div>
     </section>
 
     <figure class="portrait">
