@@ -104,8 +104,8 @@
 
       ::view-transition-group(root) {
         background: #000;
-        animation-duration: 720ms;
-        animation-timing-function: cubic-bezier(.22,.72,.18,1);
+        animation-duration: 1250ms;
+        animation-timing-function: cubic-bezier(.65,0,.35,1);
       }
 
       ::view-transition-image-pair(root) {
@@ -116,18 +116,19 @@
       ::view-transition-new(root) {
         backface-visibility: hidden;
         box-shadow: 0 0 0 1px rgba(114,255,25,.55), 0 0 28px rgba(255,43,214,.2);
-        animation-duration: 720ms;
+        animation-duration: 1150ms;
+        animation-timing-function: cubic-bezier(.65,0,.35,1);
         animation-fill-mode: both;
       }
 
-      html[data-dead-transition="swirl"]::view-transition-old(root) { animation-name: dead-swirl-out; }
-      html[data-dead-transition="swirl"]::view-transition-new(root) { animation-name: dead-swirl-in; }
-      html[data-dead-transition="glitch-disintegrate"]::view-transition-old(root) { animation: dead-glitch-out 680ms steps(7,end) both; }
-      html[data-dead-transition="glitch-disintegrate"]::view-transition-new(root) { animation: dead-glitch-in 680ms steps(7,end) both; }
+      html[data-dead-transition="swirl"]::view-transition-old(root) { animation: dead-swirl-out 1250ms cubic-bezier(.65,0,.35,1) both; }
+      html[data-dead-transition="swirl"]::view-transition-new(root) { animation: dead-swirl-in 1250ms cubic-bezier(.65,0,.35,1) both; }
+      html[data-dead-transition="glitch-disintegrate"]::view-transition-old(root) { animation: dead-glitch-out 1050ms steps(10,end) both; }
+      html[data-dead-transition="glitch-disintegrate"]::view-transition-new(root) { animation: dead-glitch-in 1050ms steps(10,end) both; }
       html[data-dead-transition="void-iris"]::view-transition-old(root) { animation-name: dead-iris-out; }
       html[data-dead-transition="void-iris"]::view-transition-new(root) { animation-name: dead-iris-in; }
-      html[data-dead-transition="crt-collapse"]::view-transition-old(root) { animation-name: dead-crt-out; }
-      html[data-dead-transition="crt-collapse"]::view-transition-new(root) { animation-name: dead-crt-in; }
+      html[data-dead-transition="crt-collapse"]::view-transition-old(root) { animation: dead-crt-out 1000ms cubic-bezier(.65,0,.35,1) both; }
+      html[data-dead-transition="crt-collapse"]::view-transition-new(root) { animation: dead-crt-in 1000ms cubic-bezier(.65,0,.35,1) both; }
 
       html[data-dead-transition="slide-up"]::view-transition-old(root) { animation-name: dead-slide-up-out; }
       html[data-dead-transition="slide-up"]::view-transition-new(root) { animation-name: dead-slide-up-in; }
@@ -137,9 +138,11 @@
       html[data-dead-transition="slide-left"]::view-transition-new(root) { animation-name: dead-slide-left-in; }
       html[data-dead-transition="slide-right"]::view-transition-old(root) { animation-name: dead-slide-right-out; }
       html[data-dead-transition="slide-right"]::view-transition-new(root) { animation-name: dead-slide-right-in; }
+      html[data-dead-transition^="slide-"]::view-transition-old(root),
+      html[data-dead-transition^="slide-"]::view-transition-new(root) { animation-duration: 1050ms; }
 
-      @keyframes dead-swirl-out { to { transform: translateY(10vh) rotate(540deg) scale(.025); opacity: 0; } }
-      @keyframes dead-swirl-in { from { transform: translateY(10vh) rotate(-540deg) scale(.025); opacity: 0; } }
+      @keyframes dead-swirl-out { to { transform: translateY(10vh) rotate(720deg) scale(.025); opacity: 0; } }
+      @keyframes dead-swirl-in { from { transform: translateY(10vh) rotate(-720deg) scale(.025); opacity: 0; } }
       @keyframes dead-glitch-out {
         0% { transform: translate3d(0,0,0); clip-path: inset(0); opacity: 1; }
         28% { transform: translate3d(-10px,2px,0) skewX(2deg); clip-path: inset(8% 0 12%); }
@@ -174,8 +177,8 @@
       @keyframes dead-slide-right-in { from { transform: translate3d(-100%,0,0); } }
 
       @media (prefers-reduced-motion: reduce) {
-        ::view-transition-old(root) { animation: dead-fade-out 160ms linear both !important; }
-        ::view-transition-new(root) { animation: dead-fade-in 160ms linear both !important; }
+        ::view-transition-old(root) { animation: dead-fade-out 180ms linear both !important; }
+        ::view-transition-new(root) { animation: dead-fade-in 180ms linear both !important; }
         @keyframes dead-fade-out { to { opacity: 0; } }
         @keyframes dead-fade-in { from { opacity: 0; } }
       }
@@ -276,34 +279,34 @@
     if (effect === "swirl") {
       field = [
         { transform: "rotate(0deg) scale(.65)", opacity: .08 },
-        { transform: "rotate(250deg) scale(1.35)", opacity: .9 }
+        { transform: "rotate(320deg) scale(1.35)", opacity: .52 }
       ];
     } else if (effect === "glitch-disintegrate") {
       field = [
         { transform: "translate3d(-8%,0,0) scale(1)", opacity: .08 },
-        { transform: "translate3d(8%,0,0) scale(1.15)", opacity: .88 }
+        { transform: "translate3d(8%,0,0) scale(1.15)", opacity: .58 }
       ];
     } else if (effect === "void-iris") {
       field = [
         { transform: "scale(.35)", opacity: .05 },
-        { transform: "scale(2.2)", opacity: .92 }
+        { transform: "scale(2.2)", opacity: .58 }
       ];
     } else if (effect === "crt-collapse") {
       field = [
         { transform: "scale(1,1)", opacity: .08 },
-        { transform: "scale(1,.012)", opacity: 1 }
+        { transform: "scale(1,.012)", opacity: .72 }
       ];
     } else {
       const vertical = effect === "slide-up" || effect === "slide-down";
       const sign = effect === "slide-up" || effect === "slide-left" ? -1 : 1;
       field = vertical
-        ? [{ transform: `translate3d(0,${-sign * 60}%,0)`, opacity: .12 }, { transform: `translate3d(0,${sign * 60}%,0)`, opacity: .72 }]
-        : [{ transform: `translate3d(${-sign * 60}%,0,0)`, opacity: .12 }, { transform: `translate3d(${sign * 60}%,0,0)`, opacity: .72 }];
+        ? [{ transform: `translate3d(0,${-sign * 60}%,0)`, opacity: .08 }, { transform: `translate3d(0,${sign * 60}%,0)`, opacity: .48 }]
+        : [{ transform: `translate3d(${-sign * 60}%,0,0)`, opacity: .08 }, { transform: `translate3d(${sign * 60}%,0,0)`, opacity: .48 }];
     }
 
     const scan = [
       { transform: "translate3d(0,-8px,0)", opacity: .08 },
-      { transform: "translate3d(0,8px,0)", opacity: .7 }
+      { transform: "translate3d(0,8px,0)", opacity: .38 }
     ];
     return outgoing ? { field, scan } : { field: reverseFrames(field), scan: reverseFrames(scan) };
   };
@@ -326,9 +329,9 @@
     if (effect === "swirl") return outgoing ? [
       { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", opacity: 1 },
       { transform: "translate3d(0,2vh,0) rotate(42deg) scale(.9)", opacity: 1, offset: .28 },
-      { transform: "translate3d(0,10vh,0) rotate(540deg) scale(.025)", opacity: 0 }
+      { transform: "translate3d(0,10vh,0) rotate(720deg) scale(.025)", opacity: 0 }
     ] : [
-      { transform: "translate3d(0,10vh,0) rotate(-540deg) scale(.025)", opacity: 0 },
+      { transform: "translate3d(0,10vh,0) rotate(-720deg) scale(.025)", opacity: 0 },
       { transform: "translate3d(0,2vh,0) rotate(-42deg) scale(.9)", opacity: 1, offset: .72 },
       { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", opacity: 1 }
     ];
@@ -361,15 +364,23 @@
   };
 
   const effectTiming = effect => ({
-    duration: effect === "glitch-disintegrate" ? 680 : effect.startsWith("slide-") ? 640 : 720,
-    easing: effect === "glitch-disintegrate" ? "steps(7,end)" : "cubic-bezier(.22,.72,.18,1)"
+    duration: effect === "swirl"
+      ? 1250
+      : effect === "glitch-disintegrate"
+        ? 1050
+        : effect.startsWith("slide-")
+          ? 1050
+          : effect === "crt-collapse"
+            ? 1000
+            : 1150,
+    easing: effect === "glitch-disintegrate" ? "steps(10,end)" : "cubic-bezier(.65,0,.35,1)"
   });
 
   const playEffect = async (effect, phase, options = {}) => {
     const outgoing = phase === "out";
     const root = transitionRoot(options);
     const baseTiming = effectTiming(effect);
-    const duration = reducedMotion ? 160 : Math.max(120, Math.min(1000, options.duration ?? baseTiming.duration));
+    const duration = reducedMotion ? 180 : Math.max(180, Math.min(1800, options.duration ?? baseTiming.duration));
     const easing = reducedMotion ? "linear" : options.easing || baseTiming.easing;
     lockPage(root);
 
@@ -522,7 +533,7 @@
 
   if (nativeNavigation) {
     window.addEventListener("pagereveal", () => {
-      window.setTimeout(() => delete document.documentElement.dataset.deadTransition, 1000);
+      window.setTimeout(() => delete document.documentElement.dataset.deadTransition, 1800);
     }, { once: true });
   }
 
@@ -573,7 +584,7 @@
     if (cleanPath(window.location.href) !== cleanPath(handoff.to)) return;
 
     if (handoff.native) {
-      window.setTimeout(() => delete document.documentElement.dataset.deadTransition, 1000);
+      window.setTimeout(() => delete document.documentElement.dataset.deadTransition, 1800);
       return;
     }
     if (handoff.skipIncoming) return;

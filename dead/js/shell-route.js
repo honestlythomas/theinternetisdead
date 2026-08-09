@@ -10,7 +10,7 @@
   if (document.querySelector('script[data-dead-transition-engine]')) return;
 
   const script = document.createElement("script");
-  script.src = "/dead/scripts/page-transitions.js?v=20260809-6";
+  script.src = "/dead/scripts/page-transitions.js?v=20260809-7";
   script.async = false;
   script.dataset.deadTransitionEngine = "";
   (document.head || document.documentElement).appendChild(script);
