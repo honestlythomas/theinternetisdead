@@ -17,6 +17,7 @@
   const routes = [];
   const keyBindings = new Map();
   const heldKeys = new Set();
+  const activeAnimations = new Set();
   let leaving = false;
 
   const cleanPath = value => {
@@ -44,6 +45,12 @@
     animation.addEventListener("finish", resolve, { once: true });
     animation.addEventListener("cancel", resolve, { once: true });
   });
+
+  const trackAnimation = animation => {
+    activeAnimations.add(animation);
+    animation.addEventListener("cancel", () => activeAnimations.delete(animation), { once: true });
+    return animation;
+  };
 
   const transitionRoot = options => options.element
     ? document.querySelector(options.element)
@@ -74,11 +81,11 @@
     const root = transitionRoot(options);
     const outgoing = direction === "out";
     lockPage(root);
-    const animation = root.animate(outgoing ? outgoingFrames : incomingFrames, {
+    const animation = trackAnimation(root.animate(outgoing ? outgoingFrames : incomingFrames, {
       duration,
       easing: timing.easing || "cubic-bezier(.7,0,.3,1)",
       fill: "both"
-    });
+    }));
     await waitFor(animation);
     if (!outgoing) finishIncoming(root, [animation]);
   };
@@ -86,6 +93,7 @@
   const makeOverlay = () => {
     const overlay = document.createElement("div");
     overlay.setAttribute("aria-hidden", "true");
+    overlay.dataset.pageTransitionOverlay = "";
     Object.assign(overlay.style, {
       position: "fixed",
       inset: "0",
@@ -131,8 +139,8 @@
       { opacity: 0, transform: "scale(.1) rotate(0deg)" }
     ];
 
-    const rootAnimation = root.animate(rootFrames, { duration, easing, fill: "both" });
-    const overlayAnimation = overlay.animate(overlayFrames, { duration, easing: outgoing ? "ease-in" : "ease-out", fill: "both" });
+    const rootAnimation = trackAnimation(root.animate(rootFrames, { duration, easing, fill: "both" }));
+    const overlayAnimation = trackAnimation(overlay.animate(overlayFrames, { duration, easing: outgoing ? "ease-in" : "ease-out", fill: "both" }));
     await Promise.all([waitFor(rootAnimation), waitFor(overlayAnimation)]);
 
     if (!outgoing) {
@@ -162,11 +170,11 @@
         return reversed;
       })
       .reverse();
-    const rootAnimation = root.animate(frames, { duration, easing: "steps(8,end)", fill: "both" });
-    const flashAnimation = overlay.animate(outgoing
+    const rootAnimation = trackAnimation(root.animate(frames, { duration, easing: "steps(8,end)", fill: "both" }));
+    const flashAnimation = trackAnimation(overlay.animate(outgoing
       ? [{ opacity: 0 }, { opacity: .7, offset: .22 }, { opacity: .12, offset: .72 }, { opacity: 1 }]
       : [{ opacity: 1 }, { opacity: .15, offset: .28 }, { opacity: .65, offset: .78 }, { opacity: 0 }],
-    { duration, easing: "steps(10,end)", fill: "both" });
+    { duration, easing: "steps(10,end)", fill: "both" }));
     await Promise.all([waitFor(rootAnimation), waitFor(flashAnimation)]);
     if (!outgoing) finishIncoming(root, [rootAnimation, flashAnimation], [overlay]);
   };
@@ -318,6 +326,19 @@
   });
   window.addEventListener("keyup", event => heldKeys.delete(event.key.length === 1 ? event.key.toLowerCase() : event.key));
   window.addEventListener("blur", () => heldKeys.clear());
+
+  // Browsers may restore a transitioned-out page from the back/forward cache.
+  // Put it back into a clean, fully visible state instead of preserving the
+  // final frame of its outgoing animation.
+  window.addEventListener("pageshow", event => {
+    if (!event.persisted) return;
+    leaving = false;
+    heldKeys.clear();
+    activeAnimations.forEach(animation => animation.cancel());
+    activeAnimations.clear();
+    document.querySelectorAll("[data-page-transition-overlay]").forEach(overlay => overlay.remove());
+    unlockPage(transitionRoot({}));
+  });
 
   document.addEventListener("click", event => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
