@@ -368,6 +368,7 @@
     let pointerFrame = 0;
     let pointerX = 0;
     let pointerY = 0;
+    let pointerActive = false;
     let portalIsOpen = false;
     let closeTimer = 0;
 
@@ -394,17 +395,24 @@
       document.documentElement.style.setProperty("--vortex-x", `${pointerX * 15}px`);
       document.documentElement.style.setProperty("--vortex-y", `${pointerY * 15}px`);
       try {
-        window.parent.postMessage({ type: "portal-pointer", x: pointerX, y: pointerY }, window.location.origin);
+        window.parent.postMessage({
+          type: "portal-pointer",
+          active: pointerActive,
+          x: pointerX,
+          y: pointerY
+        }, window.location.origin);
       } catch (_) {}
     };
 
     window.addEventListener("pointermove", event => {
+      pointerActive = true;
       pointerX = Math.max(-1, Math.min(1, event.clientX / window.innerWidth * 2 - 1));
       pointerY = Math.max(-1, Math.min(1, event.clientY / window.innerHeight * 2 - 1));
       if (!pointerFrame) pointerFrame = requestAnimationFrame(publishPointer);
     });
 
     window.addEventListener("pointerleave", () => {
+      pointerActive = false;
       pointerX = 0;
       pointerY = 0;
       if (!pointerFrame) pointerFrame = requestAnimationFrame(publishPointer);

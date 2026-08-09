@@ -92,6 +92,8 @@ let playerVxSmoothed = 0;
 let starfieldReady = false;
 let time = 0;
 let last = performance.now();
+let externalParallaxActive = false;
+let externalParallaxX = 0;
 
 // In the original game this value was passed into updateStarfield().
 // This preserves the same visual scale for the menu/start-screen idle sway.
@@ -100,6 +102,14 @@ const playerSpeed = 7;
 // Use the start-menu / non-playing idle sway, because this file has no
 // gameplay input. To mimic gameplay with no left/right movement, set this to 0.
 const MENU_IDLE_SWAY_STRENGTH = 0.15;
+
+window.addEventListener("message", event => {
+  if (event.origin !== window.location.origin) return;
+  if (!event.data || event.data.type !== "portal-starfield-parallax") return;
+
+  externalParallaxActive = Boolean(event.data.active);
+  externalParallaxX = Math.max(-1, Math.min(1, Number(event.data.x) || 0));
+});
 
 function resetStarfield(){
   stars = starLayers.map(layer => {
@@ -120,9 +130,12 @@ function resetStarfield(){
 function updateStarfield(dt){
   if (!starfieldReady) return;
 
-  // Original non-playing/start-menu branch:
-  // vxIntent = 0.15 * Math.sin(time * 0.6)
-  const vxIntent = MENU_IDLE_SWAY_STRENGTH * Math.sin(time * 0.6);
+  // Portal pointer input uses the same left/right intent and smoothing path as
+  // player movement in shooter-game. Without external input, preserve the
+  // original non-playing/start-menu idle sway.
+  const vxIntent = externalParallaxActive
+    ? externalParallaxX
+    : MENU_IDLE_SWAY_STRENGTH * Math.sin(time * 0.6);
 
   const targetVx = vxIntent * playerSpeed * 55;
   playerVxSmoothed += (targetVx - playerVxSmoothed) * Math.min(1, dt * 8);

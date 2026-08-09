@@ -40,10 +40,8 @@
       width: 106%;
       height: 106%;
       background: #000;
-      transform: scale(1.04) translate3d(0, 0, 0);
+      transform: scale(1.04);
       transform-origin: center;
-      transition: transform 90ms linear;
-      will-change: transform;
     }
 
     .navigation {
@@ -88,11 +86,11 @@
 <body>
   <main class="portal" data-transition-root>
     <iframe class="starfield"
-            src="/dead/experiments/canvas-backgrounds/starfield-background.html"
+            src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-2"
             title="Animated starfield background"></iframe>
 
     <iframe class="navigation"
-            src="/portal/nav.html"
+            src="/portal/nav.html?v=20260809-2"
             title="Cardinal portal navigation"
             allowtransparency="true"></iframe>
 
@@ -109,7 +107,12 @@
 
       const x = Math.max(-1, Math.min(1, Number(event.data.x) || 0));
       const y = Math.max(-1, Math.min(1, Number(event.data.y) || 0));
-      starfield.style.transform = `scale(1.07) translate3d(${-x * 1.8}%, ${-y * 1.8}%, 0)`;
+      starfield.contentWindow.postMessage({
+        type: "portal-starfield-parallax",
+        active: Boolean(event.data.active),
+        x,
+        y
+      }, window.location.origin);
     });
   </script>
   <script src="/dead/scripts/page-transitions.js?v=20260809-2"></script>
