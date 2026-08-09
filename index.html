@@ -332,12 +332,10 @@
         <nav class="actions" aria-label="Enter or inspect the project">
           <label for="portal-transition" hidden>Choose a portal transition</label>
           <select class="action portal-select" id="portal-transition"
-                  data-arrow-transition-destination="/portal/"
-                  title="Choose Arrow Keys, then press an arrow key to enter in that direction">
+                  title="Choose the transition used by internal links across the site">
             <option value="">Enter Recursive Portal</option>
             <option value="swirl">Swirl</option>
             <option value="glitch-disintegrate">Glitch Disintegration</option>
-            <option value="arrow-keys">Arrow Keys</option>
             <option value="void-iris">Void Iris</option>
             <option value="crt-collapse">CRT Collapse</option>
           </select>
@@ -367,8 +365,9 @@
 
       const restoreSelection = () => {
         try {
-          const savedTransition = window.localStorage.getItem(storageKey)
+          let savedTransition = window.localStorage.getItem(storageKey)
             ?? window.localStorage.getItem(legacyStorageKey);
+          if (savedTransition === "arrow-keys") savedTransition = "";
           if (savedTransition !== null && hasOption(savedTransition)) selector.value = savedTransition;
           if (savedTransition !== null) window.localStorage.setItem(storageKey, savedTransition);
         } catch (_) {}
@@ -386,6 +385,6 @@
       window.addEventListener("pageshow", restoreSelection);
     })();
   </script>
-  <script src="/dead/scripts/page-transitions.js?v=20260809-5"></script>
+  <script src="/dead/scripts/page-transitions.js?v=20260809-6"></script>
 </body>
 </html>

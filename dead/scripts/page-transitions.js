@@ -8,7 +8,7 @@
  * - transform/opacity first, short bounded durations, reduced-motion fallback
  * - native cross-document snapshots between the main navigation hubs when available
  *
- * Precedence: explicit transition > custom route > saved splash default.
+ * Precedence: explicit override > saved splash preference > legacy link/route value.
  */
 (() => {
   "use strict";
@@ -46,19 +46,33 @@
     return null;
   };
 
-  const readDefaultTransition = () => {
+  const readTransitionPreference = () => {
     try {
       const saved = window.localStorage.getItem(DEFAULT_TRANSITION_KEY)
         ?? window.localStorage.getItem(LEGACY_DEFAULT_TRANSITION_KEY);
-      return saved && saved !== "arrow-keys" && transitions.has(saved) ? saved : null;
+      if (saved === null) return null;
+      return saved === "arrow-keys" ? "" : saved;
     } catch (_) {
       return null;
     }
   };
 
-  const defaultRule = () => {
-    const transition = readDefaultTransition();
-    return transition ? { transition, options: {} } : null;
+  const resolveRule = (from, to, requestedTransition, options = {}) => {
+    const route = findRoute(from, to);
+    if (options.overrideDefault === true && requestedTransition) {
+      return { transition: requestedTransition, options };
+    }
+    if (route?.options?.overrideDefault === true) return route;
+
+    const preference = readTransitionPreference();
+    if (preference !== null) {
+      return preference && transitions.has(preference)
+        ? { transition: preference, options: {} }
+        : null;
+    }
+
+    if (requestedTransition) return { transition: requestedTransition, options };
+    return route;
   };
 
   const readHandoff = ({ consume = false } = {}) => {
@@ -411,12 +425,17 @@
     },
 
     getDefault() {
-      return readDefaultTransition();
+      const preference = readTransitionPreference();
+      return preference && transitions.has(preference) ? preference : null;
+    },
+
+    getPreference() {
+      return readTransitionPreference();
     },
 
     setDefault(transition) {
       const value = transition || "";
-      if (value && value !== "arrow-keys" && !transitions.has(value)) {
+      if (value && !transitions.has(value)) {
         throw new TypeError(`Unknown transition: ${value}`);
       }
       try { window.localStorage.setItem(DEFAULT_TRANSITION_KEY, value); } catch (_) {}
@@ -428,9 +447,7 @@
       const url = new URL(destination, window.location.href);
       const from = cleanPath(window.location.href);
       const to = cleanPath(url.href);
-      const rule = transitionName
-        ? { transition: transitionName, options }
-        : findRoute(from, to) || defaultRule();
+      const rule = resolveRule(from, to, transitionName, options);
 
       if (!rule || !transitions.has(rule.transition)) {
         window.location.assign(url.href);
@@ -440,6 +457,7 @@
       leaving = true;
       const definition = transitions.get(rule.transition);
       const settings = { ...rule.options, ...options };
+      delete settings.overrideDefault;
       const useNative = canUseNativeNavigation(from, to);
       const handoff = {
         from,
@@ -508,24 +526,6 @@
     }, { once: true });
   }
 
-  window.addEventListener("keydown", event => {
-    if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
-    const selector = document.querySelector('[data-arrow-transition-destination]');
-    if (!selector || selector.value !== "arrow-keys") return;
-
-    const arrowTransitions = {
-      ArrowUp: "slide-down",
-      ArrowDown: "slide-up",
-      ArrowLeft: "slide-right",
-      ArrowRight: "slide-left"
-    };
-    const transition = arrowTransitions[event.key];
-    if (!transition) return;
-
-    event.preventDefault();
-    api.navigate(selector.dataset.arrowTransitionDestination, transition);
-  });
-
   document.addEventListener("click", event => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
@@ -534,11 +534,6 @@
       const selector = document.getElementById(launcher.dataset.transitionSelect);
       const transition = selector?.value || undefined;
       if (!transition) return;
-      if (transition === "arrow-keys") {
-        event.preventDefault();
-        selector.focus();
-        return;
-      }
       event.preventDefault();
       api.navigate(launcher.dataset.transitionDestination, transition);
       return;
@@ -551,9 +546,18 @@
     if (destination.origin !== window.location.origin || destination.protocol !== window.location.protocol) return;
     if (destination.pathname === window.location.pathname && destination.search === window.location.search) return;
 
-    const rule = anchor.dataset.transition
-      ? { transition: anchor.dataset.transition, options: {} }
-      : findRoute(cleanPath(window.location.href), cleanPath(destination.href)) || defaultRule();
+    if (anchor.dataset.transitionOverride) {
+      event.preventDefault();
+      api.navigate(destination.href, anchor.dataset.transitionOverride, { overrideDefault: true });
+      return;
+    }
+
+    const rule = resolveRule(
+      cleanPath(window.location.href),
+      cleanPath(destination.href),
+      anchor.dataset.transition,
+      {}
+    );
     if (!rule) return;
 
     event.preventDefault();
@@ -561,7 +565,7 @@
   });
 
   const receiveHandoff = async () => {
-    if (window.frameElement?.hasAttribute("data-page-transition-preview")) return;
+    if (window.frameElement) return;
 
     const handoff = readHandoff({ consume: true });
     if (!handoff) return;
