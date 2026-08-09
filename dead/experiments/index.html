@@ -159,6 +159,21 @@
       text-shadow: 0 0 8px #000;
     }
 
+    .portal-button .destination-label {
+      min-width: 0;
+      max-width: 78%;
+      aspect-ratio: auto;
+      border: 0;
+      border-radius: 0;
+      padding: .35em .55em;
+      background: rgba(0, 0, 0, .78);
+      font-size: clamp(8px, 1.35vmin, 14px);
+      letter-spacing: .04em;
+      line-height: 1.05;
+      overflow-wrap: anywhere;
+      text-align: center;
+    }
+
     .portal-button:hover,
     .portal-button:focus-visible {
       border-color: var(--magenta);
@@ -610,10 +625,10 @@
         <line x1="50" y1="50" x2="83.33" y2="83.33"></line>
       </svg>
 
-      <a class="portal-button northwest" href="/dead/experiments/background/" data-transition="swirl" aria-label="Open Background"></a>
-      <a class="portal-button north" href="/dead/experiments/blotter-visualizer/" data-transition="slide-down" aria-label="Open Blotter Visualizer"></a>
-      <a class="portal-button northeast" href="/dead/experiments/bookmark-manager/" data-transition="swirl" aria-label="Open Bookmark Manager"></a>
-      <a class="portal-button west" href="/dead/experiments/business-card/" data-transition="slide-right" aria-label="Open Business Card"></a>
+      <a class="portal-button northwest" href="/dead/experiments/background/" data-transition="swirl" aria-label="Open Background"><span class="destination-label">Background</span></a>
+      <a class="portal-button north" href="/dead/experiments/blotter-visualizer/" data-transition="slide-down" aria-label="Open Blotter Visualizer"><span class="destination-label">Blotter Visualizer</span></a>
+      <a class="portal-button northeast" href="/dead/experiments/bookmark-manager/" data-transition="swirl" aria-label="Open Bookmark Manager"><span class="destination-label">Bookmark Manager</span></a>
+      <a class="portal-button west" href="/dead/experiments/business-card/" data-transition="slide-right" aria-label="Open Business Card"><span class="destination-label">Business Card</span></a>
 
       <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the experiment portals">
         <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
@@ -624,10 +639,10 @@
         <span class="core-label">Open<br>Portal</span>
       </a>
 
-      <a class="portal-button east" href="/dead/experiments/camera-experiment/" data-transition="slide-left" aria-label="Open Camera Experiment"></a>
-      <a class="portal-button southwest" href="/dead/experiments/camera-studio/" data-transition="swirl" aria-label="Open Camera Studio"></a>
-      <a class="portal-button south" href="/dead/experiments/canvas-backgrounds/" data-transition="slide-up" aria-label="Open Canvas Backgrounds"></a>
-      <a class="portal-button southeast" href="/dead/experiments/chat-sandbox/" data-transition="swirl" aria-label="Open Chat Sandbox"></a>
+      <a class="portal-button east" href="/dead/experiments/camera-experiment/" data-transition="slide-left" aria-label="Open Camera Experiment"><span class="destination-label">Camera Experiment</span></a>
+      <a class="portal-button southwest" href="/dead/experiments/camera-studio/" data-transition="swirl" aria-label="Open Camera Studio"><span class="destination-label">Camera Studio</span></a>
+      <a class="portal-button south" href="/dead/experiments/canvas-backgrounds/" data-transition="slide-up" aria-label="Open Canvas Backgrounds"><span class="destination-label">Canvas Backgrounds</span></a>
+      <a class="portal-button southeast" href="/dead/experiments/chat-sandbox/" data-transition="swirl" aria-label="Open Chat Sandbox"><span class="destination-label">Chat Sandbox</span></a>
     </nav>
 
     <a class="home-link" href="/">theinternetisdead.org</a>
@@ -735,12 +750,14 @@
 
       portalSlots.forEach((slot, index) => {
         const entry = entries[index];
+        const label = slot.querySelector(".destination-label");
         if (!entry) {
           slot.removeAttribute("href");
           slot.removeAttribute("data-transition");
           slot.setAttribute("aria-label", "Empty portal");
           slot.setAttribute("tabindex", "-1");
           slot.style.setProperty("--portal-image", 'url("/dead/assets/images/static.gif")');
+          label.textContent = "Empty";
           return;
         }
 
@@ -750,6 +767,7 @@
         slot.setAttribute("aria-label", `Open ${name}`);
         slot.removeAttribute("tabindex");
         slot.style.setProperty("--portal-image", `url("${thumbnail}")`);
+        label.textContent = name;
       });
 
       saveExperimentPage(normalizedPage);

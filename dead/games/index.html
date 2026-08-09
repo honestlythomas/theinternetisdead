@@ -172,6 +172,21 @@
       text-shadow: 0 0 8px #000;
     }
 
+    .portal-button .destination-label {
+      min-width: 0;
+      max-width: 78%;
+      aspect-ratio: auto;
+      border: 0;
+      border-radius: 0;
+      padding: .35em .55em;
+      background: rgba(0, 0, 0, .78);
+      font-size: clamp(8px, 1.35vmin, 14px);
+      letter-spacing: .04em;
+      line-height: 1.05;
+      overflow-wrap: anywhere;
+      text-align: center;
+    }
+
     .portal-button:hover,
     .portal-button:focus-visible {
       border-color: var(--magenta);
@@ -513,9 +528,12 @@
 
     <nav class="navigation compass" aria-label="Games portal navigation">
       <a class="portal-button north" href="/dead/games/shooter-game/" data-transition="slide-down" aria-label="Open Shooter Game">
+        <span class="destination-label">Shooter Game</span>
       </a>
 
-      <button class="portal-button east" type="button" aria-label="Static portal"></button>
+      <button class="portal-button east" type="button" aria-label="Static portal">
+        <span class="destination-label">Static</span>
+      </button>
 
       <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the game portals">
         <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
@@ -527,9 +545,11 @@
       </a>
 
       <a class="portal-button south" href="/dead/games/tektite-3D-game/" data-transition="slide-up" aria-label="Open Tektite 3D Game">
+        <span class="destination-label">Tektite 3D Game</span>
       </a>
 
       <a class="portal-button west" href="/dead/games/inferno-trainer/" data-transition="slide-right" aria-label="Open Inferno Trainer">
+        <span class="destination-label">Inferno Trainer</span>
       </a>
     </nav>
 
