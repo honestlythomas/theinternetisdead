@@ -13,6 +13,8 @@
 
   const HANDOFF_KEY = "theinternetisdead:page-transition";
   const HANDOFF_MAX_AGE = 30000;
+  const DEFAULT_TRANSITION_KEY = "theinternetisdead:page-transition:default";
+  const LEGACY_DEFAULT_TRANSITION_KEY = "theinternetisdead:index:portal-transition";
   const transitions = new Map();
   const routes = [];
   const activeAnimations = new Set();
@@ -37,6 +39,21 @@
       if (routeMatches(rule.from, from) && routeMatches(rule.to, to)) return rule;
     }
     return null;
+  };
+
+  const readDefaultTransition = () => {
+    try {
+      const saved = window.localStorage.getItem(DEFAULT_TRANSITION_KEY)
+        ?? window.localStorage.getItem(LEGACY_DEFAULT_TRANSITION_KEY);
+      return saved && saved !== "arrow-keys" && transitions.has(saved) ? saved : null;
+    } catch (_) {
+      return null;
+    }
+  };
+
+  const defaultRule = () => {
+    const transition = readDefaultTransition();
+    return transition ? { transition, options: {} } : null;
   };
 
   const waitFor = animation => new Promise(resolve => {
@@ -405,6 +422,21 @@
       return findRoute(cleanPath(from), cleanPath(to));
     },
 
+    getDefault() {
+      return readDefaultTransition();
+    },
+
+    setDefault(transition) {
+      const value = transition || "";
+      if (value && value !== "arrow-keys" && !transitions.has(value)) {
+        throw new TypeError(`Unknown transition: ${value}`);
+      }
+      try {
+        window.localStorage.setItem(DEFAULT_TRANSITION_KEY, value);
+      } catch (_) {}
+      return api;
+    },
+
     async navigate(destination, transitionName, options = {}) {
       if (leaving) return;
       const url = new URL(destination, window.location.href);
@@ -412,7 +444,7 @@
       const to = cleanPath(url.href);
       const rule = transitionName
         ? { transition: transitionName, options }
-        : findRoute(from, to);
+        : findRoute(from, to) || defaultRule();
 
       if (!rule || !transitions.has(rule.transition)) {
         window.location.assign(url.href);
@@ -530,7 +562,7 @@
 
     const rule = anchor.dataset.transition
       ? { transition: anchor.dataset.transition, options: {} }
-      : findRoute(cleanPath(window.location.href), cleanPath(destination.href));
+      : findRoute(cleanPath(window.location.href), cleanPath(destination.href)) || defaultRule();
     if (!rule) return;
 
     event.preventDefault();

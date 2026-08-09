@@ -362,7 +362,8 @@
 
   <script>
     (() => {
-      const storageKey = "theinternetisdead:index:portal-transition";
+      const storageKey = "theinternetisdead:page-transition:default";
+      const legacyStorageKey = "theinternetisdead:index:portal-transition";
       const selector = document.getElementById("portal-transition");
       const goButton = document.getElementById("portal-go");
 
@@ -370,8 +371,10 @@
 
       const restoreSelection = () => {
         try {
-          const savedTransition = window.localStorage.getItem(storageKey);
+          const savedTransition = window.localStorage.getItem(storageKey)
+            ?? window.localStorage.getItem(legacyStorageKey);
           if (savedTransition !== null && hasOption(savedTransition)) selector.value = savedTransition;
+          if (savedTransition !== null) window.localStorage.setItem(storageKey, savedTransition);
         } catch (_) {}
       };
 
@@ -387,6 +390,6 @@
       window.addEventListener("pageshow", restoreSelection);
     })();
   </script>
-  <script src="/dead/scripts/page-transitions.js?v=20260809-1"></script>
+  <script src="/dead/scripts/page-transitions.js?v=20260809-4"></script>
 </body>
 </html>
