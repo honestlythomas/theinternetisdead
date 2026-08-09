@@ -72,12 +72,12 @@
       background: linear-gradient(180deg, transparent, var(--line), transparent);
     }
 
-    .compass.portal-opening::before {
+    .compass.portal-open::before {
       height: 3px;
       background: linear-gradient(90deg, transparent, var(--magenta), transparent);
     }
 
-    .compass.portal-opening::after {
+    .compass.portal-open::after {
       width: 3px;
       background: linear-gradient(180deg, transparent, var(--magenta), transparent);
     }
@@ -149,6 +149,14 @@
     .east  { grid-column: 3; grid-row: 2; --from-x: -134%; --from-y: 0%; --over-x: 10%; --over-y: 0%; --spiral: 620deg; --delay: 70ms; }
     .south { grid-column: 2; grid-row: 3; --from-x: 0%; --from-y: -134%; --over-x: 0%; --over-y: 10%; --spiral: -620deg; --delay: 140ms; }
     .west  { grid-column: 1; grid-row: 2; --from-x: 134%; --from-y: 0%; --over-x: -10%; --over-y: 0%; --spiral: 620deg; --delay: 210ms; }
+
+    .portal-open .portal-button {
+      visibility: visible;
+      pointer-events: auto;
+      opacity: 1;
+      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+      filter: none;
+    }
 
     .portal-opening .portal-button {
       visibility: visible;
@@ -261,6 +269,18 @@
       outline-color: var(--magenta);
       color: var(--magenta);
       box-shadow: 0 0 64px rgba(255, 43, 214, .58);
+    }
+
+    .portal-open .core-vortex {
+      opacity: .96;
+      filter: saturate(1.9) brightness(1.25);
+      transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
+      animation: vortex-spin 420ms linear infinite;
+    }
+
+    .portal-open .core {
+      overflow: hidden;
+      transform: scale(1.08);
     }
 
     .portal-opening .core-vortex {
@@ -382,6 +402,7 @@
     let pointerActive = false;
     let pointerType = "mouse";
     let portalIsOpen = false;
+    let openTimer = 0;
     let closeTimer = 0;
 
     const makeSpiral = phase => {
@@ -440,12 +461,33 @@
       if (!pointerFrame) pointerFrame = requestAnimationFrame(publishPointer);
     });
 
-    openPortal.addEventListener("click", () => {
+    const publishPortalState = () => {
+      try {
+        window.parent.postMessage({
+          type: "portal-open-state",
+          open: portalIsOpen
+        }, window.location.origin);
+      } catch (_) {}
+    };
+
+    const setPortalState = (open, { animate = false, notify = false } = {}) => {
+      window.clearTimeout(openTimer);
       window.clearTimeout(closeTimer);
+      portalIsOpen = Boolean(open);
+      compass.classList.remove("portal-open", "portal-opening", "portal-closing");
 
       if (portalIsOpen) {
-        portalIsOpen = false;
-        compass.classList.remove("portal-opening", "portal-closing");
+        compass.classList.add("portal-open");
+        if (animate) {
+          void compass.offsetWidth;
+          compass.classList.add("portal-opening");
+          openTimer = window.setTimeout(() => {
+            if (portalIsOpen) compass.classList.remove("portal-opening");
+          }, 1550);
+        }
+        coreLabel.innerHTML = "Close<br>Portal";
+        openPortal.setAttribute("aria-expanded", "true");
+      } else if (animate) {
         void compass.offsetWidth;
         compass.classList.add("portal-closing");
         coreLabel.innerHTML = "Open<br>Portal";
@@ -453,16 +495,27 @@
         closeTimer = window.setTimeout(() => {
           if (!portalIsOpen) compass.classList.remove("portal-closing");
         }, 980);
-        return;
+      } else {
+        coreLabel.innerHTML = "Open<br>Portal";
+        openPortal.setAttribute("aria-expanded", "false");
       }
 
-      portalIsOpen = true;
-      compass.classList.remove("portal-opening", "portal-closing");
-      void compass.offsetWidth;
-      compass.classList.add("portal-opening");
-      coreLabel.innerHTML = "Close<br>Portal";
-      openPortal.setAttribute("aria-expanded", "true");
+      if (notify) publishPortalState();
+    };
+
+    openPortal.addEventListener("click", () => {
+      setPortalState(!portalIsOpen, { animate: true, notify: true });
     });
+
+    window.addEventListener("message", event => {
+      if (event.origin !== window.location.origin || event.source !== window.parent || !event.data) return;
+      if (event.data.type !== "portal-set-open-state") return;
+      setPortalState(Boolean(event.data.open));
+    });
+
+    try {
+      window.parent.postMessage({ type: "portal-open-state-request" }, window.location.origin);
+    } catch (_) {}
 
     document.addEventListener("click", event => {
       const portal = event.target.closest("a[data-transition]");

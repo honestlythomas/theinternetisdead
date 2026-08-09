@@ -118,7 +118,7 @@
             title="Animated starfield background"></iframe>
 
     <iframe class="navigation"
-            src="/portal/nav.html?v=20260809-6"
+            src="/portal/nav.html?v=20260809-7"
             title="Cardinal portal navigation"
             allowtransparency="true"></iframe>
 
@@ -131,7 +131,30 @@
     const starfield = document.querySelector(".starfield");
     const navigation = document.querySelector(".navigation");
     const cursorLens = document.querySelector(".cursor-lens");
+    const portalStateKey = "theinternetisdead:portal:open";
     let touchHideTimer = 0;
+
+    const readPortalState = () => {
+      try {
+        return window.localStorage.getItem(portalStateKey) === "true";
+      } catch (_) {
+        return false;
+      }
+    };
+
+    const savePortalState = open => {
+      try {
+        window.localStorage.setItem(portalStateKey, open ? "true" : "false");
+      } catch (_) {}
+    };
+
+    const syncPortalState = () => {
+      if (!navigation.contentWindow) return;
+      navigation.contentWindow.postMessage({
+        type: "portal-set-open-state",
+        open: readPortalState()
+      }, window.location.origin);
+    };
 
     const positionLens = (clientX, clientY, pointerType = "mouse", active = true) => {
       window.clearTimeout(touchHideTimer);
@@ -170,9 +193,23 @@
     }, { passive: true });
     portal.addEventListener("pointercancel", event => updateParentLens(event, false), { passive: true });
     window.addEventListener("blur", () => cursorLens.classList.remove("is-visible"));
+    navigation.addEventListener("load", syncPortalState);
+    window.addEventListener("pageshow", syncPortalState);
 
     window.addEventListener("message", event => {
       if (event.origin !== window.location.origin || !event.data) return;
+
+      if (event.source === navigation.contentWindow) {
+        if (event.data.type === "portal-open-state-request") {
+          syncPortalState();
+          return;
+        }
+
+        if (event.data.type === "portal-open-state") {
+          savePortalState(Boolean(event.data.open));
+          return;
+        }
+      }
 
       if (event.source === starfield.contentWindow && event.data.type === "portal-surface-pointer") {
         positionLensFromFrame(starfield, event.data);
