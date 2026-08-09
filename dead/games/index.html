@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#000000">
   <meta name="color-scheme" content="dark">
   <title>Games Portal</title>
+  <link rel="stylesheet" href="/dead/styles/orb-arranger.css?v=20260809-1">
   <style>
     :root {
       color-scheme: dark;
@@ -618,7 +619,9 @@
             src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-3"
             title="Animated starfield background"></iframe>
 
-    <nav class="navigation compass" aria-label="Games portal navigation">
+    <nav class="navigation compass" aria-label="Games portal navigation"
+         data-orb-arranger-key="theinternetisdead:games:orb-order"
+         data-orb-arranger-scope-select="#game-page">
       <svg class="portal-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
         <line x1="50" y1="50" x2="16.67" y2="16.67"></line>
         <line x1="50" y1="50" x2="50" y2="16.67"></line>
@@ -651,7 +654,7 @@
     </nav>
 
     <a class="home-link" href="/">theinternetisdead.org</a>
-    <h1 class="page-title">Games</h1>
+    <h1 class="page-title"><span>Games</span> <button class="orb-edit-toggle" type="button" aria-label="Rearrange orbs" aria-pressed="false">✏️</button></h1>
     <select class="page-select" id="game-page" aria-label="Game portal page">
       <option value="1">Page 1/1</option>
     </select>
@@ -836,6 +839,7 @@
       window.location.assign(destination.href);
     });
   </script>
+  <script src="/dead/scripts/orb-arranger.js?v=20260809-1"></script>
   <script src="/dead/scripts/page-transitions.js?v=20260809-7"></script>
 </body>
 </html>
