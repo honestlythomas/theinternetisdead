@@ -3,28 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#020302">
   <meta name="color-scheme" content="dark">
-  <meta http-equiv="Cache-Control" content="no-store">
-  <meta name="description" content="A warning at the threshold of a recursive art archive, personal symbolic operating system, and record of lived experience.">
-  <title>⚠ WARNING — THE INTERNET IS DEAD</title>
+  <meta name="description" content="Thomas Harrison—Honestly Thomas / Tektite—is a Canadian interdisciplinary artist working across music, video, code, games and web-native archives.">
+  <title>Honestly Thomas — The Internet Is Dead</title>
   <style>
     :root {
       color-scheme: dark;
-      --void: #000;
-      --panel: #020702;
-      --ink: #ddffda;
-      --green: #42ff19;
-      --dim: #168609;
-      --magenta: #ff00d4;
-      --red: #ff3b3b;
-      --amber: #ffd000;
-      --line: rgba(66, 255, 25, 0.32);
+      --void: #020302;
+      --ink: #f0ffe9;
+      --green: #72ff19;
+      --green-dim: #2ba80d;
+      --magenta: #ff2bd6;
+      --amber: #ffb000;
+      --line: rgba(114, 255, 25, .34);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html,
     body {
@@ -41,158 +36,142 @@
       font-family: "Courier New", Courier, monospace;
     }
 
-    .screen {
+    .splash {
       position: relative;
       display: grid;
       width: 100vw;
       height: 100vh;
       height: 100dvh;
-      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-columns: minmax(360px, 46%) minmax(0, 54%);
       overflow: hidden;
-      padding:
-        max(12px, env(safe-area-inset-top))
-        max(14px, env(safe-area-inset-right))
-        max(12px, env(safe-area-inset-bottom))
-        max(14px, env(safe-area-inset-left));
-      background:
-        linear-gradient(90deg, rgba(255, 0, 212, 0.035), transparent 30%, transparent 70%, rgba(66, 255, 25, 0.035)),
-        radial-gradient(circle at 50% 0%, rgba(255, 0, 212, 0.09), transparent 44%),
-        radial-gradient(circle at 50% 110%, rgba(66, 255, 25, 0.08), transparent 45%),
-        #000;
+      isolation: isolate;
+      background: #000;
     }
 
-    .screen::before {
+    .portrait {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      margin: 0;
+      border-left: 1px solid var(--line);
+      background: #000;
+    }
+
+    .portrait img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 50%;
+      filter: saturate(1.08) contrast(1.04);
+    }
+
+    .portrait::after {
       content: "";
       position: absolute;
-      inset: 8px;
-      border: 1px solid var(--line);
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, #020302 0, transparent 14%),
+        repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .13) 3px 4px);
+    }
+
+    .identity {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      flex-direction: column;
+      justify-content: center;
+      gap: clamp(10px, 1.8vh, 18px);
+      padding:
+        max(18px, env(safe-area-inset-top))
+        clamp(24px, 4.4vw, 76px)
+        max(18px, env(safe-area-inset-bottom))
+        max(22px, env(safe-area-inset-left));
+      background:
+        radial-gradient(circle at 8% 16%, rgba(255, 43, 214, .12), transparent 29%),
+        radial-gradient(circle at 75% 90%, rgba(114, 255, 25, .09), transparent 34%),
+        #020302;
+    }
+
+    .identity::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      z-index: -1;
+      border: 1px solid rgba(114, 255, 25, .18);
       pointer-events: none;
     }
 
-    .topline,
-    .bottomline {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      min-width: 0;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    .eyebrow,
+    .status,
+    .key-hint {
+      margin: 0;
       color: var(--green);
-      font-size: clamp(8px, 0.85vw, 11px);
+      font-size: clamp(8px, .75vw, 11px);
       font-weight: 700;
-      letter-spacing: 0.11em;
-      line-height: 1.2;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .topline {
-      padding: 4px 7px 10px;
-    }
-
-    .bottomline {
-      padding: 10px 7px 4px;
-      color: var(--dim);
-    }
-
-    .warning-label {
-      color: var(--red);
-    }
-
-    .warning {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      width: min(1120px, calc(100% - 24px));
-      min-height: 0;
-      margin: auto;
-      grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
-      gap: clamp(24px, 5vw, 70px);
-      align-items: center;
-    }
-
-    .warning-code {
-      margin: 0 0 clamp(7px, 1.2vh, 12px);
-      color: var(--amber);
-      font-size: clamp(9px, 1vw, 13px);
-      font-weight: 700;
-      letter-spacing: 0.15em;
+      letter-spacing: .14em;
+      line-height: 1.35;
       text-transform: uppercase;
     }
+
+    .eyebrow::before { content: "● "; color: var(--magenta); }
 
     h1 {
       margin: 0;
       color: #fff;
-      font-size: clamp(54px, 8vw, 112px);
+      font-size: clamp(48px, 6.4vw, 104px);
       font-weight: 900;
-      letter-spacing: -0.085em;
-      line-height: 0.82;
+      letter-spacing: -.09em;
+      line-height: .78;
       text-transform: uppercase;
-      text-shadow:
-        2px 0 0 var(--red),
-        -2px 0 0 var(--magenta),
-        0 0 24px rgba(66, 255, 25, 0.3);
+      text-shadow: 2px 0 var(--magenta), -2px 0 var(--green-dim);
     }
 
-    .subhead {
-      max-width: 54ch;
-      margin: clamp(16px, 2.6vh, 28px) 0 0;
+    h1 span {
+      display: block;
+      color: var(--green);
+      font-size: .47em;
+      letter-spacing: -.045em;
+      line-height: 1.05;
+      text-shadow: 1px 0 var(--magenta);
+    }
+
+    .discipline {
+      margin: 0;
       border-left: 3px solid var(--magenta);
-      padding-left: 14px;
+      padding-left: 12px;
       color: var(--green);
-      font-size: clamp(12px, 1.28vw, 17px);
+      font-size: clamp(11px, 1.15vw, 16px);
       font-weight: 700;
-      line-height: 1.42;
+      line-height: 1.4;
     }
 
-    .transmission {
-      position: relative;
-      border: 1px solid var(--line);
-      padding: clamp(18px, 2.7vw, 30px);
-      background: rgba(0, 8, 0, 0.9);
-      box-shadow: inset 0 0 28px rgba(66, 255, 25, 0.035);
+    .statement {
+      max-width: 58ch;
+      margin: 0;
+      color: #d8e8d2;
+      font-size: clamp(10px, .92vw, 13px);
+      line-height: 1.52;
     }
 
-    .transmission::before {
-      content: "TRANSMISSION / PERSONAL.OS";
-      position: absolute;
-      top: 0;
-      left: 12px;
-      padding: 0 6px;
-      background: #000;
-      color: var(--magenta);
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      transform: translateY(-50%);
-    }
+    .statement strong { color: #fff; }
 
-    .transmission p {
-      margin: 0 0 0.82em;
-      color: var(--ink);
-      font-size: clamp(11px, 1vw, 14px);
-      line-height: 1.48;
-    }
-
-    .transmission p:last-of-type {
-      margin-bottom: 0;
-    }
-
-    .declaration {
-      color: #fff !important;
-      font-weight: 700;
-    }
-
-    .declaration strong {
-      color: var(--green);
+    .warning {
+      margin: 0;
+      border: 1px solid rgba(255, 176, 0, .38);
+      padding: 8px 10px;
+      color: #ffd27a;
+      font-size: clamp(8px, .72vw, 10px);
+      line-height: 1.35;
     }
 
     .actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.08fr .92fr;
       gap: 8px;
-      margin-top: clamp(14px, 2vh, 20px);
     }
 
     .action {
@@ -202,240 +181,142 @@
       justify-content: center;
       border: 1px solid var(--green);
       padding: 9px 11px;
-      background: #000;
+      background: rgba(0, 0, 0, .76);
       color: var(--green);
-      font-size: clamp(9px, 0.85vw, 12px);
+      font-size: clamp(9px, .78vw, 11px);
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: .065em;
       line-height: 1.25;
       text-align: center;
       text-decoration: none;
       text-transform: uppercase;
     }
 
-    .action.secondary {
-      border-color: var(--magenta);
-      color: #ff72e8;
-    }
-
+    .action.secondary { border-color: var(--magenta); color: #ff7ae7; }
     .action:hover,
-    .action:focus-visible {
-      background: var(--green);
-      color: #000;
-      outline: 2px solid #fff;
-      outline-offset: 2px;
+    .action:focus-visible { background: var(--green); color: #000; outline: 2px solid #fff; outline-offset: 2px; }
+    .action.secondary:hover,
+    .action.secondary:focus-visible { background: var(--magenta); color: #000; }
+
+    .key-hint {
+      color: #6f9e67;
+      letter-spacing: .06em;
+      text-align: center;
     }
 
-    .action.secondary:hover,
-    .action.secondary:focus-visible {
-      background: var(--magenta);
-      color: #000;
+    .key-hint kbd {
+      color: #baff9f;
+      font: inherit;
+    }
+
+    .status {
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      right: clamp(20px, 3vw, 48px);
+      color: var(--green-dim);
+      letter-spacing: .08em;
     }
 
     @media (max-width: 760px) {
-      .screen {
-        padding: 10px 11px;
+      .splash { display: block; }
+
+      .portrait {
+        position: absolute;
+        inset: 0;
+        border: 0;
       }
 
-      .screen::before {
-        inset: 5px;
+      .portrait img { object-position: 50% 46%; }
+
+      .portrait::after {
+        background:
+          linear-gradient(180deg, rgba(0, 0, 0, .24), rgba(0, 0, 0, .72) 43%, #020302 88%),
+          repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .13) 3px 4px);
       }
 
-      .warning {
-        width: calc(100% - 12px);
-        grid-template-columns: 1fr;
-        gap: clamp(14px, 2.8vh, 24px);
-        align-content: center;
+      .identity {
+        height: 100%;
+        justify-content: flex-end;
+        gap: clamp(6px, 1.35vh, 10px);
+        padding: max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
+        background: transparent;
+        text-shadow: 0 1px 4px #000;
       }
 
-      .warning-code {
-        margin-bottom: 5px;
-        font-size: 8px;
-      }
-
-      h1 {
-        font-size: clamp(40px, 12.5vw, 66px);
-        line-height: 0.84;
-      }
-
-      .subhead {
-        margin-top: clamp(9px, 1.8vh, 15px);
-        padding-left: 10px;
-        font-size: clamp(9px, 2.75vw, 12px);
-        line-height: 1.3;
-      }
-
-      .transmission {
-        padding: clamp(13px, 3.5vw, 19px);
-      }
-
-      .transmission p {
-        margin-bottom: 0.58em;
-        font-size: clamp(8px, 2.42vw, 10.5px);
-        line-height: 1.32;
-      }
-
-      .actions {
-        margin-top: clamp(9px, 1.5vh, 13px);
-      }
-
-      .action {
-        min-height: 38px;
-        padding: 6px 8px;
-        font-size: clamp(7px, 2.15vw, 9px);
-      }
-
-      .topline,
-      .bottomline {
-        padding-inline: 3px;
-        font-size: 7px;
-      }
+      .identity::before { inset: 6px; border-color: rgba(114, 255, 25, .28); }
+      .status { top: 13px; right: 14px; font-size: 7px; }
+      .eyebrow { font-size: 7px; }
+      h1 { font-size: clamp(42px, 14vw, 70px); }
+      .discipline { max-width: 42ch; font-size: clamp(9px, 2.65vw, 12px); line-height: 1.28; }
+      .statement { max-width: 55ch; color: #f0f7ed; font-size: clamp(8px, 2.3vw, 10.5px); line-height: 1.34; }
+      .warning { padding: 6px 8px; background: rgba(0, 0, 0, .55); font-size: clamp(7px, 2vw, 9px); }
+      .action { min-height: 37px; padding: 6px 7px; font-size: clamp(7px, 2.2vw, 9px); }
+      .key-hint { font-size: 6.5px; }
     }
 
-    @media (max-width: 420px) {
-      .topline span:last-child,
-      .bottomline span:last-child {
-        display: none;
-      }
-
-      .actions {
-        grid-template-columns: 1fr;
-        gap: 6px;
-      }
-
-      .action {
-        min-height: 34px;
-      }
+    @media (max-width: 400px) {
+      .actions { grid-template-columns: 1fr; gap: 5px; }
+      .action { min-height: 31px; }
     }
 
-    @media (max-height: 650px) and (max-width: 760px) {
-      .warning {
-        gap: 10px;
-      }
-
-      .warning-code {
-        display: none;
-      }
-
-      h1 {
-        font-size: clamp(34px, 10.5vw, 50px);
-      }
-
-      .subhead {
-        margin-top: 7px;
-        font-size: clamp(8px, 2.25vw, 10px);
-      }
-
-      .transmission {
-        padding: 11px 13px;
-      }
-
-      .transmission p {
-        margin-bottom: 0.42em;
-        font-size: clamp(7px, 2.05vw, 9px);
-        line-height: 1.22;
-      }
-
-      .actions {
-        margin-top: 7px;
-      }
-
-      .action {
-        min-height: 29px;
-        padding: 4px 6px;
-      }
-
-      .bottomline {
-        display: none;
-      }
+    @media (max-height: 650px) {
+      .identity { gap: 6px; }
+      .statement { line-height: 1.27; }
+      .warning { padding-block: 5px; }
+      .action { min-height: 31px; padding-block: 5px; }
+      .key-hint { font-size: 6px; }
     }
 
-    @media (max-height: 600px) and (min-width: 761px) {
-      .warning {
-        gap: 28px;
-      }
-
-      h1 {
-        font-size: clamp(50px, 7vw, 78px);
-      }
-
-      .subhead {
-        margin-top: 14px;
-      }
-
-      .transmission {
-        padding: 16px 20px;
-      }
-
-      .transmission p {
-        font-size: 10px;
-        line-height: 1.3;
-      }
-
-      .actions {
-        margin-top: 10px;
-      }
-
-      .bottomline {
-        display: none;
-      }
+    @media (max-height: 520px) and (min-width: 761px) {
+      .identity { gap: 5px; }
+      h1 { font-size: clamp(42px, 5.7vw, 74px); }
+      .statement { font-size: 9px; line-height: 1.25; }
+      .warning { font-size: 7px; }
+      .action { min-height: 28px; }
     }
-
   </style>
 </head>
 <body>
-  <main class="screen" aria-labelledby="warning-title">
-    <header class="topline">
-      <span class="warning-label">⚠ Threshold warning</span>
-      <span>theinternetisdead.org // signal detected</span>
-    </header>
+  <main class="splash" data-transition-root aria-labelledby="artist-name">
+    <section class="identity">
+      <p class="status">Signal source: Muskoka, Ontario, Canada</p>
+      <p class="eyebrow">Thomas Harrison // Honestly Thomas // Tektite</p>
 
-    <div class="warning">
-      <section class="warning-heading">
-        <p class="warning-code">Recursive material ahead</p>
-        <h1 id="warning-title">Enter With<br>Context</h1>
-        <p class="subhead">
-          This site contains recursive art and a weighty symbolic language forged through
-          isolation in the midst of the world we live in.
-        </p>
-      </section>
+      <h1 id="artist-name">Honestly<span>Thomas</span></h1>
 
-      <article class="transmission">
-        <p>
-          What follows explores the digital decay of identity: the self fragmented into files,
-          records, diagnoses, usernames, evidence and signals—and the role institutions can play
-          in dehumanizing the people they were constructed to help.
-        </p>
+      <p class="discipline">
+        Neurodivergent Canadian interdisciplinary artist working across rap, video,
+        writing, code, web design, games and experimental media.
+      </p>
 
-        <p>
-          You may encounter flashing imagery, unexpected sound, dense symbolism, personal
-          testimony, gallows humour and artifacts that refuse to explain themselves only once.
-        </p>
+      <p class="statement">
+        <strong>theinternetisdead.org</strong> is art first: a recursive archive of web-native
+        grief, absurdity, identity and survival. It is also my personal symbolic operating
+        system—a place to gather the work, document the experience, and leave proof that I
+        was here and that it mattered.
+      </p>
 
-        <p>
-          This website is art first and foremost. It is also a personal symbolic operating system:
-          a place where one life and its creative effort can be archived, processed, translated
-          and made visible.
-        </p>
+      <p class="warning">
+        ⚠ Enter expecting haunted interfaces, dense symbolism, flashing imagery, unexpected
+        sound, gallows humour, unfinished ruins and sincerity hiding inside the debris.
+      </p>
 
-        <p class="declaration">
-          This is my place on the internet to <strong>prove I exist</strong> and document my
-          experience as if it mattered.
-        </p>
+      <nav class="actions" aria-label="Enter or inspect the project">
+        <a class="action" id="portal-entry" href="/portal/"
+           title="Hold a transition key while clicking: S swirl · G glitch · arrow keys slide · V void iris · C CRT collapse"
+           aria-description="Hold S, G, an arrow key, V, or C while clicking to choose a transition.">Enter Recursive Portal</a>
+        <a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a>
+      </nav>
 
-        <nav class="actions" aria-label="Continue into the site">
-          <a class="action" id="portal-entry" href="/portal/"
-             title="Hold a transition key while clicking: S swirl · G glitch · arrow keys slide · V void iris · C CRT collapse"
-             aria-description="Hold S, G, an arrow key, V, or C while clicking to choose a transition.">Enter Recursive Portal</a>
-          <a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a>
-        </nav>
-      </article>
-    </div>
+      <p class="key-hint" aria-label="Optional transition keys">
+        Hold + click: <kbd>S</kbd> swirl / <kbd>G</kbd> glitch / <kbd>↑ ↓ ← →</kbd> slide / <kbd>V</kbd> void / <kbd>C</kbd> CRT
+      </p>
+    </section>
 
-    <footer class="bottomline">
-      <span>Identity checksum: unresolved</span>
-      <span>Art survives the system that names it</span>
-    </footer>
+    <figure class="portrait">
+      <img src="/dead/assets/images/honestly-thomas-recursive-portrait.webp"
+           alt="A recursive mosaic portrait of Honestly Thomas assembled from videos, artworks, code, timelines and fragments of internet history.">
+    </figure>
   </main>
 
   <script src="/dead/scripts/page-transitions.js"></script>
