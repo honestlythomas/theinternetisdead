@@ -77,6 +77,10 @@
     }
 
     .identity {
+      --identity-pad-top: max(18px, env(safe-area-inset-top));
+      --identity-pad-right: clamp(24px, 4.4vw, 76px);
+      --identity-pad-bottom: max(18px, env(safe-area-inset-bottom));
+      --identity-pad-left: max(22px, env(safe-area-inset-left));
       position: relative;
       z-index: 2;
       display: flex;
@@ -86,16 +90,16 @@
       justify-content: flex-start;
       gap: 0;
       overflow-y: auto;
-      padding:
-        max(18px, env(safe-area-inset-top))
-        clamp(24px, 4.4vw, 76px)
-        max(18px, env(safe-area-inset-bottom))
-        max(22px, env(safe-area-inset-left));
+      padding: var(--identity-pad-top) var(--identity-pad-right) var(--identity-pad-bottom) var(--identity-pad-left);
+      -ms-overflow-style: none;
+      scrollbar-width: none;
       background:
         radial-gradient(circle at 8% 16%, rgba(255, 43, 214, .12), transparent 29%),
         radial-gradient(circle at 75% 90%, rgba(114, 255, 25, .09), transparent 34%),
         #020302;
     }
+
+    .identity::-webkit-scrollbar { display: none; }
 
     .identity::before {
       content: "";
@@ -108,9 +112,14 @@
 
     .splash-banner {
       display: block;
-      width: 100%;
+      width: calc(100% + var(--identity-pad-left) + var(--identity-pad-right));
       aspect-ratio: 3 / 1;
       flex: 0 0 auto;
+      margin:
+        calc(0px - var(--identity-pad-top))
+        calc(0px - var(--identity-pad-right))
+        0
+        calc(0px - var(--identity-pad-left));
       border-bottom: 3px solid #fff;
       object-fit: cover;
     }
@@ -254,9 +263,13 @@
       }
 
       .identity {
+        --identity-pad-top: max(14px, env(safe-area-inset-top));
+        --identity-pad-right: max(16px, env(safe-area-inset-right));
+        --identity-pad-bottom: max(14px, env(safe-area-inset-bottom));
+        --identity-pad-left: max(16px, env(safe-area-inset-left));
         height: 100%;
         justify-content: flex-start;
-        padding: max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
+        padding: var(--identity-pad-top) var(--identity-pad-right) var(--identity-pad-bottom) var(--identity-pad-left);
         background: transparent;
         text-shadow: 0 1px 4px #000;
       }
