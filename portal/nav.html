@@ -177,7 +177,7 @@
       width: min(17vmin, 140px);
       aspect-ratio: 1;
       place-items: center;
-      overflow: visible;
+      overflow: hidden;
       border: 1px solid rgba(255, 43, 214, .7);
       border-radius: 50%;
       padding: 0;
@@ -197,6 +197,8 @@
       outline: 2px solid #fff;
       outline-offset: 6px;
       box-shadow: 0 0 48px rgba(0, 217, 255, .46);
+      transform: scale(3);
+      transform-origin: center;
       transition: outline-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
     }
 
@@ -294,8 +296,8 @@
     }
 
     @keyframes core-open {
-      0% { transform: scale(1); }
-      42% { transform: scale(2.2); }
+      0% { transform: scale(3); }
+      42% { transform: scale(3.35); }
       68% { transform: scale(1.28); }
       100% { transform: scale(1.08); }
     }
@@ -321,7 +323,7 @@
     @keyframes core-close {
       0% { transform: scale(1.08); }
       38% { transform: scale(1.7); }
-      100% { transform: scale(1); }
+      100% { transform: scale(3); }
     }
 
     @media (max-width: 520px) {
