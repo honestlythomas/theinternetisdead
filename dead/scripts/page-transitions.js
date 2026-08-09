@@ -105,9 +105,10 @@
   };
 
   const playSwirl = async (direction, options = {}) => {
-    const duration = options.duration ?? 2500;
+    const duration = options.duration ?? 1900;
     const root = transitionRoot(options);
     const outgoing = direction === "out";
+    const useRings = !root.querySelector("iframe");
     lockPage(root);
 
     const vortex = document.createElement("div");
@@ -119,13 +120,25 @@
       zIndex: "2147483647",
       overflow: "hidden",
       pointerEvents: "none",
-      background: "#000",
+      background: "transparent",
       perspective: "900px"
     });
 
+    const hueField = document.createElement("div");
+    Object.assign(hueField.style, {
+      position: "absolute",
+      inset: "-18%",
+      zIndex: "0",
+      transformOrigin: "50% 52%",
+      background: "radial-gradient(circle at 50% 52%, #000 0 4%, rgba(0,0,0,.2) 12%, transparent 32%), conic-gradient(from 0deg at 50% 52%, #00140c, #180019, #001328, #210800, #00140c)",
+      opacity: ".92",
+      willChange: "transform, filter, opacity"
+    });
+    vortex.appendChild(hueField);
+
     const maxRadius = Math.hypot(window.innerWidth * .5, window.innerHeight * .52);
-    const ringCount = window.innerWidth < 700 ? 18 : 28;
-    const ringWidth = maxRadius / ringCount;
+    const ringCount = useRings ? (window.innerWidth < 700 ? 8 : 12) : 0;
+    const ringWidth = ringCount ? maxRadius / ringCount : 0;
     const animations = [];
 
     for (let index = ringCount - 1; index >= 0; index -= 1) {
@@ -144,7 +157,7 @@
         height: "100dvh",
         margin: "0",
         transformOrigin: "50% 52%",
-        willChange: "transform, filter, opacity",
+        willChange: "transform, opacity",
         backfaceVisibility: "hidden"
       });
 
@@ -157,15 +170,15 @@
       const halfTurn = 72 + depth * depth * 520;
       const directionSign = index % 7 === 0 ? .92 : 1;
       const frames = outgoing ? [
-        { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", filter: "none", opacity: 1 },
-        { transform: `translate3d(0,1vh,0) rotate(${(10 + depth * 42) * directionSign}deg) scale(${1.015 + depth * .045})`, filter: `saturate(${1 + depth * .4})`, opacity: 1, offset: .18 },
-        { transform: `translate3d(0,5vh,0) rotate(${halfTurn * directionSign}deg) scale(${.82 - depth * .18})`, filter: `saturate(${1.3 + depth}) contrast(${1.05 + depth * .3})`, opacity: .98, offset: .56 },
-        { transform: `translate3d(0,14vh,0) rotate(${finalTurn * directionSign}deg) scale(.006)`, filter: "saturate(2.6) contrast(1.5) blur(1.5px)", opacity: 0 }
+        { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", opacity: 1 },
+        { transform: `translate3d(0,1vh,0) rotate(${(10 + depth * 42) * directionSign}deg) scale(${1.015 + depth * .045})`, opacity: 1, offset: .18 },
+        { transform: `translate3d(0,5vh,0) rotate(${halfTurn * directionSign}deg) scale(${.82 - depth * .18})`, opacity: .98, offset: .56 },
+        { transform: `translate3d(0,14vh,0) rotate(${finalTurn * directionSign}deg) scale(.006)`, opacity: 0 }
       ] : [
-        { transform: `translate3d(0,14vh,0) rotate(${-finalTurn * directionSign}deg) scale(.006)`, filter: "saturate(2.6) contrast(1.5) blur(1.5px)", opacity: 0 },
-        { transform: `translate3d(0,5vh,0) rotate(${-halfTurn * directionSign}deg) scale(${.82 - depth * .18})`, filter: `saturate(${1.3 + depth}) contrast(${1.05 + depth * .3})`, opacity: .98, offset: .44 },
-        { transform: `translate3d(0,1vh,0) rotate(${-(10 + depth * 42) * directionSign}deg) scale(${1.015 + depth * .045})`, filter: `saturate(${1 + depth * .4})`, opacity: 1, offset: .82 },
-        { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", filter: "none", opacity: 1 }
+        { transform: `translate3d(0,14vh,0) rotate(${-finalTurn * directionSign}deg) scale(.006)`, opacity: 0 },
+        { transform: `translate3d(0,5vh,0) rotate(${-halfTurn * directionSign}deg) scale(${.82 - depth * .18})`, opacity: .98, offset: .44 },
+        { transform: `translate3d(0,1vh,0) rotate(${-(10 + depth * 42) * directionSign}deg) scale(${1.015 + depth * .045})`, opacity: 1, offset: .82 },
+        { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", opacity: 1 }
       ];
 
       animations.push(trackAnimation(clone.animate(frames, {
@@ -186,8 +199,31 @@
     vortex.appendChild(drain);
     document.body.appendChild(vortex);
 
-    const rootAnimation = trackAnimation(root.animate([{ opacity: 0 }, { opacity: 0 }], { duration, fill: "both" }));
+    const rootAnimation = useRings
+      ? trackAnimation(root.animate([{ opacity: 0 }, { opacity: 0 }], { duration, fill: "both" }))
+      : trackAnimation(root.animate(outgoing ? [
+        { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", opacity: 1 },
+        { transform: "translate3d(0,8vh,0) rotate(420deg) scale(.28)", opacity: .95, offset: .62 },
+        { transform: "translate3d(0,14vh,0) rotate(880deg) scale(.008)", opacity: 0 }
+      ] : [
+        { transform: "translate3d(0,14vh,0) rotate(-880deg) scale(.008)", opacity: 0 },
+        { transform: "translate3d(0,8vh,0) rotate(-420deg) scale(.28)", opacity: .95, offset: .38 },
+        { transform: "translate3d(0,0,0) rotate(0deg) scale(1)", opacity: 1 }
+      ], {
+        duration,
+        easing: outgoing ? "cubic-bezier(.58,0,.96,.55)" : "cubic-bezier(.08,.62,.22,1)",
+        fill: "both"
+      }));
     animations.push(rootAnimation);
+    animations.push(trackAnimation(hueField.animate(outgoing ? [
+      { transform: "rotate(0deg) scale(1)", filter: "hue-rotate(0deg) saturate(1.4)", opacity: .42 },
+      { transform: "rotate(130deg) scale(1.22)", filter: "hue-rotate(360deg) saturate(2)", opacity: .92, offset: .5 },
+      { transform: "rotate(360deg) scale(1.65)", filter: "hue-rotate(900deg) saturate(2.5)", opacity: 1 }
+    ] : [
+      { transform: "rotate(-360deg) scale(1.65)", filter: "hue-rotate(-900deg) saturate(2.5)", opacity: 1 },
+      { transform: "rotate(-130deg) scale(1.22)", filter: "hue-rotate(-360deg) saturate(2)", opacity: .92, offset: .5 },
+      { transform: "rotate(0deg) scale(1)", filter: "hue-rotate(0deg) saturate(1.4)", opacity: 0 }
+    ], { duration, easing: "linear", fill: "both" })));
     animations.push(trackAnimation(drain.animate(outgoing ? [
       { opacity: .12, transform: "rotate(0deg) scale(.5)" },
       { opacity: .72, transform: "rotate(260deg) scale(1.25)", offset: .55 },
