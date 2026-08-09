@@ -347,6 +347,33 @@
     </figure>
   </main>
 
+  <script>
+    (() => {
+      const storageKey = "theinternetisdead:index:portal-transition";
+      const selector = document.getElementById("portal-transition");
+      const goButton = document.getElementById("portal-go");
+
+      const hasOption = value => Array.from(selector.options).some(option => option.value === value);
+
+      const restoreSelection = () => {
+        try {
+          const savedTransition = window.localStorage.getItem(storageKey);
+          if (savedTransition !== null && hasOption(savedTransition)) selector.value = savedTransition;
+        } catch (_) {}
+      };
+
+      const saveSelection = () => {
+        try {
+          window.localStorage.setItem(storageKey, selector.value);
+        } catch (_) {}
+      };
+
+      restoreSelection();
+      selector.addEventListener("change", saveSelection);
+      goButton.addEventListener("click", saveSelection);
+      window.addEventListener("pageshow", restoreSelection);
+    })();
+  </script>
   <script src="/dead/scripts/page-transitions.js?v=20260809-1"></script>
 </body>
 </html>
