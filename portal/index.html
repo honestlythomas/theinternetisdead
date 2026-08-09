@@ -59,20 +59,25 @@
       top: max(16px, env(safe-area-inset-top));
       left: max(16px, env(safe-area-inset-left));
       z-index: 2;
-      color: #fff;
+      color: #72ff19;
       font-family: "Courier New", Courier, monospace;
       font-size: clamp(16px, 2vw, 24px);
       font-style: italic;
       font-weight: 700;
       line-height: 1;
-      text-decoration: none;
-      text-shadow: 0 2px 8px #000, 0 0 12px rgba(255, 255, 255, .28);
+      text-decoration: underline;
+      text-underline-offset: .2em;
+      text-shadow: 0 2px 8px #000, 0 0 12px rgba(114, 255, 25, .38);
+    }
+
+    .home-link:visited {
+      color: #72ff19;
     }
 
     .home-link:hover,
     .home-link:focus-visible {
-      text-decoration: underline;
-      text-underline-offset: .2em;
+      color: #ff2bd6;
+      text-shadow: 0 2px 8px #000, 0 0 14px rgba(255, 43, 214, .58);
     }
 
     .cursor-lens {
@@ -113,7 +118,7 @@
             title="Animated starfield background"></iframe>
 
     <iframe class="navigation"
-            src="/portal/nav.html?v=20260809-3"
+            src="/portal/nav.html?v=20260809-4"
             title="Cardinal portal navigation"
             allowtransparency="true"></iframe>
 
