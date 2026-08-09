@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#000000">
   <meta name="color-scheme" content="dark">
   <title>Recursive Portal</title>
+  <link rel="stylesheet" href="/dead/styles/orb-arranger.css?v=20260809-1">
   <style>
     :root {
       color-scheme: dark;
@@ -542,7 +543,8 @@
             src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-3"
             title="Animated starfield background"></iframe>
 
-    <nav class="navigation compass" aria-label="Portal navigation">
+    <nav class="navigation compass" aria-label="Portal navigation"
+         data-orb-arranger-key="theinternetisdead:portal:orb-order">
       <a class="portal-button north" href="/" data-transition="slide-down" aria-label="Return through the north portal">
         <span aria-hidden="true">↑</span>
       </a>
@@ -572,7 +574,7 @@
     </nav>
 
     <a class="home-link" href="/">theinternetisdead.org</a>
-    <h1 class="page-title">Portal</h1>
+    <h1 class="page-title"><span>Portal</span> <button class="orb-edit-toggle" type="button" aria-label="Rearrange orbs" aria-pressed="false">✏️</button></h1>
     <div class="cursor-lens" aria-hidden="true"></div>
   </main>
 
@@ -751,6 +753,7 @@
       window.location.assign(destination.href);
     });
   </script>
+  <script src="/dead/scripts/orb-arranger.js?v=20260809-1"></script>
   <script src="/dead/scripts/page-transitions.js?v=20260809-7"></script>
 </body>
 </html>
