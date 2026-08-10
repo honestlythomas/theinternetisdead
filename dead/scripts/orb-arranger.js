@@ -73,6 +73,35 @@
       y: ((slot.row - .5) / 3) * 100
     });
 
+    const transitionForSlots = (origin, destination) => {
+      const vertical = destination.row < origin.row
+        ? "down"
+        : destination.row > origin.row
+          ? "up"
+          : "";
+      const horizontal = destination.column < origin.column
+        ? "right"
+        : destination.column > origin.column
+          ? "left"
+          : "";
+      const direction = [vertical, horizontal].filter(Boolean).join("-");
+      return direction ? `slide-${direction}` : "";
+    };
+
+    const updateDirectionalTransitions = () => {
+      const coreIndex = currentOrder.indexOf("portal-core");
+      if (coreIndex < 0) return;
+      const coreSlot = defaultSlots[coreIndex];
+
+      currentOrder.forEach((id, slotIndex) => {
+        if (id === "portal-core") return;
+        const item = itemById.get(id);
+        if (!item?.matches("a[href]")) return;
+        const transition = transitionForSlots(coreSlot, defaultSlots[slotIndex]);
+        if (transition) item.dataset.transition = transition;
+      });
+    };
+
     const updateLines = () => {
       if (!lines.length) return;
       const coreIndex = currentOrder.indexOf("portal-core");
@@ -103,6 +132,7 @@
         item.style.gridColumn = String(slot.column);
         item.style.gridRow = String(slot.row);
       });
+      updateDirectionalTransitions();
       updateLines();
     };
 
