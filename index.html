@@ -216,25 +216,6 @@
       cursor: pointer;
     }
 
-    .portal-select {
-      width: 100%;
-      min-width: 0;
-      appearance: auto;
-      text-align: center;
-    }
-
-    .portal-select option {
-      background: #020302;
-      color: var(--green);
-    }
-
-    .go {
-      grid-column: 1 / -1;
-      width: 100%;
-      min-height: 44px;
-      aspect-ratio: auto;
-    }
-
     .action.secondary { border-color: var(--magenta); color: #ff7ae7; }
     .action:hover,
     .action:focus-visible { background: var(--green); color: #000; outline: 2px solid #fff; outline-offset: 2px; }
@@ -330,20 +311,8 @@
         </p>
 
         <nav class="actions" aria-label="Enter or inspect the project">
-          <label for="portal-transition" hidden>Choose a portal transition</label>
-          <select class="action portal-select" id="portal-transition"
-                  title="Choose the transition used by internal links across the site">
-            <option value="">Enter Recursive Portal</option>
-            <option value="swirl">Swirl</option>
-            <option value="glitch-disintegrate">Glitch Disintegration</option>
-            <option value="void-iris">Void Iris</option>
-            <option value="crt-collapse">CRT Collapse</option>
-          </select>
+          <a class="action" href="/portal/">Enter Recursive Portal</a>
           <a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a>
-          <a class="action go" id="portal-go" href="/portal/"
-             data-transition-select="portal-transition"
-             data-transition-destination="/portal/"
-             aria-label="Enter Recursive Portal using the selected transition">GO</a>
         </nav>
       </div>
     </section>
@@ -354,37 +323,6 @@
     </figure>
   </main>
 
-  <script>
-    (() => {
-      const storageKey = "theinternetisdead:page-transition:default";
-      const legacyStorageKey = "theinternetisdead:index:portal-transition";
-      const selector = document.getElementById("portal-transition");
-      const goButton = document.getElementById("portal-go");
-
-      const hasOption = value => Array.from(selector.options).some(option => option.value === value);
-
-      const restoreSelection = () => {
-        try {
-          let savedTransition = window.localStorage.getItem(storageKey)
-            ?? window.localStorage.getItem(legacyStorageKey);
-          if (savedTransition === "arrow-keys") savedTransition = "";
-          if (savedTransition !== null && hasOption(savedTransition)) selector.value = savedTransition;
-          if (savedTransition !== null) window.localStorage.setItem(storageKey, savedTransition);
-        } catch (_) {}
-      };
-
-      const saveSelection = () => {
-        try {
-          window.localStorage.setItem(storageKey, selector.value);
-        } catch (_) {}
-      };
-
-      restoreSelection();
-      selector.addEventListener("change", saveSelection);
-      goButton.addEventListener("click", saveSelection);
-      window.addEventListener("pageshow", restoreSelection);
-    })();
-  </script>
   <script src="/dead/scripts/page-transitions.js?v=20260809-7"></script>
 </body>
 </html>
