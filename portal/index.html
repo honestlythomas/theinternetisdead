@@ -204,6 +204,13 @@
       line-height: 1;
     }
 
+    .portal-button .home-symbol {
+      padding: .22em;
+      background: rgba(0, 0, 0, .58);
+      font-size: clamp(24px, 4.5vmin, 44px);
+      letter-spacing: 0;
+    }
+
     .portal-button:hover,
     .portal-button:focus-visible {
       border-color: var(--magenta);
@@ -219,7 +226,6 @@
     .north {
       grid-column: 2;
       grid-row: 1;
-      --portal-image: url("/dead/assets/images/static.gif");
       --from-x: 0%;
       --from-y: 134%;
       --over-x: 0%;
@@ -545,8 +551,8 @@
 
     <nav class="navigation compass" aria-label="Portal navigation"
          data-orb-arranger-key="theinternetisdead:portal:orb-order">
-      <a class="portal-button north" href="/" data-transition="slide-down" aria-label="Return through the north portal">
-        <span aria-hidden="true">↑</span>
+      <a class="portal-button north" href="/" data-transition="slide-down" aria-label="Return home">
+        <span class="destination-label home-symbol" aria-hidden="true">🏠</span>
       </a>
 
       <a class="portal-button east" href="/dead/experiments/" data-transition="slide-left" aria-label="Open Experiments">
