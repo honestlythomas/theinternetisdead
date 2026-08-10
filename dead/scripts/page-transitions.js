@@ -138,6 +138,14 @@
       html[data-dead-transition="slide-left"]::view-transition-new(root) { animation-name: dead-slide-left-in; }
       html[data-dead-transition="slide-right"]::view-transition-old(root) { animation-name: dead-slide-right-out; }
       html[data-dead-transition="slide-right"]::view-transition-new(root) { animation-name: dead-slide-right-in; }
+      html[data-dead-transition="slide-up-left"]::view-transition-old(root) { animation-name: dead-slide-up-left-out; }
+      html[data-dead-transition="slide-up-left"]::view-transition-new(root) { animation-name: dead-slide-up-left-in; }
+      html[data-dead-transition="slide-up-right"]::view-transition-old(root) { animation-name: dead-slide-up-right-out; }
+      html[data-dead-transition="slide-up-right"]::view-transition-new(root) { animation-name: dead-slide-up-right-in; }
+      html[data-dead-transition="slide-down-left"]::view-transition-old(root) { animation-name: dead-slide-down-left-out; }
+      html[data-dead-transition="slide-down-left"]::view-transition-new(root) { animation-name: dead-slide-down-left-in; }
+      html[data-dead-transition="slide-down-right"]::view-transition-old(root) { animation-name: dead-slide-down-right-out; }
+      html[data-dead-transition="slide-down-right"]::view-transition-new(root) { animation-name: dead-slide-down-right-in; }
       html[data-dead-transition^="slide-"]::view-transition-old(root),
       html[data-dead-transition^="slide-"]::view-transition-new(root) { animation-duration: 1050ms; }
 
@@ -175,6 +183,14 @@
       @keyframes dead-slide-left-in { from { transform: translate3d(100%,0,0); } }
       @keyframes dead-slide-right-out { to { transform: translate3d(100%,0,0); } }
       @keyframes dead-slide-right-in { from { transform: translate3d(-100%,0,0); } }
+      @keyframes dead-slide-up-left-out { to { transform: translate3d(-100%,-100%,0); } }
+      @keyframes dead-slide-up-left-in { from { transform: translate3d(100%,100%,0); } }
+      @keyframes dead-slide-up-right-out { to { transform: translate3d(100%,-100%,0); } }
+      @keyframes dead-slide-up-right-in { from { transform: translate3d(-100%,100%,0); } }
+      @keyframes dead-slide-down-left-out { to { transform: translate3d(-100%,100%,0); } }
+      @keyframes dead-slide-down-left-in { from { transform: translate3d(100%,-100%,0); } }
+      @keyframes dead-slide-down-right-out { to { transform: translate3d(100%,100%,0); } }
+      @keyframes dead-slide-down-right-in { from { transform: translate3d(-100%,-100%,0); } }
 
       @media (prefers-reduced-motion: reduce) {
         ::view-transition-old(root) { animation: dead-fade-out 180ms linear both !important; }
@@ -297,11 +313,12 @@
         { transform: "scale(1,.012)", opacity: .72 }
       ];
     } else {
-      const vertical = effect === "slide-up" || effect === "slide-down";
-      const sign = effect === "slide-up" || effect === "slide-left" ? -1 : 1;
-      field = vertical
-        ? [{ transform: `translate3d(0,${-sign * 60}%,0)`, opacity: .08 }, { transform: `translate3d(0,${sign * 60}%,0)`, opacity: .48 }]
-        : [{ transform: `translate3d(${-sign * 60}%,0,0)`, opacity: .08 }, { transform: `translate3d(${sign * 60}%,0,0)`, opacity: .48 }];
+      const verticalSign = effect.includes("up") ? -1 : effect.includes("down") ? 1 : 0;
+      const horizontalSign = effect.includes("left") ? -1 : effect.includes("right") ? 1 : 0;
+      field = [
+        { transform: `translate3d(${-horizontalSign * 60}%,${-verticalSign * 60}%,0)`, opacity: .08 },
+        { transform: `translate3d(${horizontalSign * 60}%,${verticalSign * 60}%,0)`, opacity: .48 }
+      ];
     }
 
     const scan = [
@@ -314,7 +331,11 @@
   const rootFrames = (effect, outgoing) => {
     const slideVectors = {
       "slide-up": ["0", "-100%", "0", "100%"],
+      "slide-up-left": ["-100%", "-100%", "100%", "100%"],
+      "slide-up-right": ["100%", "-100%", "-100%", "100%"],
       "slide-down": ["0", "100%", "0", "-100%"],
+      "slide-down-left": ["-100%", "100%", "100%", "-100%"],
+      "slide-down-right": ["100%", "100%", "-100%", "-100%"],
       "slide-left": ["-100%", "0", "100%", "0"],
       "slide-right": ["100%", "0", "-100%", "0"]
     };
@@ -516,7 +537,7 @@
     });
   });
 
-  ["up", "down", "left", "right"].forEach(direction => {
+  ["up", "up-right", "right", "down-right", "down", "down-left", "left", "up-left"].forEach(direction => {
     const effect = `slide-${direction}`;
     api.register(effect, {
       out: options => playEffect(effect, "out", options),
