@@ -177,7 +177,7 @@
       mix-blend-mode: screen;
     }
 
-    .portal-button span {
+    .portal-button > span {
       position: relative;
       z-index: 3;
       display: grid;
@@ -204,11 +204,24 @@
       line-height: 1;
     }
 
-    .portal-button .home-symbol {
-      padding: .22em;
-      background: rgba(0, 0, 0, .58);
-      font-size: clamp(24px, 4.5vmin, 44px);
-      letter-spacing: 0;
+    .portal-button .orb-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .3em;
+      text-align: center;
+    }
+
+    .portal-button .orb-symbol {
+      display: block;
+      min-width: 0;
+      aspect-ratio: auto;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      font-size: clamp(22px, 4vmin, 40px);
+      line-height: 1;
     }
 
     .portal-button:hover,
@@ -552,12 +565,12 @@
     <nav class="navigation compass" aria-label="Portal navigation"
          data-orb-arranger-key="theinternetisdead:portal:orb-order">
       <a class="portal-button north" href="/" data-transition="slide-down" aria-label="Return home">
-        <span class="destination-label home-symbol" aria-hidden="true">🏠</span>
+        <span class="destination-label orb-label"><span class="orb-symbol" aria-hidden="true">🏠</span>Home</span>
       </a>
 
       <a class="portal-button east" href="/dead/experiments/" data-transition="slide-left" aria-label="Open Experiments">
         <iframe class="portal-preview" src="/dead/experiments/" title="Live preview of Experiments" aria-hidden="true" tabindex="-1"></iframe>
-        <span class="destination-label">Experiments</span>
+        <span class="destination-label orb-label"><span class="orb-symbol" aria-hidden="true">🧩</span>Experiments</span>
       </a>
 
       <button class="core" id="open-portal" type="button" aria-expanded="false" aria-label="Enter Portal and release the direction portals">
@@ -575,7 +588,7 @@
 
       <a class="portal-button west" href="/dead/games/" data-transition="crt-collapse" aria-label="Open Games">
         <iframe class="portal-preview" src="/dead/games/" title="Live preview of Games" aria-hidden="true" tabindex="-1"></iframe>
-        <span class="destination-label">Games</span>
+        <span class="destination-label orb-label"><span class="orb-symbol" aria-hidden="true">🕹️</span>Games</span>
       </a>
     </nav>
 
