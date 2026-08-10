@@ -223,19 +223,37 @@
     .action.secondary:focus-visible { background: var(--magenta); color: #000; }
 
     @media (max-width: 760px) {
-      .splash { display: block; }
+      html,
+      body {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .splash {
+        display: flex;
+        width: 100%;
+        height: auto;
+        min-height: 100dvh;
+        flex-direction: column;
+        overflow: visible;
+      }
 
       .portrait {
-        position: absolute;
-        inset: 0;
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: 100dvh;
+        min-height: 100dvh;
+        flex: 0 0 100dvh;
         border: 0;
       }
 
-      .portrait img { object-position: 50% 46%; }
+      .portrait img { object-position: 50% top; }
 
       .portrait::after {
         background:
-          linear-gradient(180deg, rgba(0, 0, 0, .24), rgba(0, 0, 0, .72) 43%, #020302 88%),
           repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .13) 3px 4px);
       }
 
@@ -244,11 +262,17 @@
         --identity-pad-right: max(16px, env(safe-area-inset-right));
         --identity-pad-bottom: max(14px, env(safe-area-inset-bottom));
         --identity-pad-left: max(16px, env(safe-area-inset-left));
-        height: 100%;
+        width: 100%;
+        height: 100dvh;
+        min-height: 100dvh;
+        flex: 0 0 100dvh;
         justify-content: flex-start;
         padding: var(--identity-pad-top) var(--identity-pad-right) var(--identity-pad-bottom) var(--identity-pad-left);
-        background: transparent;
-        text-shadow: 0 1px 4px #000;
+        background:
+          radial-gradient(circle at 8% 16%, rgba(255, 43, 214, .12), transparent 29%),
+          radial-gradient(circle at 75% 90%, rgba(114, 255, 25, .09), transparent 34%),
+          #020302;
+        text-shadow: none;
       }
 
       .identity::before { inset: 6px; border-color: rgba(114, 255, 25, .28); }
