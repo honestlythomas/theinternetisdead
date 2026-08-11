@@ -3,24 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#020302">
   <meta name="color-scheme" content="dark">
-  <title>Experiments Portal</title>
-  <link rel="stylesheet" href="/dead/styles/orb-arranger.css?v=20260809-1">
+  <meta name="description" content="Thomas Harrison—Honestly Thomas / Tektite—is a Canadian interdisciplinary artist working across music, video, code, games and web-native archives.">
+  <title>Space — The Internet Is Dead</title>
   <style>
     :root {
       color-scheme: dark;
+      --void: #020302;
+      --ink: #f0ffe9;
       --green: #72ff19;
+      --green-dim: #2ba80d;
       --magenta: #ff2bd6;
-      --line: rgba(114, 255, 25, .32);
-      --vortex-x: 0px;
-      --vortex-y: 0px;
-    }
-
-    @property --vortex-spin {
-      syntax: "<angle>";
-      inherits: false;
-      initial-value: 0deg;
+      --amber: #ffb000;
+      --line: rgba(114, 255, 25, .34);
     }
 
     * { box-sizing: border-box; }
@@ -31,499 +27,290 @@
       height: 100%;
       margin: 0;
       overflow: hidden;
-      background: #000;
+      background: var(--void);
     }
 
     body {
-      color: var(--green);
+      min-width: 280px;
+      color: var(--ink);
       font-family: "Courier New", Courier, monospace;
     }
 
-    .portal {
+    .splash {
       position: relative;
+      display: grid;
       width: 100vw;
       height: 100vh;
       height: 100dvh;
+      grid-template-columns: minmax(360px, 46%) minmax(0, 54%);
       overflow: hidden;
-      background: #000;
-    }
-
-    .starfield {
-      position: absolute;
-      inset: -3%;
-      z-index: 0;
-      display: block;
-      width: 106%;
-      height: 106%;
-      border: 0;
-      background: #000;
-      transform: scale(1.04);
-      transform-origin: center;
-    }
-
-    .navigation {
-      position: absolute;
-      top: 54%;
-      left: 50%;
-      z-index: 1;
-      width: min(84vmin, 760px);
-      height: min(84vmin, 760px);
-      background: transparent;
-      transform: translate(-50%, -50%);
       isolation: isolate;
+      background: #000;
     }
 
-    .compass {
+    .portrait {
       position: relative;
-      display: grid;
+      min-width: 0;
+      overflow: hidden;
+      margin: 0;
+      border-left: 1px solid var(--line);
+      background: #000;
+    }
+
+    .portrait img {
+      display: block;
       width: 100%;
       height: 100%;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      place-items: center;
+      object-fit: cover;
+      object-position: 50% 50%;
+      filter: saturate(1.08) contrast(1.04);
     }
 
-    .portal-lines {
-      position: absolute;
-      inset: 8%;
-      z-index: -1;
-      width: 84%;
-      height: 84%;
-      overflow: visible;
-      pointer-events: none;
-    }
-
-    .portal-lines line {
-      stroke: var(--line);
-      stroke-width: 1;
-      vector-effect: non-scaling-stroke;
-      transition: stroke 180ms ease, stroke-width 180ms ease;
-    }
-
-    .portal-open .portal-lines line {
-      stroke: var(--magenta);
-      stroke-width: 3;
-    }
-
-    .portal-button {
-      position: relative;
-      display: grid;
-      width: min(22vmin, 190px);
-      aspect-ratio: 1;
-      place-items: center;
-      overflow: hidden;
-      border: 2px solid var(--green);
-      border-radius: 50%;
-      background:
-        linear-gradient(rgba(0, 0, 0, .12), rgba(0, 0, 0, .12)),
-        var(--portal-image) center / cover no-repeat;
-      box-shadow:
-        0 0 0 4px rgba(0, 0, 0, .85),
-        0 0 0 5px rgba(114, 255, 25, .3),
-        0 0 34px rgba(114, 255, 25, .2),
-        inset 0 0 32px rgba(0, 0, 0, .45);
-      color: var(--green);
-      cursor: pointer;
-      font: inherit;
-      padding: 0;
-      text-decoration: none;
-      appearance: none;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transform: translateZ(0);
-      will-change: transform, opacity;
-    }
-
-    .portal-button::before {
+    .portrait::after {
       content: "";
       position: absolute;
       inset: 0;
-      border-radius: inherit;
+      pointer-events: none;
       background:
-        repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .3) 3px 4px),
-        radial-gradient(circle, transparent 38%, rgba(0, 0, 0, .58) 100%);
+        linear-gradient(90deg, #020302 0, transparent 14%),
+        repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .13) 3px 4px);
     }
 
-    .portal-button span {
+    .identity {
+      --identity-pad-top: max(18px, env(safe-area-inset-top));
+      --identity-pad-right: clamp(24px, 4.4vw, 76px);
+      --identity-pad-bottom: max(18px, env(safe-area-inset-bottom));
+      --identity-pad-left: max(22px, env(safe-area-inset-left));
       position: relative;
-      z-index: 1;
-      display: grid;
-      min-width: 46%;
-      aspect-ratio: 1;
-      place-items: center;
-      border: 1px solid currentColor;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, .76);
-      font-size: clamp(10px, 2.2vmin, 20px);
-      font-weight: 900;
-      text-shadow: 0 0 8px #000;
-    }
-
-    .portal-button .destination-label {
+      z-index: 2;
+      display: flex;
       min-width: 0;
-      max-width: 78%;
-      aspect-ratio: auto;
-      border: 0;
-      border-radius: 0;
-      padding: .35em .55em;
-      background: rgba(0, 0, 0, .78);
-      font-size: clamp(8px, 1.35vmin, 14px);
-      letter-spacing: .04em;
-      line-height: 1.05;
-      overflow-wrap: anywhere;
-      text-align: center;
-    }
-
-    .portal-button:hover,
-    .portal-button:focus-visible {
-      border-color: var(--magenta);
-      color: #ff8deb;
-      outline: 2px solid #fff;
-      outline-offset: 6px;
-      box-shadow:
-        0 0 0 4px rgba(0, 0, 0, .85),
-        0 0 0 5px rgba(255, 43, 214, .45),
-        0 0 48px rgba(255, 43, 214, .42);
-    }
-
-    .northwest {
-      grid-column: 1;
-      grid-row: 1;
-      --portal-image: url("/dead/experiments/thumbnails/background/index.png");
-      --from-x: 134%;
-      --from-y: 134%;
-      --over-x: -7%;
-      --over-y: -7%;
-      --spiral: 620deg;
-      --delay: 0ms;
-    }
-
-    .north {
-      grid-column: 2;
-      grid-row: 1;
-      --portal-image: url("/dead/experiments/thumbnails/blotter-visualizer/index.png");
-      --from-x: 0%;
-      --from-y: 134%;
-      --over-x: 0%;
-      --over-y: -10%;
-      --spiral: -620deg;
-      --delay: 45ms;
-    }
-
-    .northeast {
-      grid-column: 3;
-      grid-row: 1;
-      --portal-image: url("/dead/experiments/thumbnails/bookmark-manager/index.png");
-      --from-x: -134%;
-      --from-y: 134%;
-      --over-x: 7%;
-      --over-y: -7%;
-      --spiral: -620deg;
-      --delay: 90ms;
-    }
-
-    .west {
-      grid-column: 1;
-      grid-row: 2;
-      --portal-image: url("/dead/experiments/thumbnails/business-card/index.png");
-      --from-x: 134%;
-      --from-y: 0%;
-      --over-x: -10%;
-      --over-y: 0%;
-      --spiral: 620deg;
-      --delay: 135ms;
-    }
-
-    .east {
-      grid-column: 3;
-      grid-row: 2;
-      --portal-image: url("/dead/experiments/thumbnails/camera-experiment/index.png");
-      --from-x: -134%;
-      --from-y: 0%;
-      --over-x: 10%;
-      --over-y: 0%;
-      --spiral: 620deg;
-      --delay: 180ms;
-    }
-
-    .southwest {
-      grid-column: 1;
-      grid-row: 3;
-      --portal-image: url("/dead/experiments/thumbnails/camera-studio/index.png");
-      --from-x: 134%;
-      --from-y: -134%;
-      --over-x: -7%;
-      --over-y: 7%;
-      --spiral: -620deg;
-      --delay: 225ms;
-    }
-
-    .south {
-      grid-column: 2;
-      grid-row: 3;
-      --portal-image: url("/dead/experiments/thumbnails/canvas-backgrounds/index.png");
-      --from-x: 0%;
-      --from-y: -134%;
-      --over-x: 0%;
-      --over-y: 10%;
-      --spiral: -620deg;
-      --delay: 270ms;
-    }
-
-    .southeast {
-      grid-column: 3;
-      grid-row: 3;
-      --portal-image: url("/dead/experiments/thumbnails/chat-sandbox/index.png");
-      --from-x: -134%;
-      --from-y: -134%;
-      --over-x: 7%;
-      --over-y: 7%;
-      --spiral: 620deg;
-      --delay: 315ms;
-    }
-
-    .portal-open .portal-button {
-      visibility: visible;
-      pointer-events: auto;
-      opacity: 1;
-      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-      filter: none;
-    }
-
-    .portal-opening .portal-button {
-      visibility: visible;
-      pointer-events: auto;
-      animation: portal-emerge 1050ms cubic-bezier(.12, .72, .18, 1.12) calc(var(--delay) + 240ms) both;
-    }
-
-    .portal-closing .portal-button {
-      visibility: visible;
-      pointer-events: none;
-      animation: portal-emerge 720ms cubic-bezier(.62, 0, .88, .38) calc(210ms - var(--delay)) reverse both;
-    }
-
-    .portal-open.portal-page-cycling .portal-button {
-      pointer-events: none;
-      animation: portal-page-cycle 560ms cubic-bezier(.55, 0, .2, 1) both;
-    }
-
-    @keyframes portal-emerge {
-      0% {
-        opacity: 0;
-        transform: translate3d(var(--from-x), var(--from-y), 0) rotate(var(--spiral)) scale(.02);
-        filter: brightness(3) saturate(2.5);
-      }
-      58% {
-        opacity: 1;
-        transform: translate3d(var(--over-x), var(--over-y), 0) rotate(-26deg) scale(1.12);
-        filter: brightness(1.4) saturate(1.6);
-      }
-      100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-        filter: none;
-      }
-    }
-
-    @keyframes portal-page-cycle {
-      0% {
-        opacity: 1;
-        transform: rotate(0deg) scale(1);
-        filter: none;
-      }
-      48% {
-        opacity: 0;
-        transform: rotate(180deg) scale(.08);
-        filter: brightness(2.4) saturate(2);
-      }
-      52% {
-        opacity: 0;
-        transform: rotate(-180deg) scale(.08);
-        filter: brightness(2.4) saturate(2);
-      }
-      100% {
-        opacity: 1;
-        transform: rotate(0deg) scale(1);
-        filter: none;
-      }
-    }
-
-    .core {
-      position: relative;
-      grid-column: 2;
-      grid-row: 2;
-      display: grid;
-      width: min(15vmin, 125px);
-      aspect-ratio: 1;
-      place-items: center;
+      min-height: 0;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0;
       overflow: hidden;
-      border: 1px solid rgba(255, 43, 214, .7);
-      border-radius: 50%;
-      padding: 0;
-      background: radial-gradient(circle, #000 0 34%, rgba(0, 0, 0, .78) 52%, transparent 72%);
+      padding: var(--identity-pad-top) var(--identity-pad-right) var(--identity-pad-bottom) var(--identity-pad-left);
+      background:
+        radial-gradient(circle at 8% 16%, rgba(255, 43, 214, .12), transparent 29%),
+        radial-gradient(circle at 75% 90%, rgba(114, 255, 25, .09), transparent 34%),
+        #020302;
+    }
+
+    .identity::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      z-index: -1;
+      border: 1px solid rgba(114, 255, 25, .18);
+      pointer-events: none;
+    }
+
+    .splash-banner {
+      display: block;
+      width: calc(100% + var(--identity-pad-left) + var(--identity-pad-right));
+      aspect-ratio: 3 / 1;
+      flex: 0 0 auto;
+      margin:
+        calc(0px - var(--identity-pad-top))
+        calc(0px - var(--identity-pad-right))
+        0
+        calc(0px - var(--identity-pad-left));
+      border-bottom: 3px solid #fff;
+      object-fit: cover;
+    }
+
+    .identity-content {
+      display: flex;
+      min-width: 0;
+      flex: 0 0 auto;
+      flex-direction: column;
+      gap: clamp(10px, 1.8vh, 18px);
+      padding-top: clamp(12px, 2vh, 20px);
+    }
+
+    .eyebrow {
+      margin: 0;
       color: var(--green);
-      cursor: pointer;
-      font: 900 clamp(21px, 3.75vmin, 36px) / 1.05 "Courier New", Courier, monospace;
-      letter-spacing: .08em;
+      font-size: clamp(8px, .75vw, 11px);
+      font-weight: 700;
+      letter-spacing: .14em;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before { content: "● "; color: var(--magenta); }
+
+    h1 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(48px, 6.4vw, 104px);
+      font-weight: 900;
+      letter-spacing: -.09em;
+      line-height: .78;
+      text-transform: uppercase;
+      text-shadow: 2px 0 var(--magenta), -2px 0 var(--green-dim);
+    }
+
+    h1 span {
+      display: block;
+      color: var(--green);
+      font-size: .47em;
+      letter-spacing: -.045em;
+      line-height: 1.05;
+      text-shadow: 1px 0 var(--magenta);
+    }
+
+    .discipline {
+      margin: 0;
+      border-left: 3px solid var(--magenta);
+      padding-left: 12px;
+      color: var(--green);
+      font-size: clamp(11px, 1.15vw, 16px);
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .statement {
+      max-width: 58ch;
+      margin: 0;
+      color: #d8e8d2;
+      font-size: clamp(10px, .92vw, 13px);
+      line-height: 1.52;
+    }
+
+    .statement strong { color: #fff; }
+
+    .warning {
+      margin: 0;
+      border: 1px solid rgba(255, 176, 0, .38);
+      padding: 8px 10px;
+      color: #ffd27a;
+      font-size: clamp(8px, .72vw, 10px);
+      line-height: 1.35;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .action {
+      display: flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--green);
+      padding: 9px 11px;
+      background: rgba(0, 0, 0, .76);
+      color: var(--green);
+      font-size: clamp(9px, .78vw, 11px);
+      font-weight: 700;
+      letter-spacing: .065em;
+      line-height: 1.25;
       text-align: center;
       text-decoration: none;
       text-transform: uppercase;
-      text-shadow: 0 0 8px #000;
-      isolation: isolate;
-      appearance: none;
-      outline: 2px solid var(--green);
-      outline-offset: 6px;
-      box-shadow: 0 0 48px rgba(114, 255, 25, .46);
-      transform: scale(3);
-      transform-origin: center;
-      transition: outline-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+      font-family: inherit;
+      cursor: pointer;
     }
 
-    .core-vortex {
-      position: absolute;
-      inset: -50%;
-      z-index: -1;
-      width: 200%;
-      height: 200%;
-      overflow: visible;
-      opacity: .9;
-      filter: saturate(1.5);
-      transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin));
-      animation: vortex-spin 1650ms linear infinite;
-      transform-origin: center;
-      will-change: transform, filter, opacity;
-    }
+    .action.secondary { border-color: var(--magenta); color: #ff7ae7; }
+    .action:hover,
+    .action:focus-visible { background: var(--green); color: #000; outline: 2px solid #fff; outline-offset: 2px; }
+    .action.secondary:hover,
+    .action.secondary:focus-visible { background: var(--magenta); color: #000; }
 
-    .vortex-tendril {
-      fill: none;
-      stroke-width: 3.2;
-      stroke-linecap: round;
-      vector-effect: non-scaling-stroke;
-      mix-blend-mode: screen;
-    }
-
-    .vortex-red {
-      stroke: #ff1744;
-      filter: drop-shadow(0 0 4px #ff1744);
-    }
-
-    .vortex-green {
-      stroke: #42ff55;
-      filter: drop-shadow(0 0 4px #42ff55);
-    }
-
-    .vortex-blue {
-      stroke: #18a8ff;
-      filter: drop-shadow(0 0 4px #18a8ff);
-    }
-
-    .core-label {
-      position: relative;
-      z-index: 1;
-    }
-
-    .core:hover,
-    .core:focus-visible {
-      outline-color: var(--magenta);
-      color: var(--magenta);
-      box-shadow: 0 0 64px rgba(255, 43, 214, .58);
-    }
-
-    .portal-open .core-vortex {
-      opacity: .96;
-      filter: saturate(1.9) brightness(1.25);
-      transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
-      animation: vortex-spin 420ms linear infinite;
-    }
-
-    .portal-open .core {
-      overflow: hidden;
-      transform: scale(1.08);
-    }
-
-    .portal-opening .core-vortex {
-      animation:
-        vortex-open 1250ms cubic-bezier(.1, .76, .18, 1) both,
-        vortex-spin 420ms linear infinite;
-    }
-
-    .portal-opening .core {
-      overflow: hidden;
-      animation: core-open 1250ms cubic-bezier(.12, .72, .18, 1) both;
-    }
-
-    .portal-closing .core-vortex {
-      animation:
-        vortex-close 930ms cubic-bezier(.62, 0, .88, .38) both,
-        vortex-spin 360ms linear infinite;
-    }
-
-    .portal-closing .core {
-      animation: core-close 930ms cubic-bezier(.62, 0, .88, .38) both;
-    }
-
-    @keyframes vortex-spin {
-      to { --vortex-spin: 360deg; }
-    }
-
-    @keyframes vortex-open {
-      0% {
-        opacity: .78;
-        filter: saturate(1.4) brightness(1);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(.72);
+    @media (max-width: 760px) {
+      html,
+      body {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
-      48% {
-        opacity: 1;
-        filter: saturate(2.4) brightness(1.65);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(2.45);
+
+      .splash {
+        display: flex;
+        width: 100%;
+        height: auto;
+        min-height: 100dvh;
+        flex-direction: column;
+        overflow: visible;
       }
-      100% {
-        opacity: .96;
-        filter: saturate(1.9) brightness(1.25);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
+
+      .portrait {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: 100dvh;
+        min-height: 100dvh;
+        flex: 0 0 100dvh;
+        border: 0;
       }
+
+      .portrait img { object-position: 50% top; }
+
+      .portrait::after {
+        background:
+          repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .13) 3px 4px);
+      }
+
+      .identity {
+        --identity-pad-top: max(14px, env(safe-area-inset-top));
+        --identity-pad-right: max(16px, env(safe-area-inset-right));
+        --identity-pad-bottom: max(14px, env(safe-area-inset-bottom));
+        --identity-pad-left: max(16px, env(safe-area-inset-left));
+        width: 100%;
+        height: 100dvh;
+        min-height: 100dvh;
+        flex: 0 0 100dvh;
+        justify-content: flex-start;
+        padding: var(--identity-pad-top) var(--identity-pad-right) var(--identity-pad-bottom) var(--identity-pad-left);
+        background:
+          radial-gradient(circle at 8% 16%, rgba(255, 43, 214, .12), transparent 29%),
+          radial-gradient(circle at 75% 90%, rgba(114, 255, 25, .09), transparent 34%),
+          #020302;
+        text-shadow: none;
+      }
+
+      .identity::before { inset: 6px; border-color: rgba(114, 255, 25, .28); }
+      .identity-content { gap: clamp(6px, 1.35vh, 10px); padding-top: 10px; }
+      .eyebrow { font-size: 7px; }
+      h1 { font-size: clamp(42px, 14vw, 70px); }
+      .discipline { max-width: 42ch; font-size: clamp(9px, 2.65vw, 12px); line-height: 1.28; }
+      .statement { max-width: 55ch; color: #f0f7ed; font-size: clamp(8px, 2.3vw, 10.5px); line-height: 1.34; }
+      .warning { padding: 6px 8px; background: rgba(0, 0, 0, .55); font-size: clamp(7px, 2vw, 9px); }
+      .action { min-height: 37px; padding: 6px 7px; font-size: clamp(7px, 2.2vw, 9px); }
     }
 
-    @keyframes core-open {
-      0% { transform: scale(3); }
-      42% { transform: scale(3.35); }
-      68% { transform: scale(1.28); }
-      100% { transform: scale(1.08); }
+    @media (max-width: 400px) {
+      .actions { gap: 5px; }
+      .action { min-height: 31px; }
     }
 
-    @keyframes vortex-close {
-      0% {
-        opacity: .96;
-        filter: saturate(1.9) brightness(1.25);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
-      }
-      38% {
-        opacity: 1;
-        filter: saturate(2.5) brightness(1.7);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(2.1);
-      }
-      100% {
-        opacity: .9;
-        filter: saturate(1.5) brightness(1);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1);
-      }
+    @media (max-height: 650px) {
+      .identity-content { gap: 6px; }
+      .statement { line-height: 1.27; }
+      .warning { padding-block: 5px; }
+      .action { min-height: 31px; padding-block: 5px; }
     }
 
-    @keyframes core-close {
-      0% { transform: scale(1.08); }
-      38% { transform: scale(1.7); }
-      100% { transform: scale(3); }
+    @media (max-height: 520px) and (min-width: 761px) {
+      .identity { gap: 5px; }
+      h1 { font-size: clamp(42px, 5.7vw, 74px); }
+      .statement { font-size: 9px; line-height: 1.25; }
+      .warning { font-size: 7px; }
+      .action { min-height: 28px; }
     }
-
-    .home-link,
-    .page-title,
-    .page-select {
-      position: absolute;
+    .space-title {
+      position: fixed;
       top: max(16px, env(safe-area-inset-top));
-      z-index: 2;
+      left: 50%;
+      z-index: 10;
       margin: 0;
-      color: var(--green);
+      color: #72ff19;
       font-family: "Courier New", Courier, monospace;
       font-size: clamp(16px, 2vw, 24px);
       font-style: italic;
@@ -532,416 +319,53 @@
       text-decoration: underline;
       text-underline-offset: .2em;
       text-shadow: 0 2px 8px #000, 0 0 12px rgba(114, 255, 25, .38);
-    }
-
-    .home-link {
-      left: max(16px, env(safe-area-inset-left));
-    }
-
-    .page-title {
-      left: 50%;
-      transform: translateX(-50%);
       pointer-events: none;
     }
 
-    .page-select {
-      right: max(16px, env(safe-area-inset-right));
-      border: 0;
-      border-radius: 0;
-      padding: 0 .15em .1em;
-      background: #000;
-      cursor: pointer;
-    }
-
-    .page-select:hover,
-    .page-select:focus-visible {
-      color: var(--magenta);
-      outline: 1px solid var(--magenta);
-      outline-offset: 4px;
-    }
-
-    .page-select option {
-      color: var(--green);
-      background: #000;
-      font-style: normal;
-      font-weight: 700;
-    }
-
-    .home-link:visited { color: var(--green); }
-
-    .home-link:hover,
-    .home-link:focus-visible {
-      color: var(--magenta);
-      text-shadow: 0 2px 8px #000, 0 0 14px rgba(255, 43, 214, .58);
-    }
-
-    .cursor-lens {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 3;
-      width: 50px;
-      height: 50px;
-      border: 3px solid #fff;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, .001);
-      -webkit-backdrop-filter: invert(1);
-      backdrop-filter: invert(1);
-      opacity: 0;
-      pointer-events: none;
-      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
-      transition: opacity 80ms linear;
-      will-change: transform, opacity;
-    }
-
-    .cursor-lens.is-visible { opacity: 1; }
-
-    @media (max-width: 520px) {
-      .navigation {
-        top: 55%;
-        width: 88vmin;
-        height: 88vmin;
-      }
-
-      .portal-button { width: 23vmin; }
-      .core { width: 16vmin; font-size: clamp(15px, 3.7vmin, 24px); }
-    }
   </style>
 </head>
 <body>
-  <main class="portal" data-transition-root>
-    <iframe class="starfield"
-            src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-3"
-            title="Animated starfield background"></iframe>
+  <div class="space-title" role="heading" aria-level="2">Space</div>
+  <main class="splash" data-transition-root aria-labelledby="artist-name">
+    <section class="identity">
+      <img class="splash-banner" src="/dead/assets/images/muskoka-glitch-banner.webp"
+           alt="A glitch-saturated panoramic view of Muskoka water, trees, rocks and a bridge.">
 
-    <nav class="navigation compass" aria-label="Experiments portal navigation"
-         data-orb-arranger-key="theinternetisdead:experiments:orb-order"
-         data-orb-arranger-scope-select="#experiment-page">
-      <svg class="portal-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <line x1="50" y1="50" x2="16.67" y2="16.67"></line>
-        <line x1="50" y1="50" x2="50" y2="16.67"></line>
-        <line x1="50" y1="50" x2="83.33" y2="16.67"></line>
-        <line x1="50" y1="50" x2="16.67" y2="50"></line>
-        <line x1="50" y1="50" x2="83.33" y2="50"></line>
-        <line x1="50" y1="50" x2="16.67" y2="83.33"></line>
-        <line x1="50" y1="50" x2="50" y2="83.33"></line>
-        <line x1="50" y1="50" x2="83.33" y2="83.33"></line>
-      </svg>
+      <div class="identity-content">
+        <p class="eyebrow">Thomas Harrison // Honestly Thomas // Tektite</p>
 
-      <a class="portal-button northwest" href="/dead/experiments/background/" data-transition="slide-down-right" aria-label="Open Background"><span class="destination-label">Background</span></a>
-      <a class="portal-button north" href="/dead/experiments/blotter-visualizer/" data-transition="slide-down" aria-label="Open Blotter Visualizer"><span class="destination-label">Blotter Visualizer</span></a>
-      <a class="portal-button northeast" href="/dead/experiments/bookmark-manager/" data-transition="slide-down-left" aria-label="Open Bookmark Manager"><span class="destination-label">Bookmark Manager</span></a>
-      <a class="portal-button west" href="/dead/experiments/business-card/" data-transition="slide-right" aria-label="Open Business Card"><span class="destination-label">Business Card</span></a>
+        <h1 id="artist-name">Honestly<span>Thomas</span></h1>
 
-      <a class="core" id="open-portal" href="/portal/" data-transition="crt-collapse" aria-expanded="false" aria-label="Open Portal and release the experiment portals">
-        <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
-          <path class="vortex-tendril vortex-red"></path>
-          <path class="vortex-tendril vortex-green"></path>
-          <path class="vortex-tendril vortex-blue"></path>
-        </svg>
-        <span class="core-label">Open<br>Portal</span>
-      </a>
+        <p class="discipline">
+          Neurodivergent Canadian interdisciplinary artist working across rap, video,
+          writing, code, web design, games and experimental media.
+        </p>
 
-      <a class="portal-button east" href="/dead/experiments/camera-experiment/" data-transition="slide-left" aria-label="Open Camera Experiment"><span class="destination-label">Camera Experiment</span></a>
-      <a class="portal-button southwest" href="/dead/experiments/camera-studio/" data-transition="slide-up-right" aria-label="Open Camera Studio"><span class="destination-label">Camera Studio</span></a>
-      <a class="portal-button south" href="/dead/experiments/canvas-backgrounds/" data-transition="slide-up" aria-label="Open Canvas Backgrounds"><span class="destination-label">Canvas Backgrounds</span></a>
-      <a class="portal-button southeast" href="/dead/experiments/chat-sandbox/" data-transition="slide-up-left" aria-label="Open Chat Sandbox"><span class="destination-label">Chat Sandbox</span></a>
-    </nav>
+        <p class="statement">
+          <strong>theinternetisdead.org</strong> is art first: a recursive archive of web-native
+          grief, absurdity, identity and survival. It is also my personal symbolic operating
+          system—a place to gather the work, document the experience, and leave proof that I
+          was here and that it mattered.
+        </p>
 
-    <a class="home-link" href="/">theinternetisdead.org</a>
-    <h1 class="page-title"><span>Experiments</span> <button class="orb-edit-toggle" type="button" aria-label="Rearrange orbs" aria-pressed="false">✏️</button></h1>
-    <select class="page-select" id="experiment-page" aria-label="Experiment portal page">
-      <option value="1">Page 1/3</option>
-      <option value="2">Page 2/3</option>
-      <option value="3">Page 3/3</option>
-    </select>
-    <div class="cursor-lens" aria-hidden="true"></div>
+        <p class="warning">
+          ⚠ Enter expecting haunted interfaces, dense symbolism, flashing imagery, unexpected
+          sound, gallows humour, unfinished ruins and sincerity hiding inside the debris.
+        </p>
+
+        <nav class="actions" aria-label="Enter or inspect the project">
+          <a class="action" href="/portal/" data-transition-override="swirl">Enter Recursive Portal</a>
+          <a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a>
+        </nav>
+      </div>
+    </section>
+
+    <figure class="portrait">
+      <img src="/dead/assets/images/honestly-thomas-recursive-portrait.webp"
+           alt="A recursive mosaic portrait of Honestly Thomas assembled from videos, artworks, code, timelines and fragments of internet history.">
+    </figure>
   </main>
 
-  <script>
-    const portal = document.querySelector(".portal");
-    const starfield = document.querySelector(".starfield");
-    const compass = document.querySelector(".compass");
-    const cursorLens = document.querySelector(".cursor-lens");
-    const openPortal = document.getElementById("open-portal");
-    const coreLabel = openPortal.querySelector(".core-label");
-    const tendrils = document.querySelectorAll(".vortex-tendril");
-    const portalSlots = [...document.querySelectorAll(".portal-button")];
-    const pageSelect = document.getElementById("experiment-page");
-    const portalStateKey = "theinternetisdead:experiments:portal-open";
-    const pageStateKey = "theinternetisdead:experiments:page";
-    const slotTransitions = ["swirl", "slide-down", "swirl", "slide-right", "slide-left", "swirl", "slide-up", "swirl"];
-    const experimentPages = [
-      [
-        ["Background", "/dead/experiments/background/", "/dead/experiments/thumbnails/background/index.png"],
-        ["Blotter Visualizer", "/dead/experiments/blotter-visualizer/", "/dead/experiments/thumbnails/blotter-visualizer/index.png"],
-        ["Bookmark Manager", "/dead/experiments/bookmark-manager/", "/dead/experiments/thumbnails/bookmark-manager/index.png"],
-        ["Business Card", "/dead/experiments/business-card/", "/dead/experiments/thumbnails/business-card/index.png"],
-        ["Camera Experiment", "/dead/experiments/camera-experiment/", "/dead/experiments/thumbnails/camera-experiment/index.png"],
-        ["Camera Studio", "/dead/experiments/camera-studio/", "/dead/experiments/thumbnails/camera-studio/index.png"],
-        ["Canvas Backgrounds", "/dead/experiments/canvas-backgrounds/", "/dead/experiments/thumbnails/canvas-backgrounds/index.png"],
-        ["Chat Sandbox", "/dead/experiments/chat-sandbox/", "/dead/experiments/thumbnails/chat-sandbox/index.png"]
-      ],
-      [
-        ["Dead TV", "/dead/experiments/dead-tv/", "/dead/experiments/thumbnails/dead-tv/index.png"],
-        ["God's Eye", "/dead/experiments/gods-eye/", "/dead/experiments/thumbnails/gods-eye/index.png"],
-        ["Habisky Mofo", "/dead/experiments/habisky-mofo/", "/dead/experiments/thumbnails/habisky-mofo/index.png"],
-        ["Karaoke Machine", "/dead/experiments/karaoke-machine/", "/dead/experiments/thumbnails/karaoke-machine/index.png"],
-        ["Mandala Visuals", "/dead/experiments/mandala-visuals/", "/dead/experiments/thumbnails/mandala-visuals/index.png"],
-        ["Multimedia Editor", "/dead/experiments/multimedia-editor/", "/dead/experiments/thumbnails/multimedia-editor/index.png"],
-        ["Music Crunchifier", "/dead/experiments/music-crunchifier/", "/dead/experiments/thumbnails/music-crunchifier/index.png"],
-        ["Music Player", "/dead/experiments/music-player/", "/dead/experiments/thumbnails/music-player/index.png"]
-      ],
-      [
-        ["PDF Viewer", "/dead/experiments/pdf-viewer/", "/dead/experiments/thumbnails/pdf-viewer/index.png"],
-        ["Photosphere", "/dead/experiments/photosphere/", "/dead/experiments/thumbnails/photosphere/index.png"],
-        ["Sound Machine", "/dead/experiments/sound-machine/", "/dead/experiments/thumbnails/sound-machine/index.png"],
-        ["Stacks", "/dead/experiments/stacks/", "/dead/experiments/thumbnails/stacks/index.png"],
-        ["Weird Secret", "/dead/experiments/weird-secret/", "/dead/experiments/thumbnails/weird-secret/index.png"],
-        ["World in Thing", "/dead/experiments/world-in-thing/", "/dead/experiments/thumbnails/world-in-thing/index.png"]
-      ]
-    ];
-    let pointerFrame = 0;
-    let pointerX = 0;
-    let pointerY = 0;
-    let pointerActive = false;
-    let pointerType = "mouse";
-    let portalIsOpen = false;
-    let openTimer = 0;
-    let closeTimer = 0;
-    let pageCycleTimer = 0;
-    let pageSwapTimer = 0;
-    let touchHideTimer = 0;
-
-    const makeSpiral = phase => {
-      const points = [];
-      const steps = 260;
-      for (let step = 0; step <= steps; step++) {
-        const progress = step / steps;
-        const angle = progress * Math.PI * 10 + phase;
-        const radius = 4 + progress * 98;
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-        points.push(`${step ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`);
-      }
-      return points.join(" ");
-    };
-
-    tendrils.forEach((tendril, index) => {
-      tendril.setAttribute("d", makeSpiral(index * Math.PI * 2 / tendrils.length));
-    });
-
-    const readExperimentPage = () => {
-      try {
-        const storedPage = Number(window.localStorage.getItem(pageStateKey)) - 1;
-        return storedPage >= 0 && storedPage < experimentPages.length ? storedPage : 0;
-      } catch (_) {
-        return 0;
-      }
-    };
-
-    const saveExperimentPage = pageIndex => {
-      try {
-        window.localStorage.setItem(pageStateKey, String(pageIndex + 1));
-      } catch (_) {}
-    };
-
-    const renderExperimentPage = pageIndex => {
-      const normalizedPage = Math.max(0, Math.min(experimentPages.length - 1, Number(pageIndex) || 0));
-      const entries = experimentPages[normalizedPage];
-      pageSelect.value = String(normalizedPage + 1);
-
-      portalSlots.forEach((slot, index) => {
-        const entry = entries[index];
-        const label = slot.querySelector(".destination-label");
-        if (!entry) {
-          slot.removeAttribute("href");
-          slot.removeAttribute("data-transition");
-          slot.setAttribute("aria-label", "Empty portal");
-          slot.setAttribute("tabindex", "-1");
-          slot.style.setProperty("--portal-image", 'url("/dead/assets/images/static.gif")');
-          label.textContent = "Empty";
-          return;
-        }
-
-        const [name, href, thumbnail] = entry;
-        slot.href = href;
-        slot.dataset.transition = slotTransitions[index];
-        slot.setAttribute("aria-label", `Open ${name}`);
-        slot.removeAttribute("tabindex");
-        slot.style.setProperty("--portal-image", `url("${thumbnail}")`);
-        label.textContent = name;
-      });
-
-      saveExperimentPage(normalizedPage);
-    };
-
-    const selectExperimentPage = (pageIndex, animate = false) => {
-      window.clearTimeout(pageCycleTimer);
-      window.clearTimeout(pageSwapTimer);
-      compass.classList.remove("portal-page-cycling");
-
-      if (!animate || !portalIsOpen) {
-        renderExperimentPage(pageIndex);
-        return;
-      }
-
-      void compass.offsetWidth;
-      compass.classList.add("portal-page-cycling");
-      pageSwapTimer = window.setTimeout(() => renderExperimentPage(pageIndex), 270);
-      pageCycleTimer = window.setTimeout(() => compass.classList.remove("portal-page-cycling"), 580);
-    };
-
-    const readPortalState = () => {
-      try {
-        return window.localStorage.getItem(portalStateKey) === "true";
-      } catch (_) {
-        return false;
-      }
-    };
-
-    const savePortalState = open => {
-      try {
-        window.localStorage.setItem(portalStateKey, open ? "true" : "false");
-      } catch (_) {}
-    };
-
-    const setPortalState = (open, { animate = false } = {}) => {
-      window.clearTimeout(openTimer);
-      window.clearTimeout(closeTimer);
-      portalIsOpen = Boolean(open);
-      compass.classList.remove("portal-open", "portal-opening", "portal-closing");
-
-      if (portalIsOpen) {
-        compass.classList.add("portal-open");
-        if (animate) {
-          void compass.offsetWidth;
-          compass.classList.add("portal-opening");
-          openTimer = window.setTimeout(() => {
-            if (portalIsOpen) compass.classList.remove("portal-opening");
-          }, 1650);
-        }
-        coreLabel.textContent = "Portal";
-        openPortal.setAttribute("aria-expanded", "true");
-        openPortal.setAttribute("aria-label", "Return to the Recursive Portal");
-      } else if (animate) {
-        void compass.offsetWidth;
-        compass.classList.add("portal-closing");
-        coreLabel.innerHTML = "Open<br>Portal";
-        openPortal.setAttribute("aria-expanded", "false");
-        openPortal.setAttribute("aria-label", "Open Portal and release the experiment portals");
-        closeTimer = window.setTimeout(() => {
-          if (!portalIsOpen) compass.classList.remove("portal-closing");
-        }, 980);
-      } else {
-        coreLabel.innerHTML = "Open<br>Portal";
-        openPortal.setAttribute("aria-expanded", "false");
-        openPortal.setAttribute("aria-label", "Open Portal and release the experiment portals");
-      }
-
-      savePortalState(portalIsOpen);
-    };
-
-    const positionLens = (clientX, clientY, currentPointerType = "mouse", active = true) => {
-      window.clearTimeout(touchHideTimer);
-      if (active) {
-        cursorLens.style.transform = `translate3d(${clientX}px, ${clientY}px, 0) translate(-50%, -50%)`;
-        cursorLens.classList.add("is-visible");
-        return;
-      }
-
-      const hide = () => cursorLens.classList.remove("is-visible");
-      if (currentPointerType === "touch") touchHideTimer = window.setTimeout(hide, 180);
-      else hide();
-    };
-
-    const positionLensFromFrame = data => {
-      const rect = starfield.getBoundingClientRect();
-      const x = Math.max(-1, Math.min(1, Number(data.x) || 0));
-      const y = Math.max(-1, Math.min(1, Number(data.y) || 0));
-      positionLens(
-        rect.left + (x + 1) * rect.width / 2,
-        rect.top + (y + 1) * rect.height / 2,
-        data.pointerType || "mouse",
-        Boolean(data.active)
-      );
-    };
-
-    const publishPointer = () => {
-      pointerFrame = 0;
-      document.documentElement.style.setProperty("--vortex-x", `${pointerX * 15}px`);
-      document.documentElement.style.setProperty("--vortex-y", `${pointerY * 15}px`);
-      starfield.contentWindow.postMessage({
-        type: "portal-starfield-parallax",
-        active: pointerActive,
-        x: pointerX,
-        y: pointerY
-      }, window.location.origin);
-    };
-
-    const updatePointer = (event, active = true) => {
-      pointerActive = active;
-      pointerType = event.pointerType || pointerType;
-      pointerX = Math.max(-1, Math.min(1, event.clientX / window.innerWidth * 2 - 1));
-      pointerY = Math.max(-1, Math.min(1, event.clientY / window.innerHeight * 2 - 1));
-      positionLens(event.clientX, event.clientY, pointerType, active);
-      if (!pointerFrame) pointerFrame = window.requestAnimationFrame(publishPointer);
-    };
-
-    portal.addEventListener("pointermove", event => updatePointer(event), { passive: true });
-    portal.addEventListener("pointerdown", event => updatePointer(event), { passive: true });
-    portal.addEventListener("pointerup", event => {
-      if (event.pointerType !== "mouse") updatePointer(event, false);
-    }, { passive: true });
-    portal.addEventListener("pointercancel", event => updatePointer(event, false), { passive: true });
-    portal.addEventListener("pointerleave", event => {
-      pointerX = 0;
-      pointerY = 0;
-      pointerActive = false;
-      positionLens(event.clientX, event.clientY, event.pointerType || pointerType, false);
-      if (!pointerFrame) pointerFrame = window.requestAnimationFrame(publishPointer);
-    });
-
-    window.addEventListener("blur", () => cursorLens.classList.remove("is-visible"));
-    window.addEventListener("pageshow", () => {
-      setPortalState(readPortalState());
-      selectExperimentPage(readExperimentPage());
-    });
-
-    window.addEventListener("message", event => {
-      if (event.origin !== window.location.origin || event.source !== starfield.contentWindow || !event.data) return;
-      if (event.data.type !== "portal-surface-pointer") return;
-      positionLensFromFrame(event.data);
-    });
-
-    openPortal.addEventListener("click", event => {
-      if (portalIsOpen) return;
-      event.preventDefault();
-      event.stopPropagation();
-      setPortalState(true, { animate: true });
-    });
-
-    pageSelect.addEventListener("change", () => {
-      selectExperimentPage(Number(pageSelect.value) - 1, true);
-    });
-
-    selectExperimentPage(readExperimentPage());
-    setPortalState(readPortalState());
-
-    document.addEventListener("click", event => {
-      const destination = event.target.closest("a[data-transition]");
-      if (!destination) return;
-      event.preventDefault();
-
-      if (window.PageTransitions) {
-        window.PageTransitions.navigate(destination.href, destination.dataset.transition);
-        return;
-      }
-
-      window.location.assign(destination.href);
-    });
-  </script>
-  <script src="/dead/scripts/orb-arranger.js?v=20260809-2"></script>
   <script src="/dead/scripts/page-transitions.js?v=20260809-8"></script>
 </body>
 </html>
