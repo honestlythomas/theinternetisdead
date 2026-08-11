@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <title>Recursive Portal</title>
+  <link rel="stylesheet" href="/dead/styles/orb-arranger.css?v=20260809-1">
+  <style>
+    :root {
+      color-scheme: dark;
+      --green: #72ff19;
+      --magenta: #ff2bd6;
+      --line: rgba(114, 255, 25, .32);
+      --vortex-x: 0px;
+      --vortex-y: 0px;
+    }
+
+    @property --vortex-spin {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    body {
+      color: var(--green);
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    .portal {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .starfield {
+      position: absolute;
+      inset: -3%;
+      z-index: 0;
+      display: block;
+      width: 106%;
+      height: 106%;
+      border: 0;
+      background: #000;
+      transform: scale(1.04);
+      transform-origin: center;
+    }
+
+    .navigation {
+      position: absolute;
+      top: 54%;
+      left: 50%;
+      z-index: 1;
+      width: min(84vmin, 760px);
+      height: min(84vmin, 760px);
+      background: transparent;
+      transform: translate(-50%, -50%);
+      isolation: isolate;
+    }
+
+    .compass {
+      position: relative;
+      display: grid;
+      width: 100%;
+      height: 100%;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      place-items: center;
+    }
+
+    .compass::before,
+    .compass::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      pointer-events: none;
+      transition: width 180ms ease, height 180ms ease, background 180ms ease;
+    }
+
+    .compass::before {
+      top: 50%;
+      left: 8%;
+      width: 84%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line), transparent);
+    }
+
+    .compass::after {
+      top: 8%;
+      left: 50%;
+      width: 1px;
+      height: 84%;
+      background: linear-gradient(180deg, transparent, var(--line), transparent);
+    }
+
+    .compass.portal-open::before {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--magenta), transparent);
+    }
+
+    .compass.portal-open::after {
+      width: 3px;
+      background: linear-gradient(180deg, transparent, var(--magenta), transparent);
+    }
+
+    .portal-button {
+      position: relative;
+      display: grid;
+      width: min(22vmin, 190px);
+      aspect-ratio: 1;
+      place-items: center;
+      overflow: hidden;
+      border: 2px solid var(--green);
+      border-radius: 50%;
+      background:
+        linear-gradient(rgba(0, 0, 0, .12), rgba(0, 0, 0, .12)),
+        var(--portal-image) center / cover no-repeat;
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, .85),
+        0 0 0 5px rgba(114, 255, 25, .3),
+        0 0 34px rgba(114, 255, 25, .2),
+        inset 0 0 32px rgba(0, 0, 0, .45);
+      color: var(--green);
+      cursor: pointer;
+      font: inherit;
+      padding: 0;
+      text-decoration: none;
+      appearance: none;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateZ(0);
+      will-change: transform, opacity;
+    }
+
+    .portal-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      border-radius: inherit;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .3) 3px 4px),
+        radial-gradient(circle, transparent 38%, rgba(0, 0, 0, .58) 100%);
+      pointer-events: none;
+    }
+
+    .portal-preview {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      width: 455%;
+      height: 455%;
+      border: 0;
+      background: transparent;
+      opacity: .82;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(.22);
+      transform-origin: center;
+      filter: saturate(1.18) contrast(1.08);
+      mix-blend-mode: screen;
+    }
+
+    .portal-button > span {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      min-width: 46%;
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .76);
+      font-size: clamp(10px, 2.2vmin, 20px);
+      font-weight: 900;
+      text-shadow: 0 0 8px #000;
+    }
+
+    .portal-button .destination-label {
+      min-width: 0;
+      aspect-ratio: auto;
+      border: 0;
+      border-radius: 0;
+      padding: .35em .55em;
+      background: rgba(0, 0, 0, .78);
+      font-size: clamp(10px, 1.8vmin, 18px);
+      letter-spacing: .04em;
+      line-height: 1;
+    }
+
+    .portal-button .orb-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .3em;
+      text-align: center;
+    }
+
+    .portal-button .orb-symbol {
+      display: block;
+      min-width: 0;
+      aspect-ratio: auto;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      font-size: clamp(22px, 4vmin, 40px);
+      line-height: 1;
+    }
+
+    .portal-button:hover,
+    .portal-button:focus-visible {
+      border-color: var(--magenta);
+      color: #ff8deb;
+      outline: 2px solid #fff;
+      outline-offset: 6px;
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, .85),
+        0 0 0 5px rgba(255, 43, 214, .45),
+        0 0 48px rgba(255, 43, 214, .42);
+    }
+
+    .north {
+      grid-column: 2;
+      grid-row: 1;
+      --from-x: 0%;
+      --from-y: 134%;
+      --over-x: 0%;
+      --over-y: -10%;
+      --spiral: -620deg;
+      --delay: 0ms;
+    }
+
+    .east {
+      grid-column: 3;
+      grid-row: 2;
+      --portal-image: url("/dead/assets/images/static.gif");
+      --from-x: -134%;
+      --from-y: 0%;
+      --over-x: 10%;
+      --over-y: 0%;
+      --spiral: 620deg;
+      --delay: 70ms;
+    }
+
+    .south {
+      grid-column: 2;
+      grid-row: 3;
+      --portal-image: url("/dead/assets/images/static.gif");
+      --from-x: 0%;
+      --from-y: -134%;
+      --over-x: 0%;
+      --over-y: 10%;
+      --spiral: -620deg;
+      --delay: 140ms;
+    }
+
+    .west {
+      grid-column: 1;
+      grid-row: 2;
+      --portal-image: url("/dead/assets/images/static.gif");
+      --from-x: 134%;
+      --from-y: 0%;
+      --over-x: -10%;
+      --over-y: 0%;
+      --spiral: 620deg;
+      --delay: 210ms;
+    }
+
+    .portal-open .portal-button {
+      visibility: visible;
+      pointer-events: auto;
+      opacity: 1;
+      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+      filter: none;
+    }
+
+    .portal-opening .portal-button {
+      visibility: visible;
+      pointer-events: auto;
+      animation: portal-emerge 1050ms cubic-bezier(.12, .72, .18, 1.12) calc(var(--delay) + 240ms) both;
+    }
+
+    .portal-closing .portal-button {
+      visibility: visible;
+      pointer-events: none;
+      animation: portal-emerge 720ms cubic-bezier(.62, 0, .88, .38) calc(210ms - var(--delay)) reverse both;
+    }
+
+    @keyframes portal-emerge {
+      0% {
+        opacity: 0;
+        transform: translate3d(var(--from-x), var(--from-y), 0) rotate(var(--spiral)) scale(.02);
+        filter: brightness(3) saturate(2.5);
+      }
+      58% {
+        opacity: 1;
+        transform: translate3d(var(--over-x), var(--over-y), 0) rotate(-26deg) scale(1.12);
+        filter: brightness(1.4) saturate(1.6);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+        filter: none;
+      }
+    }
+
+    .core {
+      position: relative;
+      grid-column: 2;
+      grid-row: 2;
+      display: grid;
+      width: min(15vmin, 125px);
+      aspect-ratio: 1;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid rgba(255, 43, 214, .7);
+      border-radius: 50%;
+      padding: 0;
+      background: radial-gradient(circle, #000 0 34%, rgba(0, 0, 0, .78) 52%, transparent 72%);
+      color: var(--green);
+      cursor: pointer;
+      font: 900 clamp(21px, 3.75vmin, 36px) / 1.05 "Courier New", Courier, monospace;
+      letter-spacing: .08em;
+      text-align: center;
+      text-decoration: none;
+      text-transform: uppercase;
+      text-shadow: 0 0 8px #000;
+      isolation: isolate;
+      appearance: none;
+      outline: 2px solid var(--green);
+      outline-offset: 6px;
+      box-shadow: 0 0 48px rgba(114, 255, 25, .46);
+      transform: scale(3);
+      transform-origin: center;
+      transition: outline-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+    }
+
+    .core-vortex {
+      position: absolute;
+      inset: -50%;
+      z-index: -1;
+      width: 200%;
+      height: 200%;
+      overflow: visible;
+      opacity: .9;
+      filter: saturate(1.5);
+      transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin));
+      animation: vortex-spin 1650ms linear infinite;
+      transform-origin: center;
+      will-change: transform, filter, opacity;
+    }
+
+    .vortex-tendril {
+      fill: none;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+      mix-blend-mode: screen;
+    }
+
+    .vortex-red {
+      stroke: #ff1744;
+      filter: drop-shadow(0 0 4px #ff1744);
+    }
+
+    .vortex-green {
+      stroke: #42ff55;
+      filter: drop-shadow(0 0 4px #42ff55);
+    }
+
+    .vortex-blue {
+      stroke: #18a8ff;
+      filter: drop-shadow(0 0 4px #18a8ff);
+    }
+
+    .core-label {
+      position: relative;
+      z-index: 1;
+    }
+
+    .core:hover,
+    .core:focus-visible {
+      outline-color: var(--magenta);
+      color: var(--magenta);
+      box-shadow: 0 0 64px rgba(255, 43, 214, .58);
+    }
+
+    .portal-open .core-vortex {
+      opacity: .96;
+      filter: saturate(1.9) brightness(1.25);
+      transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
+      animation: vortex-spin 420ms linear infinite;
+    }
+
+    .portal-open .core {
+      overflow: hidden;
+      transform: scale(1.08);
+    }
+
+    .portal-opening .core-vortex {
+      animation:
+        vortex-open 1250ms cubic-bezier(.1, .76, .18, 1) both,
+        vortex-spin 420ms linear infinite;
+    }
+
+    .portal-opening .core {
+      overflow: hidden;
+      animation: core-open 1250ms cubic-bezier(.12, .72, .18, 1) both;
+    }
+
+    .portal-closing .core-vortex {
+      animation:
+        vortex-close 930ms cubic-bezier(.62, 0, .88, .38) both,
+        vortex-spin 360ms linear infinite;
+    }
+
+    .portal-closing .core {
+      animation: core-close 930ms cubic-bezier(.62, 0, .88, .38) both;
+    }
+
+    @keyframes vortex-spin {
+      to { --vortex-spin: 360deg; }
+    }
+
+    @keyframes vortex-open {
+      0% {
+        opacity: .78;
+        filter: saturate(1.4) brightness(1);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(.72);
+      }
+      48% {
+        opacity: 1;
+        filter: saturate(2.4) brightness(1.65);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(2.45);
+      }
+      100% {
+        opacity: .96;
+        filter: saturate(1.9) brightness(1.25);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
+      }
+    }
+
+    @keyframes core-open {
+      0% { transform: scale(3); }
+      42% { transform: scale(3.35); }
+      68% { transform: scale(1.28); }
+      100% { transform: scale(1.08); }
+    }
+
+    @keyframes vortex-close {
+      0% {
+        opacity: .96;
+        filter: saturate(1.9) brightness(1.25);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
+      }
+      38% {
+        opacity: 1;
+        filter: saturate(2.5) brightness(1.7);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(2.1);
+      }
+      100% {
+        opacity: .9;
+        filter: saturate(1.5) brightness(1);
+        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1);
+      }
+    }
+
+    @keyframes core-close {
+      0% { transform: scale(1.08); }
+      38% { transform: scale(1.7); }
+      100% { transform: scale(3); }
+    }
+
+    .home-link,
+    .page-title {
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      z-index: 2;
+      margin: 0;
+      color: var(--green);
+      font-family: "Courier New", Courier, monospace;
+      font-size: clamp(16px, 2vw, 24px);
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: underline;
+      text-underline-offset: .2em;
+      text-shadow: 0 2px 8px #000, 0 0 12px rgba(114, 255, 25, .38);
+    }
+
+    .home-link {
+      left: max(16px, env(safe-area-inset-left));
+    }
+
+    .page-title {
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .home-link:visited { color: var(--green); }
+
+    .home-link:hover,
+    .home-link:focus-visible {
+      color: var(--magenta);
+      text-shadow: 0 2px 8px #000, 0 0 14px rgba(255, 43, 214, .58);
+    }
+
+    .cursor-lens {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 3;
+      width: 50px;
+      height: 50px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .001);
+      -webkit-backdrop-filter: invert(1);
+      backdrop-filter: invert(1);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+      transition: opacity 80ms linear;
+      will-change: transform, opacity;
+    }
+
+    .cursor-lens.is-visible { opacity: 1; }
+
+    @media (max-width: 520px) {
+      .navigation {
+        top: 55%;
+        width: 88vmin;
+        height: 88vmin;
+      }
+
+      .portal-button { width: 23vmin; }
+      .core { width: 16vmin; font-size: clamp(15px, 3.7vmin, 24px); }
+    }
+  </style>
+</head>
+<body>
+  <main class="portal" data-transition-root>
+    <iframe class="starfield"
+            src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-3"
+            title="Animated starfield background"></iframe>
+
+    <nav class="navigation compass" aria-label="Portal navigation"
+         data-orb-arranger-key="theinternetisdead:portal:orb-order">
+      <a class="portal-button north" href="/" data-transition="slide-down" aria-label="Return home">
+        <span class="destination-label orb-label"><span class="orb-symbol" aria-hidden="true">🏠</span>Home</span>
+      </a>
+
+      <a class="portal-button east" href="/dead/experiments/" data-transition="slide-left" aria-label="Open Experiments">
+        <iframe class="portal-preview" src="/dead/experiments/" title="Live preview of Experiments" aria-hidden="true" tabindex="-1"></iframe>
+        <span class="destination-label orb-label"><span class="orb-symbol" aria-hidden="true">🧩</span>Experiments</span>
+      </a>
+
+      <button class="core" id="open-portal" type="button" aria-expanded="false" aria-label="Enter Portal and release the direction portals">
+        <svg class="core-vortex" viewBox="-110 -110 220 220" aria-hidden="true">
+          <path class="vortex-tendril vortex-red"></path>
+          <path class="vortex-tendril vortex-green"></path>
+          <path class="vortex-tendril vortex-blue"></path>
+        </svg>
+        <span class="core-label">Enter</span>
+      </button>
+
+      <a class="portal-button south" href="/" data-transition="slide-up" aria-label="Return through the south portal">
+        <span aria-hidden="true">↓</span>
+      </a>
+
+      <a class="portal-button west" href="/dead/games/" data-transition="slide-right" aria-label="Open Games">
+        <iframe class="portal-preview" src="/dead/games/" title="Live preview of Games" aria-hidden="true" tabindex="-1"></iframe>
+        <span class="destination-label orb-label"><span class="orb-symbol" aria-hidden="true">🕹️</span>Games</span>
+      </a>
+    </nav>
+
+    <a class="home-link" href="/">theinternetisdead.org</a>
+    <h1 class="page-title"><span>Portal</span> <button class="orb-edit-toggle" type="button" aria-label="Rearrange orbs" aria-pressed="false">✏️</button></h1>
+    <div class="cursor-lens" aria-hidden="true"></div>
+  </main>
+
+  <script>
+    const portal = document.querySelector(".portal");
+    const starfield = document.querySelector(".starfield");
+    const compass = document.querySelector(".compass");
+    const cursorLens = document.querySelector(".cursor-lens");
+    const openPortal = document.getElementById("open-portal");
+    const coreLabel = openPortal.querySelector(".core-label");
+    const tendrils = document.querySelectorAll(".vortex-tendril");
+    const portalStateKey = "theinternetisdead:portal:open";
+    let pointerFrame = 0;
+    let pointerX = 0;
+    let pointerY = 0;
+    let pointerActive = false;
+    let pointerType = "mouse";
+    let portalIsOpen = false;
+    let openTimer = 0;
+    let closeTimer = 0;
+    let touchHideTimer = 0;
+
+    const makeSpiral = phase => {
+      const points = [];
+      const steps = 260;
+      for (let step = 0; step <= steps; step++) {
+        const progress = step / steps;
+        const angle = progress * Math.PI * 10 + phase;
+        const radius = 4 + progress * 98;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        points.push(`${step ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`);
+      }
+      return points.join(" ");
+    };
+
+    tendrils.forEach((tendril, index) => {
+      tendril.setAttribute("d", makeSpiral(index * Math.PI * 2 / tendrils.length));
+    });
+
+    const readPortalState = () => {
+      try {
+        return window.localStorage.getItem(portalStateKey) === "true";
+      } catch (_) {
+        return false;
+      }
+    };
+
+    const savePortalState = open => {
+      try {
+        window.localStorage.setItem(portalStateKey, open ? "true" : "false");
+      } catch (_) {}
+    };
+
+    const setPortalState = (open, { animate = false } = {}) => {
+      window.clearTimeout(openTimer);
+      window.clearTimeout(closeTimer);
+      portalIsOpen = Boolean(open);
+      compass.classList.remove("portal-open", "portal-opening", "portal-closing");
+
+      if (portalIsOpen) {
+        compass.classList.add("portal-open");
+        if (animate) {
+          void compass.offsetWidth;
+          compass.classList.add("portal-opening");
+          openTimer = window.setTimeout(() => {
+            if (portalIsOpen) compass.classList.remove("portal-opening");
+          }, 1550);
+        }
+        coreLabel.textContent = "Exit";
+        openPortal.setAttribute("aria-expanded", "true");
+        openPortal.setAttribute("aria-label", "Exit Portal and hide the direction portals");
+      } else if (animate) {
+        void compass.offsetWidth;
+        compass.classList.add("portal-closing");
+        coreLabel.textContent = "Enter";
+        openPortal.setAttribute("aria-expanded", "false");
+        openPortal.setAttribute("aria-label", "Enter Portal and release the direction portals");
+        closeTimer = window.setTimeout(() => {
+          if (!portalIsOpen) compass.classList.remove("portal-closing");
+        }, 980);
+      } else {
+        coreLabel.textContent = "Enter";
+        openPortal.setAttribute("aria-expanded", "false");
+        openPortal.setAttribute("aria-label", "Enter Portal and release the direction portals");
+      }
+
+      savePortalState(portalIsOpen);
+    };
+
+    const positionLens = (clientX, clientY, currentPointerType = "mouse", active = true) => {
+      window.clearTimeout(touchHideTimer);
+      if (active) {
+        cursorLens.style.transform = `translate3d(${clientX}px, ${clientY}px, 0) translate(-50%, -50%)`;
+        cursorLens.classList.add("is-visible");
+        return;
+      }
+
+      const hide = () => cursorLens.classList.remove("is-visible");
+      if (currentPointerType === "touch") touchHideTimer = window.setTimeout(hide, 180);
+      else hide();
+    };
+
+    const positionLensFromFrame = data => {
+      const rect = starfield.getBoundingClientRect();
+      const x = Math.max(-1, Math.min(1, Number(data.x) || 0));
+      const y = Math.max(-1, Math.min(1, Number(data.y) || 0));
+      positionLens(
+        rect.left + (x + 1) * rect.width / 2,
+        rect.top + (y + 1) * rect.height / 2,
+        data.pointerType || "mouse",
+        Boolean(data.active)
+      );
+    };
+
+    const publishPointer = () => {
+      pointerFrame = 0;
+      document.documentElement.style.setProperty("--vortex-x", `${pointerX * 15}px`);
+      document.documentElement.style.setProperty("--vortex-y", `${pointerY * 15}px`);
+      starfield.contentWindow.postMessage({
+        type: "portal-starfield-parallax",
+        active: pointerActive,
+        x: pointerX,
+        y: pointerY
+      }, window.location.origin);
+    };
+
+    const updatePointer = (event, active = true) => {
+      pointerActive = active;
+      pointerType = event.pointerType || pointerType;
+      pointerX = Math.max(-1, Math.min(1, event.clientX / window.innerWidth * 2 - 1));
+      pointerY = Math.max(-1, Math.min(1, event.clientY / window.innerHeight * 2 - 1));
+      positionLens(event.clientX, event.clientY, pointerType, active);
+      if (!pointerFrame) pointerFrame = window.requestAnimationFrame(publishPointer);
+    };
+
+    portal.addEventListener("pointermove", event => updatePointer(event), { passive: true });
+    portal.addEventListener("pointerdown", event => updatePointer(event), { passive: true });
+    portal.addEventListener("pointerup", event => {
+      if (event.pointerType !== "mouse") updatePointer(event, false);
+    }, { passive: true });
+    portal.addEventListener("pointercancel", event => updatePointer(event, false), { passive: true });
+    portal.addEventListener("pointerleave", event => {
+      pointerX = 0;
+      pointerY = 0;
+      pointerActive = false;
+      positionLens(event.clientX, event.clientY, event.pointerType || pointerType, false);
+      if (!pointerFrame) pointerFrame = window.requestAnimationFrame(publishPointer);
+    });
+
+    window.addEventListener("blur", () => cursorLens.classList.remove("is-visible"));
+    window.addEventListener("pageshow", () => setPortalState(readPortalState()));
+
+    window.addEventListener("message", event => {
+      if (event.origin !== window.location.origin || event.source !== starfield.contentWindow || !event.data) return;
+      if (event.data.type !== "portal-surface-pointer") return;
+      positionLensFromFrame(event.data);
+    });
+
+    openPortal.addEventListener("click", () => {
+      setPortalState(!portalIsOpen, { animate: true });
+    });
+
+    setPortalState(readPortalState());
+
+    document.addEventListener("click", event => {
+      const destination = event.target.closest("a[data-transition]");
+      if (!destination) return;
+      event.preventDefault();
+
+      if (window.PageTransitions) {
+        window.PageTransitions.navigate(destination.href, destination.dataset.transition);
+        return;
+      }
+
+      window.location.assign(destination.href);
+    });
+  </script>
+  <script src="/dead/scripts/orb-arranger.js?v=20260809-2"></script>
+  <script src="/dead/scripts/page-transitions.js?v=20260809-8"></script>
+</body>
+</html>
+
