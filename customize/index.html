@@ -3,976 +3,842 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#050505">
+  <meta name="theme-color" content="#020302">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="A draggable live map of every page and transition on theinternetisdead.org.">
-  <title>Site Map Lab — The Internet Is Dead</title>
+  <meta name="description" content="A spatial map of every page on theinternetisdead.org.">
+  <title>Site Space — The Internet Is Dead</title>
   <style>
     :root {
       color-scheme: dark;
-      --void: #050505;
-      --panel: #0b0e0a;
-      --panel-2: #11160f;
+      --void: #020302;
       --ink: #efffe8;
-      --muted: #91a58a;
       --green: #72ff19;
       --magenta: #ff2bd6;
       --amber: #ffb000;
-      --line: rgba(114, 255, 25, .32);
-      --panel-min: 430px;
-      --viewport-ratio: 16 / 9;
+      --cell-w: 1000px;
+      --cell-h: 562.5px;
+      --gap: 110px;
+      --step-x: 1110px;
+      --step-y: 672.5px;
     }
 
     * { box-sizing: border-box; }
 
-    html { background: var(--void); }
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--void);
+    }
 
     body {
-      min-width: 300px;
-      min-height: 100vh;
-      margin: 0;
-      background:
-        linear-gradient(rgba(114, 255, 25, .035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(114, 255, 25, .035) 1px, transparent 1px),
-        radial-gradient(circle at 15% 0, rgba(255, 43, 214, .1), transparent 32%),
-        var(--void);
-      background-size: 36px 36px, 36px 36px, auto, auto;
       color: var(--ink);
       font-family: "Courier New", Courier, monospace;
+      user-select: none;
     }
 
     button,
-    input,
-    select,
-    textarea { font: inherit; }
+    input { font: inherit; }
 
-    button,
-    select,
-    input[type="search"] {
-      border: 1px solid var(--line);
+    button { color: inherit; }
+
+    .viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(114, 255, 25, .055), transparent 46%),
+        #020302;
+    }
+
+    .viewport.is-panning { cursor: grabbing; }
+
+    .world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    .world::before {
+      content: "";
+      position: absolute;
+      top: -7600px;
+      left: -12200px;
+      width: 24400px;
+      height: 15200px;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(114, 255, 25, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(114, 255, 25, .045) 1px, transparent 1px);
+      background-size: var(--step-x) var(--step-y);
+      border: 1px solid rgba(114, 255, 25, .06);
+    }
+
+    .slot,
+    .page-panel {
+      position: absolute;
+      width: var(--cell-w);
+      height: var(--cell-h);
+      transform: translate(-50%, -50%);
+    }
+
+    .slot {
+      display: grid;
+      place-items: center;
+      border: 3px dashed rgba(114, 255, 25, .21);
+      background: rgba(7, 11, 6, .34);
+      color: rgba(114, 255, 25, .55);
+      cursor: pointer;
+      font-size: 82px;
+      transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+    }
+
+    .slot:hover,
+    .slot:focus-visible {
+      border-color: var(--magenta);
+      background: rgba(255, 43, 214, .08);
+      color: var(--magenta);
+      outline: 8px solid rgba(255, 43, 214, .15);
+      outline-offset: 10px;
+    }
+
+    .slot span {
+      display: block;
+      text-align: center;
+      text-shadow: 0 0 24px currentColor;
+    }
+
+    .slot small {
+      display: block;
+      margin-top: 16px;
+      font-size: 26px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .page-panel {
+      overflow: hidden;
+      border: 4px solid var(--green);
+      background: #000;
+      box-shadow: 0 0 0 10px #020302, 0 0 0 13px rgba(114, 255, 25, .25), 0 24px 70px rgba(0, 0, 0, .75);
+    }
+
+    .page-panel.is-home {
+      border-color: #fff;
+      box-shadow: 0 0 0 10px #020302, 0 0 0 13px rgba(255, 43, 214, .48), 0 0 90px rgba(114, 255, 25, .18);
+    }
+
+    .panel-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 3;
+      display: flex;
+      min-height: 50px;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 2px solid rgba(114, 255, 25, .55);
+      padding: 0 12px 0 18px;
+      background: rgba(0, 0, 0, .88);
+      backdrop-filter: blur(8px);
+    }
+
+    .panel-title {
+      overflow: hidden;
+      flex: 1;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .panel-path {
+      overflow: hidden;
+      max-width: 46%;
+      color: var(--green);
+      font-size: 16px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .panel-action {
+      display: grid;
+      width: 38px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(114, 255, 25, .5);
       background: #080a07;
-      color: var(--ink);
-    }
-
-    button {
-      min-height: 38px;
-      padding: .55rem .75rem;
+      color: var(--green);
+      font-size: 22px;
+      text-decoration: none;
       cursor: pointer;
     }
 
-    button:hover,
-    button:focus-visible,
-    select:focus-visible,
-    input:focus-visible,
-    textarea:focus-visible {
+    .panel-action:hover,
+    .panel-action:focus-visible {
       border-color: var(--magenta);
-      outline: 2px solid var(--magenta);
-      outline-offset: 2px;
+      color: var(--magenta);
+      outline: 2px solid #fff;
     }
 
-    .masthead {
-      position: sticky;
-      top: 0;
+    .page-panel iframe {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 1280px;
+      height: 720px;
+      border: 0;
+      background: #000;
+      pointer-events: none;
+      transform: scale(.78125);
+      transform-origin: 0 0;
+    }
+
+    .chrome {
+      position: fixed;
       z-index: 20;
-      border-bottom: 1px solid var(--line);
-      padding: max(12px, env(safe-area-inset-top)) clamp(14px, 2vw, 28px) 14px;
-      background: rgba(5, 5, 5, .94);
-      box-shadow: 0 10px 34px rgba(0, 0, 0, .5);
-      backdrop-filter: blur(14px);
+      pointer-events: none;
     }
 
-    .heading-row,
-    .controls,
-    .control,
-    .panel-head,
-    .panel-actions,
-    .status-line {
+    .topbar {
+      top: max(12px, env(safe-area-inset-top));
+      left: max(12px, env(safe-area-inset-left));
+      right: max(12px, env(safe-area-inset-right));
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
     }
 
-    .heading-row {
-      justify-content: space-between;
-      gap: 16px;
+    .brand,
+    .controls,
+    .position-readout {
+      border: 1px solid rgba(114, 255, 25, .36);
+      background: rgba(2, 3, 2, .9);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .48);
+      backdrop-filter: blur(12px);
+      pointer-events: auto;
     }
+
+    .brand { padding: 10px 13px; }
 
     h1 {
       margin: 0;
       color: #fff;
-      font-size: clamp(22px, 3vw, 42px);
-      letter-spacing: -.07em;
-      line-height: .95;
+      font-size: clamp(15px, 2vw, 24px);
+      letter-spacing: -.05em;
+      line-height: 1;
       text-transform: uppercase;
-      text-shadow: 2px 0 var(--magenta), -2px 0 #2ba80d;
+      text-shadow: 1px 0 var(--magenta), -1px 0 var(--green);
     }
 
-    h1 span {
-      display: block;
-      margin-top: .35rem;
-      color: var(--green);
-      font-size: .36em;
-      letter-spacing: .12em;
-      text-shadow: none;
+    .hint {
+      margin: 6px 0 0;
+      color: #9db397;
+      font-size: 9px;
+      line-height: 1.35;
     }
-
-    .back-link {
-      color: var(--green);
-      font-size: 12px;
-      text-decoration: none;
-    }
-
-    .back-link:hover,
-    .back-link:focus-visible { color: var(--magenta); }
 
     .controls {
-      flex-wrap: wrap;
-      gap: 9px 14px;
-      margin-top: 14px;
+      display: flex;
+      gap: 5px;
+      padding: 5px;
     }
 
-    .control {
-      gap: 7px;
-      color: var(--muted);
+    .controls button {
+      min-width: 38px;
+      min-height: 36px;
+      border: 1px solid rgba(114, 255, 25, .28);
+      background: #070907;
+      color: var(--green);
+      cursor: pointer;
       font-size: 11px;
       text-transform: uppercase;
     }
 
-    .control.search { flex: 1 1 240px; }
-    .control.search input { width: 100%; }
-
-    input[type="search"],
-    select {
-      min-height: 38px;
-      border-radius: 0;
-      padding: 0 .65rem;
-    }
-
-    input[type="range"] { accent-color: var(--green); }
-
-    input[type="checkbox"] { accent-color: var(--magenta); }
-
-    .status-line {
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.35;
-    }
-
-    #status::before { content: "● "; color: var(--green); }
-
-    .legend { text-align: right; }
-
-    main { padding: clamp(14px, 2vw, 28px); }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--panel-min)), 1fr));
-      gap: clamp(14px, 2vw, 26px);
-      align-items: start;
-    }
-
-    .panel {
-      min-width: 0;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      box-shadow: 0 10px 34px rgba(0, 0, 0, .38);
-      transition: opacity 140ms ease, border-color 140ms ease, transform 140ms ease;
-    }
-
-    .panel[hidden] { display: none; }
-
-    .panel.is-dragging {
+    .controls button:hover,
+    .controls button:focus-visible {
       border-color: var(--magenta);
-      opacity: .42;
-      transform: scale(.985);
+      color: var(--magenta);
+      outline: 2px solid #fff;
     }
 
-    .panel.is-drop-target {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(114, 255, 25, .15);
+    .position-readout {
+      right: max(12px, env(safe-area-inset-right));
+      bottom: max(12px, env(safe-area-inset-bottom));
+      padding: 7px 10px;
+      color: var(--green);
+      font-size: 10px;
     }
 
-    .panel-head {
-      min-height: 48px;
-      justify-content: space-between;
-      gap: 8px;
-      border-bottom: 1px solid var(--line);
-      padding: 6px 7px 6px 9px;
-      background: var(--panel-2);
+    .key {
+      display: inline-grid;
+      min-width: 19px;
+      height: 19px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.35);
+      margin: 0 1px;
+      background: #10140e;
+      color: #fff;
     }
 
-    .route-block { min-width: 0; }
-
-    .route-title {
+    dialog {
+      width: min(680px, calc(100vw - 28px));
+      max-height: min(780px, calc(100dvh - 28px));
       overflow: hidden;
+      border: 2px solid var(--green);
+      padding: 0;
+      background: #070907;
+      color: var(--ink);
+      box-shadow: 0 0 0 7px #000, 0 0 80px rgba(114, 255, 25, .22);
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, .78);
+      backdrop-filter: blur(5px);
+    }
+
+    .picker-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      border-bottom: 1px solid rgba(114, 255, 25, .32);
+      padding: 14px;
+    }
+
+    .picker-head h2 {
+      grid-column: 1;
       margin: 0;
       color: #fff;
-      font-size: 12px;
-      line-height: 1.2;
-      text-overflow: ellipsis;
+      font-size: 19px;
       text-transform: uppercase;
-      white-space: nowrap;
     }
 
-    .route-path {
-      display: block;
-      overflow: hidden;
-      margin-top: 3px;
-      color: var(--green);
-      font-size: 9px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .picker-head p {
+      grid-column: 1;
+      margin: 2px 0 0;
+      color: #93a78d;
+      font-size: 10px;
     }
 
-    .panel-actions {
-      flex: 0 0 auto;
-      gap: 4px;
-    }
-
-    .icon-button,
-    .open-link {
-      display: grid;
-      width: 34px;
-      min-height: 34px;
-      place-items: center;
-      border: 1px solid rgba(114, 255, 25, .22);
-      padding: 0;
-      background: #060806;
-      color: var(--green);
-      text-decoration: none;
-    }
-
-    .drag-handle {
+    .close-picker {
+      grid-column: 2;
+      grid-row: 1 / 3;
+      width: 42px;
+      border: 1px solid rgba(255, 43, 214, .5);
+      background: #0b070a;
       color: var(--magenta);
-      cursor: grab;
-      touch-action: none;
-    }
-
-    .drag-handle:active { cursor: grabbing; }
-
-    .preview {
-      position: relative;
-      width: 100%;
-      aspect-ratio: var(--viewport-ratio);
-      overflow: hidden;
-      background:
-        repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.025) 3px 4px),
-        #000;
-    }
-
-    .preview::before {
-      content: "PREVIEW QUEUED";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      color: rgba(114, 255, 25, .55);
-      font-size: 11px;
-      letter-spacing: .12em;
-      transform: translate(-50%, -50%);
-    }
-
-    .preview iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
-      display: block;
-      border: 0;
-      background: #000;
-      pointer-events: none;
-      transform: scale(var(--preview-scale, .25));
-      transform-origin: 0 0;
-    }
-
-    .preview-cover {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      border: 0;
-      background: transparent;
-    }
-
-    .preview-cover:focus-visible {
-      outline: 3px solid var(--magenta);
-      outline-offset: -3px;
-    }
-
-    .panel-foot {
-      border-top: 1px solid rgba(114, 255, 25, .2);
-      background: #080a07;
-    }
-
-    details summary {
-      display: flex;
-      min-height: 38px;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 7px 10px;
-      color: var(--muted);
       cursor: pointer;
-      font-size: 10px;
-      list-style: none;
-      text-transform: uppercase;
+      font-size: 22px;
     }
 
-    details summary::-webkit-details-marker { display: none; }
-    details summary::before { content: "+"; color: var(--magenta); }
-    details[open] summary::before { content: "−"; }
-
-    .transition-count { margin-left: auto; color: var(--green); }
-
-    .drawer {
-      border-top: 1px solid rgba(114, 255, 25, .16);
-      padding: 10px;
-    }
-
-    .transition-list {
-      display: grid;
-      gap: 6px;
-      margin: 0 0 10px;
-      padding: 0;
-      list-style: none;
-    }
-
-    .transition-list li {
-      display: grid;
-      grid-template-columns: max-content minmax(0, 1fr);
-      gap: 8px;
-      align-items: start;
-      font-size: 9px;
-      line-height: 1.35;
-    }
-
-    .transition-kind {
-      border: 1px solid rgba(255, 43, 214, .38);
-      padding: 2px 4px;
-      color: #ff88e9;
-    }
-
-    .transition-target {
-      overflow-wrap: anywhere;
-      color: #cfe2c8;
-    }
-
-    .empty-transitions {
-      margin: 0 0 10px;
-      color: #6f7c6b;
-      font-size: 9px;
-    }
-
-    .note-label {
+    .page-search {
       display: block;
-      margin-bottom: 5px;
-      color: var(--amber);
-      font-size: 9px;
-      text-transform: uppercase;
+      width: calc(100% - 28px);
+      min-height: 44px;
+      margin: 14px;
+      border: 1px solid rgba(114, 255, 25, .4);
+      padding: 0 12px;
+      background: #020302;
+      color: #fff;
     }
 
-    .note {
-      display: block;
+    .page-search:focus {
+      border-color: var(--magenta);
+      outline: 2px solid var(--magenta);
+    }
+
+    .page-list {
+      display: grid;
+      max-height: min(570px, calc(100dvh - 190px));
+      overflow: auto;
+      gap: 7px;
+      padding: 0 14px 14px;
+    }
+
+    .page-choice {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) max-content;
+      gap: 5px 12px;
       width: 100%;
-      min-height: 62px;
-      resize: vertical;
-      border: 1px solid rgba(255, 176, 0, .3);
-      padding: 7px;
-      background: #050505;
-      color: #ffe0a0;
-      font-size: 10px;
-      line-height: 1.4;
+      border: 1px solid rgba(114, 255, 25, .22);
+      padding: 10px 12px;
+      background: #0b0e0a;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
     }
 
-    .empty-state {
-      grid-column: 1 / -1;
-      border: 1px dashed var(--line);
-      padding: 60px 20px;
-      color: var(--muted);
+    .page-choice:hover,
+    .page-choice:focus-visible {
+      border-color: var(--magenta);
+      outline: 2px solid rgba(255, 43, 214, .55);
+    }
+
+    .choice-title {
+      overflow: hidden;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .choice-route {
+      grid-column: 1;
+      overflow: hidden;
+      color: var(--green);
+      font-size: 9px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .choice-section {
+      grid-column: 2;
+      grid-row: 1 / 3;
+      align-self: center;
+      color: var(--amber);
+      font-size: 8px;
+      text-transform: uppercase;
+    }
+
+    .page-choice:disabled {
+      opacity: .32;
+      cursor: not-allowed;
+    }
+
+    .no-results {
+      padding: 30px;
+      color: #879481;
       text-align: center;
     }
 
-    .internal-badge {
-      margin-left: 6px;
-      color: var(--amber);
-      font-size: 8px;
-    }
-
-    @media (max-width: 680px) {
-      :root { --panel-min: 100%; }
-      .masthead { position: relative; }
-      .heading-row { align-items: flex-start; }
-      .controls { align-items: stretch; }
-      .control { flex: 1 1 145px; }
-      .control.search { flex-basis: 100%; }
-      .status-line { align-items: flex-start; flex-direction: column; }
-      .legend { text-align: left; }
-      .size-control { display: none; }
+    @media (max-width: 620px) {
+      .topbar { align-items: stretch; }
+      .brand { max-width: 58vw; }
+      .hint { font-size: 8px; }
+      .controls { flex-wrap: wrap; justify-content: flex-end; max-width: 155px; }
+      .controls button { min-width: 34px; padding: 4px 6px; font-size: 9px; }
+      .page-panel { border-width: 6px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+      .slot { transition: none; }
     }
   </style>
 </head>
 <body>
-  <header class="masthead">
-    <div class="heading-row">
-      <h1>Site Map Lab<span>Full-viewport transition organizer</span></h1>
-      <a class="back-link" href="/portal/">← Portal</a>
+  <div class="viewport" id="viewport" aria-label="Spatial page map">
+    <div class="world" id="world"></div>
+  </div>
+
+  <div class="chrome topbar">
+    <div class="brand">
+      <h1>Site Space</h1>
+      <p class="hint"><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> fly · wheel zoom · drag to pan · click an empty rectangle to add a page</p>
     </div>
+    <nav class="controls" aria-label="Map controls">
+      <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+      <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+      <button type="button" id="overview">Overview</button>
+      <button type="button" id="home">Splash</button>
+    </nav>
+  </div>
 
-    <div class="controls" aria-label="Map controls">
-      <label class="control search">
-        <span>Find</span>
-        <input id="search" type="search" placeholder="Filter by name, path or section…" autocomplete="off">
-      </label>
+  <div class="chrome position-readout" id="position" aria-live="polite">0, 0 · 100%</div>
 
-      <label class="control">
-        <span>Viewport</span>
-        <select id="viewport">
-          <option value="1280x720">Desktop 1280×720</option>
-          <option value="1440x900">Desktop 1440×900</option>
-          <option value="390x844">Phone 390×844</option>
-        </select>
-      </label>
-
-      <label class="control size-control">
-        <span>Panel size</span>
-        <input id="panel-size" type="range" min="280" max="760" step="10" value="430">
-      </label>
-
-      <label class="control">
-        <input id="show-internals" type="checkbox">
-        <span>Include internals</span>
-      </label>
-
-      <label class="control">
-        <input id="load-previews" type="checkbox" checked>
-        <span>Live previews</span>
-      </label>
-
-      <button id="copy-map" type="button">Copy transition map</button>
-      <button id="reset-order" type="button">Reset layout</button>
+  <dialog id="page-picker">
+    <div class="picker-head">
+      <h2>Add a page</h2>
+      <p id="picker-position">Choose what belongs in this part of the map.</p>
+      <button class="close-picker" type="button" aria-label="Close page list">×</button>
     </div>
-
-    <div class="status-line" aria-live="polite">
-      <span id="status">Building page map…</span>
-      <span class="legend">Drag ⠿ to rearrange · arrows work without dragging · order and notes save on this device</span>
-    </div>
-  </header>
-
-  <main>
-    <div class="grid" id="page-grid"></div>
-  </main>
-
-  <template id="panel-template">
-    <article class="panel">
-      <header class="panel-head">
-        <div class="route-block">
-          <h2 class="route-title"></h2>
-          <code class="route-path"></code>
-        </div>
-        <div class="panel-actions">
-          <button class="icon-button move-up" type="button" title="Move earlier" aria-label="Move earlier">↑</button>
-          <button class="icon-button move-down" type="button" title="Move later" aria-label="Move later">↓</button>
-          <a class="open-link" target="_blank" rel="noopener" title="Open page" aria-label="Open page in a new tab">↗</a>
-          <button class="icon-button drag-handle" type="button" draggable="true" title="Drag to rearrange" aria-label="Drag to rearrange">⠿</button>
-        </div>
-      </header>
-      <div class="preview">
-        <iframe loading="lazy" tabindex="-1"></iframe>
-        <a class="preview-cover" target="_blank" rel="noopener" aria-label="Open preview in a new tab"></a>
-      </div>
-      <footer class="panel-foot">
-        <details>
-          <summary><span>Outgoing transitions</span><span class="transition-count">waiting</span></summary>
-          <div class="drawer">
-            <ul class="transition-list"></ul>
-            <p class="empty-transitions">Preview this page to inspect its transition metadata.</p>
-            <label>
-              <span class="note-label">Transition / layout notes</span>
-              <textarea class="note" placeholder="What enters, exits, clashes, loops, or still needs fixing?"></textarea>
-            </label>
-          </div>
-        </details>
-      </footer>
-    </article>
-  </template>
+    <input class="page-search" id="page-search" type="search" placeholder="Search every page…" autocomplete="off">
+    <div class="page-list" id="page-list"></div>
+  </dialog>
 
   <script>
-    const STORAGE = {
-      order: "theinternetisdead:customize:page-order:v1",
-      notes: "theinternetisdead:customize:notes:v1",
-      settings: "theinternetisdead:customize:settings:v1"
-    };
-
+    const CELL_W = 1000;
+    const CELL_H = 562.5;
+    const STEP_X = 1110;
+    const STEP_Y = 672.5;
+    const GRID_RADIUS = 10;
+    const STORAGE_KEY = "theinternetisdead:site-space:placements:v1";
     const REPOSITORY_TREE = "https://api.github.com/repos/honestlythomas/theinternetisdead/git/trees/main?recursive=1";
-    const INTERNAL_PATTERNS = [
-      "/dead/apps/os/components/",
-      "/dead/apps/os/apps/",
-      "/dead/games/shooter-game/assets/",
-      "/portal/nav.html"
+
+    const FALLBACK_PATHS = [
+      "index.html", "portal/index.html", "help/index.html",
+      "help/institutional-neglect.html", "help/self-advocacy-101-human-dignity.html",
+      "help/self-advocacy-101-recognizing-harm.html", "dead/apps/chat/index.html",
+      "dead/apps/os/index.html", "dead/content/pages/thumbnail-grid/index.html",
+      "dead/distribution/downloads/index.html", "dead/distribution/downloads/dead-david-tss/index.html",
+      "dead/experiments/index.html", "dead/experiments/background/index.html",
+      "dead/experiments/base64-converter/index.html", "dead/experiments/blotter-visualizer/index.html",
+      "dead/experiments/bookmark-manager/index.html", "dead/experiments/business-card/index.html",
+      "dead/experiments/camera-experiment/index.html", "dead/experiments/camera-studio/index.html",
+      "dead/experiments/canvas-backgrounds/index.html", "dead/experiments/chat-sandbox/index.html",
+      "dead/experiments/dead-tv/index.html", "dead/experiments/gods-eye/index.html",
+      "dead/experiments/habisky-mofo/index.html", "dead/experiments/karaoke-machine/index.html",
+      "dead/experiments/mandala-visuals/index.html", "dead/experiments/multimedia-editor/index.html",
+      "dead/experiments/music-crunchifier/index.html", "dead/experiments/music-player/index.html",
+      "dead/experiments/old-homepage/index.html", "dead/experiments/pdf-viewer/index.html",
+      "dead/experiments/photosphere/index.html", "dead/experiments/sound-machine/index.html",
+      "dead/experiments/stacks/index.html", "dead/experiments/weird-secret/index.html",
+      "dead/experiments/world-in-thing/index.html", "dead/games/index.html",
+      "dead/games/grid-game-v2/index.html", "dead/games/grid-game/index.html",
+      "dead/games/inferno-trainer/index.html", "dead/games/shooter-game/index.html",
+      "dead/games/tektite-3D-game/index.html", "dead/media/videos/index.html"
     ];
 
-    // Used immediately if GitHub's public tree endpoint is unavailable or rate-limited.
-    const FALLBACK_HTML_PATHS = [
-      "dead/apps/chat/index.html",
-      "dead/apps/os/apps/settings_app.html",
-      "dead/apps/os/components/boot-screen.html",
-      "dead/apps/os/components/bottom-taskbar.html",
-      "dead/apps/os/components/control-bar.html",
-      "dead/apps/os/components/desktop.html",
-      "dead/apps/os/components/nickname-screen.html",
-      "dead/apps/os/index.html",
-      "dead/content/pages/thumbnail-grid/index.html",
-      "dead/distribution/downloads/dead-david-tss/index.html",
-      "dead/distribution/downloads/index.html",
-      "dead/experiments/background/index.html",
-      "dead/experiments/base64-converter/index.html",
-      "dead/experiments/blotter-visualizer/index.html",
-      "dead/experiments/bookmark-manager/index.html",
-      "dead/experiments/business-card/index.html",
-      "dead/experiments/camera-experiment/index.html",
-      "dead/experiments/camera-studio/index.html",
-      "dead/experiments/canvas-backgrounds/cursed-background.html",
-      "dead/experiments/canvas-backgrounds/demon-ascii.html",
-      "dead/experiments/canvas-backgrounds/dot-lavalamp.html",
-      "dead/experiments/canvas-backgrounds/index.html",
-      "dead/experiments/canvas-backgrounds/rainbow-background.html",
-      "dead/experiments/canvas-backgrounds/starfield-background.html",
-      "dead/experiments/canvas-backgrounds/starfield-background_reactive.html",
-      "dead/experiments/canvas-backgrounds/starfield-background_warp.html",
-      "dead/experiments/chat-sandbox/index.html",
-      "dead/experiments/dead-tv/index.html",
-      "dead/experiments/gods-eye/index.html",
-      "dead/experiments/habisky-mofo/index.html",
-      "dead/experiments/index.html",
-      "dead/experiments/karaoke-machine/index.html",
-      "dead/experiments/mandala-visuals/01-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/02-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/03-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/04-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/05-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/06-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/07-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/08-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/09-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/10-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/11-mandala-visuals.html",
-      "dead/experiments/mandala-visuals/index.html",
-      "dead/experiments/multimedia-editor/index.html",
-      "dead/experiments/music-crunchifier/index.html",
-      "dead/experiments/music-player/index.html",
-      "dead/experiments/old-homepage/index.html",
-      "dead/experiments/pdf-viewer/creepy-susie.html",
-      "dead/experiments/pdf-viewer/doodle-book.html",
-      "dead/experiments/pdf-viewer/index.html",
-      "dead/experiments/photosphere/index.html",
-      "dead/experiments/sound-machine/index.html",
-      "dead/experiments/stacks/index.html",
-      "dead/experiments/weird-secret/index.html",
-      "dead/experiments/world-in-thing/index.html",
-      "dead/games/grid-game-v2/index.html",
-      "dead/games/grid-game/index.html",
-      "dead/games/index.html",
-      "dead/games/inferno-trainer/index.html",
-      "dead/games/shooter-game/assets/controller-buttons/controls.html",
-      "dead/games/shooter-game/assets/levels/shooter-game-level1.html",
-      "dead/games/shooter-game/assets/levels/shooter-game-level2.html",
-      "dead/games/shooter-game/index.html",
-      "dead/games/tektite-3D-game/index.html",
-      "dead/media/videos/index.html",
-      "help/index.html",
-      "help/institutional-neglect.html",
-      "help/self-advocacy-101-human-dignity.html",
-      "help/self-advocacy-101-recognizing-harm.html",
-      "index.html",
-      "portal/index.html",
-      "portal/nav.html"
-    ];
+    const viewport = document.getElementById("viewport");
+    const world = document.getElementById("world");
+    const picker = document.getElementById("page-picker");
+    const pageSearch = document.getElementById("page-search");
+    const pageList = document.getElementById("page-list");
+    const positionReadout = document.getElementById("position");
+    const pickerPosition = document.getElementById("picker-position");
 
-    const grid = document.getElementById("page-grid");
-    const template = document.getElementById("panel-template");
-    const status = document.getElementById("status");
-    const search = document.getElementById("search");
-    const viewportSelect = document.getElementById("viewport");
-    const panelSize = document.getElementById("panel-size");
-    const showInternals = document.getElementById("show-internals");
-    const loadPreviews = document.getElementById("load-previews");
-    const transitionMap = new Map();
-    let pageSource = "bundled snapshot";
+    let camera = { x: 0, y: 0, zoom: 1 };
     let pages = [];
-    let dragging = null;
-    let viewportWidth = 1280;
-    let viewportHeight = 720;
+    let pendingCell = null;
+    let placements = readPlacements();
+    let pointer = null;
+    let moved = false;
+    let suppressSlotClick = false;
+    let animationFrame = 0;
+    const keys = new Set();
 
-    const readJSON = (key, fallback) => {
+    if (!placements["0,0"]) placements["0,0"] = "/";
+
+    function readPlacements() {
       try {
-        const value = JSON.parse(localStorage.getItem(key));
-        return value ?? fallback;
+        const value = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return value && typeof value === "object" ? value : {};
       } catch (_) {
-        return fallback;
+        return {};
       }
-    };
+    }
 
-    const writeJSON = (key, value) => {
-      try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
-    };
+    function savePlacements() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(placements)); } catch (_) {}
+    }
 
-    const pathToRoute = path => {
+    function pathToRoute(path) {
       if (path === "index.html") return "/";
       if (path.endsWith("/index.html")) return `/${path.slice(0, -10)}`;
       return `/${path}`;
-    };
+    }
 
-    const titleFromRoute = route => {
-      if (route === "/") return "Home";
-      const part = route.replace(/\/$/, "").split("/").pop().replace(/\.html$/, "");
-      return part
+    function titleFromRoute(route) {
+      if (route === "/") return "Splash";
+      return route.replace(/\/$/, "").split("/").pop().replace(/\.html$/, "")
         .replace(/[-_]+/g, " ")
         .replace(/\b3d\b/i, "3D")
         .replace(/\b\w/g, letter => letter.toUpperCase());
-    };
+    }
 
-    const sectionFromRoute = route => {
+    function sectionFromRoute(route) {
       if (route === "/") return "home";
-      if (route.startsWith("/portal")) return "portal";
-      if (route.startsWith("/help")) return "help";
-      if (route.includes("/experiments/")) return "experiments";
-      if (route.includes("/games/")) return "games";
-      if (route.includes("/apps/")) return "apps";
-      if (route.includes("/media/")) return "media";
-      if (route.includes("/distribution/")) return "downloads";
-      return "site";
-    };
+      const parts = route.split("/").filter(Boolean);
+      if (parts[0] === "dead" && parts[1]) return parts[1];
+      return parts[0] || "site";
+    }
 
-    const isInternalRoute = route => INTERNAL_PATTERNS.some(pattern => route.includes(pattern));
-
-    const normalizePages = paths => {
-      const unique = [...new Set(paths)]
-        .filter(path => path.endsWith(".html"))
-        .map(pathToRoute)
-        .filter(route => route !== "/customize/");
-
-      const savedOrder = readJSON(STORAGE.order, []);
-      const rank = new Map(savedOrder.map((route, index) => [route, index]));
-      const natural = [...unique].sort((a, b) => a.localeCompare(b));
-
-      natural.sort((a, b) => {
-        const aRank = rank.has(a) ? rank.get(a) : Number.MAX_SAFE_INTEGER;
-        const bRank = rank.has(b) ? rank.get(b) : Number.MAX_SAFE_INTEGER;
-        return aRank - bRank || a.localeCompare(b);
-      });
-
-      return natural.map(route => ({
-        route,
-        title: titleFromRoute(route),
-        section: sectionFromRoute(route),
-        internal: isInternalRoute(route)
-      }));
-    };
-
-    const standaloneUrl = route => {
-      const url = new URL(route, window.location.origin);
-      if (route !== "/") url.searchParams.set("standalone", "true");
+    function standaloneUrl(route) {
+      if (route === "/") return "/";
+      const url = new URL(route, location.origin);
+      url.searchParams.set("standalone", "true");
       return `${url.pathname}${url.search}`;
-    };
+    }
 
-    const saveOrder = () => {
-      const order = [...grid.querySelectorAll(".panel")].map(panel => panel.dataset.route);
-      writeJSON(STORAGE.order, order);
-      pages.sort((a, b) => order.indexOf(a.route) - order.indexOf(b.route));
-    };
+    function cellKey(x, y) { return `${x},${y}`; }
 
-    const updateScale = panel => {
-      const preview = panel.querySelector(".preview");
-      const frame = panel.querySelector("iframe");
-      const width = preview.getBoundingClientRect().width;
-      if (!width) return;
-      frame.width = viewportWidth;
-      frame.height = viewportHeight;
-      preview.style.setProperty("--preview-scale", width / viewportWidth);
-    };
+    function cellPosition(x, y) {
+      return { left: x * STEP_X, top: y * STEP_Y };
+    }
 
-    const normalizeTarget = href => {
-      try {
-        const url = new URL(href, window.location.origin);
-        if (url.origin !== window.location.origin) return url.href;
-        return `${url.pathname}${url.search}${url.hash}`;
-      } catch (_) {
-        return href || "(button / scripted destination)";
+    function createSlot(x, y) {
+      const button = document.createElement("button");
+      const position = cellPosition(x, y);
+      button.className = "slot";
+      button.type = "button";
+      button.style.left = `${position.left}px`;
+      button.style.top = `${position.top}px`;
+      button.dataset.x = x;
+      button.dataset.y = y;
+      button.setAttribute("aria-label", `Add page at grid position ${x}, ${y}`);
+      button.innerHTML = `<span>+<small>${x}, ${y}</small></span>`;
+      button.addEventListener("click", () => {
+        if (suppressSlotClick) return;
+        openPicker(x, y);
+      });
+      return button;
+    }
+
+    function createPanel(route, x, y) {
+      const panel = document.createElement("article");
+      const position = cellPosition(x, y);
+      panel.className = `page-panel${route === "/" ? " is-home" : ""}`;
+      panel.style.left = `${position.left}px`;
+      panel.style.top = `${position.top}px`;
+      panel.dataset.route = route;
+      panel.dataset.x = x;
+      panel.dataset.y = y;
+
+      const bar = document.createElement("header");
+      bar.className = "panel-bar";
+
+      const title = document.createElement("span");
+      title.className = "panel-title";
+      title.textContent = titleFromRoute(route);
+
+      const path = document.createElement("code");
+      path.className = "panel-path";
+      path.textContent = route;
+
+      const open = document.createElement("a");
+      open.className = "panel-action";
+      open.href = route;
+      open.target = "_blank";
+      open.rel = "noopener";
+      open.textContent = "↗";
+      open.setAttribute("aria-label", `Open ${titleFromRoute(route)} in a new tab`);
+
+      bar.append(title, path, open);
+
+      if (route !== "/") {
+        const remove = document.createElement("button");
+        remove.className = "panel-action";
+        remove.type = "button";
+        remove.textContent = "×";
+        remove.setAttribute("aria-label", `Remove ${titleFromRoute(route)} from the map`);
+        remove.addEventListener("click", () => {
+          delete placements[cellKey(x, y)];
+          savePlacements();
+          renderWorld();
+        });
+        bar.append(remove);
       }
-    };
 
-    const inspectTransitions = panel => {
-      const frame = panel.querySelector("iframe");
-      const list = panel.querySelector(".transition-list");
-      const empty = panel.querySelector(".empty-transitions");
-      const count = panel.querySelector(".transition-count");
-      let links = [];
+      const frame = document.createElement("iframe");
+      frame.src = standaloneUrl(route);
+      frame.loading = "lazy";
+      frame.tabIndex = -1;
+      frame.title = `Preview of ${titleFromRoute(route)}`;
 
-      try {
-        links = [...frame.contentDocument.querySelectorAll("[data-transition], [data-transition-override]")]
-          .map(node => ({
-            type: node.dataset.transition || node.dataset.transitionOverride || "default",
-            target: normalizeTarget(node.href || node.getAttribute("href"))
-          }));
-      } catch (_) {
-        count.textContent = "unavailable";
-        empty.textContent = "This preview could not be inspected.";
-        return;
-      }
-
-      transitionMap.set(panel.dataset.route, links);
-      list.replaceChildren();
-      count.textContent = `${links.length} ${links.length === 1 ? "exit" : "exits"}`;
-      empty.hidden = links.length > 0;
-      if (!links.length) empty.textContent = "No explicit transition metadata found on this page.";
-
-      links.forEach(link => {
-        const item = document.createElement("li");
-        const kind = document.createElement("span");
-        const target = document.createElement("span");
-        kind.className = "transition-kind";
-        target.className = "transition-target";
-        kind.textContent = link.type;
-        target.textContent = `→ ${link.target}`;
-        item.append(kind, target);
-        list.append(item);
-      });
-    };
-
-    const previewObserver = new IntersectionObserver(entries => {
-      if (!loadPreviews.checked) return;
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const frame = entry.target.querySelector("iframe");
-        if (!frame.src) frame.src = frame.dataset.src;
-        previewObserver.unobserve(entry.target);
-      });
-    }, { rootMargin: "700px 0px" });
-
-    const resizeObserver = new ResizeObserver(entries => {
-      entries.forEach(entry => updateScale(entry.target.closest(".panel")));
-    });
-
-    const makePanel = page => {
-      const panel = template.content.firstElementChild.cloneNode(true);
-      const title = panel.querySelector(".route-title");
-      const path = panel.querySelector(".route-path");
-      const frame = panel.querySelector("iframe");
-      const open = panel.querySelector(".open-link");
-      const cover = panel.querySelector(".preview-cover");
-      const note = panel.querySelector(".note");
-      const notes = readJSON(STORAGE.notes, {});
-
-      panel.dataset.route = page.route;
-      panel.dataset.section = page.section;
-      panel.dataset.internal = String(page.internal);
-      title.textContent = page.title;
-      if (page.internal) {
-        const badge = document.createElement("span");
-        badge.className = "internal-badge";
-        badge.textContent = "internal";
-        title.append(badge);
-      }
-      path.textContent = page.route;
-      frame.title = `Full viewport preview of ${page.title}`;
-      frame.dataset.src = standaloneUrl(page.route);
-      open.href = page.route;
-      cover.href = page.route;
-      cover.setAttribute("aria-label", `Open ${page.title} in a new tab`);
-      note.value = notes[page.route] || "";
-
-      frame.addEventListener("load", () => inspectTransitions(panel));
-      note.addEventListener("input", () => {
-        const nextNotes = readJSON(STORAGE.notes, {});
-        if (note.value) nextNotes[page.route] = note.value;
-        else delete nextNotes[page.route];
-        writeJSON(STORAGE.notes, nextNotes);
-      });
-
-      panel.querySelector(".move-up").addEventListener("click", () => {
-        const previous = [...grid.children].filter(item => !item.hidden && item !== panel)
-          .filter(item => item.compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING).pop();
-        if (previous) grid.insertBefore(panel, previous);
-        saveOrder();
-      });
-
-      panel.querySelector(".move-down").addEventListener("click", () => {
-        const next = [...grid.children].find(item => !item.hidden && item !== panel &&
-          (panel.compareDocumentPosition(item) & Node.DOCUMENT_POSITION_FOLLOWING));
-        if (next) grid.insertBefore(next, panel);
-        saveOrder();
-      });
-
-      const handle = panel.querySelector(".drag-handle");
-      handle.addEventListener("dragstart", event => {
-        dragging = panel;
-        panel.classList.add("is-dragging");
-        event.dataTransfer.effectAllowed = "move";
-        event.dataTransfer.setData("text/plain", page.route);
-      });
-      handle.addEventListener("dragend", () => {
-        panel.classList.remove("is-dragging");
-        grid.querySelectorAll(".is-drop-target").forEach(item => item.classList.remove("is-drop-target"));
-        dragging = null;
-        saveOrder();
-      });
-
-      resizeObserver.observe(panel.querySelector(".preview"));
-      previewObserver.observe(panel);
+      panel.append(frame, bar);
       return panel;
-    };
+    }
 
-    const applyFilter = () => {
-      const term = search.value.trim().toLowerCase();
-      let shown = 0;
-      grid.querySelectorAll(".panel").forEach(panel => {
-        const haystack = `${panel.dataset.route} ${panel.dataset.section} ${titleFromRoute(panel.dataset.route)}`.toLowerCase();
-        const visible = (showInternals.checked || panel.dataset.internal !== "true") && (!term || haystack.includes(term));
-        panel.hidden = !visible;
-        if (visible) shown++;
+    function renderWorld() {
+      const fragment = document.createDocumentFragment();
+      for (let y = -GRID_RADIUS; y <= GRID_RADIUS; y++) {
+        for (let x = -GRID_RADIUS; x <= GRID_RADIUS; x++) {
+          const route = placements[cellKey(x, y)];
+          fragment.append(route ? createPanel(route, x, y) : createSlot(x, y));
+        }
+      }
+      world.replaceChildren(fragment);
+      updateWorldTransform();
+    }
+
+    function updateWorldTransform() {
+      const screenX = innerWidth / 2 - camera.x * camera.zoom;
+      const screenY = innerHeight / 2 - camera.y * camera.zoom;
+      world.style.transform = `translate3d(${screenX}px, ${screenY}px, 0) scale(${camera.zoom})`;
+      positionReadout.textContent = `${Math.round(camera.x)}, ${Math.round(camera.y)} · ${Math.round(camera.zoom * 100)}%`;
+    }
+
+    function fitSplash() {
+      camera.x = 0;
+      camera.y = 0;
+      camera.zoom = Math.min(.98, (innerWidth - 54) / CELL_W, (innerHeight - 80) / CELL_H);
+      camera.zoom = Math.max(.16, camera.zoom);
+      updateWorldTransform();
+    }
+
+    function showOverview() {
+      const occupied = Object.entries(placements).map(([key]) => key.split(",").map(Number));
+      if (!occupied.length) return fitSplash();
+      const xs = occupied.map(point => point[0] * STEP_X);
+      const ys = occupied.map(point => point[1] * STEP_Y);
+      const minX = Math.min(...xs) - CELL_W / 2;
+      const maxX = Math.max(...xs) + CELL_W / 2;
+      const minY = Math.min(...ys) - CELL_H / 2;
+      const maxY = Math.max(...ys) + CELL_H / 2;
+      camera.x = (minX + maxX) / 2;
+      camera.y = (minY + maxY) / 2;
+      camera.zoom = Math.max(.08, Math.min(.8, (innerWidth - 70) / (maxX - minX), (innerHeight - 110) / (maxY - minY)));
+      updateWorldTransform();
+    }
+
+    function zoomAt(nextZoom, clientX = innerWidth / 2, clientY = innerHeight / 2) {
+      const oldZoom = camera.zoom;
+      const clamped = Math.max(.07, Math.min(1.25, nextZoom));
+      const worldX = camera.x + (clientX - innerWidth / 2) / oldZoom;
+      const worldY = camera.y + (clientY - innerHeight / 2) / oldZoom;
+      camera.zoom = clamped;
+      camera.x = worldX - (clientX - innerWidth / 2) / clamped;
+      camera.y = worldY - (clientY - innerHeight / 2) / clamped;
+      updateWorldTransform();
+    }
+
+    function openPicker(x, y) {
+      pendingCell = { x, y };
+      pickerPosition.textContent = `Grid ${x}, ${y} · choose what belongs here.`;
+      pageSearch.value = "";
+      renderPageList();
+      picker.showModal();
+      requestAnimationFrame(() => pageSearch.focus());
+    }
+
+    function renderPageList() {
+      const term = pageSearch.value.trim().toLowerCase();
+      const usedRoutes = new Set(Object.values(placements));
+      const matching = pages.filter(page => !term || `${page.title} ${page.route} ${page.section}`.toLowerCase().includes(term));
+      const fragment = document.createDocumentFragment();
+
+      matching.forEach(page => {
+        const choice = document.createElement("button");
+        choice.className = "page-choice";
+        choice.type = "button";
+        choice.disabled = usedRoutes.has(page.route);
+        choice.innerHTML = `<span class="choice-title"></span><code class="choice-route"></code><span class="choice-section"></span>`;
+        choice.querySelector(".choice-title").textContent = page.title;
+        choice.querySelector(".choice-route").textContent = page.route;
+        choice.querySelector(".choice-section").textContent = choice.disabled ? "already placed" : page.section;
+        choice.addEventListener("click", () => {
+          if (!pendingCell) return;
+          placements[cellKey(pendingCell.x, pendingCell.y)] = page.route;
+          savePlacements();
+          picker.close();
+          renderWorld();
+        });
+        fragment.append(choice);
       });
 
-      let empty = grid.querySelector(".empty-state");
-      if (!shown && !empty) {
-        empty = document.createElement("p");
-        empty.className = "empty-state";
-        grid.append(empty);
+      if (!matching.length) {
+        const empty = document.createElement("p");
+        empty.className = "no-results";
+        empty.textContent = "No pages found.";
+        fragment.append(empty);
       }
-      if (empty) {
-        empty.textContent = "No pages match this view.";
-        empty.hidden = shown > 0;
-      }
+      pageList.replaceChildren(fragment);
+    }
 
-      status.textContent = `${shown} of ${pages.length} HTML pages shown · source: ${pageSource}`;
-    };
-
-    const render = () => {
-      grid.replaceChildren(...pages.map(makePanel));
-      applyFilter();
-    };
-
-    const setViewport = value => {
-      [viewportWidth, viewportHeight] = value.split("x").map(Number);
-      document.documentElement.style.setProperty("--viewport-ratio", `${viewportWidth} / ${viewportHeight}`);
-      grid.querySelectorAll(".panel").forEach(updateScale);
-      saveSettings();
-    };
-
-    const readSettings = () => {
-      const settings = readJSON(STORAGE.settings, {});
-      viewportSelect.value = settings.viewport || "1280x720";
-      panelSize.value = settings.panelSize || "430";
-      showInternals.checked = Boolean(settings.showInternals);
-      loadPreviews.checked = settings.loadPreviews !== false;
-      document.documentElement.style.setProperty("--panel-min", `${panelSize.value}px`);
-      [viewportWidth, viewportHeight] = viewportSelect.value.split("x").map(Number);
-      document.documentElement.style.setProperty("--viewport-ratio", `${viewportWidth} / ${viewportHeight}`);
-    };
-
-    const saveSettings = () => writeJSON(STORAGE.settings, {
-      viewport: viewportSelect.value,
-      panelSize: panelSize.value,
-      showInternals: showInternals.checked,
-      loadPreviews: loadPreviews.checked
-    });
-
-    const discoverPages = async () => {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 3500);
+    async function discoverPages() {
+      let paths = FALLBACK_PATHS;
       try {
-        const response = await fetch(REPOSITORY_TREE, {
-          headers: { Accept: "application/vnd.github+json" },
-          signal: controller.signal
-        });
-        if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+        const response = await fetch(REPOSITORY_TREE, { headers: { Accept: "application/vnd.github+json" } });
+        if (!response.ok) throw new Error("page tree unavailable");
         const data = await response.json();
-        const paths = data.tree.filter(item => item.type === "blob" && item.path.endsWith(".html")).map(item => item.path);
-        if (!paths.length) throw new Error("No HTML pages found");
-        pageSource = "live main branch";
-        return paths;
-      } catch (_) {
-        return FALLBACK_HTML_PATHS;
-      } finally {
-        clearTimeout(timer);
+        paths = data.tree.filter(item => item.type === "blob" && item.path.endsWith(".html")).map(item => item.path);
+      } catch (_) {}
+
+      pages = [...new Set(paths.map(pathToRoute))]
+        .filter(route => route !== "/customize/")
+        .map(route => ({ route, title: titleFromRoute(route), section: sectionFromRoute(route) }))
+        .sort((a, b) => a.section.localeCompare(b.section) || a.title.localeCompare(b.title));
+      renderPageList();
+    }
+
+    function shouldIgnoreKey(event) {
+      const tag = event.target?.tagName?.toLowerCase();
+      return picker.open || tag === "input" || tag === "textarea" || tag === "select" || event.target?.isContentEditable;
+    }
+
+    function fly(time) {
+      const previous = fly.previous || time;
+      const seconds = Math.min(.04, (time - previous) / 1000);
+      fly.previous = time;
+      let dx = 0;
+      let dy = 0;
+      if (keys.has("w") || keys.has("arrowup")) dy--;
+      if (keys.has("s") || keys.has("arrowdown")) dy++;
+      if (keys.has("a") || keys.has("arrowleft")) dx--;
+      if (keys.has("d") || keys.has("arrowright")) dx++;
+      if (dx || dy) {
+        const length = Math.hypot(dx, dy);
+        const speed = 920 / Math.max(.22, camera.zoom);
+        camera.x += dx / length * speed * seconds;
+        camera.y += dy / length * speed * seconds;
+        updateWorldTransform();
       }
+      animationFrame = requestAnimationFrame(fly);
+    }
+
+    viewport.addEventListener("wheel", event => {
+      event.preventDefault();
+      zoomAt(camera.zoom * Math.exp(-event.deltaY * .0012), event.clientX, event.clientY);
+    }, { passive: false });
+
+    viewport.addEventListener("pointerdown", event => {
+      if (event.button !== 0 || event.target.closest(".panel-action")) return;
+      pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, cameraX: camera.x, cameraY: camera.y };
+      moved = false;
+      viewport.setPointerCapture(event.pointerId);
+      viewport.classList.add("is-panning");
+    });
+
+    viewport.addEventListener("pointermove", event => {
+      if (!pointer || pointer.id !== event.pointerId) return;
+      const dx = event.clientX - pointer.x;
+      const dy = event.clientY - pointer.y;
+      if (Math.hypot(dx, dy) > 7) moved = true;
+      camera.x = pointer.cameraX - dx / camera.zoom;
+      camera.y = pointer.cameraY - dy / camera.zoom;
+      updateWorldTransform();
+    });
+
+    const stopPanning = event => {
+      if (!pointer || pointer.id !== event.pointerId) return;
+      suppressSlotClick = moved;
+      setTimeout(() => { suppressSlotClick = false; }, 0);
+      pointer = null;
+      viewport.classList.remove("is-panning");
     };
+    viewport.addEventListener("pointerup", stopPanning);
+    viewport.addEventListener("pointercancel", stopPanning);
 
-    grid.addEventListener("dragover", event => {
-      if (!dragging) return;
-      const target = event.target.closest(".panel");
-      if (!target || target === dragging || target.hidden) return;
-      event.preventDefault();
-      event.dataTransfer.dropEffect = "move";
-      grid.querySelectorAll(".is-drop-target").forEach(item => item.classList.remove("is-drop-target"));
-      target.classList.add("is-drop-target");
-    });
-
-    grid.addEventListener("drop", event => {
-      const target = event.target.closest(".panel");
-      if (!dragging || !target || target === dragging) return;
-      event.preventDefault();
-      const rect = target.getBoundingClientRect();
-      const after = event.clientY > rect.top + rect.height / 2;
-      grid.insertBefore(dragging, after ? target.nextSibling : target);
-      target.classList.remove("is-drop-target");
-      saveOrder();
-    });
-
-    search.addEventListener("input", applyFilter);
-    showInternals.addEventListener("change", () => { saveSettings(); applyFilter(); });
-    viewportSelect.addEventListener("change", () => setViewport(viewportSelect.value));
-    panelSize.addEventListener("input", () => {
-      document.documentElement.style.setProperty("--panel-min", `${panelSize.value}px`);
-      saveSettings();
-    });
-
-    loadPreviews.addEventListener("change", () => {
-      saveSettings();
-      if (loadPreviews.checked) {
-        grid.querySelectorAll(".panel").forEach(panel => previewObserver.observe(panel));
-      } else {
-        grid.querySelectorAll("iframe").forEach(frame => {
-          frame.removeAttribute("src");
-          const panel = frame.closest(".panel");
-          panel.querySelector(".transition-count").textContent = "paused";
-        });
+    addEventListener("keydown", event => {
+      if (shouldIgnoreKey(event)) return;
+      const key = event.key.toLowerCase();
+      if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
+        event.preventDefault();
+        keys.add(key);
       }
     });
+    addEventListener("keyup", event => keys.delete(event.key.toLowerCase()));
+    addEventListener("blur", () => keys.clear());
+    addEventListener("resize", updateWorldTransform);
 
-    document.getElementById("reset-order").addEventListener("click", () => {
-      localStorage.removeItem(STORAGE.order);
-      pages.sort((a, b) => a.route.localeCompare(b.route));
-      render();
+    document.getElementById("zoom-out").addEventListener("click", () => zoomAt(camera.zoom / 1.25));
+    document.getElementById("zoom-in").addEventListener("click", () => zoomAt(camera.zoom * 1.25));
+    document.getElementById("overview").addEventListener("click", showOverview);
+    document.getElementById("home").addEventListener("click", fitSplash);
+    document.querySelector(".close-picker").addEventListener("click", () => picker.close());
+    picker.addEventListener("click", event => {
+      if (event.target === picker) picker.close();
     });
+    pageSearch.addEventListener("input", renderPageList);
 
-    document.getElementById("copy-map").addEventListener("click", async event => {
-      const notes = readJSON(STORAGE.notes, {});
-      const map = [...grid.querySelectorAll(".panel")].map((panel, position) => ({
-        position: position + 1,
-        page: panel.dataset.route,
-        transitions: transitionMap.get(panel.dataset.route) || [],
-        note: notes[panel.dataset.route] || ""
-      }));
-      try {
-        await navigator.clipboard.writeText(JSON.stringify(map, null, 2));
-        const original = event.currentTarget.textContent;
-        event.currentTarget.textContent = "Copied";
-        setTimeout(() => { event.currentTarget.textContent = original; }, 1200);
-      } catch (_) {
-        status.textContent = "Clipboard access was blocked; open this page over HTTPS and try again.";
-      }
-    });
-
-    readSettings();
-    discoverPages().then(paths => {
-      pages = normalizePages(paths);
-      render();
-    });
+    savePlacements();
+    renderWorld();
+    fitSplash();
+    discoverPages();
+    animationFrame = requestAnimationFrame(fly);
   </script>
 </body>
 </html>
