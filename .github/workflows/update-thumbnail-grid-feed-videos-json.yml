@@ -60,7 +60,7 @@ jobs:
         env:
           YT_DLP_TIMEOUT_SECONDS: ${{ inputs.full_metadata_refresh && '90' || '60' }}
           FEED_FULL_METADATA_REFRESH: ${{ inputs.full_metadata_refresh && 'true' || 'false' }}
-        run: python dead/pages/thumbnail-grid/build-feed-videos.py
+        run: python dead/content/pages/thumbnail-grid/build-feed-videos.py
 
       - name: Remove temporary YouTube cookies
         if: always()
@@ -73,13 +73,13 @@ jobs:
       - name: Commit updated thumbnail-grid feed-videos.json
         shell: bash
         run: |
-          if git diff --quiet -- dead/pages/thumbnail-grid/feed-videos.json; then
+          if git diff --quiet -- dead/content/pages/thumbnail-grid/feed-videos.json; then
             echo "feed-videos.json is already up to date."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dead/pages/thumbnail-grid/feed-videos.json
+          git add dead/content/pages/thumbnail-grid/feed-videos.json
           git commit -m "Update feed video data [DEAD_COMMIT]"
           git push
