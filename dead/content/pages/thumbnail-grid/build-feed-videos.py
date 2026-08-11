@@ -8,9 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[3]
-CHANNELS_PATH = ROOT / "dead" / "pages" / "thumbnail-grid" / "feeds-channels.json"
-OUTPUT_PATH = ROOT / "dead" / "pages" / "thumbnail-grid" / "feed-videos.json"
+ROOT = Path(__file__).resolve().parents[4]
+CHANNELS_PATH = ROOT / "dead" / "content" / "pages" / "thumbnail-grid" / "feeds-channels.json"
+OUTPUT_PATH = ROOT / "dead" / "content" / "pages" / "thumbnail-grid" / "feed-videos.json"
 LEGACY_FALLBACK_PATH = ROOT / "dead" / "JSON" / "videos.json"
 LOCAL_COOKIES_PATH = ROOT / "cookies.txt"
 YT_DLP_TIMEOUT_SECONDS = int(os.environ.get("YT_DLP_TIMEOUT_SECONDS") or "180")
