@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A draggable live map of every page and transition on theinternetisdead.org.">
+  <title>Site Map Lab — The Internet Is Dead</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --void: #050505;
+      --panel: #0b0e0a;
+      --panel-2: #11160f;
+      --ink: #efffe8;
+      --muted: #91a58a;
+      --green: #72ff19;
+      --magenta: #ff2bd6;
+      --amber: #ffb000;
+      --line: rgba(114, 255, 25, .32);
+      --panel-min: 430px;
+      --viewport-ratio: 16 / 9;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { background: var(--void); }
+
+    body {
+      min-width: 300px;
+      min-height: 100vh;
+      margin: 0;
+      background:
+        linear-gradient(rgba(114, 255, 25, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(114, 255, 25, .035) 1px, transparent 1px),
+        radial-gradient(circle at 15% 0, rgba(255, 43, 214, .1), transparent 32%),
+        var(--void);
+      background-size: 36px 36px, 36px 36px, auto, auto;
+      color: var(--ink);
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    button,
+    input,
+    select,
+    textarea { font: inherit; }
+
+    button,
+    select,
+    input[type="search"] {
+      border: 1px solid var(--line);
+      background: #080a07;
+      color: var(--ink);
+    }
+
+    button {
+      min-height: 38px;
+      padding: .55rem .75rem;
+      cursor: pointer;
+    }
+
+    button:hover,
+    button:focus-visible,
+    select:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      border-color: var(--magenta);
+      outline: 2px solid var(--magenta);
+      outline-offset: 2px;
+    }
+
+    .masthead {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      padding: max(12px, env(safe-area-inset-top)) clamp(14px, 2vw, 28px) 14px;
+      background: rgba(5, 5, 5, .94);
+      box-shadow: 0 10px 34px rgba(0, 0, 0, .5);
+      backdrop-filter: blur(14px);
+    }
+
+    .heading-row,
+    .controls,
+    .control,
+    .panel-head,
+    .panel-actions,
+    .status-line {
+      display: flex;
+      align-items: center;
+    }
+
+    .heading-row {
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(22px, 3vw, 42px);
+      letter-spacing: -.07em;
+      line-height: .95;
+      text-transform: uppercase;
+      text-shadow: 2px 0 var(--magenta), -2px 0 #2ba80d;
+    }
+
+    h1 span {
+      display: block;
+      margin-top: .35rem;
+      color: var(--green);
+      font-size: .36em;
+      letter-spacing: .12em;
+      text-shadow: none;
+    }
+
+    .back-link {
+      color: var(--green);
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible { color: var(--magenta); }
+
+    .controls {
+      flex-wrap: wrap;
+      gap: 9px 14px;
+      margin-top: 14px;
+    }
+
+    .control {
+      gap: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .control.search { flex: 1 1 240px; }
+    .control.search input { width: 100%; }
+
+    input[type="search"],
+    select {
+      min-height: 38px;
+      border-radius: 0;
+      padding: 0 .65rem;
+    }
+
+    input[type="range"] { accent-color: var(--green); }
+
+    input[type="checkbox"] { accent-color: var(--magenta); }
+
+    .status-line {
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    #status::before { content: "● "; color: var(--green); }
+
+    .legend { text-align: right; }
+
+    main { padding: clamp(14px, 2vw, 28px); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--panel-min)), 1fr));
+      gap: clamp(14px, 2vw, 26px);
+      align-items: start;
+    }
+
+    .panel {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 10px 34px rgba(0, 0, 0, .38);
+      transition: opacity 140ms ease, border-color 140ms ease, transform 140ms ease;
+    }
+
+    .panel[hidden] { display: none; }
+
+    .panel.is-dragging {
+      border-color: var(--magenta);
+      opacity: .42;
+      transform: scale(.985);
+    }
+
+    .panel.is-drop-target {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(114, 255, 25, .15);
+    }
+
+    .panel-head {
+      min-height: 48px;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+      padding: 6px 7px 6px 9px;
+      background: var(--panel-2);
+    }
+
+    .route-block { min-width: 0; }
+
+    .route-title {
+      overflow: hidden;
+      margin: 0;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.2;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .route-path {
+      display: block;
+      overflow: hidden;
+      margin-top: 3px;
+      color: var(--green);
+      font-size: 9px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .panel-actions {
+      flex: 0 0 auto;
+      gap: 4px;
+    }
+
+    .icon-button,
+    .open-link {
+      display: grid;
+      width: 34px;
+      min-height: 34px;
+      place-items: center;
+      border: 1px solid rgba(114, 255, 25, .22);
+      padding: 0;
+      background: #060806;
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    .drag-handle {
+      color: var(--magenta);
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .drag-handle:active { cursor: grabbing; }
+
+    .preview {
+      position: relative;
+      width: 100%;
+      aspect-ratio: var(--viewport-ratio);
+      overflow: hidden;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.025) 3px 4px),
+        #000;
+    }
+
+    .preview::before {
+      content: "PREVIEW QUEUED";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      color: rgba(114, 255, 25, .55);
+      font-size: 11px;
+      letter-spacing: .12em;
+      transform: translate(-50%, -50%);
+    }
+
+    .preview iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      display: block;
+      border: 0;
+      background: #000;
+      pointer-events: none;
+      transform: scale(var(--preview-scale, .25));
+      transform-origin: 0 0;
+    }
+
+    .preview-cover {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      border: 0;
+      background: transparent;
+    }
+
+    .preview-cover:focus-visible {
+      outline: 3px solid var(--magenta);
+      outline-offset: -3px;
+    }
+
+    .panel-foot {
+      border-top: 1px solid rgba(114, 255, 25, .2);
+      background: #080a07;
+    }
+
+    details summary {
+      display: flex;
+      min-height: 38px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 7px 10px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 10px;
+      list-style: none;
+      text-transform: uppercase;
+    }
+
+    details summary::-webkit-details-marker { display: none; }
+    details summary::before { content: "+"; color: var(--magenta); }
+    details[open] summary::before { content: "−"; }
+
+    .transition-count { margin-left: auto; color: var(--green); }
+
+    .drawer {
+      border-top: 1px solid rgba(114, 255, 25, .16);
+      padding: 10px;
+    }
+
+    .transition-list {
+      display: grid;
+      gap: 6px;
+      margin: 0 0 10px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .transition-list li {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      font-size: 9px;
+      line-height: 1.35;
+    }
+
+    .transition-kind {
+      border: 1px solid rgba(255, 43, 214, .38);
+      padding: 2px 4px;
+      color: #ff88e9;
+    }
+
+    .transition-target {
+      overflow-wrap: anywhere;
+      color: #cfe2c8;
+    }
+
+    .empty-transitions {
+      margin: 0 0 10px;
+      color: #6f7c6b;
+      font-size: 9px;
+    }
+
+    .note-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--amber);
+      font-size: 9px;
+      text-transform: uppercase;
+    }
+
+    .note {
+      display: block;
+      width: 100%;
+      min-height: 62px;
+      resize: vertical;
+      border: 1px solid rgba(255, 176, 0, .3);
+      padding: 7px;
+      background: #050505;
+      color: #ffe0a0;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      border: 1px dashed var(--line);
+      padding: 60px 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .internal-badge {
+      margin-left: 6px;
+      color: var(--amber);
+      font-size: 8px;
+    }
+
+    @media (max-width: 680px) {
+      :root { --panel-min: 100%; }
+      .masthead { position: relative; }
+      .heading-row { align-items: flex-start; }
+      .controls { align-items: stretch; }
+      .control { flex: 1 1 145px; }
+      .control.search { flex-basis: 100%; }
+      .status-line { align-items: flex-start; flex-direction: column; }
+      .legend { text-align: left; }
+      .size-control { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="heading-row">
+      <h1>Site Map Lab<span>Full-viewport transition organizer</span></h1>
+      <a class="back-link" href="/portal/">← Portal</a>
+    </div>
+
+    <div class="controls" aria-label="Map controls">
+      <label class="control search">
+        <span>Find</span>
+        <input id="search" type="search" placeholder="Filter by name, path or section…" autocomplete="off">
+      </label>
+
+      <label class="control">
+        <span>Viewport</span>
+        <select id="viewport">
+          <option value="1280x720">Desktop 1280×720</option>
+          <option value="1440x900">Desktop 1440×900</option>
+          <option value="390x844">Phone 390×844</option>
+        </select>
+      </label>
+
+      <label class="control size-control">
+        <span>Panel size</span>
+        <input id="panel-size" type="range" min="280" max="760" step="10" value="430">
+      </label>
+
+      <label class="control">
+        <input id="show-internals" type="checkbox">
+        <span>Include internals</span>
+      </label>
+
+      <label class="control">
+        <input id="load-previews" type="checkbox" checked>
+        <span>Live previews</span>
+      </label>
+
+      <button id="copy-map" type="button">Copy transition map</button>
+      <button id="reset-order" type="button">Reset layout</button>
+    </div>
+
+    <div class="status-line" aria-live="polite">
+      <span id="status">Building page map…</span>
+      <span class="legend">Drag ⠿ to rearrange · arrows work without dragging · order and notes save on this device</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid" id="page-grid"></div>
+  </main>
+
+  <template id="panel-template">
+    <article class="panel">
+      <header class="panel-head">
+        <div class="route-block">
+          <h2 class="route-title"></h2>
+          <code class="route-path"></code>
+        </div>
+        <div class="panel-actions">
+          <button class="icon-button move-up" type="button" title="Move earlier" aria-label="Move earlier">↑</button>
+          <button class="icon-button move-down" type="button" title="Move later" aria-label="Move later">↓</button>
+          <a class="open-link" target="_blank" rel="noopener" title="Open page" aria-label="Open page in a new tab">↗</a>
+          <button class="icon-button drag-handle" type="button" draggable="true" title="Drag to rearrange" aria-label="Drag to rearrange">⠿</button>
+        </div>
+      </header>
+      <div class="preview">
+        <iframe loading="lazy" tabindex="-1"></iframe>
+        <a class="preview-cover" target="_blank" rel="noopener" aria-label="Open preview in a new tab"></a>
+      </div>
+      <footer class="panel-foot">
+        <details>
+          <summary><span>Outgoing transitions</span><span class="transition-count">waiting</span></summary>
+          <div class="drawer">
+            <ul class="transition-list"></ul>
+            <p class="empty-transitions">Preview this page to inspect its transition metadata.</p>
+            <label>
+              <span class="note-label">Transition / layout notes</span>
+              <textarea class="note" placeholder="What enters, exits, clashes, loops, or still needs fixing?"></textarea>
+            </label>
+          </div>
+        </details>
+      </footer>
+    </article>
+  </template>
+
+  <script>
+    const STORAGE = {
+      order: "theinternetisdead:customize:page-order:v1",
+      notes: "theinternetisdead:customize:notes:v1",
+      settings: "theinternetisdead:customize:settings:v1"
+    };
+
+    const REPOSITORY_TREE = "https://api.github.com/repos/honestlythomas/theinternetisdead/git/trees/main?recursive=1";
+    const INTERNAL_PATTERNS = [
+      "/dead/apps/os/components/",
+      "/dead/apps/os/apps/",
+      "/dead/games/shooter-game/assets/",
+      "/portal/nav.html"
+    ];
+
+    // Used immediately if GitHub's public tree endpoint is unavailable or rate-limited.
+    const FALLBACK_HTML_PATHS = [
+      "dead/apps/chat/index.html",
+      "dead/apps/os/apps/settings_app.html",
+      "dead/apps/os/components/boot-screen.html",
+      "dead/apps/os/components/bottom-taskbar.html",
+      "dead/apps/os/components/control-bar.html",
+      "dead/apps/os/components/desktop.html",
+      "dead/apps/os/components/nickname-screen.html",
+      "dead/apps/os/index.html",
+      "dead/content/pages/thumbnail-grid/index.html",
+      "dead/distribution/downloads/dead-david-tss/index.html",
+      "dead/distribution/downloads/index.html",
+      "dead/experiments/background/index.html",
+      "dead/experiments/base64-converter/index.html",
+      "dead/experiments/blotter-visualizer/index.html",
+      "dead/experiments/bookmark-manager/index.html",
+      "dead/experiments/business-card/index.html",
+      "dead/experiments/camera-experiment/index.html",
+      "dead/experiments/camera-studio/index.html",
+      "dead/experiments/canvas-backgrounds/cursed-background.html",
+      "dead/experiments/canvas-backgrounds/demon-ascii.html",
+      "dead/experiments/canvas-backgrounds/dot-lavalamp.html",
+      "dead/experiments/canvas-backgrounds/index.html",
+      "dead/experiments/canvas-backgrounds/rainbow-background.html",
+      "dead/experiments/canvas-backgrounds/starfield-background.html",
+      "dead/experiments/canvas-backgrounds/starfield-background_reactive.html",
+      "dead/experiments/canvas-backgrounds/starfield-background_warp.html",
+      "dead/experiments/chat-sandbox/index.html",
+      "dead/experiments/dead-tv/index.html",
+      "dead/experiments/gods-eye/index.html",
+      "dead/experiments/habisky-mofo/index.html",
+      "dead/experiments/index.html",
+      "dead/experiments/karaoke-machine/index.html",
+      "dead/experiments/mandala-visuals/01-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/02-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/03-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/04-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/05-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/06-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/07-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/08-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/09-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/10-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/11-mandala-visuals.html",
+      "dead/experiments/mandala-visuals/index.html",
+      "dead/experiments/multimedia-editor/index.html",
+      "dead/experiments/music-crunchifier/index.html",
+      "dead/experiments/music-player/index.html",
+      "dead/experiments/old-homepage/index.html",
+      "dead/experiments/pdf-viewer/creepy-susie.html",
+      "dead/experiments/pdf-viewer/doodle-book.html",
+      "dead/experiments/pdf-viewer/index.html",
+      "dead/experiments/photosphere/index.html",
+      "dead/experiments/sound-machine/index.html",
+      "dead/experiments/stacks/index.html",
+      "dead/experiments/weird-secret/index.html",
+      "dead/experiments/world-in-thing/index.html",
+      "dead/games/grid-game-v2/index.html",
+      "dead/games/grid-game/index.html",
+      "dead/games/index.html",
+      "dead/games/inferno-trainer/index.html",
+      "dead/games/shooter-game/assets/controller-buttons/controls.html",
+      "dead/games/shooter-game/assets/levels/shooter-game-level1.html",
+      "dead/games/shooter-game/assets/levels/shooter-game-level2.html",
+      "dead/games/shooter-game/index.html",
+      "dead/games/tektite-3D-game/index.html",
+      "dead/media/videos/index.html",
+      "help/index.html",
+      "help/institutional-neglect.html",
+      "help/self-advocacy-101-human-dignity.html",
+      "help/self-advocacy-101-recognizing-harm.html",
+      "index.html",
+      "portal/index.html",
+      "portal/nav.html"
+    ];
+
+    const grid = document.getElementById("page-grid");
+    const template = document.getElementById("panel-template");
+    const status = document.getElementById("status");
+    const search = document.getElementById("search");
+    const viewportSelect = document.getElementById("viewport");
+    const panelSize = document.getElementById("panel-size");
+    const showInternals = document.getElementById("show-internals");
+    const loadPreviews = document.getElementById("load-previews");
+    const transitionMap = new Map();
+    let pageSource = "bundled snapshot";
+    let pages = [];
+    let dragging = null;
+    let viewportWidth = 1280;
+    let viewportHeight = 720;
+
+    const readJSON = (key, fallback) => {
+      try {
+        const value = JSON.parse(localStorage.getItem(key));
+        return value ?? fallback;
+      } catch (_) {
+        return fallback;
+      }
+    };
+
+    const writeJSON = (key, value) => {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
+    };
+
+    const pathToRoute = path => {
+      if (path === "index.html") return "/";
+      if (path.endsWith("/index.html")) return `/${path.slice(0, -10)}`;
+      return `/${path}`;
+    };
+
+    const titleFromRoute = route => {
+      if (route === "/") return "Home";
+      const part = route.replace(/\/$/, "").split("/").pop().replace(/\.html$/, "");
+      return part
+        .replace(/[-_]+/g, " ")
+        .replace(/\b3d\b/i, "3D")
+        .replace(/\b\w/g, letter => letter.toUpperCase());
+    };
+
+    const sectionFromRoute = route => {
+      if (route === "/") return "home";
+      if (route.startsWith("/portal")) return "portal";
+      if (route.startsWith("/help")) return "help";
+      if (route.includes("/experiments/")) return "experiments";
+      if (route.includes("/games/")) return "games";
+      if (route.includes("/apps/")) return "apps";
+      if (route.includes("/media/")) return "media";
+      if (route.includes("/distribution/")) return "downloads";
+      return "site";
+    };
+
+    const isInternalRoute = route => INTERNAL_PATTERNS.some(pattern => route.includes(pattern));
+
+    const normalizePages = paths => {
+      const unique = [...new Set(paths)]
+        .filter(path => path.endsWith(".html"))
+        .map(pathToRoute)
+        .filter(route => route !== "/customize/");
+
+      const savedOrder = readJSON(STORAGE.order, []);
+      const rank = new Map(savedOrder.map((route, index) => [route, index]));
+      const natural = [...unique].sort((a, b) => a.localeCompare(b));
+
+      natural.sort((a, b) => {
+        const aRank = rank.has(a) ? rank.get(a) : Number.MAX_SAFE_INTEGER;
+        const bRank = rank.has(b) ? rank.get(b) : Number.MAX_SAFE_INTEGER;
+        return aRank - bRank || a.localeCompare(b);
+      });
+
+      return natural.map(route => ({
+        route,
+        title: titleFromRoute(route),
+        section: sectionFromRoute(route),
+        internal: isInternalRoute(route)
+      }));
+    };
+
+    const standaloneUrl = route => {
+      const url = new URL(route, window.location.origin);
+      if (route !== "/") url.searchParams.set("standalone", "true");
+      return `${url.pathname}${url.search}`;
+    };
+
+    const saveOrder = () => {
+      const order = [...grid.querySelectorAll(".panel")].map(panel => panel.dataset.route);
+      writeJSON(STORAGE.order, order);
+      pages.sort((a, b) => order.indexOf(a.route) - order.indexOf(b.route));
+    };
+
+    const updateScale = panel => {
+      const preview = panel.querySelector(".preview");
+      const frame = panel.querySelector("iframe");
+      const width = preview.getBoundingClientRect().width;
+      if (!width) return;
+      frame.width = viewportWidth;
+      frame.height = viewportHeight;
+      preview.style.setProperty("--preview-scale", width / viewportWidth);
+    };
+
+    const normalizeTarget = href => {
+      try {
+        const url = new URL(href, window.location.origin);
+        if (url.origin !== window.location.origin) return url.href;
+        return `${url.pathname}${url.search}${url.hash}`;
+      } catch (_) {
+        return href || "(button / scripted destination)";
+      }
+    };
+
+    const inspectTransitions = panel => {
+      const frame = panel.querySelector("iframe");
+      const list = panel.querySelector(".transition-list");
+      const empty = panel.querySelector(".empty-transitions");
+      const count = panel.querySelector(".transition-count");
+      let links = [];
+
+      try {
+        links = [...frame.contentDocument.querySelectorAll("[data-transition], [data-transition-override]")]
+          .map(node => ({
+            type: node.dataset.transition || node.dataset.transitionOverride || "default",
+            target: normalizeTarget(node.href || node.getAttribute("href"))
+          }));
+      } catch (_) {
+        count.textContent = "unavailable";
+        empty.textContent = "This preview could not be inspected.";
+        return;
+      }
+
+      transitionMap.set(panel.dataset.route, links);
+      list.replaceChildren();
+      count.textContent = `${links.length} ${links.length === 1 ? "exit" : "exits"}`;
+      empty.hidden = links.length > 0;
+      if (!links.length) empty.textContent = "No explicit transition metadata found on this page.";
+
+      links.forEach(link => {
+        const item = document.createElement("li");
+        const kind = document.createElement("span");
+        const target = document.createElement("span");
+        kind.className = "transition-kind";
+        target.className = "transition-target";
+        kind.textContent = link.type;
+        target.textContent = `→ ${link.target}`;
+        item.append(kind, target);
+        list.append(item);
+      });
+    };
+
+    const previewObserver = new IntersectionObserver(entries => {
+      if (!loadPreviews.checked) return;
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const frame = entry.target.querySelector("iframe");
+        if (!frame.src) frame.src = frame.dataset.src;
+        previewObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: "700px 0px" });
+
+    const resizeObserver = new ResizeObserver(entries => {
+      entries.forEach(entry => updateScale(entry.target.closest(".panel")));
+    });
+
+    const makePanel = page => {
+      const panel = template.content.firstElementChild.cloneNode(true);
+      const title = panel.querySelector(".route-title");
+      const path = panel.querySelector(".route-path");
+      const frame = panel.querySelector("iframe");
+      const open = panel.querySelector(".open-link");
+      const cover = panel.querySelector(".preview-cover");
+      const note = panel.querySelector(".note");
+      const notes = readJSON(STORAGE.notes, {});
+
+      panel.dataset.route = page.route;
+      panel.dataset.section = page.section;
+      panel.dataset.internal = String(page.internal);
+      title.textContent = page.title;
+      if (page.internal) {
+        const badge = document.createElement("span");
+        badge.className = "internal-badge";
+        badge.textContent = "internal";
+        title.append(badge);
+      }
+      path.textContent = page.route;
+      frame.title = `Full viewport preview of ${page.title}`;
+      frame.dataset.src = standaloneUrl(page.route);
+      open.href = page.route;
+      cover.href = page.route;
+      cover.setAttribute("aria-label", `Open ${page.title} in a new tab`);
+      note.value = notes[page.route] || "";
+
+      frame.addEventListener("load", () => inspectTransitions(panel));
+      note.addEventListener("input", () => {
+        const nextNotes = readJSON(STORAGE.notes, {});
+        if (note.value) nextNotes[page.route] = note.value;
+        else delete nextNotes[page.route];
+        writeJSON(STORAGE.notes, nextNotes);
+      });
+
+      panel.querySelector(".move-up").addEventListener("click", () => {
+        const previous = [...grid.children].filter(item => !item.hidden && item !== panel)
+          .filter(item => item.compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING).pop();
+        if (previous) grid.insertBefore(panel, previous);
+        saveOrder();
+      });
+
+      panel.querySelector(".move-down").addEventListener("click", () => {
+        const next = [...grid.children].find(item => !item.hidden && item !== panel &&
+          (panel.compareDocumentPosition(item) & Node.DOCUMENT_POSITION_FOLLOWING));
+        if (next) grid.insertBefore(next, panel);
+        saveOrder();
+      });
+
+      const handle = panel.querySelector(".drag-handle");
+      handle.addEventListener("dragstart", event => {
+        dragging = panel;
+        panel.classList.add("is-dragging");
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", page.route);
+      });
+      handle.addEventListener("dragend", () => {
+        panel.classList.remove("is-dragging");
+        grid.querySelectorAll(".is-drop-target").forEach(item => item.classList.remove("is-drop-target"));
+        dragging = null;
+        saveOrder();
+      });
+
+      resizeObserver.observe(panel.querySelector(".preview"));
+      previewObserver.observe(panel);
+      return panel;
+    };
+
+    const applyFilter = () => {
+      const term = search.value.trim().toLowerCase();
+      let shown = 0;
+      grid.querySelectorAll(".panel").forEach(panel => {
+        const haystack = `${panel.dataset.route} ${panel.dataset.section} ${titleFromRoute(panel.dataset.route)}`.toLowerCase();
+        const visible = (showInternals.checked || panel.dataset.internal !== "true") && (!term || haystack.includes(term));
+        panel.hidden = !visible;
+        if (visible) shown++;
+      });
+
+      let empty = grid.querySelector(".empty-state");
+      if (!shown && !empty) {
+        empty = document.createElement("p");
+        empty.className = "empty-state";
+        grid.append(empty);
+      }
+      if (empty) {
+        empty.textContent = "No pages match this view.";
+        empty.hidden = shown > 0;
+      }
+
+      status.textContent = `${shown} of ${pages.length} HTML pages shown · source: ${pageSource}`;
+    };
+
+    const render = () => {
+      grid.replaceChildren(...pages.map(makePanel));
+      applyFilter();
+    };
+
+    const setViewport = value => {
+      [viewportWidth, viewportHeight] = value.split("x").map(Number);
+      document.documentElement.style.setProperty("--viewport-ratio", `${viewportWidth} / ${viewportHeight}`);
+      grid.querySelectorAll(".panel").forEach(updateScale);
+      saveSettings();
+    };
+
+    const readSettings = () => {
+      const settings = readJSON(STORAGE.settings, {});
+      viewportSelect.value = settings.viewport || "1280x720";
+      panelSize.value = settings.panelSize || "430";
+      showInternals.checked = Boolean(settings.showInternals);
+      loadPreviews.checked = settings.loadPreviews !== false;
+      document.documentElement.style.setProperty("--panel-min", `${panelSize.value}px`);
+      [viewportWidth, viewportHeight] = viewportSelect.value.split("x").map(Number);
+      document.documentElement.style.setProperty("--viewport-ratio", `${viewportWidth} / ${viewportHeight}`);
+    };
+
+    const saveSettings = () => writeJSON(STORAGE.settings, {
+      viewport: viewportSelect.value,
+      panelSize: panelSize.value,
+      showInternals: showInternals.checked,
+      loadPreviews: loadPreviews.checked
+    });
+
+    const discoverPages = async () => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 3500);
+      try {
+        const response = await fetch(REPOSITORY_TREE, {
+          headers: { Accept: "application/vnd.github+json" },
+          signal: controller.signal
+        });
+        if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+        const data = await response.json();
+        const paths = data.tree.filter(item => item.type === "blob" && item.path.endsWith(".html")).map(item => item.path);
+        if (!paths.length) throw new Error("No HTML pages found");
+        pageSource = "live main branch";
+        return paths;
+      } catch (_) {
+        return FALLBACK_HTML_PATHS;
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    grid.addEventListener("dragover", event => {
+      if (!dragging) return;
+      const target = event.target.closest(".panel");
+      if (!target || target === dragging || target.hidden) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      grid.querySelectorAll(".is-drop-target").forEach(item => item.classList.remove("is-drop-target"));
+      target.classList.add("is-drop-target");
+    });
+
+    grid.addEventListener("drop", event => {
+      const target = event.target.closest(".panel");
+      if (!dragging || !target || target === dragging) return;
+      event.preventDefault();
+      const rect = target.getBoundingClientRect();
+      const after = event.clientY > rect.top + rect.height / 2;
+      grid.insertBefore(dragging, after ? target.nextSibling : target);
+      target.classList.remove("is-drop-target");
+      saveOrder();
+    });
+
+    search.addEventListener("input", applyFilter);
+    showInternals.addEventListener("change", () => { saveSettings(); applyFilter(); });
+    viewportSelect.addEventListener("change", () => setViewport(viewportSelect.value));
+    panelSize.addEventListener("input", () => {
+      document.documentElement.style.setProperty("--panel-min", `${panelSize.value}px`);
+      saveSettings();
+    });
+
+    loadPreviews.addEventListener("change", () => {
+      saveSettings();
+      if (loadPreviews.checked) {
+        grid.querySelectorAll(".panel").forEach(panel => previewObserver.observe(panel));
+      } else {
+        grid.querySelectorAll("iframe").forEach(frame => {
+          frame.removeAttribute("src");
+          const panel = frame.closest(".panel");
+          panel.querySelector(".transition-count").textContent = "paused";
+        });
+      }
+    });
+
+    document.getElementById("reset-order").addEventListener("click", () => {
+      localStorage.removeItem(STORAGE.order);
+      pages.sort((a, b) => a.route.localeCompare(b.route));
+      render();
+    });
+
+    document.getElementById("copy-map").addEventListener("click", async event => {
+      const notes = readJSON(STORAGE.notes, {});
+      const map = [...grid.querySelectorAll(".panel")].map((panel, position) => ({
+        position: position + 1,
+        page: panel.dataset.route,
+        transitions: transitionMap.get(panel.dataset.route) || [],
+        note: notes[panel.dataset.route] || ""
+      }));
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(map, null, 2));
+        const original = event.currentTarget.textContent;
+        event.currentTarget.textContent = "Copied";
+        setTimeout(() => { event.currentTarget.textContent = original; }, 1200);
+      } catch (_) {
+        status.textContent = "Clipboard access was blocked; open this page over HTTPS and try again.";
+      }
+    });
+
+    readSettings();
+    discoverPages().then(paths => {
+      pages = normalizePages(paths);
+      render();
+    });
+  </script>
+</body>
+</html>
