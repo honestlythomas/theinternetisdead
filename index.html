@@ -49,7 +49,8 @@
     .page-nav-option{display:block;width:100%;border:0;padding:7px 10px;background:#000;color:var(--green);font:900 clamp(15px,1.65vw,21px)/1 "Courier New",Courier,monospace;letter-spacing:-.075em;text-align:left;white-space:nowrap;cursor:pointer}
     .page-nav-option:hover,.page-nav-option:focus-visible{background:var(--green);color:#000;outline:none}
     .page-nav-button:hover,.page-nav-button:focus-visible{color:var(--magenta);outline:none}
-    .topbar-clock{grid-column:3;justify-self:end;align-self:center;white-space:nowrap;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
+    .topbar-clock{grid-column:3;justify-self:end;align-self:center;display:inline-flex;align-items:center;gap:9px;white-space:nowrap;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
+    .topbar-clock::after{content:"⚙️";display:inline-grid;width:34px;height:34px;flex:0 0 34px;place-items:center;overflow:hidden;border:1px solid rgba(114,255,25,.68);background:rgba(0,0,0,.78);box-shadow:0 0 10px rgba(114,255,25,.18);font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:1;text-decoration:none}
     .site-name:hover,.site-name:focus-visible,.site-name[aria-expanded="true"]{color:var(--magenta);outline:none;text-shadow:0 2px 8px #000,0 0 14px rgba(255,43,214,.58)}
     .site-name:hover .site-name-icon,.site-name:focus-visible .site-name-icon,.site-name[aria-expanded="true"] .site-name-icon{border-color:var(--magenta);box-shadow:0 0 12px rgba(255,43,214,.3)}
 
@@ -68,7 +69,7 @@
     .cursor-lens{position:fixed;top:0;left:0;z-index:6;width:50px;height:50px;border:3px solid #fff;border-radius:50%;background:rgba(255,255,255,.001);-webkit-backdrop-filter:invert(1);backdrop-filter:invert(1);opacity:0;pointer-events:none;transform:translate3d(-100px,-100px,0) translate(-50%,-50%);transition:opacity 80ms linear}.cursor-lens.is-visible{opacity:1}
 
     @media(max-height:720px){.sidebar{grid-template-rows:auto minmax(105px,1fr) auto;gap:16px}.sidebar-owner-avatar{width:58px;height:58px}.sidebar-bottom{padding-top:7px}.main-area{padding-top:6px;padding-bottom:10px}.identity-content{gap:5px}#artist-name{font-size:clamp(38px,9dvh,76px)}.action{min-height:34px}}
-    @media(max-width:820px){.topbar{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;height:48px}.site-name,.page-title,.topbar-clock{font-size:clamp(13px,4vw,17px)}.page-nav-option{font-size:clamp(13px,4vw,17px)}.site-name{gap:7px}.site-name-icon{width:30px;height:30px;flex-basis:30px}.site-name-icon::before{font-size:22px}.main-area{top:48px;padding:8px 15px 12px}.identity-content{display:flex;flex-direction:column;height:100%;gap:clamp(5px,1dvh,9px)}.portrait-banner{height:auto;min-height:90px;max-height:24dvh;flex:1 1 160px;object-position:center 30%}#artist-name{font-size:clamp(38px,min(15vw,10dvh),72px)}.discipline{font-size:clamp(9px,2.6vw,13px)}.statement{font-size:clamp(8px,2.35vw,11px);line-height:1.3}.warning{font-size:clamp(8px,2.2vw,10px);padding:6px 8px}.actions{grid-template-columns:1fr}.action{min-height:34px}}
+    @media(max-width:820px){.topbar{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;height:48px}.site-name,.page-title,.topbar-clock{font-size:clamp(13px,4vw,17px)}.page-nav-option{font-size:clamp(13px,4vw,17px)}.site-name{gap:7px}.site-name-icon{width:30px;height:30px;flex-basis:30px}.site-name-icon::before{font-size:22px}.topbar-clock{gap:7px}.topbar-clock::after{width:30px;height:30px;flex-basis:30px;font-size:22px}.main-area{top:48px;padding:8px 15px 12px}.identity-content{display:flex;flex-direction:column;height:100%;gap:clamp(5px,1dvh,9px)}.portrait-banner{height:auto;min-height:90px;max-height:24dvh;flex:1 1 160px;object-position:center 30%}#artist-name{font-size:clamp(38px,min(15vw,10dvh),72px)}.discipline{font-size:clamp(9px,2.6vw,13px)}.statement{font-size:clamp(8px,2.35vw,11px);line-height:1.3}.warning{font-size:clamp(8px,2.2vw,10px);padding:6px 8px}.actions{grid-template-columns:1fr}.action{min-height:34px}}
     @media(prefers-reduced-motion:reduce){.sidebar,.sidebar-backdrop{transition-duration:1ms}}
   </style>
 </head>
@@ -132,7 +133,7 @@
   <script>
     const topbarClock=document.getElementById('topbar-clock');
     const clockFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true});
-    const updateTopbarClock=()=>{topbarClock.textContent=clockFormatter.format(new Date())};
+    const updateTopbarClock=()=>{topbarClock.childNodes[0] ? topbarClock.childNodes[0].nodeValue=clockFormatter.format(new Date()) : topbarClock.prepend(document.createTextNode(clockFormatter.format(new Date())))};
     updateTopbarClock();
     setInterval(updateTopbarClock,250);
 
