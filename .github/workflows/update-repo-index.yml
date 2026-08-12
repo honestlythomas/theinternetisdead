@@ -1,0 +1,106 @@
+name: Update repo index
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - dead/scripts/repo-index.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repo-index-main
+  cancel-in-progress: true
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect structural changes
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+
+          # A branch's first push can have an all-zero before SHA.
+          if [[ "$BEFORE" =~ ^0+$ ]]; then
+            echo "structural=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CHANGES="$(git diff --name-status "$BEFORE" "$AFTER" -- . ':(exclude)dead/scripts/repo-index.json')"
+          printf '%s\n' "$CHANGES"
+
+          # Rebuild only when the repository structure changed:
+          # A = added, D = deleted, R = renamed/moved, C = copied.
+          if printf '%s\n' "$CHANGES" | grep -Eq '^(A|D|R[0-9]*|C[0-9]*)[[:space:]]'; then
+            echo "structural=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "structural=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate dead/scripts/repo-index.json
+        if: steps.changes.outputs.structural == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('.')
+          output = Path('dead/scripts/repo-index.json')
+          output.parent.mkdir(parents=True, exist_ok=True)
+
+          entries = []
+
+          for path in root.rglob('*'):
+              rel = path.as_posix()
+
+              if rel == '.git' or rel.startswith('.git/'):
+                  continue
+
+              if rel == output.as_posix():
+                  continue
+
+              entries.append({
+                  'path': rel,
+                  'type': 'folder' if path.is_dir() else 'file'
+              })
+
+          entries.sort(key=lambda item: (item['path'].lower(), item['path']))
+
+          output.write_text(
+              json.dumps(entries, indent=2, ensure_ascii=False) + '\n',
+              encoding='utf-8'
+          )
+          PY
+
+      - name: Commit updated index
+        if: steps.changes.outputs.structural == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- dead/scripts/repo-index.json; then
+            echo "Repo index is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add dead/scripts/repo-index.json
+          git commit -m "Update repo index [skip ci]"
+          git push
