@@ -37,18 +37,7 @@
   transform: translateY(-50%) scale(1.12) rotate(-8deg);
 }
 
-/* Topbar emoji controls: no boxes, borders, shadows, or underline. */
-.site-name-icon {
-  border: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-.site-name:hover .site-name-icon,
-.site-name:focus-visible .site-name-icon {
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
+/* Shared right-side gear. */
 .topbar-clock {
   display: inline-flex;
   align-items: center;
@@ -67,10 +56,28 @@
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
+  outline: 0 !important;
   font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
   font-size: 25px;
   line-height: 1;
   text-decoration: none !important;
+}
+
+/* Remove the skull box styling from all secondary topbars, even against inline page CSS. */
+.site-name-icon {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.site-name:hover .site-name-icon,
+.site-name:focus-visible .site-name-icon,
+.site-name[aria-expanded="true"] .site-name-icon {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: 0 !important;
 }
 
 @media (max-width: 520px) {
