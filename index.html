@@ -43,9 +43,11 @@
     .site-name-icon::before{content:"☠️";position:absolute;inset:0;display:grid;place-items:center;width:100%;height:100%;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:1;transform:scale(.92);transform-origin:center}
     .site-name-label{display:inline-block;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
     .page-title{grid-column:2;justify-self:center;align-self:center;display:inline-flex;align-items:center;margin:0;font-style:normal;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em;white-space:nowrap}
-    .page-nav-select{appearance:none;-webkit-appearance:none;border:0;padding:0;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;text-shadow:inherit;text-decoration:inherit;text-decoration-thickness:inherit;text-underline-offset:inherit;cursor:pointer;outline:none}
+    .page-nav-wrap{position:relative;display:inline-flex;align-items:center;white-space:nowrap;cursor:pointer}
+    .page-nav-label{display:inline-flex;align-items:center;color:inherit;font:inherit;letter-spacing:inherit;text-shadow:inherit}
+    .page-nav-caret{display:inline-block;margin-left:.35em;line-height:1;transform:rotate(90deg);transform-origin:center}
+    .page-nav-select{position:absolute;inset:-8px -10px;z-index:1;width:calc(100% + 20px);height:calc(100% + 16px);appearance:none;-webkit-appearance:none;border:0;margin:0;padding:0;background:transparent;opacity:0;cursor:pointer;outline:none}
     .page-nav-select option{background:#000;color:var(--green);font-family:"Courier New",Courier,monospace;font-weight:900;letter-spacing:0}
-    .page-nav-caret{display:inline-block;margin-left:.35em;line-height:1;transform:rotate(90deg);transform-origin:center;pointer-events:none}
     .page-title:hover,.page-title:focus-within{color:var(--magenta)}
     .topbar-clock{grid-column:3;justify-self:end;align-self:center;white-space:nowrap;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
     .site-name:hover,.site-name:focus-visible,.site-name[aria-expanded="true"]{color:var(--magenta);outline:none;text-shadow:0 2px 8px #000,0 0 14px rgba(255,43,214,.58)}
@@ -100,7 +102,7 @@
 
     <header class="topbar">
       <button class="site-name" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false"><span class="site-name-icon" aria-hidden="true">☠️</span><span class="site-name-label">theinternetisdead.org</span></button>
-      <h1 class="page-title"><select class="page-nav-select" id="page-nav-select" aria-label="Navigate site sections"><option value="/" selected>Main Page</option><option value="/portal/">Portal</option><option value="/dead/games/">Games</option><option value="/dead/experiments/">Experiments</option></select><span class="page-nav-caret" aria-hidden="true">&gt;</span></h1>
+      <h1 class="page-title"><span class="page-nav-wrap"><span class="page-nav-label">Main Page<span class="page-nav-caret" aria-hidden="true">&gt;</span></span><select class="page-nav-select" id="page-nav-select" aria-label="Navigate site sections"><option value="/" selected>Main Page</option><option value="/portal/">Portal</option><option value="/dead/games/">Games</option><option value="/dead/experiments/">Experiments</option></select></span></h1>
       <time class="topbar-clock" id="topbar-clock" aria-label="Local time"></time>
     </header>
 
