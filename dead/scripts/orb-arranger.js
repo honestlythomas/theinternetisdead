@@ -5,6 +5,108 @@
   };
 
   ready(() => {
+    const setupPageNavigation = () => {
+      const pageTitle = document.querySelector(".page-title");
+      if (!pageTitle || pageTitle.querySelector("#page-nav-button")) return;
+
+      const path = window.location.pathname.replace(/\/+$/, "") || "/";
+      const destinations = [
+        { label: "Main Page", path: "/" },
+        { label: "Portal", path: "/portal/" },
+        { label: "Games", path: "/dead/games/" },
+        { label: "Experiments", path: "/dead/experiments/" }
+      ];
+      const normalized = value => value.replace(/\/+$/, "") || "/";
+      const current = destinations.find(item => normalized(item.path) === path) || destinations[0];
+      const editToggle = pageTitle.querySelector(".orb-edit-toggle");
+
+      const style = document.createElement("style");
+      style.id = "shared-page-nav-style";
+      style.textContent = `
+        .page-title{position:relative;display:inline-flex;align-items:center;gap:.4em;white-space:nowrap}
+        .page-nav-button{display:inline-flex;align-items:center;border:0;margin:0;padding:0;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;text-shadow:inherit;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em;cursor:pointer;caret-color:transparent;user-select:none;-webkit-user-select:none}
+        .page-nav-menu{position:absolute;top:calc(100% + 10px);left:50%;z-index:8;display:none;min-width:max-content;transform:translateX(-50%);border:1px solid rgba(114,255,25,.55);background:#000;box-shadow:0 8px 24px rgba(0,0,0,.8)}
+        .page-nav-menu.is-open{display:block}
+        .page-nav-option{display:block;width:100%;border:0;padding:7px 10px;background:#000;color:var(--green);font:900 clamp(15px,1.65vw,21px)/1 "Courier New",Courier,monospace;letter-spacing:-.075em;text-align:left;white-space:nowrap;cursor:pointer}
+        .page-nav-option:hover,.page-nav-option:focus-visible{background:var(--green);color:#000;outline:none}
+        .page-nav-button:hover,.page-nav-button:focus-visible{color:var(--magenta);outline:none}
+        @media(max-width:520px){.page-nav-option{font-size:clamp(13px,4vw,17px)}}
+      `;
+      if (!document.getElementById(style.id)) document.head.appendChild(style);
+
+      pageTitle.textContent = "";
+
+      const button = document.createElement("button");
+      button.className = "page-nav-button";
+      button.id = "page-nav-button";
+      button.type = "button";
+      button.setAttribute("aria-haspopup", "menu");
+      button.setAttribute("aria-expanded", "false");
+      button.textContent = current.label;
+
+      const menu = document.createElement("div");
+      menu.className = "page-nav-menu";
+      menu.id = "page-nav-menu";
+      menu.setAttribute("role", "menu");
+      menu.setAttribute("aria-label", "Navigate site sections");
+
+      destinations.forEach(destination => {
+        const option = document.createElement("button");
+        option.className = "page-nav-option";
+        option.type = "button";
+        option.setAttribute("role", "menuitem");
+        option.dataset.destination = destination.path;
+        option.textContent = destination.label;
+        menu.appendChild(option);
+      });
+
+      pageTitle.append(button, menu);
+      if (editToggle) pageTitle.appendChild(editToggle);
+
+      const setOpen = open => {
+        menu.classList.toggle("is-open", open);
+        button.setAttribute("aria-expanded", open ? "true" : "false");
+      };
+
+      const navigate = destination => {
+        if (!destination || normalized(destination) === path) {
+          setOpen(false);
+          return;
+        }
+        const href = new URL(destination, window.location.origin).href;
+        if (window.PageTransitions) {
+          window.PageTransitions.navigate(href, "swirl");
+          return;
+        }
+        window.location.assign(href);
+      };
+
+      button.addEventListener("click", event => {
+        event.stopPropagation();
+        setOpen(!menu.classList.contains("is-open"));
+      });
+
+      menu.querySelectorAll(".page-nav-option").forEach(option => {
+        option.addEventListener("click", event => {
+          event.stopPropagation();
+          navigate(option.dataset.destination);
+        });
+      });
+
+      document.addEventListener("click", event => {
+        if (!event.target.closest(".page-title")) setOpen(false);
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && menu.classList.contains("is-open")) {
+          setOpen(false);
+          button.focus();
+        }
+      });
+    };
+
+    setupPageNavigation();
+
     const compass = document.querySelector(".compass[data-orb-arranger-key]");
     const toggle = document.querySelector(".orb-edit-toggle");
     if (!compass || !toggle) return;
