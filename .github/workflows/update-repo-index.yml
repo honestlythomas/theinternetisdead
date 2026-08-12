@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - dead/scripts/repo-index.json
+      - repo-index.json
 
 permissions:
   contents: write
@@ -39,7 +39,7 @@ jobs:
             exit 0
           fi
 
-          CHANGES="$(git diff --name-status "$BEFORE" "$AFTER" -- . ':(exclude)dead/scripts/repo-index.json')"
+          CHANGES="$(git diff --name-status "$BEFORE" "$AFTER" -- . ':(exclude)repo-index.json')"
           printf '%s\n' "$CHANGES"
 
           # Rebuild only when the repository structure changed:
@@ -50,7 +50,7 @@ jobs:
             echo "structural=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Generate dead/scripts/repo-index.json
+      - name: Generate repo-index.json
         if: steps.changes.outputs.structural == 'true'
         shell: bash
         run: |
@@ -60,8 +60,7 @@ jobs:
           from pathlib import Path
 
           root = Path('.')
-          output = Path('dead/scripts/repo-index.json')
-          output.parent.mkdir(parents=True, exist_ok=True)
+          output = Path('repo-index.json')
 
           entries = []
 
@@ -93,7 +92,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- dead/scripts/repo-index.json; then
+          if git diff --quiet -- repo-index.json; then
             echo "Repo index is already current."
             exit 0
           fi
@@ -101,6 +100,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add dead/scripts/repo-index.json
+          git add repo-index.json
           git commit -m "Update repo index [skip ci]"
           git push
