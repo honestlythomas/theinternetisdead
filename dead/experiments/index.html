@@ -44,7 +44,7 @@ const setPortal=open=>{compass.classList.toggle('portal-open',open);openPortal.s
 document.addEventListener('click',e=>{const a=e.target.closest('a[data-transition]');if(!a||!a.href)return;e.preventDefault();window.PageTransitions?window.PageTransitions.navigate(a.href,a.dataset.transition):location.assign(a.href)});
 const lens=document.querySelector('.cursor-lens');addEventListener('pointermove',e=>{lens.style.transform=`translate3d(${e.clientX}px,${e.clientY}px,0) translate(-50%,-50%)`;lens.classList.add('is-visible')},{passive:true});addEventListener('pointerleave',()=>lens.classList.remove('is-visible'));
 </script>
-<script src="/dead/scripts/orb-arranger.js?v=20260809-2"></script>
+<script src="/dead/scripts/orb-arranger.js?v=20260812-1"></script>
 <script src="/dead/scripts/page-transitions.js?v=20260809-8"></script>
 </body>
 </html>
