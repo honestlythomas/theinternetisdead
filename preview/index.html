@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Repo Preview Grid</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --columns: 3;
+      --gap: 12px;
+      --preview-width: 1280;
+      --preview-height: 720;
+      --preview-scale: .24;
+      --bg: #080808;
+      --panel: #111;
+      --line: #2b2b2b;
+      --text: #f5f5f5;
+      --muted: #9d9d9d;
+      --accent: #8cff00;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    body {
+      padding-top: 74px;
+    }
+
+    .toolbar {
+      position: fixed;
+      z-index: 1000;
+      inset: 0 0 auto 0;
+      min-height: 62px;
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+      background: rgba(8, 8, 8, .94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+
+    .brand strong { color: var(--accent); }
+    .brand span { color: var(--muted); font-size: 12px; }
+
+    .control {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    input, select, button {
+      font: inherit;
+      color: var(--text);
+      background: #151515;
+      border: 1px solid #373737;
+      border-radius: 6px;
+    }
+
+    input, select { padding: 5px 7px; }
+    input[type="number"] { width: 70px; }
+    input[type="range"] { width: 100px; padding: 0; }
+
+    button {
+      padding: 6px 9px;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    .toolbar .spacer { flex: 1; }
+
+    #status {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+      gap: var(--gap);
+      padding: var(--gap);
+      align-items: start;
+    }
+
+    .tile {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 5px 24px rgba(0, 0, 0, .3);
+    }
+
+    .tile-head {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 6px 0 10px;
+      border-bottom: 1px solid var(--line);
+      background: #101010;
+    }
+
+    .path {
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 11px;
+      color: #d7d7d7;
+    }
+
+    .icon-btn {
+      width: 27px;
+      height: 25px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      line-height: 1;
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .icon-btn:hover {
+      background: #1c1c1c;
+      border-color: #3a3a3a;
+    }
+
+    .remove { color: #ff7d7d; }
+    .add { color: var(--accent); font-weight: 800; }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      aspect-ratio: calc(var(--preview-width) / var(--preview-height));
+      overflow: hidden;
+      background:
+        linear-gradient(45deg, #121212 25%, transparent 25%),
+        linear-gradient(-45deg, #121212 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #121212 75%),
+        linear-gradient(-45deg, transparent 75%, #121212 75%),
+        #0d0d0d;
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+
+    .stage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: calc(var(--preview-width) * 1px);
+      height: calc(var(--preview-height) * 1px);
+      transform-origin: 0 0;
+      transform: scale(var(--fit-scale));
+    }
+
+    iframe {
+      display: block;
+      width: calc(var(--preview-width) * 1px);
+      height: calc(var(--preview-height) * 1px);
+      border: 0;
+      background: white;
+    }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 11px;
+      pointer-events: none;
+    }
+
+    .tile-foot {
+      min-height: 26px;
+      padding: 5px 9px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: #777;
+      font-size: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    dialog {
+      width: min(680px, calc(100vw - 24px));
+      max-height: min(720px, calc(100vh - 24px));
+      padding: 0;
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid #404040;
+      border-radius: 12px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .7);
+    }
+
+    dialog::backdrop { background: rgba(0, 0, 0, .72); }
+
+    .picker-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      background: #0d0d0d;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .picker-head input { flex: 1; min-width: 0; }
+
+    .page-list {
+      display: grid;
+      gap: 2px;
+      padding: 8px;
+      max-height: 64vh;
+      overflow: auto;
+    }
+
+    .page-option {
+      width: 100%;
+      padding: 9px 10px;
+      text-align: left;
+      overflow-wrap: anywhere;
+      background: #111;
+      border-color: transparent;
+    }
+
+    .page-option:hover { background: #1b1b1b; }
+
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      body { padding-top: 118px; }
+      .grid { grid-template-columns: repeat(min(var(--columns), 2), minmax(0, 1fr)); }
+      .toolbar .spacer { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      body { padding-top: 166px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="brand">
+      <strong>PREVIEW GRID</strong>
+      <span id="pageCount">0 pages</span>
+    </div>
+
+    <label class="control">columns
+      <input id="columns" type="number" min="1" max="12" step="1" value="3" />
+    </label>
+
+    <label class="control">resolution
+      <input id="previewWidth" type="number" min="240" max="7680" step="10" value="1280" />
+      ×
+      <input id="previewHeight" type="number" min="240" max="4320" step="10" value="720" />
+    </label>
+
+    <label class="control">scale
+      <input id="scale" type="range" min="40" max="180" step="5" value="100" />
+      <span id="scaleLabel">100%</span>
+    </label>
+
+    <label class="control">gap
+      <input id="gap" type="number" min="0" max="64" step="1" value="12" />
+    </label>
+
+    <div class="spacer"></div>
+    <button id="addTile" type="button">＋ add preview</button>
+    <button id="reset" type="button">reset all</button>
+    <span id="status">discovering repository pages…</span>
+  </header>
+
+  <main id="grid" class="grid" aria-live="polite"></main>
+
+  <dialog id="picker">
+    <div class="picker-head">
+      <input id="search" type="search" placeholder="Filter all .html pages…" autocomplete="off" />
+      <button id="closePicker" type="button">close</button>
+    </div>
+    <div id="pageList" class="page-list"></div>
+  </dialog>
+
+  <script>
+    (() => {
+      const OWNER = 'honestlythomas';
+      const REPO = 'theinternetisdead';
+      const BRANCH = 'main';
+      const TREE_API = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+      const STORAGE_KEY = 'theinternetisdead-preview-grid-v2';
+
+      const grid = document.getElementById('grid');
+      const status = document.getElementById('status');
+      const pageCount = document.getElementById('pageCount');
+      const picker = document.getElementById('picker');
+      const search = document.getElementById('search');
+      const pageList = document.getElementById('pageList');
+      const controls = {
+        columns: document.getElementById('columns'),
+        previewWidth: document.getElementById('previewWidth'),
+        previewHeight: document.getElementById('previewHeight'),
+        scale: document.getElementById('scale'),
+        gap: document.getElementById('gap')
+      };
+
+      let allPages = [];
+      let tiles = [];
+      let insertAfter = null;
+      let observer;
+
+      const defaultSettings = {
+        columns: 3,
+        previewWidth: 1280,
+        previewHeight: 720,
+        scale: 100,
+        gap: 12
+      };
+
+      const state = loadState();
+      const settings = { ...defaultSettings, ...(state.settings || {}) };
+      tiles = Array.isArray(state.tiles) ? state.tiles : [];
+
+      function loadState() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+        catch { return {}; }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ settings, tiles }));
+      }
+
+      function normalizePath(path) {
+        return '/' + String(path || '').replace(/^\/+/, '');
+      }
+
+      function pageUrl(path) {
+        return new URL(normalizePath(path), location.origin).href;
+      }
+
+      function setSettingsUI() {
+        Object.entries(controls).forEach(([key, input]) => input.value = settings[key]);
+        document.getElementById('scaleLabel').textContent = settings.scale + '%';
+      }
+
+      function applySettings() {
+        document.documentElement.style.setProperty('--columns', settings.columns);
+        document.documentElement.style.setProperty('--gap', `${settings.gap}px`);
+        document.documentElement.style.setProperty('--preview-width', settings.previewWidth);
+        document.documentElement.style.setProperty('--preview-height', settings.previewHeight);
+        document.documentElement.style.setProperty('--preview-scale', settings.scale / 100);
+        document.getElementById('scaleLabel').textContent = settings.scale + '%';
+
+        requestAnimationFrame(() => {
+          document.querySelectorAll('.viewport').forEach(updateFitScale);
+        });
+      }
+
+      function updateFitScale(viewport) {
+        const base = viewport.clientWidth / settings.previewWidth;
+        const userScale = settings.scale / 100;
+        viewport.style.setProperty('--fit-scale', Math.max(.01, base * userScale));
+        viewport.style.aspectRatio = `${settings.previewWidth} / ${settings.previewHeight}`;
+      }
+
+      function makeObserver() {
+        if (observer) observer.disconnect();
+        observer = new IntersectionObserver(entries => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            const viewport = entry.target;
+            const iframe = viewport.querySelector('iframe[data-src]');
+            if (iframe) {
+              iframe.src = iframe.dataset.src;
+              iframe.removeAttribute('data-src');
+            }
+            observer.unobserve(viewport);
+          }
+        }, { rootMargin: '500px 0px' });
+      }
+
+      function tileElement(path, index) {
+        const tile = document.createElement('article');
+        tile.className = 'tile';
+        tile.dataset.index = index;
+
+        const head = document.createElement('div');
+        head.className = 'tile-head';
+
+        const label = document.createElement('div');
+        label.className = 'path';
+        label.title = path;
+        label.textContent = path;
+
+        const open = document.createElement('button');
+        open.className = 'icon-btn';
+        open.type = 'button';
+        open.title = 'Open page';
+        open.textContent = '↗';
+        open.addEventListener('click', () => window.open(pageUrl(path), '_blank', 'noopener'));
+
+        const add = document.createElement('button');
+        add.className = 'icon-btn add';
+        add.type = 'button';
+        add.title = 'Add a preview after this tile';
+        add.textContent = '+';
+        add.addEventListener('click', () => openPicker(index));
+
+        const remove = document.createElement('button');
+        remove.className = 'icon-btn remove';
+        remove.type = 'button';
+        remove.title = 'Remove preview';
+        remove.textContent = '×';
+        remove.addEventListener('click', () => {
+          tiles.splice(index, 1);
+          saveState();
+          render();
+        });
+
+        head.append(label, open, add, remove);
+
+        const viewport = document.createElement('div');
+        viewport.className = 'viewport';
+
+        const stage = document.createElement('div');
+        stage.className = 'stage';
+
+        const iframe = document.createElement('iframe');
+        iframe.loading = 'lazy';
+        iframe.title = `Preview of ${path}`;
+        iframe.dataset.src = pageUrl(path);
+        iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock allow-downloads');
+
+        const loading = document.createElement('div');
+        loading.className = 'loading';
+        loading.textContent = 'preview loading…';
+        iframe.addEventListener('load', () => loading.remove());
+
+        stage.appendChild(iframe);
+        viewport.append(stage, loading);
+
+        const foot = document.createElement('div');
+        foot.className = 'tile-foot';
+        foot.innerHTML = `<span>${settings.previewWidth}×${settings.previewHeight}</span><span>${settings.scale}% scale</span>`;
+
+        tile.append(head, viewport, foot);
+        requestAnimationFrame(() => updateFitScale(viewport));
+        observer.observe(viewport);
+        return tile;
+      }
+
+      function render() {
+        makeObserver();
+        grid.replaceChildren();
+
+        if (!tiles.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = allPages.length ? 'No previews selected. Use “＋ add preview”.' : 'Discovering HTML pages…';
+          grid.appendChild(empty);
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        tiles.forEach((path, index) => fragment.appendChild(tileElement(path, index)));
+        grid.appendChild(fragment);
+      }
+
+      function openPicker(afterIndex = null) {
+        insertAfter = Number.isInteger(afterIndex) ? afterIndex : null;
+        search.value = '';
+        renderPickerList();
+        picker.showModal();
+        setTimeout(() => search.focus(), 0);
+      }
+
+      function renderPickerList() {
+        const q = search.value.trim().toLowerCase();
+        const matches = q ? allPages.filter(p => p.toLowerCase().includes(q)) : allPages;
+        pageList.replaceChildren();
+
+        if (!matches.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = 'No matching HTML pages.';
+          pageList.appendChild(empty);
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        matches.forEach(path => {
+          const button = document.createElement('button');
+          button.className = 'page-option';
+          button.type = 'button';
+          button.textContent = path;
+          button.addEventListener('click', () => {
+            if (insertAfter === null) tiles.push(path);
+            else tiles.splice(insertAfter + 1, 0, path);
+            saveState();
+            picker.close();
+            render();
+          });
+          fragment.appendChild(button);
+        });
+        pageList.appendChild(fragment);
+      }
+
+      async function discoverPages() {
+        status.textContent = 'discovering repository pages…';
+        try {
+          const response = await fetch(TREE_API, { headers: { Accept: 'application/vnd.github+json' } });
+          if (!response.ok) throw new Error(`GitHub API ${response.status}`);
+          const data = await response.json();
+          allPages = (data.tree || [])
+            .filter(item => item.type === 'blob' && /\.html?$/i.test(item.path))
+            .map(item => normalizePath(item.path))
+            .filter(path => path !== '/preview/index.html')
+            .sort((a, b) => a.localeCompare(b));
+
+          pageCount.textContent = `${allPages.length} pages`;
+          status.textContent = 'repository synced';
+
+          if (!tiles.length) {
+            // First visit: preview every HTML page. Iframes are intersection-observed,
+            // so only nearby panels actually load.
+            tiles = [...allPages];
+            saveState();
+          } else {
+            // Keep the user's static layout, but discard files that no longer exist.
+            const known = new Set(allPages);
+            tiles = tiles.filter(path => known.has(path));
+            saveState();
+          }
+
+          render();
+        } catch (error) {
+          console.error(error);
+          status.textContent = 'repo discovery failed';
+          pageCount.textContent = 'offline list';
+          render();
+        }
+      }
+
+      Object.entries(controls).forEach(([key, input]) => {
+        input.addEventListener('input', () => {
+          let value = Number(input.value);
+          if (!Number.isFinite(value)) return;
+          settings[key] = value;
+          saveState();
+          applySettings();
+          if (key === 'previewWidth' || key === 'previewHeight' || key === 'scale') render();
+        });
+      });
+
+      document.getElementById('addTile').addEventListener('click', () => openPicker(null));
+      document.getElementById('closePicker').addEventListener('click', () => picker.close());
+      search.addEventListener('input', renderPickerList);
+
+      document.getElementById('reset').addEventListener('click', () => {
+        Object.assign(settings, defaultSettings);
+        tiles = [...allPages];
+        setSettingsUI();
+        applySettings();
+        saveState();
+        render();
+      });
+
+      window.addEventListener('resize', () => {
+        document.querySelectorAll('.viewport').forEach(updateFitScale);
+      });
+
+      setSettingsUI();
+      applySettings();
+      render();
+      discoverPages();
+    })();
+  </script>
+</body>
+</html>
