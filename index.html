@@ -42,7 +42,11 @@
     .site-name-icon{position:relative;display:block;width:34px;height:34px;aspect-ratio:1/1;flex:0 0 34px;overflow:hidden;border:1px solid rgba(114,255,25,.68);background:rgba(0,0,0,.78);font-size:0;line-height:0;box-shadow:0 0 10px rgba(114,255,25,.18)}
     .site-name-icon::before{content:"☠️";position:absolute;inset:0;display:grid;place-items:center;width:100%;height:100%;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:1;transform:scale(.92);transform-origin:center}
     .site-name-label{display:inline-block;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
-    .page-title{grid-column:2;justify-self:center;align-self:center;margin:0;font-style:normal;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
+    .page-title{grid-column:2;justify-self:center;align-self:center;display:inline-flex;align-items:center;margin:0;font-style:normal;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em;white-space:nowrap}
+    .page-nav-select{appearance:none;-webkit-appearance:none;border:0;padding:0;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;text-shadow:inherit;text-decoration:inherit;text-decoration-thickness:inherit;text-underline-offset:inherit;cursor:pointer;outline:none}
+    .page-nav-select option{background:#000;color:var(--green);font-family:"Courier New",Courier,monospace;font-weight:900;letter-spacing:0}
+    .page-nav-caret{display:inline-block;margin-left:.35em;line-height:1;transform:rotate(90deg);transform-origin:center;pointer-events:none}
+    .page-title:hover,.page-title:focus-within{color:var(--magenta)}
     .topbar-clock{grid-column:3;justify-self:end;align-self:center;white-space:nowrap;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
     .site-name:hover,.site-name:focus-visible,.site-name[aria-expanded="true"]{color:var(--magenta);outline:none;text-shadow:0 2px 8px #000,0 0 14px rgba(255,43,214,.58)}
     .site-name:hover .site-name-icon,.site-name:focus-visible .site-name-icon,.site-name[aria-expanded="true"] .site-name-icon{border-color:var(--magenta);box-shadow:0 0 12px rgba(255,43,214,.3)}
@@ -96,7 +100,7 @@
 
     <header class="topbar">
       <button class="site-name" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false"><span class="site-name-icon" aria-hidden="true">☠️</span><span class="site-name-label">theinternetisdead.org</span></button>
-      <h1 class="page-title">Main Space</h1>
+      <h1 class="page-title"><select class="page-nav-select" id="page-nav-select" aria-label="Navigate site sections"><option value="/" selected>Main Page</option><option value="/portal/">Portal</option><option value="/dead/games/">Games</option><option value="/dead/experiments/">Experiments</option></select><span class="page-nav-caret" aria-hidden="true">&gt;</span></h1>
       <time class="topbar-clock" id="topbar-clock" aria-label="Local time"></time>
     </header>
 
@@ -121,6 +125,9 @@
     const updateTopbarClock=()=>{topbarClock.textContent=clockFormatter.format(new Date())};
     updateTopbarClock();
     setInterval(updateTopbarClock,250);
+
+    const pageNavSelect=document.getElementById('page-nav-select');
+    pageNavSelect.addEventListener('change',()=>{const destination=pageNavSelect.value;if(!destination||destination===window.location.pathname)return;if(window.PageTransitions){window.PageTransitions.navigate(new URL(destination,window.location.origin).href,'swirl');return}window.location.assign(destination)});
 
     const sidebar=document.getElementById('sidebar');
     const sidebarToggle=document.getElementById('sidebar-toggle');
