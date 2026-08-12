@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/dead/js/shell-route.js"></script><meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>/dead/tools/bookmark-manager/</title>
+<script>
+const standaloneParams = new URLSearchParams(window.location.search);
+const allowStandalone = standaloneParams.get('standalone') === 'true';
+
+if (window.top === window.self && !allowStandalone && !window.__deadShellGuardActive) {
+  const shellFramePath = '/dead/tools/bookmark-manager/' + window.location.search + window.location.hash;
+  window.sessionStorage.setItem('deadRootShellFramePath', shellFramePath);
+  window.location.replace('/?frame=' + encodeURIComponent(shellFramePath));
+}
+</script>
+
+  <style>
+    html {
+      height: 100%;
+      background: #fff;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: hsl(146 50% 67%);
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    .empty-state {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      color: white;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.4;
+      white-space: nowrap;
+      border: 0;
+      padding: 24px;
+      background: transparent;
+      cursor: pointer;
+      pointer-events: auto;
+      box-sizing: border-box;
+    }
+
+    body.no-bookmarks .empty-state {
+      display: flex;
+    }
+
+    body.dragging-bookmark .empty-state {
+      background: rgb(59 0 102 / 35%);
+      outline: 1px solid lime;
+    }
+
+    body.no-bookmarks .empty-state:hover {
+      background: rgb(0 0 0 / 15%);
+    }
+
+    .bottom-bar {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      z-index: 2;
+      width: 100%;
+      height: 50px;
+      background: black;
+
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    body.bar-hidden .bottom-bar {
+      display: none;
+    }
+
+    body.top-bar .bottom-bar {
+      top: 0;
+      bottom: auto;
+    }
+
+    .clock-widget {
+      margin-left: auto;
+      border: 0;
+      padding: 0;
+      min-width: 120px;
+      height: 50px;
+      background: black;
+      color: white;
+      cursor: pointer;
+
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
+      font-family: "Courier New", Courier, monospace;
+      font-weight: 700;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    .bar-hide-toggle {
+      border: 0;
+      padding: 0;
+      width: 24px;
+      height: 50px;
+      background: black;
+      color: #8200e0;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    body.bar-hidden .floating-bar-toggle {
+      display: flex;
+    }
+
+    .floating-bar-toggle {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      z-index: 3;
+      display: none;
+      border: 0;
+      padding: 0;
+      width: 24px;
+      height: 50px;
+      background: transparent;
+      color: hsl(146 50% 67%);
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+      box-sizing: border-box;
+
+      align-items: center;
+      justify-content: center;
+      padding-top: 6px;
+    }
+
+    .floating-bar-toggle:hover {
+      color: #e04343;
+    }
+
+    body.top-bar .floating-bar-toggle {
+      top: 0;
+      bottom: auto;
+    }
+
+    .clock-caret::before {
+      content: "^";
+      display: inline-block;
+      margin-right: 1ch;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .clock-widget.is-flipped .clock-caret::before {
+      transform: scaleY(-1);
+    }
+
+    .clock-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.25ch;
+    }
+
+    .clock-time {
+      font-size: 15px;
+      white-space: nowrap;
+    }
+
+    .clock-date {
+      margin-top: 5px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .bookmark-controls {
+      display: flex;
+      align-items: center;
+      width: max-content;
+    }
+
+    .bookmark-button {
+      border: 0;
+      border-top: 1px solid rgb(13 0 22 / 70%);
+      padding: 0;
+      width: calc(var(--bookmark-menu-width, 400px) - 72px);
+      height: 50px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      font: 16px/1 "Courier New", Courier, monospace;
+      box-sizing: border-box;
+    }
+
+    body.no-bookmarks .bookmark-button {
+      width: max-content;
+    }
+
+    .bookmark-button .emoji-label {
+      text-align: left;
+    }
+
+    .bookmark-button .emoji-label {
+      flex: 0 0 auto;
+    }
+
+    .action-toggle {
+      border: 0;
+      border-top: 1px solid rgb(13 0 22 / 70%);
+      padding: 0;
+      width: 24px;
+      height: 50px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    .action-toggle[hidden] {
+      display: none;
+    }
+
+    .add-toggle {
+      color: #40d85a;
+    }
+
+    .clear-toggle {
+      color: #8200e0;
+    }
+
+    .action-toggle.edit-toggle {
+      color: #40d85a;
+    }
+
+    .action-toggle.edit-toggle.is-enabled {
+      color: #40d85a;
+    }
+
+    .action-toggle.edit-toggle.has-unsaved {
+      color: #f2c94c;
+    }
+
+    .action-toggle.edit-toggle.flash-blocked {
+      color: #e04343;
+    }
+
+    .add-toggle.is-save {
+      color: #f2c94c;
+    }
+
+    .emoji-popup {
+      position: fixed;
+      left: 0;
+      bottom: 50px;
+      z-index: 1;
+      width: max-content;
+      max-height: 600px;
+      background: rgb(13 0 22 / 50%);
+      overflow: visible;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: stretch;
+    }
+
+    body.top-bar .emoji-popup {
+      top: 50px;
+      bottom: auto;
+      justify-content: flex-start;
+    }
+
+    body.bar-hidden .emoji-popup {
+      bottom: 0;
+    }
+
+    body.top-bar.bar-hidden .emoji-popup {
+      top: 0;
+      bottom: auto;
+    }
+
+    .emoji-popup[hidden],
+    .file-input {
+      display: none;
+    }
+
+    .bookmark-folder {
+      position: relative;
+      flex: 0 0 50px;
+      height: 50px;
+      box-shadow: inset 0 -1px 0 lime;
+    }
+
+    .emoji-tile {
+      flex: 0 0 50px;
+      width: max-content;
+      min-width: 100%;
+      height: 50px;
+      background: transparent;
+      color: white;
+      text-decoration: none;
+      outline: 0;
+      border-top: 0;
+      border-bottom: 0;
+      box-shadow: inset 0 -1px 0 lime;
+
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      font: 16px/1 "Courier New", Courier, monospace;
+      box-sizing: border-box;
+    }
+
+    .bookmark-folder > .emoji-tile {
+      cursor: default;
+      box-shadow: inset 0 -1px 0 lime;
+    }
+
+    .emoji-tile[data-url] {
+      cursor: pointer;
+    }
+
+    .emoji-tile[draggable="true"] {
+      cursor: grab;
+    }
+
+    .emoji-tile.is-drag-over {
+      outline: 2px solid #f2c94c;
+      outline-offset: -2px;
+    }
+
+    body.clear-hover .emoji-tile {
+      background: rgb(224 67 67 / 50%);
+    }
+
+    .emoji-tile:hover {
+      background: rgb(13 0 22 / 50%);
+    }
+
+    .emoji-icon {
+      flex: 0 0 50px;
+      width: 50px;
+      height: 50px;
+      background: rgb(59 0 102 / 70%);
+      color: white;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 24px;
+      line-height: 1;
+      box-sizing: border-box;
+      box-shadow: inset 0 -1px 0 lime;
+    }
+
+    .bookmark-button .emoji-icon {
+      border-bottom: 1px solid rgb(13 0 22 / 70%);
+      box-shadow: none;
+    }
+
+    .emoji-label {
+      min-width: 0;
+      flex: 1 1 auto;
+      padding: 0 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .label-stack {
+      min-width: 0;
+      flex: 1 1 auto;
+      padding: 0 8px;
+      overflow: hidden;
+    }
+
+    .bookmark-title,
+    .bookmark-url {
+      display: block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bookmark-title,
+    .bookmark-folder .emoji-label,
+    .bookmark-button .emoji-label {
+      font-weight: 700;
+    }
+
+    .bookmark-url {
+      margin-top: 3px;
+      color: rgb(255 255 255 / 65%);
+      font-size: 12px;
+    }
+
+    .inline-edit-input {
+      width: 100%;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: white;
+      font: inherit;
+      outline: 0;
+      box-sizing: border-box;
+    }
+
+    .inline-edit-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .inline-edit-label {
+      flex: 0 0 auto;
+      color: rgb(255 255 255 / 75%);
+    }
+
+    .inline-edit-wrap .inline-edit-input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .bookmark-url .inline-edit-input {
+      color: rgb(255 255 255 / 85%);
+      font-size: 12px;
+    }
+
+    .row-actions {
+      flex: 0 0 72px;
+      display: flex;
+      height: 50px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    body.actions-hidden .row-actions {
+      visibility: hidden;
+    }
+
+    body.action-hover .row-actions {
+      visibility: visible;
+    }
+
+    .row-action {
+      border: 0;
+      padding: 0;
+      width: 24px;
+      height: 50px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .new-bookmark-form {
+      flex: 0 0 50px;
+      width: 100%;
+      height: 50px;
+      background: transparent;
+      outline: 0;
+      border-top: 0;
+      border-bottom: 0;
+      box-shadow: inset 0 -1px 0 lime;
+
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      box-sizing: border-box;
+    }
+
+    .new-bookmark-input {
+      min-width: 0;
+      flex: 1 1 auto;
+      height: 50px;
+      border: 0;
+      padding: 0 10px;
+      background: transparent;
+      color: white;
+      font: 16px/1 "Courier New", Courier, monospace;
+      outline: 0;
+      box-sizing: border-box;
+    }
+
+    .new-bookmark-input::placeholder {
+      color: rgb(255 255 255 / 65%);
+    }
+
+    .favicon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .drag-handle-icon {
+      color: lime;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .folder-popout {
+      position: absolute;
+      left: 100%;
+      bottom: 0;
+      width: max-content;
+      min-height: 50px;
+      max-height: 600px;
+      background: rgb(13 0 22 / 50%);
+      display: none;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: stretch;
+    }
+
+    .folder-popout .emoji-tile {
+      box-shadow: inset 0 -1px 0 lime;
+    }
+
+    .folder-popout .emoji-icon {
+      box-shadow: inset 0 -1px 0 lime;
+    }
+
+    body.top-bar .folder-popout {
+      top: 0;
+      bottom: auto;
+      justify-content: flex-start;
+    }
+
+    .bookmark-folder:hover > .folder-popout,
+    .bookmark-folder:focus-within > .folder-popout {
+      display: flex;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="empty-state" id="empty-state" type="button">Add Bookmarks with the + button or drag and drop a bookmarks file here.</button>
+  <div class="emoji-popup" id="bookmark-popup" hidden></div>
+  <div class="bottom-bar">
+    <button class="bookmark-button" id="bookmark-button" type="button" aria-expanded="false" aria-controls="bookmark-popup">
+      <span class="emoji-icon">&#11088;</span>
+      <span class="emoji-label" id="bookmark-button-label">Add Bookmarks</span>
+    </button>
+    <span class="bookmark-controls">
+      <button class="action-toggle add-toggle" id="add-toggle" type="button" title="Add bookmark" hidden>&#10133;</button>
+      <button class="action-toggle edit-toggle" id="action-toggle" type="button" title="Toggle edit controls" hidden>&#9851;</button>
+      <button class="action-toggle clear-toggle" id="clear-toggle" type="button" title="Clear bookmarks" hidden>&#10060;</button>
+    </span>
+    <input class="file-input" id="bookmark-file" type="file" accept=".html,.htm,.json,.txt,.url,text/html,application/json,text/plain" />
+    <button class="clock-widget is-flipped" id="bar-position-toggle" type="button" title="Move bar to top" aria-label="Move bar to top" aria-live="polite">
+      <span class="clock-caret"></span>
+      <span class="clock-text">
+        <span class="clock-time" id="clock-time"></span>
+        <span class="clock-date" id="clock-date"></span>
+      </span>
+    </button>
+    <button class="bar-hide-toggle" id="bar-hide-toggle" type="button" title="Hide bar">&#10060;</button>
+  </div>
+  <button class="floating-bar-toggle" id="floating-bar-toggle" type="button" title="Show bar">^</button>
+
+  <script>
+    const bookmarkButton = document.getElementById("bookmark-button");
+    const bookmarkButtonLabel = document.getElementById("bookmark-button-label");
+    const emptyState = document.getElementById("empty-state");
+    const bookmarkFile = document.getElementById("bookmark-file");
+    const bookmarkPopup = document.getElementById("bookmark-popup");
+    const addToggle = document.getElementById("add-toggle");
+    const actionToggle = document.getElementById("action-toggle");
+    const clearToggle = document.getElementById("clear-toggle");
+    const barPositionToggle = document.getElementById("bar-position-toggle");
+    const barHideToggle = document.getElementById("bar-hide-toggle");
+    const floatingBarToggle = document.getElementById("floating-bar-toggle");
+    const clockTime = document.getElementById("clock-time");
+    const clockDate = document.getElementById("clock-date");
+    const storageKey = "preview-bookmarks";
+
+    let bookmarkItems = [];
+    let actionsVisible = false;
+    let addRowVisible = false;
+    let addRowHover = false;
+    let addRowEditing = false;
+    let hasUnsavedOrder = false;
+    let editingField = null;
+
+    const hasImportedBookmarks = () => bookmarkItems.length > 0;
+
+    const setPopupOpen = (isOpen) => {
+      bookmarkPopup.hidden = !isOpen;
+      bookmarkButton.setAttribute("aria-expanded", String(isOpen));
+    };
+
+    const syncBottomWidth = () => {
+      if (bookmarkPopup.hidden) {
+        return;
+      }
+
+      document.documentElement.style.setProperty("--bookmark-menu-width", `${bookmarkPopup.offsetWidth}px`);
+    };
+
+    const updateBottomControls = () => {
+      const hasBookmarks = hasImportedBookmarks();
+
+      bookmarkButtonLabel.textContent = hasBookmarks ? "Bookmarks" : "Add Bookmarks";
+      document.body.classList.toggle("no-bookmarks", !hasBookmarks);
+      addToggle.hidden = false;
+      actionToggle.hidden = !hasBookmarks;
+      clearToggle.hidden = !hasBookmarks;
+      document.body.classList.toggle("actions-hidden", !actionsVisible);
+      actionToggle.classList.toggle("is-enabled", actionsVisible);
+      actionToggle.classList.toggle("has-unsaved", hasUnsavedOrder);
+      addToggle.classList.toggle("is-save", hasUnsavedOrder);
+      addToggle.textContent = hasUnsavedOrder ? "\uD83D\uDCBE" : "\u2795";
+      addToggle.title = hasUnsavedOrder ? "Save bookmark order" : "Add bookmark";
+    };
+
+    const saveBookmarks = () => {
+      localStorage.setItem(storageKey, JSON.stringify(bookmarkItems));
+    };
+
+    const updateClock = () => {
+      const now = new Date();
+
+      clockTime.textContent = now.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      }).replace(/\s/g, "");
+      clockDate.textContent = now.toLocaleDateString([], {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+    };
+
+    const getItemListByPath = (path) => {
+      let list = bookmarkItems;
+
+      for (let depth = 0; depth < path.length - 1; depth += 1) {
+        list = list[path[depth]].children;
+      }
+
+      return list;
+    };
+
+    const getItemByPath = (path) => getItemListByPath(path)[path[path.length - 1]];
+
+    const pathsShareParent = (firstPath, secondPath) => (
+      firstPath.length === secondPath.length
+      && firstPath.slice(0, -1).every((part, index) => part === secondPath[index])
+    );
+
+    const moveItemAtPath = (fromPath, toPath) => {
+      if (!pathsShareParent(fromPath, toPath)) {
+        return;
+      }
+
+      const list = getItemListByPath(fromPath);
+      const fromIndex = fromPath[fromPath.length - 1];
+      const toIndex = toPath[toPath.length - 1];
+
+      if (fromIndex === toIndex) {
+        return;
+      }
+
+      const [item] = list.splice(fromIndex, 1);
+      list.splice(toIndex, 0, item);
+      hasUnsavedOrder = true;
+      renderBookmarks();
+    };
+
+    const deleteItemAtPath = (path) => {
+      getItemListByPath(path).splice(path[path.length - 1], 1);
+      hasUnsavedOrder = false;
+      saveBookmarks();
+      renderBookmarks();
+    };
+
+    const editItemAtPath = (path) => {
+      editingField = { field: "title", path };
+      renderBookmarks();
+    };
+
+    const editUrlAtPath = (path) => {
+      const item = getItemByPath(path);
+
+      if (item.type !== "bookmark") {
+        return;
+      }
+
+      editingField = { field: "url", path };
+      renderBookmarks();
+    };
+
+    const pathsMatch = (firstPath, secondPath) => (
+      firstPath.length === secondPath.length
+      && firstPath.every((part, index) => part === secondPath[index])
+    );
+
+    const isEditingField = (field, path) => (
+      editingField
+      && editingField.field === field
+      && pathsMatch(editingField.path, path)
+    );
+
+    const commitInlineEdit = (path, field, value) => {
+      const item = getItemByPath(path);
+
+      if (field === "title") {
+        item.title = value.trim() || item.title;
+      }
+
+      if (field === "url" && item.type === "bookmark") {
+        item.url = normalizeUrl(value) || item.url;
+      }
+
+      editingField = null;
+      hasUnsavedOrder = false;
+      saveBookmarks();
+      renderBookmarks();
+    };
+
+    const createInlineInput = (path, field, value) => {
+      const input = document.createElement("input");
+      input.className = "inline-edit-input";
+      input.type = "text";
+      input.value = value;
+
+      input.addEventListener("click", (event) => event.stopPropagation());
+      input.addEventListener("mousedown", (event) => event.stopPropagation());
+      input.addEventListener("keydown", (event) => {
+        event.stopPropagation();
+
+        if (event.key === "Enter") {
+          event.preventDefault();
+          commitInlineEdit(path, field, input.value);
+        }
+
+        if (event.key === "Escape") {
+          editingField = null;
+          renderBookmarks();
+        }
+      });
+      input.addEventListener("blur", () => {
+        if (isEditingField(field, path)) {
+          commitInlineEdit(path, field, input.value);
+        }
+      });
+
+      requestAnimationFrame(() => {
+        input.focus();
+        input.select();
+      });
+
+      return input;
+    };
+
+    const createInlineEditor = (path, field, value) => {
+      const wrap = document.createElement("span");
+
+      wrap.className = "inline-edit-wrap";
+      const label = document.createElement("span");
+
+      label.className = "inline-edit-label";
+      label.textContent = field === "url" ? "URL:" : "Title:";
+      wrap.append(label, createInlineInput(path, field, value));
+
+      return wrap;
+    };
+
+    const formatUrlForList = (url) => {
+      try {
+        return new URL(url).hostname.replace(/^www\./i, "");
+      } catch {
+        return url.replace(/^https?:\/\//i, "").replace(/^www\./i, "").split("/")[0];
+      }
+    };
+
+    const createActions = (path) => {
+      const actions = document.createElement("span");
+      actions.className = "row-actions";
+
+      const editButton = document.createElement("button");
+      editButton.className = "row-action";
+      editButton.type = "button";
+      editButton.title = "Edit entry";
+      editButton.textContent = "\u270F\uFE0F";
+
+      const urlButton = document.createElement("button");
+      urlButton.className = "row-action";
+      urlButton.type = "button";
+      urlButton.title = "Edit URL";
+      urlButton.textContent = "\uD83C\uDF10";
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "row-action";
+      deleteButton.type = "button";
+      deleteButton.title = "Delete entry";
+      deleteButton.textContent = "\u274C";
+
+      actions.addEventListener("mousedown", (event) => {
+        event.stopPropagation();
+      });
+
+      actions.addEventListener("dragstart", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+
+      editButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        editItemAtPath(path);
+      });
+
+      urlButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        editUrlAtPath(path);
+      });
+
+      deleteButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        deleteItemAtPath(path);
+      });
+
+      actions.append(editButton, urlButton, deleteButton);
+      return actions;
+    };
+
+    const createBookmarkTile = (item, path) => {
+      const tile = document.createElement("div");
+      tile.className = "emoji-tile";
+      tile.draggable = actionsVisible;
+
+      tile.addEventListener("dragstart", (event) => {
+        if (!actionsVisible) {
+          event.preventDefault();
+          return;
+        }
+
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("application/json", JSON.stringify(path));
+      });
+
+      tile.addEventListener("dragover", (event) => {
+        if (!actionsVisible) {
+          return;
+        }
+
+        event.preventDefault();
+        tile.classList.add("is-drag-over");
+      });
+
+      tile.addEventListener("dragleave", () => {
+        tile.classList.remove("is-drag-over");
+      });
+
+      tile.addEventListener("drop", (event) => {
+        if (!actionsVisible) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        tile.classList.remove("is-drag-over");
+
+        try {
+          moveItemAtPath(JSON.parse(event.dataTransfer.getData("application/json")), path);
+        } catch {
+          return;
+        }
+      });
+
+      if (item.type === "bookmark") {
+        tile.dataset.url = item.url;
+        tile.tabIndex = 0;
+        tile.addEventListener("click", (event) => {
+          if (actionsVisible || event.defaultPrevented) {
+            return;
+          }
+
+          window.open(item.url, "_blank", "noreferrer");
+        });
+        tile.addEventListener("keydown", (event) => {
+          if (actionsVisible) {
+            return;
+          }
+
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            window.open(item.url, "_blank", "noreferrer");
+          }
+        });
+      }
+
+      const icon = document.createElement("span");
+      icon.className = "emoji-icon";
+
+      if (actionsVisible) {
+        const dragHandle = document.createElement("span");
+        dragHandle.className = "drag-handle-icon";
+        dragHandle.textContent = "\u2630";
+        icon.append(dragHandle);
+      } else if (item.type === "folder") {
+        icon.textContent = "\uD83D\uDCC1";
+      } else {
+        const favicon = document.createElement("img");
+        favicon.className = "favicon";
+        favicon.alt = "";
+        favicon.src = `https://www.google.com/s2/favicons?domain=${new URL(item.url).hostname}&sz=32`;
+        icon.append(favicon);
+      }
+
+      const label = document.createElement("span");
+
+      if (item.type === "bookmark") {
+        const title = document.createElement("span");
+        const url = document.createElement("span");
+
+        label.className = "label-stack";
+        title.className = "bookmark-title";
+        url.className = "bookmark-url";
+        title.append(isEditingField("title", path) ? createInlineEditor(path, "title", item.title) : document.createTextNode(item.title));
+        url.append(isEditingField("url", path) ? createInlineEditor(path, "url", item.url) : document.createTextNode(formatUrlForList(item.url)));
+        label.append(title, url);
+      } else {
+        label.className = "emoji-label";
+        label.append(isEditingField("title", path) ? createInlineEditor(path, "title", item.title) : document.createTextNode(item.title));
+      }
+
+      tile.append(icon, label, createActions(path));
+      return tile;
+    };
+
+    const createBookmarkItem = (item, index, parentPath = []) => {
+      const path = [...parentPath, index];
+
+      if (item.type !== "folder") {
+        return createBookmarkTile(item, path);
+      }
+
+      const folder = document.createElement("div");
+      folder.className = "bookmark-folder";
+      folder.append(createBookmarkTile(item, path));
+
+      if (item.children && item.children.length) {
+        const popout = document.createElement("div");
+        popout.className = "folder-popout";
+        popout.append(...item.children.slice(0, 12).map((child, childIndex) => createBookmarkItem(child, childIndex, path)));
+        folder.append(popout);
+      }
+
+      return folder;
+    };
+
+    const normalizeUrl = (value) => {
+      const trimmed = value.trim();
+
+      if (!trimmed) {
+        return "";
+      }
+
+      return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    };
+
+    const addBookmarkUrl = (value) => {
+      const url = normalizeUrl(value);
+
+      if (!url) {
+        return false;
+      }
+
+      try {
+        bookmarkItems.push({ type: "bookmark", title: new URL(url).hostname.replace(/^www\./i, ""), url });
+      } catch {
+        return false;
+      }
+
+      addRowVisible = false;
+      addRowHover = false;
+      addRowEditing = false;
+      hasUnsavedOrder = false;
+      saveBookmarks();
+      renderBookmarks();
+      return true;
+    };
+
+    const createNewBookmarkForm = () => {
+      const form = document.createElement("form");
+      form.className = "new-bookmark-form";
+
+      const icon = document.createElement("span");
+      icon.className = "emoji-icon";
+      icon.textContent = "?";
+
+      const input = document.createElement("input");
+      input.className = "new-bookmark-input";
+      input.type = "text";
+      input.placeholder = "Add URL";
+      input.readOnly = !addRowEditing;
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const url = normalizeUrl(input.value);
+
+        if (!url) {
+          return;
+        }
+
+        if (!addBookmarkUrl(url)) {
+          input.focus();
+          return;
+        }
+      });
+
+      form.append(icon, input);
+
+      if (addRowEditing) {
+        requestAnimationFrame(() => input.focus());
+      }
+
+      return form;
+    };
+
+    const renderBookmarks = () => {
+      const shouldShowAddRow = addRowVisible || addRowHover;
+      const visibleItems = shouldShowAddRow ? bookmarkItems.slice(0, 11) : bookmarkItems.slice(0, 12);
+      const rows = visibleItems.map((item, index) => createBookmarkItem(item, index));
+
+      if (shouldShowAddRow) {
+        rows.push(createNewBookmarkForm());
+      }
+
+      bookmarkPopup.replaceChildren(...rows);
+      updateBottomControls();
+      setPopupOpen(hasImportedBookmarks() || shouldShowAddRow);
+      requestAnimationFrame(() => {
+        syncBottomWidth();
+      });
+    };
+
+    const parseJsonNode = (node) => {
+      if (!node || typeof node !== "object") {
+        return [];
+      }
+
+      if (node.url) {
+        return [{ type: "bookmark", title: node.name || node.title || node.url, url: node.url }];
+      }
+
+      if (Array.isArray(node.children)) {
+        return [{
+          type: "folder",
+          title: node.name || node.title || "Folder",
+          children: node.children.flatMap(parseJsonNode)
+        }];
+      }
+
+      return Object.values(node).flatMap(parseJsonNode);
+    };
+
+    const parseBookmarkJson = (text) => {
+      const data = JSON.parse(text);
+      return parseJsonNode(data.roots || data);
+    };
+
+    const parseBookmarkHtml = (text) => {
+      const documentFragment = new DOMParser().parseFromString(text, "text/html");
+      const parseContainer = (container) => {
+        const items = [];
+        let node = container.firstElementChild;
+
+        while (node) {
+          if (node.tagName.toLowerCase() === "dt") {
+            const children = Array.from(node.children);
+            const folderTitle = children.find((child) => child.tagName.toLowerCase() === "h3");
+            const bookmarkLink = children.find((child) => child.tagName.toLowerCase() === "a" && child.href);
+            const childList = children.find((child) => child.tagName.toLowerCase() === "dl");
+            const siblingList = node.nextElementSibling && node.nextElementSibling.tagName.toLowerCase() === "dl"
+              ? node.nextElementSibling
+              : null;
+
+            if (folderTitle) {
+              items.push({
+                type: "folder",
+                title: folderTitle.textContent.trim() || "Folder",
+                children: parseContainer(childList || siblingList || document.createElement("dl"))
+              });
+
+              if (siblingList) {
+                node = siblingList.nextElementSibling;
+                continue;
+              }
+            } else if (bookmarkLink) {
+              items.push({
+                type: "bookmark",
+                title: bookmarkLink.textContent.trim() || bookmarkLink.href,
+                url: bookmarkLink.href
+              });
+            }
+          } else if (node.tagName.toLowerCase() === "a" && node.href) {
+            items.push({
+              type: "bookmark",
+              title: node.textContent.trim() || node.href,
+              url: node.href
+            });
+          } else if (node.tagName.toLowerCase() === "dl") {
+            items.push(...parseContainer(node));
+          }
+
+          node = node.nextElementSibling;
+        }
+
+        return items;
+      };
+
+      return parseContainer(documentFragment.querySelector("dl") || documentFragment.body);
+    };
+
+    const parsePlainUrls = (text) => text
+      .split(/\s+/)
+      .filter((part) => /^https?:\/\//i.test(part))
+      .map((url) => ({ type: "bookmark", title: new URL(url).hostname, url }));
+
+    const unwrapBookmarksBar = (items) => {
+      const bookmarksBar = items.find((item) => item.type === "folder" && item.title.toLowerCase() === "bookmarks bar");
+
+      return bookmarksBar && bookmarksBar.children && bookmarksBar.children.length
+        ? bookmarksBar.children
+        : items;
+    };
+
+    const parseBookmarks = (text) => {
+      try {
+        return unwrapBookmarksBar(parseBookmarkJson(text));
+      } catch {
+        const htmlItems = parseBookmarkHtml(text);
+        return unwrapBookmarksBar(htmlItems.length ? htmlItems : parsePlainUrls(text));
+      }
+    };
+
+    const importBookmarkText = (text) => {
+      bookmarkItems = parseBookmarks(text);
+      addRowVisible = false;
+      addRowHover = false;
+      addRowEditing = false;
+      hasUnsavedOrder = false;
+      saveBookmarks();
+      renderBookmarks();
+    };
+
+    const importBookmarkFile = (file) => {
+      const reader = new FileReader();
+
+      reader.addEventListener("load", () => {
+        importBookmarkText(String(reader.result));
+        bookmarkFile.value = "";
+      });
+
+      reader.readAsText(file);
+    };
+
+    bookmarkButton.addEventListener("click", () => {
+      if (!hasImportedBookmarks()) {
+        addRowVisible = true;
+        addRowHover = false;
+        addRowEditing = true;
+        renderBookmarks();
+        return;
+      }
+
+      setPopupOpen(bookmarkPopup.hidden);
+      requestAnimationFrame(syncBottomWidth);
+    });
+
+    emptyState.addEventListener("click", () => {
+      bookmarkFile.click();
+    });
+
+    bookmarkButton.addEventListener("mouseenter", () => {
+      if (hasImportedBookmarks() || addRowVisible) {
+        return;
+      }
+
+      addRowHover = true;
+      addRowEditing = false;
+      renderBookmarks();
+    });
+
+    bookmarkButton.addEventListener("mouseleave", () => {
+      if (!addRowHover || addRowVisible) {
+        return;
+      }
+
+      addRowHover = false;
+      addRowEditing = false;
+      renderBookmarks();
+    });
+
+    actionToggle.addEventListener("click", () => {
+      if (hasUnsavedOrder) {
+        actionToggle.classList.add("flash-blocked");
+        setTimeout(() => {
+          actionToggle.classList.remove("flash-blocked");
+        }, 180);
+        return;
+      }
+
+      actionsVisible = !actionsVisible;
+      document.body.classList.toggle("actions-hidden", !actionsVisible);
+      actionToggle.classList.toggle("is-enabled", actionsVisible);
+      renderBookmarks();
+    });
+
+    actionToggle.addEventListener("mouseenter", () => {
+      document.body.classList.add("action-hover");
+    });
+
+    actionToggle.addEventListener("mouseleave", () => {
+      document.body.classList.remove("action-hover");
+    });
+
+    addToggle.addEventListener("click", () => {
+      if (!hasImportedBookmarks()) {
+        addRowVisible = true;
+        addRowHover = false;
+        addRowEditing = true;
+        renderBookmarks();
+        return;
+      }
+
+      if (hasUnsavedOrder) {
+        saveBookmarks();
+        hasUnsavedOrder = false;
+        renderBookmarks();
+        return;
+      }
+
+      addRowVisible = !addRowVisible;
+      addRowEditing = addRowVisible;
+      renderBookmarks();
+    });
+
+    addToggle.addEventListener("mouseenter", () => {
+      if (hasUnsavedOrder || addRowVisible) {
+        return;
+      }
+
+      addRowHover = true;
+      addRowEditing = false;
+      renderBookmarks();
+    });
+
+    addToggle.addEventListener("mouseleave", () => {
+      if (!addRowHover) {
+        return;
+      }
+
+      addRowHover = false;
+      addRowEditing = addRowVisible;
+      renderBookmarks();
+    });
+
+    clearToggle.addEventListener("click", () => {
+      localStorage.removeItem(storageKey);
+      bookmarkItems = [];
+      actionsVisible = false;
+      addRowVisible = false;
+      hasUnsavedOrder = false;
+      editingField = null;
+      bookmarkPopup.replaceChildren();
+      setPopupOpen(false);
+      updateBottomControls();
+    });
+
+    clearToggle.addEventListener("mouseenter", () => {
+      document.body.classList.add("clear-hover");
+    });
+
+    clearToggle.addEventListener("mouseleave", () => {
+      document.body.classList.remove("clear-hover");
+    });
+
+    barPositionToggle.addEventListener("click", () => {
+      const isTopBar = document.body.classList.toggle("top-bar");
+
+      barPositionToggle.classList.toggle("is-flipped", !isTopBar);
+      barPositionToggle.title = isTopBar ? "Move bar to bottom" : "Move bar to top";
+      barPositionToggle.setAttribute("aria-label", isTopBar ? "Move bar to bottom" : "Move bar to top");
+      requestAnimationFrame(syncBottomWidth);
+    });
+
+    barHideToggle.addEventListener("click", () => {
+      document.body.classList.add("bar-hidden");
+    });
+
+    floatingBarToggle.addEventListener("click", () => {
+      document.body.classList.remove("bar-hidden");
+    });
+
+    document.addEventListener("dragover", (event) => {
+      if ([...event.dataTransfer.types].some((type) => type === "Files" || type === "text/uri-list" || type === "text/plain")) {
+        event.preventDefault();
+        document.body.classList.add("dragging-bookmark");
+      }
+    });
+
+    document.addEventListener("dragleave", (event) => {
+      if (event.relatedTarget) {
+        return;
+      }
+
+      document.body.classList.remove("dragging-bookmark");
+    });
+
+    document.addEventListener("drop", (event) => {
+      document.body.classList.remove("dragging-bookmark");
+
+      if (event.dataTransfer.files.length) {
+        event.preventDefault();
+        importBookmarkFile(event.dataTransfer.files[0]);
+        return;
+      }
+
+      const droppedText = event.dataTransfer.getData("text/uri-list") || event.dataTransfer.getData("text/plain");
+      const firstUrl = droppedText
+        .split(/\s+/)
+        .find((part) => /^(https?:\/\/|www\.)/i.test(part));
+
+      if (!firstUrl) {
+        return;
+      }
+
+      event.preventDefault();
+      addBookmarkUrl(firstUrl);
+    });
+
+    bookmarkFile.addEventListener("change", () => {
+      const [file] = bookmarkFile.files;
+
+      if (!file) {
+        return;
+      }
+
+      importBookmarkFile(file);
+    });
+
+    try {
+      bookmarkItems = JSON.parse(localStorage.getItem(storageKey)) || [];
+    } catch {
+      bookmarkItems = [];
+    }
+
+    if (hasImportedBookmarks()) {
+      renderBookmarks();
+    } else {
+      updateBottomControls();
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>

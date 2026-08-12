@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/dead/js/shell-route.js"></script><link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>/dead/tools/multimedia-editor/multimedia-editor.html</title>
+<script>
+const standaloneParams = new URLSearchParams(window.location.search);
+const allowStandalone = standaloneParams.get('standalone') === 'true';
+
+if (window.top === window.self && !allowStandalone && !window.__deadShellGuardActive) {
+  const shellFramePath = '/dead/tools/multimedia-editor/' + window.location.search + window.location.hash;
+  window.sessionStorage.setItem('deadRootShellFramePath', shellFramePath);
+  window.location.replace('/?frame=' + encodeURIComponent(shellFramePath));
+}
+</script>
+<style>
+:root{
+  --bg:#111;
+  --panel:#000;
+  --border:#333;
+  --accent:#00ff66;
+  --purple:#512A67;
+  --text:#fff;
+  --danger:red;
+  --safe:lime;
+}
+
+*{box-sizing:border-box;}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:sans-serif;
+  min-height:100%;
+}
+
+body{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:12px;
+  gap:12px;
+}
+
+#startPanel{
+  display:flex;
+  gap:20px;
+  margin-top:20px;
+  width:min(100%, 900px);
+  justify-content:center;
+  align-items:stretch;
+}
+
+#uploadBox,
+#cameraBox{
+  width:min(42vw, 320px);
+  min-width:220px;
+  height:min(42vw, 320px);
+  min-height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  text-align:center;
+  padding:18px;
+  border-radius:18px;
+  font-size:clamp(20px, 2.2vw, 28px);
+  font-weight:700;
+  line-height:1.2;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+#uploadBox{
+  border:3px dashed var(--safe);
+  background:rgba(0,255,0,0.45);
+}
+
+#cameraBox{
+  border:3px dashed var(--danger);
+  background:rgba(255,0,0,0.35);
+}
+
+#editor{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+}
+
+#imageWindow{
+  background:var(--panel);
+  border:1px solid #444;
+  display:flex;
+  flex-direction:column;
+  width:min(96vw, 1400px);
+  max-width:100%;
+  position:relative;
+  overflow:hidden;
+  border-radius:12px;
+}
+
+#windowBar{
+  min-height:44px;
+  background:var(--purple);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 10px;
+  font-family:monospace;
+  color:var(--accent);
+  flex-wrap:wrap;
+}
+
+#leftControls{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+  min-width:0;
+  flex:1 1 auto;
+}
+
+#modeSelector,
+#mirrorAxis,
+#leftEffect,
+#rightEffect,
+select,
+input{
+  background:#000;
+  color:var(--accent);
+  border:1px solid var(--border);
+  font-family:monospace;
+}
+
+#modeSelector,
+#mirrorAxis,
+#leftEffect,
+#rightEffect{
+  height:34px;
+  min-width:120px;
+  padding:0 8px;
+  border-radius:8px;
+}
+
+#gear{
+  cursor:pointer;
+  font-size:22px;
+  width:36px;
+  height:36px;
+  text-align:center;
+  display:none;
+  line-height:34px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:#000;
+  flex:0 0 auto;
+}
+
+#windowTitle{
+  font-family:monospace;
+  font-size:13px;
+  color:var(--accent);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:42%;
+  text-align:right;
+}
+
+canvas{
+  display:block;
+  width:100%;
+  height:auto;
+  max-width:100%;
+  max-height:calc(100dvh - 220px);
+  background:#000;
+  touch-action:none;
+}
+
+#controlsPanel{
+  position:absolute;
+  top:48px;
+  left:10px;
+  background:#000;
+  border:1px solid var(--border);
+  padding:12px;
+  display:none;
+  z-index:10;
+  font-family:monospace;
+  border-radius:10px;
+  width:min(360px, calc(100% - 20px));
+  box-shadow:0 10px 28px rgba(0,0,0,0.45);
+}
+
+#controlsPanel br{
+  line-height:1.7;
+}
+
+#controlsPanel label{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  line-height:1.4;
+}
+
+#mirrorControls,
+#compareControls{
+  font-size:14px;
+}
+
+#compareSlider{
+  width:100%;
+  display:none;
+  margin:0;
+  height:36px;
+  accent-color:lime;
+}
+
+input[type="checkbox"]{
+  width:18px;
+  height:18px;
+}
+
+input[type="range"]{
+  width:100%;
+}
+
+.hidden{
+  display:none !important;
+}
+
+@media (max-width: 768px){
+  body{
+    padding:10px;
+    gap:10px;
+  }
+
+  #startPanel{
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    margin-top:6px;
+    width:100%;
+  }
+
+  #uploadBox,
+  #cameraBox{
+    width:min(92vw, 520px);
+    min-width:0;
+    height:min(34vh, 220px);
+    min-height:140px;
+    font-size:clamp(22px, 6vw, 34px);
+    border-radius:20px;
+  }
+
+  #uploadBox{
+    order:1;
+  }
+
+  #cameraBox{
+    order:2;
+  }
+
+  #imageWindow{
+    width:100%;
+    border-radius:12px;
+  }
+
+  #windowBar{
+    min-height:52px;
+    padding:8px;
+    gap:8px;
+    align-items:flex-start;
+  }
+
+  #leftControls{
+    width:100%;
+    gap:8px;
+  }
+
+  #modeSelector{
+    flex:1 1 180px;
+    min-width:0;
+    height:40px;
+    font-size:16px;
+  }
+
+  #gear{
+    width:40px;
+    height:40px;
+    line-height:38px;
+    font-size:22px;
+  }
+
+  #windowTitle{
+    width:100%;
+    max-width:100%;
+    text-align:left;
+    font-size:12px;
+  }
+
+  canvas{
+    max-height:calc(100dvh - 280px);
+  }
+
+  #controlsPanel{
+    left:8px;
+    right:8px;
+    top:56px;
+    width:auto;
+    max-width:none;
+    padding:14px;
+  }
+
+  #mirrorAxis,
+  #leftEffect,
+  #rightEffect{
+    width:100%;
+    height:40px;
+    margin-top:4px;
+    margin-bottom:6px;
+    font-size:16px;
+  }
+
+  #compareSlider{
+    height:42px;
+  }
+}
+
+@media (max-width: 480px){
+  body{
+    padding:8px;
+  }
+
+  #uploadBox,
+  #cameraBox{
+    height:min(28vh, 190px);
+    font-size:clamp(20px, 6vw, 28px);
+  }
+
+  #windowBar{
+    padding:8px 8px 10px;
+  }
+
+  canvas{
+    max-height:calc(100dvh - 300px);
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="startPanel">
+  <div id="uploadBox">Upload Image</div>
+  <div id="cameraBox">Enable Camera</div>
+</div>
+
+<input type="file" id="fileInput" hidden accept="image/*">
+
+<div id="editor">
+  <div id="imageWindow">
+
+    <div id="windowBar">
+      <div id="leftControls">
+        <select id="modeSelector">
+          <option value="">Select Mode</option>
+          <option value="comparator">Comparator</option>
+          <option value="mirror">Mirror</option>
+        </select>
+        <div id="gear" aria-label="Toggle controls" title="Toggle controls">⚙️</div>
+      </div>
+      <div id="windowTitle">image</div>
+    </div>
+
+    <div id="controlsPanel">
+
+      <div id="mirrorControls" style="display:none">
+        Mirror Axis<br>
+        <select id="mirrorAxis">
+          <option value="vertical">Vertical</option>
+          <option value="horizontal">Horizontal</option>
+          <option value="both">Both (4×)</option>
+        </select><br><br>
+        <label><input type="checkbox" id="mirrorInvert">Invert Halves</label>
+      </div>
+
+      <div id="compareControls" style="display:none">
+        Left Effect<br>
+        <select id="leftEffect">
+          <option value="none">None</option>
+          <option value="chromatic">Chromatic Aberration</option>
+          <option value="anaglyph">Anaglyph</option>
+          <option value="grayscale">Grayscale</option>
+          <option value="invert">Invert</option>
+          <option value="blur">Blur</option>
+        </select><br><br>
+
+        Right Effect<br>
+        <select id="rightEffect">
+          <option value="none">None</option>
+          <option value="chromatic">Chromatic Aberration</option>
+          <option value="anaglyph">Anaglyph</option>
+          <option value="grayscale">Grayscale</option>
+          <option value="invert">Invert</option>
+          <option value="blur">Blur</option>
+        </select>
+      </div>
+
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <input type="range" id="compareSlider" min="0" max="100" value="50">
+
+  </div>
+</div>
+
+<script>
+const uploadBox = document.getElementById("uploadBox");
+const cameraBox = document.getElementById("cameraBox");
+const fileInput = document.getElementById("fileInput");
+const startPanel = document.getElementById("startPanel");
+const editor = document.getElementById("editor");
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const modeSelector = document.getElementById("modeSelector");
+const mirrorAxis = document.getElementById("mirrorAxis");
+const mirrorInvert = document.getElementById("mirrorInvert");
+
+const gear = document.getElementById("gear");
+const controlsPanel = document.getElementById("controlsPanel");
+
+const compareSlider = document.getElementById("compareSlider");
+const leftEffect = document.getElementById("leftEffect");
+const rightEffect = document.getElementById("rightEffect");
+
+const mirrorControls = document.getElementById("mirrorControls");
+const compareControls = document.getElementById("compareControls");
+
+const windowTitle = document.getElementById("windowTitle");
+const imageWindow = document.getElementById("imageWindow");
+
+let original = new Image();
+let video = null;
+let stream = null;
+let sourceType = "image";
+let filename = "image";
+let animating = false;
+
+let bufferL = document.createElement("canvas");
+let bufferR = document.createElement("canvas");
+let ctxL = bufferL.getContext("2d");
+let ctxR = bufferR.getContext("2d");
+
+function currentSource(){
+  return sourceType === "video" ? video : original;
+}
+
+function updateTitle(){
+  windowTitle.textContent = sourceType === "video" ? "🔴 LIVE" : filename;
+}
+
+function applyEffect(ctx, type){
+  let w = ctx.canvas.width;
+  let h = ctx.canvas.height;
+
+  let img = ctx.getImageData(0,0,w,h);
+  let d = img.data;
+
+  if(type === "invert"){
+    for(let i=0;i<d.length;i+=4){
+      d[i] = 255-d[i];
+      d[i+1] = 255-d[i+1];
+      d[i+2] = 255-d[i+2];
+    }
+  }
+
+  if(type === "grayscale"){
+    for(let i=0;i<d.length;i+=4){
+      let v = (d[i]+d[i+1]+d[i+2])/3;
+      d[i] = d[i+1] = d[i+2] = v;
+    }
+  }
+
+  if(type === "anaglyph"){
+    for(let i=0;i<d.length;i+=4){
+      d[i+1] = 0;
+    }
+  }
+
+  if(type === "chromatic"){
+    let copy = new Uint8ClampedArray(d);
+    for(let y=0;y<h;y++){
+      for(let x=0;x<w;x++){
+        let i = (y*w+x)*4;
+        let xr = Math.min(w-1,x+8);
+        let xb = Math.max(0,x-8);
+        let ir = (y*w+xr)*4;
+        let ib = (y*w+xb)*4;
+        d[i] = copy[ir];
+        d[i+2] = copy[ib+2];
+      }
+    }
+  }
+
+  if(type === "blur"){
+    let copy = new Uint8ClampedArray(d);
+    for(let y=1;y<h-1;y++){
+      for(let x=1;x<w-1;x++){
+        let r=0,g=0,b=0,c=0;
+        for(let dy=-1;dy<=1;dy++){
+          for(let dx=-1;dx<=1;dx++){
+            let i=((y+dy)*w+(x+dx))*4;
+            r += copy[i];
+            g += copy[i+1];
+            b += copy[i+2];
+            c++;
+          }
+        }
+        let ii=(y*w+x)*4;
+        d[ii]=r/c;
+        d[ii+1]=g/c;
+        d[ii+2]=b/c;
+      }
+    }
+  }
+
+  ctx.putImageData(img,0,0);
+}
+
+function renderEffectBuffers(){
+  let src = currentSource();
+  if(!src) return;
+
+  bufferL.width = canvas.width;
+  bufferL.height = canvas.height;
+  bufferR.width = canvas.width;
+  bufferR.height = canvas.height;
+
+  ctxL.clearRect(0,0,bufferL.width,bufferL.height);
+  ctxR.clearRect(0,0,bufferR.width,bufferR.height);
+
+  ctxL.drawImage(src,0,0,canvas.width,canvas.height);
+  ctxR.drawImage(src,0,0,canvas.width,canvas.height);
+
+  applyEffect(ctxL,leftEffect.value);
+  applyEffect(ctxR,rightEffect.value);
+}
+
+function drawComparator(){
+  renderEffectBuffers();
+
+  let split = (compareSlider.value/100) * canvas.width;
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(bufferL,0,0,split,canvas.height,0,0,split,canvas.height);
+  ctx.drawImage(bufferR,split,0,canvas.width-split,canvas.height,split,0,canvas.width-split,canvas.height);
+}
+
+function quad(src,sx,sy,sw,sh,dx,dy,dw,dh,flipX,flipY){
+  ctx.save();
+  ctx.translate(dx + (flipX ? dw : 0), dy + (flipY ? dh : 0));
+  ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+  ctx.drawImage(src,sx,sy,sw,sh,0,0,dw,dh);
+  ctx.restore();
+}
+
+function drawMirror(){
+  let src = currentSource();
+  let w = canvas.width;
+  let h = canvas.height;
+  let hw = w/2;
+  let hh = h/2;
+
+  ctx.clearRect(0,0,w,h);
+
+  if(mirrorAxis.value === "both"){
+    if(!mirrorInvert.checked){
+      quad(src,0,0,hw,hh,0,0,hw,hh,false,false);
+      quad(src,0,0,hw,hh,hw,0,hw,hh,true,false);
+      quad(src,0,0,hw,hh,0,hh,hw,hh,false,true);
+      quad(src,0,0,hw,hh,hw,hh,hw,hh,true,true);
+    }else{
+      quad(src,0,0,hw,hh,0,0,hw,hh,true,true);
+      quad(src,0,0,hw,hh,hw,0,hw,hh,false,true);
+      quad(src,0,0,hw,hh,0,hh,hw,hh,true,false);
+      quad(src,0,0,hw,hh,hw,hh,hw,hh,false,false);
+    }
+    return;
+  }
+
+  if(mirrorAxis.value === "vertical"){
+    if(!mirrorInvert.checked){
+      quad(src,0,0,hw,h,0,0,hw,h,false,false);
+      quad(src,0,0,hw,h,hw,0,hw,h,true,false);
+    }else{
+      quad(src,0,0,hw,h,0,0,hw,h,true,false);
+      quad(src,0,0,hw,h,hw,0,hw,h,false,false);
+    }
+  }
+
+  if(mirrorAxis.value === "horizontal"){
+    if(!mirrorInvert.checked){
+      quad(src,0,0,w,hh,0,0,w,hh,false,false);
+      quad(src,0,0,w,hh,0,hh,w,hh,false,true);
+    }else{
+      quad(src,0,0,w,hh,0,0,w,hh,false,true);
+      quad(src,0,0,w,hh,0,hh,w,hh,false,false);
+    }
+  }
+}
+
+function draw(){
+  const src = currentSource();
+  if(!src) return;
+
+  if(modeSelector.value === "comparator"){
+    drawComparator();
+    return;
+  }
+
+  if(modeSelector.value === "mirror"){
+    drawMirror();
+    return;
+  }
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(src,0,0,canvas.width,canvas.height);
+}
+
+function loop(){
+  if(sourceType !== "video"){
+    animating = false;
+    return;
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+
+function startVideoLoopOnce(){
+  if(animating) return;
+  animating = true;
+  requestAnimationFrame(loop);
+}
+
+function showEditor(){
+  startPanel.style.display = "none";
+  editor.style.display = "flex";
+}
+
+function closeControlsIfNeeded(target){
+  if(
+    controlsPanel.style.display === "block" &&
+    !controlsPanel.contains(target) &&
+    target !== gear
+  ){
+    controlsPanel.style.display = "none";
+  }
+}
+
+uploadBox.onclick = () => fileInput.click();
+
+fileInput.onchange = e => {
+  let file = e.target.files[0];
+  if(!file) return;
+
+  filename = file.name;
+  let reader = new FileReader();
+
+  reader.onload = r => {
+    original.onload = () => {
+      canvas.width = original.width;
+      canvas.height = original.height;
+
+      sourceType = "image";
+      updateTitle();
+      showEditor();
+      draw();
+    };
+
+    original.src = r.target.result;
+  };
+
+  reader.readAsDataURL(file);
+};
+
+cameraBox.onclick = async () => {
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({
+      video:{
+        width:{ideal:1920, max:4096},
+        height:{ideal:1080, max:4096},
+        frameRate:{ideal:30, max:60},
+        facingMode:"environment"
+      },
+      audio:false
+    });
+
+    video = document.createElement("video");
+    video.srcObject = stream;
+    video.autoplay = true;
+    video.muted = true;
+    video.playsInline = true;
+
+    await video.play();
+
+    canvas.width = video.videoWidth || 1280;
+    canvas.height = video.videoHeight || 720;
+
+    sourceType = "video";
+    updateTitle();
+    showEditor();
+    startVideoLoopOnce();
+  }catch(err){
+    alert("Camera access failed.");
+    console.error(err);
+  }
+};
+
+modeSelector.onchange = () => {
+  gear.style.display = modeSelector.value ? "block" : "none";
+
+  compareSlider.style.display = "none";
+  mirrorControls.style.display = "none";
+  compareControls.style.display = "none";
+  controlsPanel.style.display = "none";
+
+  if(modeSelector.value === "mirror"){
+    mirrorControls.style.display = "block";
+    controlsPanel.style.display = "block";
+  }
+
+  if(modeSelector.value === "comparator"){
+    compareSlider.style.display = "block";
+    compareControls.style.display = "block";
+    controlsPanel.style.display = "block";
+  }
+
+  draw();
+};
+
+compareSlider.oninput = draw;
+leftEffect.onchange = draw;
+rightEffect.onchange = draw;
+mirrorAxis.onchange = draw;
+mirrorInvert.onchange = draw;
+
+gear.onclick = (e) => {
+  e.stopPropagation();
+  if(!modeSelector.value) return;
+  controlsPanel.style.display = controlsPanel.style.display === "block" ? "none" : "block";
+};
+
+document.addEventListener("pointerdown", (e) => {
+  closeControlsIfNeeded(e.target);
+});
+
+window.addEventListener("resize", () => {
+  if(editor.style.display !== "none"){
+    draw();
+  }
+});
+</script>
+</body>
+</html>

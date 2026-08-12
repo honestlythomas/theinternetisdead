@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/dead/js/shell-route.js"></script><link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>/dead/games/shooter-game/assets/levels/shooter-game-level2.html</title>
+<script>
+(function(){
+  document.documentElement.classList.add('sg-hud-pregame');
+})();
+</script>
+<style id="hudPregameFirstPaintHidePatch">
+  /* v26: Hide corner HUD counters before runtime boots so refreshes do not flash
+     Score/Time/Lives/Bombs over the Start Menu. */
+  html.sg-hud-pregame body #scoreStoreHud,
+  html.sg-hud-pregame body #timerHud,
+  html.sg-hud-pregame body #livesSlot,
+  html.sg-hud-pregame body #powerupSlot{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+</style>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; color:#0f0; font-family:monospace; }
+  canvas { display:block; background:transparent; }
+  #overlay{
+    position:absolute; top:10px; left:10px; font-size:14px; line-height:1.4; pointer-events:none;
+    text-shadow:0 0 6px rgba(0,255,0,0.35);
+   display:none; /* HUD hidden by default (toggle with /) */
+  }
+
+
+  #uiRoot{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+  #uiRoot.pauseControlsOpen{ z-index:10001; }
+  #controlsMenu.pauseControlsMode{ display:block; position:relative; z-index:10002; background: rgba(81,42,103,0.88); }
+  #pauseOverlay.pauseControlsVisible #pausePanel{ display:none; }
+
+  /* Dim gameplay behind the Options menu the same way the Pause overlay does. */
+  #uiRoot.optionsBackdrop::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    pointer-events:none;
+    z-index:0;
+  }
+  #uiRoot.optionsBackdrop > *{
+    position:relative;
+    z-index:1;
+  }
+  .panel{
+    pointer-events:auto;
+    width:min(520px, 92vw);
+    border:1px solid rgba(0,255,0,0.35);
+    border-radius:14px;
+    background: rgba(0,0,0,0.72);
+    box-shadow: 0 0 28px rgba(0,255,0,0.08);
+    padding: 18px 18px 16px;
+    text-align:center;
+  }
+  .title{ font-size:26px; letter-spacing:1px; margin:4px 0 10px; }
+  .subimg{
+    width:120px; height:120px; display:block; margin:0 auto 10px;
+    image-rendering:pixelated; filter: drop-shadow(0 0 8px rgba(0,255,0,0.18));
+  }
+  .titleSubWrap{ display:flex; justify-content:center; margin:-4px 0 10px; }
+  .titleSub{ position:relative; display:inline-block; font-size:13px; opacity:0.82; cursor:default; min-width:220px; }
+  .titleSubDefault, .titleSubHover{ display:block; white-space:nowrap; transition:opacity 120ms ease; }
+  .titleSubHover{ position:absolute; inset:0; opacity:0; pointer-events:none; }
+  .titleSub:hover .titleSubDefault{ opacity:0; }
+  .titleSub:hover .titleSubHover{ opacity:1; }
+  .subimg{
+    width:120px; height:120px; display:block; margin:0 auto 10px;
+    image-rendering:pixelated; filter: drop-shadow(0 0 8px rgba(0,255,0,0.18));
+  }
+  .btnRow{ display:flex; gap:10px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
+  .btnRowTop{ margin-top:12px; }
+  .btnRowBottom{ margin-top:10px; }
+  #btnControls{ min-width:160px; }
+
+  /* Controller-selected Back button B-button hint.
+     B first moves selection here; pressing B again activates Back. Tiny sanity tax paid. */
+  #btnBack,
+  #controlsBack{
+    position:relative;
+    overflow:hidden;
+  }
+  body.controller-active #btnBack.controllerFocus::after,
+  body.controller-active #controlsBack.controllerFocus::after{
+    content:"";
+    position:absolute;
+    right:4px;
+    top:50%;
+    width:18px;
+    height:18px;
+    transform:translateY(-50%);
+    background:url('/dead/games/shooter-game/assets/controller-buttons/button-b.webp') center / contain no-repeat;
+    image-rendering:auto;
+    pointer-events:none;
+    filter:drop-shadow(0 0 4px rgba(0,255,0,0.75));
+    z-index:2;
+  }
+
+  button{
+    font-family:monospace; color:#0f0; background:rgba(0,0,0,0.55);
+    border:1px solid rgba(0,255,0,0.45);
+    padding:10px 14px; border-radius:12px; cursor:pointer; min-width:160px;
+  }
+  button:hover,
+  body.controller-active button.controllerFocus,
+  body.controller-active .smallBtn.controllerFocus{ background: rgba(0,255,0,0.08); }
+  .smallBtn{ min-width:120px; padding:8px 12px; border-radius:10px; }
+  body.controller-active button.controllerFocus,
+  body.controller-active .smallBtn.controllerFocus{
+    border-color: rgba(0,255,0,0.9);
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 18px rgba(0,255,0,0.22);
+  }
+  body.controller-active .optRow.controllerFocus,
+  body.controller-active .controlsBindRow.controllerFocus{
+    border-color: rgba(0,255,0,0.9);
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 18px rgba(0,255,0,0.22);
+    background: rgba(81,42,103,0.52);
+  }
+  body.controller-active .optRow .controllerFocus,
+  body.controller-active .controlsBindRow .controllerFocus{
+    border-color: rgba(0,255,0,0.95) !important;
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.38), 0 0 12px rgba(0,255,0,0.22);
+    outline: none;
+    background-color: rgba(81,42,103,0.45);
+  }
+  body.controller-active #optionsMenu .selectLevelTopButtons .smallBtn.controllerFocus,
+  body.controller-active #optionsMenu .selectLevelBackRow .smallBtn.controllerFocus{
+    border-color: rgba(0,255,0,0.95) !important;
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 18px rgba(0,255,0,0.22);
+    outline: none;
+    background-color: rgba(81,42,103,0.45);
+  }
+  body.controller-active input[type="range"].controllerFocus{
+    filter: drop-shadow(0 0 6px rgba(0,255,0,0.45));
+    background-color: transparent;
+  }
+  body.controller-active input[type="range"].controllerFocus::-webkit-slider-runnable-track{
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(81,42,103,0.78);
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.55), 0 0 12px rgba(0,255,0,0.22);
+  }
+  body.controller-active input[type="range"].controllerFocus::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #00ff66;
+    border: 2px solid rgba(0,0,0,0.82);
+    margin-top: -5px;
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.58), 0 0 16px rgba(0,255,0,0.30);
+  }
+  body.controller-active input[type="range"].controllerFocus::-moz-range-track{
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(81,42,103,0.78);
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.55), 0 0 12px rgba(0,255,0,0.22);
+  }
+  body.controller-active input[type="range"].controllerFocus::-moz-range-thumb{
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #00ff66;
+    border: 2px solid rgba(0,0,0,0.82);
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.58), 0 0 16px rgba(0,255,0,0.30);
+  }
+  body.controller-active input[type="checkbox"].controllerFocus{
+    outline: 2px solid rgba(0,255,0,0.95);
+    outline-offset: 2px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0,255,0,0.24);
+    background-color: transparent;
+  }
+  body.controller-active #optionsMenu label:has(input[type="checkbox"].controllerFocus){
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 10px;
+    background: rgba(81,42,103,0.45);
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 12px rgba(0,255,0,0.22);
+  }
+  .optionsGrid{ display:grid; grid-template-columns:1fr; gap:12px; text-align:center; margin-top:10px; }
+  .optRow{ border:1px solid rgba(0,255,0,0.2); border-radius:12px; padding:10px 12px; background: rgba(0,0,0,0.35); }
+  .optLabel{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:14px; }
+  #optionsMenu select,
+  #optionsMenu input[type="range"],
+  #optionsMenu input[type="checkbox"]{ transition: box-shadow 120ms ease, border-color 120ms ease, outline-color 120ms ease, filter 120ms ease, background-color 120ms ease; }
+  #optionsMenu select{ scrollbar-width:none; -ms-overflow-style:none; }
+  #optionsMenu select::-webkit-scrollbar{ width:0; height:0; display:none; }
+  input[type="range"]{ width:100%; accent-color:#00ff66; }
+  .hint{ opacity:0.8; font-size:12px; margin-top:10px; line-height:1.35; }
+  #controlsMenu.panel{ width:min(640px, 94vw); padding:12px 12px 10px; background: rgba(81,42,103,0.72); max-height:none; overflow:visible; scrollbar-width:none; -ms-overflow-style:none; transform-origin:center center; }
+  #controlsMenu.panel::-webkit-scrollbar{ width:0; height:0; display:none; }
+  #controlsMenu .title{ font-size:18px; margin:1px 0 5px; }
+  #controlsMenu .controlsGrid{ display:grid; gap:6px; text-align:center; width:100%; min-width:0; }
+  #controlsMenu .optRow{ padding:6px 0; background:transparent; border:none; border-radius:0; box-shadow:none; }
+  #controlsMenu .controlsBindList{ display:grid; grid-template-columns:minmax(0, 1fr); gap:6px; margin-top:4px; width:100%; min-width:0; }
+  #controlsMenu .controlsBindRow{ display:grid; grid-template-columns:minmax(0, 1fr) auto; gap:6px; align-items:center; border:1px solid rgba(0,255,0,0.2); border-radius:12px; padding:6px 8px; background: rgba(0,0,0,0.35); }
+  #controlsMenu .controlsBindRow:hover,
+  #controlsMenu .controlsBindRow:focus-within{ border-color: rgba(0,255,0,0.9); box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 18px rgba(0,255,0,0.22); background: rgba(81,42,103,0.52); }
+  #controlsMenu .controlsBindMeta{ display:flex; flex-direction:column; gap:1px; min-width:0; align-items:flex-start; text-align:left; }
+  #controlsMenu .controlsBindTitle{ font-size:12px; }
+  #controlsMenu .controlsBindHint{ opacity:0.7; font-size:9px; line-height:1.15; }
+  #controlsMenu .controlsBindButton{ min-width:116px; padding:6px 8px; text-align:center; font-size:11px; }
+  #controlsMenu .controlsBindButton.listening{ border-color: rgba(255,255,255,0.95); box-shadow: 0 0 0 2px rgba(255,255,255,0.16); }
+  #controlsMenu .controlsMoveRow{ grid-template-columns:minmax(120px, 0.92fr) minmax(0, 1.08fr); }
+  #controlsMenu .controlsMoveButtonGroup{ display:grid; grid-template-columns:repeat(4, 58px); gap:0; align-items:stretch; justify-content:end; min-width:0; width:100%; max-width:100%; }
+  #controlsMenu .controlsMoveButton{ min-width:58px; width:58px; max-width:58px; min-height:0; padding:6px 0; font-size:10px; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:clip; display:flex; align-items:center; justify-content:center; gap:2px; text-align:center; box-sizing:border-box; }
+  #controlsMenu .controlsMoveButton .moveBindLabel{ display:inline-block; font-size:15px; line-height:1.0; }
+  #controlsMenu .controlsMoveButton .moveBindValue{ display:inline-block; font-size:8px; line-height:1.0; opacity:0.95; white-space:nowrap; overflow:hidden; text-overflow:clip; }
+  #controlsMenu .controlsAimRow{ grid-template-columns:minmax(120px, 0.92fr) auto; }
+  #controlsMenu .controlsAimButtonGroup{ display:flex; justify-content:end; align-items:stretch; min-width:0; width:100%; max-width:100%; }
+  #controlsMenu .controlsAimButton{ min-width:116px; padding:6px 8px; text-align:center; font-size:11px; display:flex; align-items:center; justify-content:center; }
+  #controlsMenu .controlsFixedBindButton{ cursor:default; }
+  #controlsMenu .controlsFixedBindButton:focus{ outline:none; }
+
+  @media (max-width: 640px), (max-height: 760px){
+    #controlsMenu.panel{ width:min(520px, 94vw); padding:10px; max-height:none; }
+    #controlsMenu .title{ font-size:17px; }
+    #controlsMenu .controlsGrid{ gap:5px; }
+    #controlsMenu .optRow{ padding:6px 8px; }
+    #controlsMenu .controlsBindList{ gap:5px; }
+    #controlsMenu .controlsBindRow{ padding:6px 8px; gap:5px; }
+    #controlsMenu .controlsBindTitle{ font-size:11px; }
+    #controlsMenu .controlsBindHint{ font-size:8px; }
+    #controlsMenu .controlsBindButton{ min-width:104px; padding:6px 7px; font-size:10px; }
+    #controlsMenu .controlsMoveButtonGroup{ grid-template-columns:repeat(4, 52px); gap:0; }
+    #controlsMenu .controlsMoveButton{ min-width:52px; width:52px; max-width:52px; padding:6px 0; }
+    #controlsMenu .controlsMoveButton .moveBindLabel{ font-size:14px; }
+    #controlsMenu .controlsMoveButton .moveBindValue{ font-size:8px; }
+    #controlsMenu .controlsAimButton{ min-width:104px; padding:6px 7px; font-size:10px; }
+  }
+
+  /* OPTIONS MENU: keep it on-screen, scroll if needed */
+  #optionsMenu.panel{ max-height:88vh; overflow:auto; scrollbar-width:none; -ms-overflow-style:none; }
+  #optionsMenu.panel::-webkit-scrollbar{ width:0; height:0; display:none; }
+  #optionsMenu .title{ font-size:18px; margin:1px 0 5px; }
+  #optionsMenu .optionsGrid{ grid-template-columns:repeat(2, minmax(0, 1fr)); gap:6px; align-items:start; }
+  #optionsMenu .optRow.fullRow,
+  #optionsMenu .optRow.checkboxGroup{ grid-column:1 / -1; }
+  #optionsMenu .optRow{ padding:6px 8px; }
+  #optionsMenu .optLabel{ margin-bottom:3px; font-size:12px; }
+  #optionsMenu .hint{ margin-top:3px; line-height:1.15; font-size:10px; }
+  #optionsMenu .selectLevelGrid{ display:block; margin-top:10px; }
+  #optionsMenu .selectLevelTopButtons{ display:flex; gap:10px; margin-top:0; }
+  #optionsMenu .selectLevelTopButtons .smallBtn{ flex:1 1 0; }
+  #optionsMenu .selectLevelBackRow{ margin-top:14px; justify-content:center; }
+  #optionsMenu .checkboxGroup{ display:flex; flex-direction:column; gap:7px; }
+  #optionsMenu .checkOption{ display:flex; flex-direction:column; gap:4px; }
+  #optionsMenu .checkOption label{ display:flex; align-items:center; gap:8px; font-size:12px; opacity:0.95; cursor:pointer; }
+  #optionsMenu .checkOption .hint{ margin-top:0; padding-left:0; }
+
+  @media (max-width: 640px), (max-height: 760px){
+    #optionsMenu.panel{ width:min(520px, 94vw); padding:10px; max-height:none; }
+    #optionsMenu .title{ font-size:17px; }
+    #optionsMenu .optionsGrid{ grid-template-columns:1fr; gap:5px; }
+    #optionsMenu .optRow{ padding:6px 8px; }
+    #optionsMenu .hint{ font-size:9px; }
+  }
+
+  .statusLine{ margin-top:10px; font-size:12px; opacity:0.9; }
+
+  /* =======================
+     HUD Corner Slots (v1.96)
+  ======================= */
+  .cornerSlot{
+    position:absolute;
+    min-width:120px;
+    height:76px;
+    padding:6px;
+    border:2px solid rgba(0,255,0,0.55);
+    border-radius:12px;
+    background: rgba(0,0,0,0.55);
+    box-shadow: 0 0 18px rgba(0,255,0,0.10);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:4px;
+    pointer-events:none;
+  }
+  .cornerSlot .subtxt{
+    font-family: "Courier New", monospace;
+    font-size: 18px;
+    font-weight:700;
+    line-height:1;
+    opacity:0.95;
+    color:#0f0;
+    text-align:center;
+  }
+  #powerupHint{
+    font-weight:700;
+  }
+  #livesSlot img{
+    width:40px; height:40px;
+    image-rendering:pixelated;
+    filter: drop-shadow(0 0 8px rgba(0,255,0,0.20));
+  }
+
+
+  .livesButton{
+    flex-direction:row;
+    justify-content:center;
+    gap:8px;
+  }
+  .livesLabel{
+    font-family:"Courier New", monospace;
+    font-size: 18px;
+    font-weight:700;
+    color:#00ff66;
+    opacity:0.95;
+    white-space:nowrap;
+  }
+
+  #deathOverlay{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background: rgba(255,0,0,0.22);
+    pointer-events:auto;
+  }
+  #deathPanel{
+    width:min(520px, 92vw);
+    border:3px solid rgba(255,0,0,0.65);
+    border-radius:16px;
+    background: rgba(0,0,0,0.72);
+    padding: 18px 18px 16px;
+    text-align:center;
+    box-shadow: 0 0 36px rgba(255,0,0,0.14);
+  }
+  #deathTitle{
+    font-family:"Courier New", monospace;
+    font-weight:900;
+    font-size:56px;
+    letter-spacing:2px;
+    color:#ff4444;
+    text-shadow: 0 0 10px rgba(255,0,0,0.25);
+  }
+  #deathPanel .deathBtn{
+    display:block;
+    width:min(460px, 78vw);
+    min-width:0;
+    margin:14px auto 0;
+    box-sizing:border-box;
+    font-family:"Courier New", monospace;
+    font-size:20px;
+    font-weight:800;
+    color:#ffdddd;
+    background: rgba(0,0,0,0.55);
+    border:2px solid rgba(255,0,0,0.55);
+    padding:10px 18px;
+    border-radius:14px;
+    cursor:pointer;
+    text-align:center;
+  }
+  #deathPanel .deathBtn:hover,
+  body.controller-active #deathPanel .deathBtn.controllerFocus{
+    border-color: rgba(0,255,0,0.9);
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 18px rgba(0,255,0,0.22);
+    background: rgba(81,42,103,0.55);
+  }
+
+  #winOverlay{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background: rgba(0,255,0,0.22);
+    pointer-events:auto;
+    z-index: 110;
+  }
+
+  #mazeSummaryOverlay{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background: rgba(0,0,0,0.68);
+    pointer-events:auto;
+    z-index: 105;
+  }
+  #mazeSummaryPanel{
+    width:min(560px, 92vw);
+    border:3px solid rgba(255,215,0,0.70);
+    border-radius:18px;
+    background: rgba(0,0,0,0.84);
+    padding: 22px 20px 18px;
+    text-align:center;
+    box-shadow: 0 0 36px rgba(255,215,0,0.16);
+  }
+  #mazeSummaryTitle{
+    font-family:"Cooper Std", "Cooper Black", "Bookman Old Style", serif;
+    font-weight:900;
+    font-size:44px;
+    letter-spacing:1px;
+    color:#ffe680;
+    text-shadow:0 0 12px rgba(255,215,0,0.20);
+  }
+  #mazeSummaryStats{
+    margin-top:12px;
+    font-family:monospace;
+    font-size:20px;
+    line-height:1.6;
+    color:#f7ffcf;
+  }
+  #mazeSummaryBonus{
+    margin-top:10px;
+    font-family:monospace;
+    font-weight:900;
+    font-size:28px;
+    color:#ffd400;
+    text-shadow:0 0 10px rgba(255,212,0,0.18);
+  }
+  #btnNextMaze{
+    margin-top:16px;
+    font-family:"Cooper Std", "Cooper Black", "Bookman Old Style", serif;
+    font-size:22px;
+    font-weight:800;
+    color:#fff6d5;
+    background: rgba(60,40,0,0.70);
+    border:2px solid rgba(255,215,0,0.62);
+    padding:10px 18px;
+    border-radius:14px;
+    cursor:pointer;
+  }
+  #btnNextMaze:hover{ background: rgba(255,215,0,0.12); }
+  #winPanel{
+    width:min(520px, 92vw);
+    border:3px solid rgba(0,255,0,0.75);
+    border-radius:16px;
+    background: rgba(0,0,0,0.82);
+    padding: 20px 18px 18px;
+    text-align:center;
+    box-shadow: 0 0 36px rgba(0,255,0,0.18);
+  }
+  #winTitle{
+    font-family: "Cooper Std", "Cooper Black", "Bookman Old Style", serif;
+    font-weight:900;
+    font-size:56px;
+    letter-spacing:1px;
+    color:#7dff7d;
+    text-shadow: 0 0 12px rgba(0,255,0,0.28);
+  }
+  #btnContinue{
+    margin-top:14px;
+    font-family:"Cooper Std", "Cooper Black", "Bookman Old Style", serif;
+    font-size:22px;
+    font-weight:800;
+    color:#dfffe2;
+    background: rgba(0,40,0,0.65);
+    border:2px solid rgba(0,255,0,0.60);
+    padding:10px 18px;
+    border-radius:14px;
+    cursor:pointer;
+  }
+  #btnContinue:hover{ background: rgba(0,255,0,0.12); }
+
+
+  #pauseOverlay{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background: rgba(0,0,0,0.55);
+    pointer-events:none;
+    z-index: 90;
+  }
+  #pausePanel{
+    width:min(520px, 92vw);
+    border:3px solid rgba(0,255,0,0.65);
+    border-radius:16px;
+    background: rgba(81,42,103,0.72);
+    padding: 18px 18px 16px;
+    text-align:center;
+    box-shadow: 0 0 36px rgba(0,255,0,0.14);
+  
+  box-sizing: border-box;
+  max-width: min(520px, 92vw);
+  width: min(520px, 92vw);
+
+  position: relative;
+
+  pointer-events: auto;
+}
+  #pauseTitle{
+    font-family:"Courier New", monospace;
+    font-weight:900;
+    font-size:34px;
+    line-height:1.08;
+    letter-spacing:2px;
+    color:#00ff66;
+    text-shadow: 0 0 10px rgba(0,255,0,0.25);
+  }
+  #pauseHint{
+    margin-bottom:12px;
+    margin-top:10px;
+    font-family:monospace;
+    font-size:14px;
+    opacity:0.9;
+    color:#b6ffcf;
+  }
+  .pauseMenuBtn{
+    width:100%;
+    max-width:420px;
+    box-sizing:border-box;
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+    font-family:"Courier New", monospace;
+    font-weight:800;
+    color:#0f0;
+    background: rgba(0,0,0,0.55);
+    border:2px solid rgba(0,255,0,0.55);
+    padding:12px 14px;
+    border-radius:14px;
+    cursor:pointer;
+    pointer-events:auto;
+    transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  }
+  .pauseMenuBtn + .pauseMenuBtn{ margin-top:10px; }
+  /* Quit to Menu now uses the same stacked spacing as the rest of the pause menu. */
+  body.controller-active #pausePanel .pauseMenuBtn.controllerFocus{
+    background: rgba(81,42,103,0.55) !important;
+    border-color: rgba(0,255,0,0.95) !important;
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 18px rgba(0,255,0,0.22) !important;
+  }
+  body.controller-active #pausePanel .pauseMenuBtn.controllerFocus *{ box-shadow:none !important; }
+
+  /* Controller-selected Pause menu A-button hint.
+     Inline after the label so it appears to the right of the button text only while controller-selected. */
+  body.controller-active #pausePanel .pauseMenuBtn.controllerFocus::after{
+    content:"";
+    display:inline-block;
+    width:18px;
+    height:18px;
+    margin-left:8px;
+    vertical-align:-3px;
+    background:url('/dead/games/shooter-game/assets/controller-buttons/button-a.webp') center / contain no-repeat;
+    image-rendering:auto;
+    pointer-events:none;
+    filter:drop-shadow(0 0 4px rgba(0,255,0,0.75));
+  }
+  #pausePanel .pauseMenuBtn:hover{
+    background: rgba(81,42,103,0.55);
+    border-color: rgba(0,255,0,0.9);
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 18px rgba(0,255,0,0.22);
+  }
+  #pauseOverlay.scoreStoreVisible #pausePanel{ display:none; }
+  #scoreStorePanel{
+    display:none;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    z-index:1;
+    width:min(640px, 94vw);
+    border:3px solid rgba(0,255,0,0.65);
+    border-radius:16px;
+    background: rgba(81,42,103,0.72);
+    padding:12px 12px 10px;
+    text-align:center;
+    box-shadow: 0 0 36px rgba(0,255,0,0.14);
+    pointer-events:auto;
+    box-sizing:border-box;
+    max-height:min(88vh, 640px);
+    overflow:auto;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  #scoreStorePanel::-webkit-scrollbar{ width:0; height:0; display:none; }
+  #pauseOverlay.scoreStoreVisible #scoreStorePanel{ display:block; }
+  #scoreStorePanel .title{
+    font-size:18px;
+    margin:1px 0 5px;
+  }
+  #scoreStoreHint{
+    margin:0 0 6px;
+    font-family:monospace;
+    font-size:11px;
+    line-height:1.3;
+    color:#d9ffe5;
+    opacity:0.9;
+  }
+  #scoreStoreCurrentScore{
+    margin:0 0 8px;
+    font-family:monospace;
+    font-size:14px;
+    font-weight:800;
+    color:#ffd400;
+    text-shadow:0 0 8px rgba(0,0,0,0.65);
+  }
+  #scoreStoreItems{
+    display:grid;
+    gap:6px;
+  }
+  #scoreStoreItems .scoreStoreRow{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) auto;
+    gap:8px;
+    align-items:center;
+    padding:8px 10px;
+    text-align:left;
+  }
+  #scoreStoreItems .scoreStoreMeta{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    min-width:0;
+  }
+  #scoreStoreItems .scoreStoreHead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+  #scoreStoreItems .scoreStoreItemTitle{
+    font-size:13px;
+    color:#ffffff;
+    white-space:nowrap;
+  }
+  #scoreStoreItems .scoreStoreCost{
+    font-size:10px;
+    font-weight:900;
+    color:#ffd400;
+    white-space:nowrap;
+  }
+  #scoreStoreItems .scoreStoreItemDetail{
+    font-size:10px;
+    line-height:1.2;
+    color:#b6ffcf;
+    opacity:0.82;
+  }
+
+  #scoreStoreItems .scoreStoreHeartsPreview{
+    display:block;
+    width:max-content;
+    max-width:100%;
+    margin-top:3px;
+    padding:3px 5px;
+    border:1px solid rgba(0,255,0,0.38);
+    border-radius:8px;
+    background:rgba(0,0,0,0.28);
+    color:#ffffff;
+    font-family:monospace;
+    font-size:18px;
+    line-height:1;
+    letter-spacing:1px;
+    white-space:nowrap;
+    text-shadow:0 0 6px rgba(0,0,0,0.75);
+  }
+  #scoreStoreItems .scoreStoreHeartsPreview .hudExtra,
+  #scoreStoreItems .scoreStoreHeartsPreview .heartsExtra{
+    display:inline-block;
+    letter-spacing:0;
+    margin-left:0;
+    vertical-align:middle;
+    font-size:0.78em;
+    color:#ffd400;
+  }
+  #scoreStoreItems .scoreStoreAction{
+    min-width:104px;
+    padding:6px 8px;
+    font-size:11px;
+    text-align:center;
+  }
+  #scoreStoreStatus{
+    min-height:1.3em;
+    margin-top:8px;
+    font-family:monospace;
+    font-size:10px;
+    line-height:1.2;
+    color:#d9ffe5;
+    opacity:0.82;
+  }
+  #btnScoreStoreClose{
+    margin-top:10px;
+    min-width:140px;
+  }
+
+
+  /* v1.96: keep HUD off the menu and keep menu clickable */
+  #uiRoot{ z-index: 50; }
+  #deathOverlay{ z-index: 100; }
+#livesSlot{
+  display:none;
+  transform:scale(0.5);
+  transform-origin:left bottom;
+  z-index:40;
+}
+#powerupSlot{
+  display:none;
+  transform:scale(0.5);
+  transform-origin:right bottom;
+  z-index:40;
+}
+
+
+/* Centered wave label (replaces old Stage/Waves HUD) */
+/* Centered wave label (final) */
+#stageHud{
+  position: absolute;
+  top: 8px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font: bold 20px monospace;
+  z-index: 50;
+  text-shadow: 0 0 8px rgba(0,0,0,0.65);
+  pointer-events: none;
+}
+
+
+/* v2.XX: Music HUD. Speaker + filename dropdown live beside the Start Menu/Wave label. */
+#stageHud{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  width:100% !important;
+  left:0 !important;
+  text-align:center !important;
+  pointer-events:none !important;
+}
+#stageHud.stageMenuAudioToggle::after{
+  content:none !important;
+  display:none !important;
+}
+#stageHudLabel{
+  display:inline-block;
+}
+#stageHudSpeaker{
+  display:inline-grid;
+  place-items:center;
+  box-sizing:border-box;
+  inline-size:28px;
+  block-size:28px;
+  width:28px;
+  min-width:28px;
+  max-width:28px;
+  height:28px;
+  min-height:28px;
+  max-height:28px;
+  aspect-ratio:1 / 1;
+  flex:0 0 28px;
+  padding:0;
+  margin:0 6px 0 10px;
+  border:1px solid rgba(0,255,102,0.52);
+  border-radius:8px;
+  background:rgba(0,0,0,0.58);
+  box-shadow:0 0 12px rgba(0,255,102,0.16);
+  color:#00ff66;
+  font-family:monospace;
+  font-size:18px;
+  font-weight:400;
+  line-height:1;
+  text-align:center;
+  cursor:pointer;
+  pointer-events:auto;
+  vertical-align:middle;
+  appearance:none;
+  -webkit-appearance:none;
+}
+#stageHudSpeaker:hover,
+#stageHudSpeaker:focus-visible{
+  background:rgba(81,42,103,0.82);
+  border-color:rgba(0,255,0,0.95);
+  box-shadow:0 0 0 2px rgba(0,255,0,0.22), 0 0 14px rgba(0,255,0,0.24);
+  outline:none;
+}
+#musicFileDropdown{
+  pointer-events:auto;
+  appearance:none;
+  -webkit-appearance:none;
+  box-sizing:content-box;
+  flex:0 0 auto;
+  width:calc(var(--music-select-ch, 10) * 1ch);
+  min-width:0;
+  max-width:none;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#00ff66;
+  font:bold 14px monospace;
+  text-shadow:0 0 6px rgba(0,255,0,0.35);
+  padding:0;
+  margin:0;
+  cursor:pointer;
+}
+#musicFileDropdown option{
+  background:#050008;
+  color:#00ff66;
+}
+#musicDropdownCaret{
+  display:inline-block;
+  flex:0 0 auto;
+  color:#00ff66;
+  font:bold 15px monospace;
+  line-height:1;
+  margin-left:calc(-8px + 1ch);
+  text-shadow:0 0 6px rgba(0,255,0,0.35);
+  pointer-events:none;
+  user-select:none;
+  transform:translateY(-1px);
+}
+#musicFileDropdown.isMuted{
+  color:#ff5050;
+  text-shadow:0 0 6px rgba(255,0,0,0.45);
+}
+#musicFileDropdown.isMuted + #musicDropdownCaret{
+  color:#ff5050;
+  text-shadow:0 0 6px rgba(255,0,0,0.45);
+}
+
+/* Accuracy score (top-left, 2x wave counter) */
+#scoreStoreHud{
+  position:absolute;
+  top:10px;
+  left:14px;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:4px;
+  padding:6px;
+  margin:0;
+  min-width:0;
+  border:2px solid rgba(255,232,102,0.82);
+  border-radius:12px;
+  background:rgba(0,0,0,0.55);
+  box-shadow:0 0 18px rgba(255,232,102,0.12);
+  appearance:none;
+  -webkit-appearance:none;
+  font:inherit;
+  text-align:left;
+  cursor:default;
+  pointer-events:none;
+  z-index:60;
+  user-select:none;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+#scoreStoreHud:hover{ background:rgba(0,0,0,0.55); }
+#scoreStoreHud:disabled{ opacity:1; }
+#scoreStoreHud.storeReady{
+  border-color:rgba(255,232,102,0.92);
+  background: rgba(0,0,0,0.55);
+  box-shadow: 0 0 18px rgba(255,232,102,0.16);
+  cursor:pointer;
+  pointer-events:auto;
+  animation:storeUnlockedHue 1.1s linear infinite;
+}
+#scoreStoreHud.storeReady:hover,
+body.controller-active #scoreStoreHud.storeReady.controllerFocus{
+  background: rgba(81,42,103,0.55) !important;
+  border-color: rgba(0,255,0,0.9) !important;
+  box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 18px rgba(0,255,0,0.22) !important;
+}
+#accuracyScore{
+  position:static;
+  font-family:monospace;
+  font-weight:900;
+  font-size:20px;
+  color:#ffd400;
+  text-shadow:0 0 8px rgba(0,0,0,0.65);
+  pointer-events:none;
+  user-select:none;
+  white-space:nowrap;
+}
+
+#storeUnlockedHud{
+  position:static;
+  font-family:monospace;
+  font-weight:900;
+  font-size:12px;
+  color:#fff;
+  text-shadow:0 0 8px rgba(0,0,0,0.75);
+  pointer-events:none;
+  user-select:none;
+  white-space:nowrap;
+  display:none;
+  width:100%;
+  text-align:center;
+}
+
+@keyframes storeUnlockedHue{
+  0%{filter:hue-rotate(0deg);}
+  100%{filter:hue-rotate(360deg);}
+}
+
+#timerHud{
+  position:absolute;
+  top:10px;
+  right:14px;
+  padding:6px;
+  border:2px solid rgba(255,255,255,0.82);
+  border-radius:12px;
+  background:rgba(0,0,0,0.55);
+  box-shadow:0 0 18px rgba(255,255,255,0.12);
+  font-family:monospace;
+  font-weight:800;
+  font-size:18px;
+  color:#ffffff;
+  opacity:0.95;
+  text-shadow:0 0 8px rgba(0,0,0,0.65);
+  pointer-events:none;
+  z-index:60;
+  user-select:none;
+  text-align:center;
+  line-height:1.05;
+  white-space:nowrap;
+}
+.timerHudLabel{
+  display:block;
+  font-size:14px;
+  line-height:1;
+  margin-bottom:2px;
+  text-transform:none;
+}
+
+/* v2.XX: Square HUD counter boxes.
+   Score, Time, Lives, and Bombs now use the same compact square footprint.
+   The label/value stack is tuned to stay readable without letting the HUD balloon
+   back into a neon filing cabinet. */
+#scoreStoreHud,
+#timerHud,
+#livesSlot,
+#powerupSlot{
+  width:72px !important;
+  min-width:72px !important;
+  max-width:72px !important;
+  height:72px !important;
+  min-height:72px !important;
+  max-height:72px !important;
+  box-sizing:border-box !important;
+  padding:6px 5px !important;
+  border-radius:12px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-direction:column !important;
+  gap:4px !important;
+  text-align:center !important;
+  line-height:1 !important;
+}
+#scoreStoreHud{
+  align-items:center !important;
+  text-align:center !important;
+}
+#timerHud{
+  font-size:16px;
+}
+#livesSlot,
+#powerupSlot{
+  border-width:2px !important;
+  transform:none !important;
+}
+.hudBoxLabel,
+.timerHudLabel,
+.livesLabel,
+.powerupLabel{
+  display:block;
+  width:100%;
+  margin:0 !important;
+  font-family:"Courier New", monospace;
+  font-size:10px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  opacity:0.9;
+  white-space:nowrap;
+  text-align:center;
+}
+.hudBoxValue,
+#accuracyScore,
+#livesText,
+#powerupHint,
+#timerHud > div:last-child{
+  display:block;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:clip;
+  font-family:"Courier New", monospace;
+  font-size:15px !important;
+  font-weight:900 !important;
+  line-height:1.08 !important;
+  text-align:center;
+  white-space:nowrap;
+}
+#accuracyScore{
+  color:#ffd400;
+}
+
+#mobileTwinStickOverlay{
+  position:fixed;
+  inset:0;
+  z-index:85;
+  display:none;
+  pointer-events:none;
+}
+.mobileStickZone{
+  position:absolute;
+  bottom:18px;
+  width:132px;
+  height:132px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:auto;
+  touch-action:none;
+  user-select:none;
+  background:radial-gradient(circle, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.08) 58%, rgba(0,0,0,0) 72%);
+}
+.mobileStickZoneLeft{ left:14px; }
+.mobileStickZoneRight{ right:14px; }
+.mobileStickImage{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:88px;
+  height:88px;
+  object-fit:contain;
+  opacity:0.88;
+  pointer-events:none;
+  user-select:none;
+  filter:drop-shadow(0 0 10px rgba(0,0,0,0.35));
+  transform:translate(-50%, -50%);
+  transition:transform 70ms linear, opacity 90ms ease;
+}
+
+@media (pointer: coarse) and (max-width: 600px), (pointer: coarse) and (max-height: 600px){
+  body.mobileTouchControls #livesSlot{
+    top:10px !important;
+    bottom:auto !important;
+    left:94px !important;
+    right:auto !important;
+  }
+  body.mobileTouchControls #powerupSlot{
+    top:10px !important;
+    bottom:auto !important;
+    right:94px !important;
+    left:auto !important;
+  }
+  body.mobileTouchControls #mobileTwinStickOverlay{
+    display:block;
+  }
+  body.mobileTouchControls:not(.mobileTouchControlsActive) .mobileStickZone{
+    pointer-events:none;
+    opacity:0.72;
+  }
+}
+#storeUnlockedHud{
+  font-size:7px !important;
+  line-height:1 !important;
+  margin-top:0;
+  text-align:center;
+  white-space:nowrap;
+}
+#livesSlot img,
+#powerupEmoji{
+  display:none !important;
+}
+#livesText{
+  color:#00ff66;
+}
+#powerupHint{
+  color:#00d5ff;
+}
+#powerupSlot .subtxt,
+#livesSlot .subtxt{
+  margin:0;
+}
+.cheatsInfinitySymbol{
+  font-size:1.35em;
+  line-height:0.72;
+  vertical-align:-0.08em;
+}
+/* =======================
+   Invert Colors Mode
+======================= */
+body.invert-colors {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+  /* Kill browser click-flash / focus indicator artifacts */
+  html, body, canvas, button, select, input, textarea, label, div, iframe {
+    -webkit-tap-highlight-color: transparent;
+  }
+  *:focus,
+  *:focus-visible,
+  *:active{
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  body{
+    caret-color: transparent;
+  }
+
+  /* Keep lime menu highlight scoped to real hover or active controller navigation only */
+  button:hover,
+  .smallBtn:hover{
+    border-color: rgba(0,255,0,0.9) !important;
+    box-shadow: 0 0 0 2px rgba(0,255,0,0.45), 0 0 18px rgba(0,255,0,0.22) !important;
+  }
+  body:not(.controller-active) .controllerFocus{
+    border-color: inherit !important;
+    box-shadow: none !important;
+  }
+  canvas, .panel, button, select, label, #main-content, #app-shell, #overlay-container, #shooter-game-frame, #tektite-frame{
+    user-select:none;
+    -webkit-user-select:none;
+  }
+
+  /* v1.98: show compact MAX overlay when resource spinner is at 100. */
+  .startStatField.statInfinite{ position:relative; }
+  .startStatField.statInfinite input[type="number"]{ color:transparent; text-shadow:none; }
+  .startStatField.statInfinite::after{ content:"MAX"; position:absolute; left:10px; right:34px; bottom:10px; height:22px; line-height:22px; text-align:center; color:#00ff66; font-family:monospace; font-size:18px; pointer-events:none; }
+  /* v2.02: plain centered resource number boxes. No native or custom arrows. */
+  .startStatField input[type="number"]{ -moz-appearance:textfield; appearance:textfield; padding-right:12px; text-align:center; }
+  .startStatField input[type="number"]::-webkit-outer-spin-button,
+  .startStatField input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance:none; appearance:none; margin:0; display:none; }
+  .resourceNumberWrap{ position:relative; width:100%; }
+  .resourceNumberWrap input[type="number"]{ width:100%; }
+  .resourceStepperButtons{ display:none !important; }
+  .startStatField.statInfinite::after{ display:none; }
+  .startStatField.statInfinite .resourceNumberWrap::after{ content:"MAX"; position:absolute; left:12px; right:12px; top:50%; transform:translateY(-50%); height:22px; line-height:22px; text-align:center; color:#00ff66; font-family:monospace; font-size:18px; pointer-events:none; }
+
+  /* Unified overlay menu footprint: Start, Pause, Death, and Win now share the same shell size. */
+  :root{
+    --shooter-menu-footprint-width:min(520px, 92vw);
+    --shooter-menu-footprint-height:min(430px, calc(100vh - 32px));
+    --shooter-menu-footprint-padding:18px 18px 16px;
+    --shooter-menu-footprint-radius:16px;
+  }
+  #startMenu.panel,
+  #pausePanel,
+  #deathPanel,
+  #winPanel{
+    width:var(--shooter-menu-footprint-width) !important;
+    max-width:var(--shooter-menu-footprint-width) !important;
+    height:var(--shooter-menu-footprint-height) !important;
+    max-height:var(--shooter-menu-footprint-height) !important;
+    min-height:0 !important;
+    box-sizing:border-box !important;
+    padding:var(--shooter-menu-footprint-padding) !important;
+    border-radius:var(--shooter-menu-footprint-radius) !important;
+    text-align:center !important;
+    transform:scale(0.975) !important;
+    transform-origin:center center !important;
+  }
+  #startMenu.panel,
+  #pausePanel,
+  #deathPanel{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  #winPanel{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    aspect-ratio:auto !important;
+    overflow:auto;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  #winPanel::-webkit-scrollbar{ width:0; height:0; display:none; }
+  #startMenu.panel .btnRow,
+  #pausePanel .pauseMenuBtn,
+  #deathPanel .deathBtn,
+  #winPanel #btnContinue{
+    flex:0 0 auto;
+  }
+  #winStatsList{
+    flex:0 1 auto;
+    min-height:0;
+    overflow:visible;
+  }
+  @media (max-height: 620px), (max-width: 460px){
+    :root{ --shooter-menu-footprint-height:min(400px, calc(100vh - 24px)); }
+    #pauseTitle,
+    #deathTitle{ font-size:44px; }
+  }
+  /* End unified overlay menu footprint. */
+</style>
+
+
+<style>
+/* YOU WIN CENTERED BONUS PATCH */
+#levelCompleteOverlay,
+#levelCompleteModal,
+#winOverlay,
+#winModal,
+.completion-stats-modal,
+.win-screen,
+.level-complete-modal {
+  text-align: center !important;
+}
+
+#levelCompleteOverlay *,
+#levelCompleteModal *,
+#winOverlay *,
+#winModal *,
+.completion-stats-modal *,
+.win-screen *,
+.level-complete-modal * {
+  text-align: center !important;
+}
+
+#levelCompleteOverlay .bonus-row,
+#levelCompleteModal .bonus-row,
+#winOverlay .bonus-row,
+#winModal .bonus-row,
+.completion-stats-modal .bonus-row,
+.win-screen .bonus-row,
+.level-complete-modal .bonus-row {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  text-indent: 0 !important;
+}
+
+#levelCompleteOverlay button,
+#levelCompleteModal button,
+#winOverlay button,
+#winModal button,
+.completion-stats-modal button,
+.win-screen button,
+.level-complete-modal button {
+  margin-top: 28px !important;
+  margin-bottom: 24px !important;
+}
+
+#heartsHud .heartsExtra{
+  display:inline-block;
+  letter-spacing:0;
+  margin-left:2px;
+  vertical-align:middle;
+}
+</style>
+
+
+<style id="startMenuHudAboveGameplayBackdrop">
+  /* v2.XX: On the Start Menu, the dim layer is for the gameplay/canvas layer only.
+     Keep score, title/audio dropdown, timer, lives, hearts, and bombs above it. */
+  body.start-menu-hud-over-gameplay #stageHud,
+  body.start-menu-hud-over-gameplay #scoreStoreHud,
+  body.start-menu-hud-over-gameplay #timerHud,
+  body.start-menu-hud-over-gameplay #livesSlot,
+  body.start-menu-hud-over-gameplay #powerupSlot,
+  body.start-menu-hud-over-gameplay #heartsHud{
+    z-index:10060 !important;
+  }
+  body.start-menu-hud-over-gameplay #stageHud{
+    z-index:10070 !important;
+  }
+</style>
+
+<style id="scoreStorePauseSwapTrue16x9Patch">
+  /* Store must replace the pause panel, not stack on top of it. Yes, apparently CSS needs adult supervision. */
+  html body #pauseOverlay.scoreStoreVisible #pausePanel{
+    display:none !important;
+  }
+
+  html body #pauseOverlay #scoreStorePanel{
+    width:var(--shooter-menu-footprint-width, min(520px, 92vw)) !important;
+    max-width:var(--shooter-menu-footprint-width, min(520px, 92vw)) !important;
+    height:var(--shooter-menu-footprint-height, min(430px, calc(100vh - 32px))) !important;
+    max-height:var(--shooter-menu-footprint-height, min(430px, calc(100vh - 32px))) !important;
+    min-height:0 !important;
+    box-sizing:border-box !important;
+    padding:var(--shooter-menu-footprint-padding, 18px 18px 18px) !important;
+    border:2px solid rgba(0,255,102,0.65) !important;
+    border-radius:var(--shooter-menu-footprint-radius, 16px) !important;
+    background:rgba(81,42,103,0.50) !important;
+    box-shadow:0 0 28px rgba(0,255,102,0.20) !important;
+    overflow:hidden !important;
+    transform:translate(-50%, -50%) scale(0.94) !important;
+    transform-origin:center center !important;
+  }
+
+  html body #pauseOverlay.scoreStoreVisible #scoreStorePanel{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+  }
+
+  html body #pauseOverlay #scoreStoreItems{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow:auto !important;
+    scrollbar-width:none !important;
+    -ms-overflow-style:none !important;
+  }
+  html body #pauseOverlay #scoreStoreItems::-webkit-scrollbar{
+    width:0 !important;
+    height:0 !important;
+    display:none !important;
+  }
+
+  html body #pauseOverlay #scoreStorePanel .title,
+  html body #pauseOverlay #scoreStoreHint,
+  html body #pauseOverlay #scoreStoreCurrentScore,
+  html body #pauseOverlay #scoreStoreStatus,
+  html body #pauseOverlay #btnScoreStoreClose{
+    flex:0 0 auto !important;
+  }
+</style>
+
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="overlay" hidden aria-hidden="true" style="display:none !important;"></div>
+
+<div id="stageHud" data-audio-icon="🔊" style="
+  position:absolute;
+  top:10px;
+  left:0;
+  width:100%;
+  font-family:monospace;
+  font-size:14px;
+  color:#00ff66;
+  text-shadow:0 0 6px rgba(0,255,0,0.35);
+  pointer-events:none;
+  z-index:20;
+">
+  <span id="stageHudLabel">Start Menu</span>
+  <button id="stageHudSpeaker" type="button" aria-label="Unmute audio" title="Unmute all game audio">🔇</button>
+  <select id="musicFileDropdown" aria-label="Music file">
+    <option value="Game Music">Game Music</option>
+    <option value="Muted" selected>Muted</option>
+    <option value="wii-shop-music.mp3">wii-shop-music.mp3</option>
+    <option value="spaceinvaders.mp3">spaceinvaders.mp3</option>
+    <option value="do-that-there.mp3">do-that-there.mp3</option>
+  </select><span id="musicDropdownCaret" aria-hidden="true">∨</span>
+</div>
+<button id="scoreStoreHud" type="button" disabled aria-label="Score HUD" style="display:none;">
+  <div id="scoreHudLabel" class="hudBoxLabel">Score</div>
+  <div id="accuracyScore" class="hudBoxValue">0pts</div>
+  <div id="storeUnlockedHud">Store Unlocked</div>
+</button>
+<div id="timerHud" style="display:none;"><div class="timerHudLabel">Time</div><div class="timerHudValue">0.0s</div></div>
+
+
+<div id="livesSlot" class="cornerSlot livesButton" style="top:10px; left:94px; bottom:auto; right:auto; display:none;">
+  <span class="livesLabel">LIVES:</span>
+<img src="/dead/games/shooter-game/assets/bananarama.gif" alt="lives"/>
+  <div id="livesText" class="subtxt">x3</div>
+</div>
+
+<div id="powerupSlot" class="cornerSlot" style="top:10px; right:94px; bottom:auto; left:auto; display:none;">
+  <div class="powerupLabel hudBoxLabel">Bombs</div>
+  <div id="powerupEmoji" style="font-size:34px; line-height:1;">💥</div>
+  <div id="powerupHint" class="subtxt hudBoxValue">Q x1</div>
+</div>
+
+<div id="deathOverlay">
+  <div id="deathPanel">
+    <div id="deathTitle">YOU DIED</div>
+    <button id="btnRestart" class="deathBtn">Restart</button>
+    <button id="btnDeathQuitToMenu" class="deathBtn">Quit to Menu</button>
+</div>
+</div>
+
+<div id="winOverlay">
+  <div id="winPanel">
+    <div id="winTitle">You Win!</div>
+    <button id="btnContinue">Continue</button>
+  </div>
+</div>
+
+<div id="mazeSummaryOverlay">
+  <div id="mazeSummaryPanel">
+    <div id="mazeSummaryTitle">Maze Clear</div>
+    <div id="mazeSummaryStats">
+      <div id="mazeSummaryCoverage">Coverage: 0 / 0 tiles</div>
+      <div id="mazeSummaryMissed">Unstepped tiles: 0</div>
+    </div>
+    <div id="mazeSummaryBonus">+0 points</div>
+    <button id="btnNextMaze">Next Maze</button>
+  </div>
+</div>
+
+
+<style id="pauseMenuFourButtonNativeListFix">
+  /* Keep the visible pause controls as normal stacked buttons: Resume, Open Store, Options, Quit.
+     The hidden command suggestion placeholder is not part of the normal pause layout. */
+  html body #pauseOverlay #pausePanel{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+  }
+  html body #pauseOverlay #pausePanel #pauseTitle{
+    flex:0 0 96px !important;
+  }
+  html body #pauseOverlay #pausePanel #pauseHint{
+    flex:0 0 28px !important;
+  }
+  html body #pauseOverlay #pausePanel #pauseCmdSuggest[hidden],
+  html body #pauseOverlay #pausePanel #pauseCmdSuggest[aria-hidden="true"]{
+    display:none !important;
+    position:absolute !important;
+    width:0 !important;
+    height:0 !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    max-width:0 !important;
+    max-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    overflow:hidden !important;
+  }
+  html body #pauseOverlay #pausePanel .pauseMenuBtn{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    max-width:none !important;
+    height:auto !important;
+    min-height:42px !important;
+    flex:1 1 0 !important;
+    margin:0 !important;
+    box-sizing:border-box !important;
+  }
+</style>
+
+<div id="pauseOverlay">
+  <div id="pausePanel">
+    <div id="pauseTitle">Hello User!<br>GAME PAUSED</div>
+    <div id="pauseHint">Press ESC to Resume</div>
+    <button id="btnPauseResume" class="pauseMenuBtn" type="button" style="font-size:18px;">Resume</button>
+    <button id="btnPauseOpenStore" class="pauseMenuBtn" type="button" style="font-size:18px; display:none;">Open Store</button>
+    <button id="btnPauseOpenChat" class="pauseMenuBtn" type="button" style="font-size:18px;">Options</button>
+    <button id="btnPauseOptions" class="pauseMenuBtn" type="button" style="font-size:18px;">Select Level</button>
+    <button id="btnPauseQuit" class="pauseMenuBtn" style="font-size:18px;">Quit to Menu</button>
+
+  </div>
+  <div id="scoreStorePanel" class="panel">
+    <div class="title">Score Store</div>
+    <div id="scoreStoreHint">Spend current score points on future upgrades and supplies.</div>
+    <div id="scoreStoreCurrentScore">Current Score: 0pts</div>
+    <div id="scoreStoreItems"></div>
+    <div id="scoreStoreStatus"></div>
+    <button id="btnScoreStoreClose" class="smallBtn" type="button">Back</button>
+  </div>
+</div>
+
+
+<div id="uiRoot">
+  <div id="startMenu" class="panel" style="background: rgba(81,42,103,0.72); border-width: 3px; display:none;">
+    <div class="title">Tektite's Bananaman Shooter Game</div>
+    <div class="titleSubWrap">
+      <div class="titleSub"><span class="titleSubDefault">(Maze Mode)</span><span class="titleSubHover" data-file-last-updated>(Last updated: May 6, 2026 7:10 PM)</span></div>
+    </div>
+<img class="subimg" src="/dead/games/shooter-game/assets/bananarama.webp" alt="bananarama" />
+    <div class="menuBlurb">Navigate the maze, paint the floor, avoid hazards, and reach the glowing exit to advance. This menu is mainly for testing because Level 2 normally boots straight into gameplay.</div>
+    <div class="btnRow btnRowTop">
+      <button id="btnStart">Start Game</button>
+      <button id="btnOptions">Options</button>
+    </div>
+    <div class="btnRow btnRowBottom">
+      <button id="btnControls" class="smallBtn" type="button" aria-live="polite" title="Keyboard / mouse active">Controls ⌨️</button>
+    </div>
+    <div id="assetStatus" class="statusLine" style="display:none;"></div>
+  </div>
+
+  <div id="optionsMenu" class="panel" style="display:none;">
+    <div class="title">SELECT LEVEL</div>
+
+
+    <div class="optionsGrid selectLevelGrid">
+      <div class="selectLevelTopButtons">
+        <button id="btnReturnToLevel1" class="smallBtn" type="button" style="flex:1 1 0; min-height:46px; font-size:16px;">Return to Level 1</button>
+        <button id="btnSkipToLevel3" class="smallBtn" type="button" style="flex:1 1 0; min-height:46px; font-size:16px;">Skip to Level 3</button>
+      </div>
+    </div>
+
+    <div class="btnRow selectLevelBackRow" style="margin-top:14px; justify-content:center;">
+      <button id="btnBack" class="smallBtn" type="button" style="min-width:220px;">Back</button>
+    </div>
+  </div>
+
+  <div id="controlsMenu" class="panel" style="display:none;">
+    <div id="controlsMenuTitle" class="title">Keyboard / Mouse Controls</div>
+    <div class="controlsGrid">
+      <div class="optRow">
+        <div id="controlsBindList" class="controlsBindList"></div>
+      </div>
+    </div>
+    <div class="btnRow" style="margin-top:14px;">
+      <button id="controlsBack" class="smallBtn" type="button">Back</button>
+      <button id="controlsResetBinds" class="smallBtn" type="button">Reset Defaults</button>
+      <button id="controlsApplyBinds" class="smallBtn" type="button">Apply</button>
+    </div>
+  </div>
+</div>
+
+<script src="/dead/games/shooter-game/assets/scripts/level-frame-bridge.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-shared-commands.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-bg-suggest.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-resource-hud.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-math.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-layout.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-stage.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-ufo.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-controls-formatters.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-file-timestamp.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level-screenshot.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/saved-images-storage.js"></script>
+<script src="/dead/games/shooter-game/assets/scripts/level2-runtime.js"></script>
+
+<div id="heartsHud" style="
+position:fixed;
+bottom:12px;
+left:50%;
+transform:translateX(-50%) scale(0.75);
+transform-origin:center bottom;
+font-size:28px;
+letter-spacing:6px;
+pointer-events:none;
+z-index:9999;
+display:none;
+white-space:nowrap;
+line-height:1;
+">❤️ ❤️ ❤️ ❤️</div>
+
+
+<style id="scoreStorePauseExactFootprintFinalPatch">
+  /* Final store footprint patch: store replaces Pause and matches Level 2's scaled Pause shell. */
+  html body #pauseOverlay.scoreStoreVisible > #pausePanel{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+
+  html body #pauseOverlay > #scoreStorePanel.panel,
+  html body #pauseOverlay #scoreStorePanel{
+    position:absolute !important;
+    top:50% !important;
+    left:50% !important;
+    width:var(--shooter-menu-footprint-width, min(520px, 92vw)) !important;
+    min-width:var(--shooter-menu-footprint-width, min(520px, 92vw)) !important;
+    max-width:var(--shooter-menu-footprint-width, min(520px, 92vw)) !important;
+    height:var(--shooter-menu-footprint-height, min(430px, calc(100vh - 32px))) !important;
+    min-height:var(--shooter-menu-footprint-height, min(430px, calc(100vh - 32px))) !important;
+    max-height:var(--shooter-menu-footprint-height, min(430px, calc(100vh - 32px))) !important;
+    aspect-ratio:16 / 9 !important;
+    box-sizing:border-box !important;
+    padding:var(--shooter-menu-footprint-padding, 18px 18px 16px) !important;
+    border:3px solid rgba(0,255,0,0.65) !important;
+    border-radius:var(--shooter-menu-footprint-radius, 16px) !important;
+    background:rgba(81,42,103,0.72) !important;
+    box-shadow:0 0 36px rgba(0,255,0,0.14) !important;
+    transform:translate(-50%, -50%) scale(0.975) !important;
+    transform-origin:center center !important;
+    margin:0 !important;
+    overflow:hidden !important;
+    pointer-events:auto !important;
+    text-align:center !important;
+  }
+
+  html body #pauseOverlay.scoreStoreVisible > #scoreStorePanel.panel,
+  html body #pauseOverlay.scoreStoreVisible #scoreStorePanel{
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+  }
+
+  html body #pauseOverlay #scoreStorePanel .title,
+  html body #pauseOverlay #scoreStoreHint,
+  html body #pauseOverlay #scoreStoreCurrentScore,
+  html body #pauseOverlay #scoreStoreStatus,
+  html body #pauseOverlay #btnScoreStoreClose{
+    flex:0 0 auto !important;
+  }
+
+  html body #pauseOverlay #scoreStoreItems{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow:auto !important;
+    scrollbar-width:none !important;
+    -ms-overflow-style:none !important;
+  }
+  html body #pauseOverlay #scoreStoreItems::-webkit-scrollbar{
+    width:0 !important;
+    height:0 !important;
+    display:none !important;
+  }
+</style>
+
+
+<style id="pauseStoreStartOpacityMatchFinalPatch">
+  /* Keep Pause and Store panel surfaces at the same purple opacity as the Start panel.
+     Level 1 defines the Start panel color through --shooter-start-hub-frame-bg;
+     Level 2's Start panel uses rgba(81,42,103,0.72), so that is the fallback. */
+  html body #pauseOverlay #pausePanel,
+  html body #pauseOverlay #pausePanel.shooter-menu16x9Surface,
+  html body #pauseOverlay #scoreStorePanel,
+  html body #pauseOverlay #scoreStorePanel.panel{
+    background:var(--shooter-start-hub-frame-bg, rgba(81,42,103,0.72)) !important;
+  }
+</style>
+
+
+<style id="scoreStoreThreeColumnGridFinalPatch">
+  /* v7: Store items use a three-column card grid inside the existing 16:9 store shell. */
+  html body #pauseOverlay #scoreStoreItems{
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+    align-content:start !important;
+    gap:8px !important;
+    padding:2px 2px 6px !important;
+  }
+  html body #pauseOverlay #scoreStoreItems .scoreStoreRow,
+  html body #pauseOverlay #scoreStoreItems .scoreStoreRow.optRow{
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:space-between !important;
+    align-items:stretch !important;
+    min-width:0 !important;
+    min-height:118px !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    gap:6px !important;
+    padding:8px !important;
+  }
+  html body #pauseOverlay #scoreStoreItems .scoreStoreMeta{
+    min-width:0 !important;
+    width:100% !important;
+  }
+  html body #pauseOverlay #scoreStoreItems .scoreStoreHead{
+    min-width:0 !important;
+  }
+  html body #pauseOverlay #scoreStoreItems .scoreStoreItemTitle{
+    font-size:clamp(10px, 1.45vw, 15px) !important;
+    line-height:1.05 !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+  }
+  html body #pauseOverlay #scoreStoreItems .scoreStoreItemDetail{
+    font-size:clamp(8px, 1.05vw, 11px) !important;
+    line-height:1.12 !important;
+    max-height:3.4em !important;
+    overflow:hidden !important;
+  }
+  html body #pauseOverlay #scoreStoreItems .scoreStoreHeartsPreview{
+    transform:scale(0.8) !important;
+    transform-origin:left center !important;
+    margin-top:2px !important;
+  }
+  html body #pauseOverlay #scoreStoreItems .scoreStoreAction{
+    width:100% !important;
+    min-height:30px !important;
+    margin-top:auto !important;
+    font-size:clamp(9px, 1.25vw, 13px) !important;
+  }
+  @media (max-width: 720px){
+    html body #pauseOverlay #scoreStoreItems{
+      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+</style>
+
+
+<style id="scoreStoreGridFocusRowPatch">
+  /* v9: Controller selection belongs to the whole store card, not only the tiny purchase button. */
+  html body.controller-active #pauseOverlay #scoreStoreItems .scoreStoreRow.controllerFocus{
+    outline:2px solid #00ff00 !important;
+    box-shadow:0 0 0 2px rgba(0,0,0,0.65), 0 0 18px rgba(0,255,0,0.75) !important;
+    background:rgba(81,42,103,0.72) !important;
+  }
+  html body.controller-active #pauseOverlay #scoreStoreItems .scoreStoreRow.controllerFocus .scoreStoreAction{
+    background:#00ff00 !important;
+    color:#000000 !important;
+    border-color:#ffffff !important;
+  }
+</style>
+
+<style id="hudSquareIconsTintPatch">
+  /* v20: Restore the lives/player icon and bomb emoji inside the compact square HUD.
+     Every box keeps the same square footprint, but now the tinted backgrounds match
+     their outlines at 20% opacity instead of doing generic black-box cosplay. */
+  html body #scoreStoreHud{
+    border-color:rgba(255,232,102,0.92) !important;
+    background:rgba(255,232,102,0.20) !important;
+    box-shadow:0 0 18px rgba(255,232,102,0.20) !important;
+  }
+  html body #timerHud{
+    border-color:rgba(255,255,255,0.92) !important;
+    background:rgba(255,255,255,0.20) !important;
+    box-shadow:0 0 18px rgba(255,255,255,0.18) !important;
+    color:#050505 !important;
+    text-shadow:0 0 5px rgba(255,255,255,0.65) !important;
+  }
+  html body #livesSlot.cornerSlot,
+  html body #livesSlot.livesButton{
+    border-color:rgba(0,255,102,0.92) !important;
+    background:rgba(0,255,102,0.20) !important;
+    box-shadow:0 0 18px rgba(0,255,102,0.20) !important;
+  }
+  html body #powerupSlot.cornerSlot{
+    border-color:rgba(0,149,255,0.95) !important;
+    background:rgba(0,149,255,0.20) !important;
+    box-shadow:0 0 18px rgba(0,149,255,0.24) !important;
+  }
+  html body #scoreStoreHud .hudBoxLabel,
+  html body #scoreStoreHud .hudBoxValue,
+  html body #timerHud .timerHudLabel,
+  html body #timerHud > div:last-child,
+  html body #livesSlot .livesLabel,
+  html body #livesSlot #livesText{
+    color:#050505 !important;
+    opacity:1 !important;
+    text-shadow:0 0 5px rgba(255,255,255,0.70), 0 1px 1px rgba(255,255,255,0.35) !important;
+  }
+  html body #powerupSlot .powerupLabel,
+  html body #powerupSlot #powerupHint{
+    color:#ffffff !important;
+    opacity:1 !important;
+    text-shadow:0 0 6px rgba(0,0,0,0.88), 0 1px 1px rgba(0,0,0,0.75) !important;
+  }
+  html body #livesSlot img{
+    display:block !important;
+    width:22px !important;
+    height:22px !important;
+    object-fit:contain !important;
+    image-rendering:pixelated !important;
+    filter:drop-shadow(0 0 5px rgba(0,0,0,0.45)) !important;
+    flex:0 0 auto !important;
+  }
+  html body #powerupSlot #powerupEmoji{
+    display:block !important;
+    font-size:20px !important;
+    line-height:0.92 !important;
+    height:20px !important;
+    filter:drop-shadow(0 0 4px rgba(0,0,0,0.55)) !important;
+  }
+  html body #scoreStoreHud,
+  html body #timerHud,
+  html body #livesSlot,
+  html body #powerupSlot{
+    gap:2px !important;
+    overflow:hidden !important;
+  }
+  html body #livesSlot #livesText,
+  html body #powerupSlot #powerupHint{
+    font-size:13px !important;
+    line-height:1 !important;
+  }
+  html body #livesSlot .livesLabel,
+  html body #powerupSlot .powerupLabel{
+    font-size:9px !important;
+    line-height:1 !important;
+  }
+</style>
+
+
+
+<style id="hudSquareBoldWhiteTextPatch">
+  /* v21: Force every text node inside the square HUD boxes to bold white.
+     Icons keep their images/emoji; the readable text stops changing color per box. */
+  html body #scoreStoreHud,
+  html body #timerHud,
+  html body #livesSlot,
+  html body #powerupSlot{
+    color:#ffffff !important;
+  }
+  html body #scoreStoreHud .hudBoxLabel,
+  html body #scoreStoreHud .hudBoxValue,
+  html body #scoreStoreHud #accuracyScore,
+  html body #scoreStoreHud #storeUnlockedHud,
+  html body #timerHud .timerHudLabel,
+  html body #timerHud > div,
+  html body #livesSlot .livesLabel,
+  html body #livesSlot #livesText,
+  html body #livesSlot .subtxt,
+  html body #powerupSlot .powerupLabel,
+  html body #powerupSlot #powerupHint,
+  html body #powerupSlot .subtxt,
+  html body #accuracyScore .cheatsInfinitySymbol{
+    color:#ffffff !important;
+    font-weight:900 !important;
+    opacity:1 !important;
+    text-shadow:0 0 6px rgba(0,0,0,0.92), 0 1px 2px rgba(0,0,0,0.85) !important;
+  }
+</style>
+
+
+<style id="bombHudHideWhenEmptyPatch">
+  /* v22: Keep the square Bombs HUD hidden until the player actually has bombs.
+     The square HUD patch uses display:flex !important, so the runtime display:none
+     needs an equally stubborn selector to win when bombs are empty. */
+  html body #powerupSlot[style*="display:none"],
+  html body #powerupSlot[style*="display: none"]{
+    display:none !important;
+  }
+</style>
+
+<style id="youDiedHalfSize16x9FinalPatch">
+  /* v18: You Died panel is now a 16:9 card at half the Start Menu footprint.
+     Humanity demanded geometric dignity from the failure screen, so here we are. */
+  :root{
+    --you-died-half-frame-height: calc(var(--shooter-start-hub-frame-height, min(405px, 51.75vw, calc(100vh - 96px))) / 2);
+    --you-died-half-frame-width: calc(var(--you-died-half-frame-height) * 16 / 9);
+  }
+
+  html body #deathOverlay #deathPanel{
+    width: var(--you-died-half-frame-width) !important;
+    min-width: var(--you-died-half-frame-width) !important;
+    max-width: var(--you-died-half-frame-width) !important;
+    height: var(--you-died-half-frame-height) !important;
+    min-height: var(--you-died-half-frame-height) !important;
+    max-height: var(--you-died-half-frame-height) !important;
+    aspect-ratio: 16 / 9 !important;
+    box-sizing: border-box !important;
+    padding: 12px !important;
+    border-radius: 14px !important;
+    transform: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    overflow: hidden !important;
+  }
+
+  html body #deathOverlay #deathTitle{
+    font-size: clamp(26px, 4.2vw, 38px) !important;
+    line-height: 0.95 !important;
+    margin: 0 0 2px !important;
+    letter-spacing: 1px !important;
+  }
+
+  html body #deathOverlay #deathPanel .deathBtn{
+    width: min(78%, 260px) !important;
+    min-height: 34px !important;
+    margin: 0 !important;
+    padding: 6px 12px !important;
+    border-radius: 10px !important;
+    font-size: clamp(13px, 2vw, 16px) !important;
+    line-height: 1.1 !important;
+  }
+</style>
+
+<style id="hudCounterTopRowPlacementPatch">
+  /* Keep Lives beside Score and Bombs beside Time.
+     This lives at the end of the file so the earlier HUD patch pile cannot
+     quietly drag them back to the corners. */
+  html body #livesSlot{
+    top:10px !important;
+    left:94px !important;
+    right:auto !important;
+    bottom:auto !important;
+  }
+  html body #powerupSlot{
+    top:10px !important;
+    right:94px !important;
+    left:auto !important;
+    bottom:auto !important;
+  }
+  @media (pointer: coarse) and (max-width: 600px), (pointer: coarse) and (max-height: 600px){
+    html body.mobileTouchControls #livesSlot{
+      top:10px !important;
+      left:94px !important;
+      right:auto !important;
+      bottom:auto !important;
+    }
+    html body.mobileTouchControls #powerupSlot{
+      top:10px !important;
+      right:94px !important;
+      left:auto !important;
+      bottom:auto !important;
+    }
+  }
+</style>
+
+<style id="hudTimerWhiteTextFinalPatch">
+  /* v22: Force the Time box text/value itself to bold white, including direct text nodes and runtime-injected children. */
+  html body #timerHud,
+  html body #timerHud *,
+  html body.speedZeroTimeTravel #timerHud,
+  html body.speedZeroTimeTravel #timerHud *{
+    color:#ffffff !important;
+    font-weight:900 !important;
+    opacity:1 !important;
+    text-shadow:0 0 6px rgba(0,0,0,0.92), 0 1px 2px rgba(0,0,0,0.85) !important;
+  }
+</style>
+
+<style id="hudTimerWhiteTextValuePatch">
+  /* v23: Keep the live 0.0s timer value bold white after runtime rewrites. */
+  html body #timerHud,
+  html body #timerHud *,
+  html body #timerHud .timerHudLabel,
+  html body #timerHud .timerHudValue,
+  html body #timerHud > div,
+  html body.speedZeroTimeTravel #timerHud,
+  html body.speedZeroTimeTravel #timerHud *{
+    color:#ffffff !important;
+    -webkit-text-fill-color:#ffffff !important;
+    font-family:"Courier New", monospace !important;
+    font-weight:900 !important;
+    opacity:1 !important;
+    text-shadow:0 0 6px rgba(0,0,0,0.92), 0 1px 2px rgba(0,0,0,0.85) !important;
+  }
+  html body #timerHud .timerHudValue,
+  html body #timerHud > div:last-child{
+    display:block !important;
+    width:100% !important;
+    font-size:15px !important;
+    line-height:1.08 !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+  }
+</style>
+
+
+
+<style id="startMenuHideCornerHudBoxesPatch">
+  /* v25: Pregame/start-menu enemy preview keeps only Hearts/Shields visible.
+     The square HUD CSS uses display:flex !important, so these corner boxes need
+     a later, equally stubborn rule or they keep photobombing the Start Menu. */
+  html body.start-menu-hud-over-gameplay #scoreStoreHud,
+  html body.start-menu-hud-over-gameplay #timerHud,
+  html body.start-menu-hud-over-gameplay #livesSlot,
+  html body.start-menu-hud-over-gameplay #powerupSlot{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+
+  html body.start-menu-hud-over-gameplay #heartsHud{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+</style>
+</body>
+
+</html>
