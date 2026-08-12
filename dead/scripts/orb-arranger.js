@@ -43,11 +43,16 @@
         .secondary-sidebar-backdrop.is-open{opacity:1;pointer-events:auto}
         .secondary-sidebar{position:fixed;left:0;top:0;bottom:0;z-index:21;display:grid;grid-template-rows:auto minmax(120px,1fr) auto;gap:clamp(24px,6vh,64px);width:min(var(--shared-sidebar-width,260px),96vw);height:100dvh;overflow-y:auto;padding:calc(var(--shared-sidebar-top,54px) + 18px) 16px 18px 12px;border-right:2px solid var(--green);background:rgba(0,0,0,.9);box-shadow:2px 0 16px rgba(0,0,0,.7);text-align:center;scrollbar-width:none;transform:translateX(-105%);transition:transform .34s cubic-bezier(.16,1,.3,1);will-change:transform}
         .secondary-sidebar.is-open{transform:translateX(0)}.secondary-sidebar::-webkit-scrollbar{display:none}
+        .secondary-sidebar-close{position:absolute;top:0;left:12px;display:inline-flex;height:var(--shared-sidebar-top,54px);align-items:center;gap:9px;border:0;padding:0;background:transparent;color:var(--green);font:900 clamp(15px,1.65vw,21px)/.9 "Courier New",Courier,monospace;letter-spacing:-.075em;text-shadow:0 2px 8px #000,0 0 12px rgba(114,255,25,.38);cursor:pointer;white-space:nowrap}
+        .secondary-sidebar-close-icon{position:relative;display:block;width:34px;height:34px;flex:0 0 34px;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:34px;text-align:center}
+        .secondary-sidebar-close-label{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
+        .secondary-sidebar-close:hover,.secondary-sidebar-close:focus-visible{color:var(--magenta);outline:none;text-shadow:0 2px 8px #000,0 0 14px rgba(255,43,214,.58)}
         .secondary-sidebar .sidebar-top-section{align-self:start}.secondary-sidebar .sidebar-owner-avatar{display:block;width:72px;height:72px;margin:0 auto 8px;border:2px solid var(--green);border-radius:50%;object-fit:cover}
         .secondary-sidebar .sidebar-owner-row,.secondary-sidebar .sidebar-footer-row,.secondary-sidebar .sidebar-radio-title,.secondary-sidebar .privacy-note,.secondary-sidebar .copyright-note{display:block;font-size:.72rem;font-weight:700;line-height:1.32}
         .secondary-sidebar .sidebar-owner-row{margin-bottom:6px}.secondary-sidebar .sidebar-footer-row{margin-bottom:3px}.secondary-sidebar a{color:var(--green);text-decoration:none}.secondary-sidebar a:hover,.secondary-sidebar a:focus-visible{color:var(--magenta);text-decoration:underline;outline:none}
         .secondary-sidebar .radio-block{align-self:center;margin:0}.secondary-sidebar .sidebar-radio-title{margin-bottom:5px;color:var(--magenta);font-size:.78rem}.secondary-sidebar .sidebar-social-card{width:100%;height:100px;overflow:hidden;border:1px solid darkgreen;background:#000}.secondary-sidebar .sidebar-tunein-player{display:block;width:100%;height:100px;border:0}
         .secondary-sidebar .sidebar-radio-caption{display:grid;grid-template-columns:24px minmax(0,1fr) 24px;gap:5px;align-items:center;margin-top:5px}.secondary-sidebar .sidebar-radio-caret{border:0;background:transparent;color:var(--magenta);font:700 1rem "Courier New",Courier,monospace;cursor:pointer}.secondary-sidebar .sidebar-radio-current{min-width:0;width:100%;border:1px solid darkgreen;background:#000;color:var(--magenta);font:700 .68rem "Courier New",Courier,monospace;text-decoration:underline}.secondary-sidebar .sidebar-bottom{align-self:end;padding-top:12px;border-top:1px solid rgba(114,255,25,.3);opacity:.86}.secondary-sidebar .privacy-note,.secondary-sidebar .copyright-note{margin-top:6px;color:#ccc}
+        @media(max-width:520px){.secondary-sidebar-close{left:16px;gap:7px;font-size:clamp(13px,4vw,17px)}.secondary-sidebar-close-icon{width:30px;height:30px;flex-basis:30px;font-size:22px;line-height:30px}}
       `;
       document.head.appendChild(style);
 
@@ -59,6 +64,7 @@
       sidebar.setAttribute("aria-label", "Honestly Thomas sidebar");
       sidebar.setAttribute("aria-hidden", "true");
       sidebar.innerHTML = `
+        <button class="secondary-sidebar-close" type="button" aria-label="Close sidebar"><span class="secondary-sidebar-close-icon" aria-hidden="true">☠️</span><span class="secondary-sidebar-close-label">theinternetisdead.org</span></button>
         <div class="sidebar-top-section">
           <img class="sidebar-owner-avatar" src="https://unavatar.io/youtube/UCn3WLZT7k8nO24XimlJVJVQ" alt="Thomas Harrison">
           <span class="sidebar-owner-row">Thomas Harrison "Honestly Thomas" Tektite/Jinclops</span>
@@ -86,6 +92,7 @@
         skullButton.setAttribute("aria-expanded", open ? "true" : "false");
       };
       skullButton.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); setOpen(!sidebar.classList.contains("is-open")); });
+      sidebar.querySelector(".secondary-sidebar-close")?.addEventListener("click", () => setOpen(false));
       backdrop.addEventListener("click", () => setOpen(false));
       window.addEventListener("resize", sync);
       document.addEventListener("keydown", event => { if (event.key === "Escape" && sidebar.classList.contains("is-open")) { setOpen(false); skullButton.focus(); } });
