@@ -2,11 +2,12 @@
   white-space: nowrap;
 }
 
+/* Keep the orb editing control/code in the DOM for later, but remove its visible pencil trigger. */
 .orb-edit-toggle {
   position: absolute;
   top: 50%;
   left: calc(100% + .35em);
-  display: grid;
+  display: none;
   width: 1.45em;
   height: 1.45em;
   place-items: center;
@@ -34,6 +35,40 @@
   background: rgba(255, 43, 214, .2);
   box-shadow: 0 0 18px rgba(255, 43, 214, .7);
   transform: translateY(-50%) scale(1.12) rotate(-8deg);
+}
+
+/* Shared right-side gear, visually matching the skull square. */
+.topbar-clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.topbar-clock::after {
+  content: "⚙️";
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(114, 255, 25, .68);
+  background: rgba(0, 0, 0, .78);
+  box-shadow: 0 0 10px rgba(114, 255, 25, .18);
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  font-size: 25px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+@media (max-width: 520px) {
+  .topbar-clock { gap: 7px; }
+  .topbar-clock::after {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+    font-size: 22px;
+  }
 }
 
 .compass.orb-editing .orb-reorderable {
