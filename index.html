@@ -95,7 +95,7 @@
         </div>
       </div>
       <div class="sidebar-bottom">
-        <span class="sidebar-footer-row"><a href="/portal/">Portal</a></span>
+        <span class="sidebar-footer-row"><a href="/portal/" data-transition-override="slide-up">Portal</a></span>
         <span class="privacy-note">No accounts. No server saves.<br>Your browser hoards the cursed data.</span>
         <span class="copyright-note">Copyright - 2025 <a href="/">theinternetisdead.org</a></span>
       </div>
@@ -123,7 +123,7 @@
         <p class="discipline">Neurodivergent Canadian interdisciplinary artist working across rap, video, writing, code, web design, games and experimental media.</p>
         <p class="statement"><strong>theinternetisdead.org</strong> is art first: a recursive archive of web-native grief, absurdity, identity and survival. It is also my personal symbolic operating system—a place to gather the work, document the experience, and leave proof that I was here and that it mattered.</p>
         <p class="warning">⚠ Enter expecting haunted interfaces, dense symbolism, flashing imagery, unexpected sound, gallows humour, unfinished ruins and sincerity hiding inside the debris.</p>
-        <nav class="actions" aria-label="Enter or inspect the project"><a class="action" href="/portal/" data-transition-override="swirl">Enter Recursive Portal</a><a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a></nav>
+        <nav class="actions" aria-label="Enter or inspect the project"><a class="action" href="/portal/" data-transition-override="slide-up">Enter Recursive Portal</a><a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a></nav>
       </div>
     </section>
 
@@ -141,7 +141,7 @@
     const pageNavMenu=document.getElementById('page-nav-menu');
     const pageNavOptions=[...document.querySelectorAll('.page-nav-option')];
     const setPageNavOpen=open=>{pageNavMenu.classList.toggle('is-open',open);pageNavButton.setAttribute('aria-expanded',open?'true':'false')};
-    const navigatePage=destination=>{if(!destination||destination===window.location.pathname){setPageNavOpen(false);return}if(window.PageTransitions){window.PageTransitions.navigate(new URL(destination,window.location.origin).href,'swirl');return}window.location.assign(destination)};
+    const navigatePage=destination=>{if(!destination||destination===window.location.pathname){setPageNavOpen(false);return}if(window.PageTransitions){const isPortal=new URL(destination,window.location.origin).pathname==='/portal/';window.PageTransitions.navigate(new URL(destination,window.location.origin).href,isPortal?'slide-up':'swirl',isPortal?{overrideDefault:true}:{});return}window.location.assign(destination)};
     pageNavButton.addEventListener('click',event=>{event.stopPropagation();setPageNavOpen(!pageNavMenu.classList.contains('is-open'))});
     pageNavOptions.forEach(option=>option.addEventListener('click',()=>navigatePage(option.dataset.destination)));
     document.addEventListener('click',event=>{if(!event.target.closest('.page-title'))setPageNavOpen(false)});
