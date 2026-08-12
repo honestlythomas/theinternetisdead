@@ -20,7 +20,7 @@
     .site-name-label{display:inline-block;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
     .page-title{grid-column:2;justify-self:center;align-self:center;position:relative;display:inline-flex;align-items:center;margin:0;font-style:normal;white-space:nowrap;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
     .topbar-clock{grid-column:3;justify-self:end;align-self:center;display:inline-flex;align-items:center;gap:9px;white-space:nowrap;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
-    .topbar-clock::after{content:"⚙️";display:inline-grid;width:34px;height:34px;flex:0 0 34px;place-items:center;overflow:hidden;border:0;background:transparent;box-shadow:none;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:1;text-decoration:none}
+    .topbar-clock::after{content:"⚙️";display:inline-grid;width:34px;height:34px;flex:0 0 34px;place-items:center;overflow:hidden;border:0;background:transparent;box-shadow:none;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:1;text-decoration:none;text-decoration-line:none}
     .site-name:hover,.site-name:focus-visible{color:var(--magenta);outline:none;text-shadow:0 2px 8px #000,0 0 14px rgba(255,43,214,.58)}
 
     @media(max-width:820px){.topbar{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;height:48px}.site-name,.page-title,.topbar-clock{font-size:clamp(13px,4vw,17px)}.site-name{gap:7px}.site-name-icon{width:30px;height:30px;flex-basis:30px}.site-name-icon::before{font-size:22px}.topbar-clock{gap:7px}.topbar-clock::after{width:30px;height:30px;flex-basis:30px;font-size:22px}}
