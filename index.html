@@ -6,21 +6,11 @@
   <meta name="theme-color" content="#000000">
   <meta name="color-scheme" content="dark">
   <title>Space — The Internet Is Dead</title>
-  <link rel="stylesheet" href="/dead/styles/orb-arranger.css?v=20260809-1">
   <style>
     :root {
       color-scheme: dark;
       --green: #72ff19;
       --magenta: #ff2bd6;
-      --line: rgba(114, 255, 25, .32);
-      --vortex-x: 0px;
-      --vortex-y: 0px;
-    }
-
-    @property --vortex-spin {
-      syntax: "<angle>";
-      inherits: false;
-      initial-value: 0deg;
     }
 
     * { box-sizing: border-box; }
@@ -28,28 +18,27 @@
     html,
     body {
       width: 100%;
-      height: 100%;
+      min-height: 100%;
       margin: 0;
-      overflow: hidden;
       background: #000;
     }
 
     body {
+      overflow-x: hidden;
       color: var(--green);
       font-family: "Courier New", Courier, monospace;
     }
 
-    .portal {
+    .space {
       position: relative;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
+      min-height: 100vh;
+      min-height: 100dvh;
       overflow: hidden;
       background: #000;
     }
 
     .starfield {
-      position: absolute;
+      position: fixed;
       inset: -3%;
       z-index: 0;
       display: block;
@@ -61,470 +50,24 @@
       transform-origin: center;
     }
 
-    .navigation {
-      position: absolute;
-      top: 54%;
-      left: 50%;
-      z-index: 1;
-      width: min(84vmin, 760px);
-      height: min(84vmin, 760px);
-      background: transparent;
-      transform: translate(-50%, -50%);
-      isolation: isolate;
-    }
-
-    .compass {
+    .topbar {
       position: relative;
-      display: grid;
-      width: 100%;
-      height: 100%;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      place-items: center;
-    }
-
-    .portal-lines {
-      position: absolute;
-      inset: 8%;
-      z-index: -1;
-      width: 84%;
-      height: 84%;
-      overflow: visible;
-      pointer-events: none;
-    }
-
-    .portal-lines line {
-      stroke: var(--line);
-      stroke-width: 1;
-      vector-effect: non-scaling-stroke;
-      transition: stroke 180ms ease, stroke-width 180ms ease;
-    }
-
-    .portal-open .portal-lines line {
-      stroke: var(--magenta);
-      stroke-width: 3;
-    }
-
-    .portal-button {
-      position: relative;
-      display: grid;
-      width: min(22vmin, 190px);
-      aspect-ratio: 1;
-      place-items: center;
-      overflow: hidden;
-      border: 2px solid var(--green);
-      border-radius: 50%;
-      background:
-        linear-gradient(rgba(0, 0, 0, .12), rgba(0, 0, 0, .12)),
-        var(--portal-image) center / cover no-repeat;
-      box-shadow:
-        0 0 0 4px rgba(0, 0, 0, .85),
-        0 0 0 5px rgba(114, 255, 25, .3),
-        0 0 34px rgba(114, 255, 25, .2),
-        inset 0 0 32px rgba(0, 0, 0, .45);
-      color: var(--green);
-      cursor: pointer;
-      font: inherit;
-      padding: 0;
-      text-decoration: none;
-      appearance: none;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transform: translateZ(0);
-      will-change: transform, opacity;
-    }
-
-    .portal-button::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background:
-        repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, .3) 3px 4px),
-        radial-gradient(circle, transparent 38%, rgba(0, 0, 0, .58) 100%);
-    }
-
-    .portal-button span {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      min-width: 46%;
-      aspect-ratio: 1;
-      place-items: center;
-      border: 1px solid currentColor;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, .76);
-      font-size: clamp(10px, 2.2vmin, 20px);
-      font-weight: 900;
-      text-shadow: 0 0 8px #000;
-    }
-
-    .portal-button .destination-label {
-      min-width: 0;
-      max-width: 78%;
-      aspect-ratio: auto;
-      border: 0;
-      border-radius: 0;
-      padding: .35em .55em;
-      background: rgba(0, 0, 0, .78);
-      font-size: clamp(8px, 1.35vmin, 14px);
-      letter-spacing: .04em;
-      line-height: 1.05;
-      overflow-wrap: anywhere;
-      text-align: center;
-    }
-
-    .portal-button:hover,
-    .portal-button:focus-visible {
-      border-color: var(--magenta);
-      color: #ff8deb;
-      outline: 2px solid #fff;
-      outline-offset: 6px;
-      box-shadow:
-        0 0 0 4px rgba(0, 0, 0, .85),
-        0 0 0 5px rgba(255, 43, 214, .45),
-        0 0 48px rgba(255, 43, 214, .42);
-    }
-
-    .northwest {
-      grid-column: 1;
-      grid-row: 1;
-      --portal-image: url("/dead/experiments/thumbnails/background/index.png");
-      --from-x: 134%;
-      --from-y: 134%;
-      --over-x: -7%;
-      --over-y: -7%;
-      --spiral: 620deg;
-      --delay: 0ms;
-    }
-
-    .north {
-      grid-column: 2;
-      grid-row: 1;
-      --portal-image: url("/dead/experiments/thumbnails/blotter-visualizer/index.png");
-      --from-x: 0%;
-      --from-y: 134%;
-      --over-x: 0%;
-      --over-y: -10%;
-      --spiral: -620deg;
-      --delay: 45ms;
-    }
-
-    .northeast {
-      grid-column: 3;
-      grid-row: 1;
-      --portal-image: url("/dead/experiments/thumbnails/bookmark-manager/index.png");
-      --from-x: -134%;
-      --from-y: 134%;
-      --over-x: 7%;
-      --over-y: -7%;
-      --spiral: -620deg;
-      --delay: 90ms;
-    }
-
-    .west {
-      grid-column: 1;
-      grid-row: 2;
-      --portal-image: url("/dead/experiments/thumbnails/business-card/index.png");
-      --from-x: 134%;
-      --from-y: 0%;
-      --over-x: -10%;
-      --over-y: 0%;
-      --spiral: 620deg;
-      --delay: 135ms;
-    }
-
-    .east {
-      grid-column: 3;
-      grid-row: 2;
-      --portal-image: url("/dead/experiments/thumbnails/camera-experiment/index.png");
-      --from-x: -134%;
-      --from-y: 0%;
-      --over-x: 10%;
-      --over-y: 0%;
-      --spiral: 620deg;
-      --delay: 180ms;
-    }
-
-    .southwest {
-      grid-column: 1;
-      grid-row: 3;
-      --portal-image: url("/dead/experiments/thumbnails/camera-studio/index.png");
-      --from-x: 134%;
-      --from-y: -134%;
-      --over-x: -7%;
-      --over-y: 7%;
-      --spiral: -620deg;
-      --delay: 225ms;
-    }
-
-    .south {
-      grid-column: 2;
-      grid-row: 3;
-      --portal-image: url("/dead/experiments/thumbnails/canvas-backgrounds/index.png");
-      --from-x: 0%;
-      --from-y: -134%;
-      --over-x: 0%;
-      --over-y: 10%;
-      --spiral: -620deg;
-      --delay: 270ms;
-    }
-
-    .southeast {
-      grid-column: 3;
-      grid-row: 3;
-      --portal-image: url("/dead/experiments/thumbnails/chat-sandbox/index.png");
-      --from-x: -134%;
-      --from-y: -134%;
-      --over-x: 7%;
-      --over-y: 7%;
-      --spiral: 620deg;
-      --delay: 315ms;
-    }
-
-    .portal-open .portal-button {
-      visibility: visible;
-      pointer-events: auto;
-      opacity: 1;
-      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-      filter: none;
-    }
-
-    .portal-opening .portal-button {
-      visibility: visible;
-      pointer-events: auto;
-      animation: portal-emerge 1050ms cubic-bezier(.12, .72, .18, 1.12) calc(var(--delay) + 240ms) both;
-    }
-
-    .portal-closing .portal-button {
-      visibility: visible;
-      pointer-events: none;
-      animation: portal-emerge 720ms cubic-bezier(.62, 0, .88, .38) calc(210ms - var(--delay)) reverse both;
-    }
-
-    .portal-open.portal-page-cycling .portal-button {
-      pointer-events: none;
-      animation: portal-page-cycle 560ms cubic-bezier(.55, 0, .2, 1) both;
-    }
-
-    @keyframes portal-emerge {
-      0% {
-        opacity: 0;
-        transform: translate3d(var(--from-x), var(--from-y), 0) rotate(var(--spiral)) scale(.02);
-        filter: brightness(3) saturate(2.5);
-      }
-      58% {
-        opacity: 1;
-        transform: translate3d(var(--over-x), var(--over-y), 0) rotate(-26deg) scale(1.12);
-        filter: brightness(1.4) saturate(1.6);
-      }
-      100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-        filter: none;
-      }
-    }
-
-    @keyframes portal-page-cycle {
-      0% {
-        opacity: 1;
-        transform: rotate(0deg) scale(1);
-        filter: none;
-      }
-      48% {
-        opacity: 0;
-        transform: rotate(180deg) scale(.08);
-        filter: brightness(2.4) saturate(2);
-      }
-      52% {
-        opacity: 0;
-        transform: rotate(-180deg) scale(.08);
-        filter: brightness(2.4) saturate(2);
-      }
-      100% {
-        opacity: 1;
-        transform: rotate(0deg) scale(1);
-        filter: none;
-      }
-    }
-
-    .core {
-      position: relative;
-      grid-column: 2;
-      grid-row: 2;
-      display: grid;
-      width: min(15vmin, 125px);
-      aspect-ratio: 1;
-      place-items: center;
-      overflow: hidden;
-      border: 1px solid rgba(255, 43, 214, .7);
-      border-radius: 50%;
-      padding: 0;
-      background: radial-gradient(circle, #000 0 34%, rgba(0, 0, 0, .78) 52%, transparent 72%);
-      color: var(--green);
-      cursor: pointer;
-      font: 900 clamp(21px, 3.75vmin, 36px) / 1.05 "Courier New", Courier, monospace;
-      letter-spacing: .08em;
-      text-align: center;
-      text-decoration: none;
-      text-transform: uppercase;
-      text-shadow: 0 0 8px #000;
-      isolation: isolate;
-      appearance: none;
-      outline: 2px solid var(--green);
-      outline-offset: 6px;
-      box-shadow: 0 0 48px rgba(114, 255, 25, .46);
-      transform: scale(3);
-      transform-origin: center;
-      transition: outline-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
-    }
-
-    .core-vortex {
-      position: absolute;
-      inset: -50%;
-      z-index: -1;
-      width: 200%;
-      height: 200%;
-      overflow: visible;
-      opacity: .9;
-      filter: saturate(1.5);
-      transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin));
-      animation: vortex-spin 1650ms linear infinite;
-      transform-origin: center;
-      will-change: transform, filter, opacity;
-    }
-
-    .vortex-tendril {
-      fill: none;
-      stroke-width: 3.2;
-      stroke-linecap: round;
-      vector-effect: non-scaling-stroke;
-      mix-blend-mode: screen;
-    }
-
-    .vortex-red {
-      stroke: #ff1744;
-      filter: drop-shadow(0 0 4px #ff1744);
-    }
-
-    .vortex-green {
-      stroke: #42ff55;
-      filter: drop-shadow(0 0 4px #42ff55);
-    }
-
-    .vortex-blue {
-      stroke: #18a8ff;
-      filter: drop-shadow(0 0 4px #18a8ff);
-    }
-
-    .core-label {
-      position: relative;
-      z-index: 1;
-    }
-
-    .core:hover,
-    .core:focus-visible {
-      outline-color: var(--magenta);
-      color: var(--magenta);
-      box-shadow: 0 0 64px rgba(255, 43, 214, .58);
-    }
-
-    .portal-open .core-vortex {
-      opacity: .96;
-      filter: saturate(1.9) brightness(1.25);
-      transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
-      animation: vortex-spin 420ms linear infinite;
-    }
-
-    .portal-open .core {
-      overflow: hidden;
-      transform: scale(1.08);
-    }
-
-    .portal-opening .core-vortex {
-      animation:
-        vortex-open 1250ms cubic-bezier(.1, .76, .18, 1) both,
-        vortex-spin 420ms linear infinite;
-    }
-
-    .portal-opening .core {
-      overflow: hidden;
-      animation: core-open 1250ms cubic-bezier(.12, .72, .18, 1) both;
-    }
-
-    .portal-closing .core-vortex {
-      animation:
-        vortex-close 930ms cubic-bezier(.62, 0, .88, .38) both,
-        vortex-spin 360ms linear infinite;
-    }
-
-    .portal-closing .core {
-      animation: core-close 930ms cubic-bezier(.62, 0, .88, .38) both;
-    }
-
-    @keyframes vortex-spin {
-      to { --vortex-spin: 360deg; }
-    }
-
-    @keyframes vortex-open {
-      0% {
-        opacity: .78;
-        filter: saturate(1.4) brightness(1);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(.72);
-      }
-      48% {
-        opacity: 1;
-        filter: saturate(2.4) brightness(1.65);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(2.45);
-      }
-      100% {
-        opacity: .96;
-        filter: saturate(1.9) brightness(1.25);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
-      }
-    }
-
-    @keyframes core-open {
-      0% { transform: scale(3); }
-      42% { transform: scale(3.35); }
-      68% { transform: scale(1.28); }
-      100% { transform: scale(1.08); }
-    }
-
-    @keyframes vortex-close {
-      0% {
-        opacity: .96;
-        filter: saturate(1.9) brightness(1.25);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1.32);
-      }
-      38% {
-        opacity: 1;
-        filter: saturate(2.5) brightness(1.7);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(2.1);
-      }
-      100% {
-        opacity: .9;
-        filter: saturate(1.5) brightness(1);
-        transform: translate3d(var(--vortex-x), var(--vortex-y), 0) rotate(var(--vortex-spin)) scale(1);
-      }
-    }
-
-    @keyframes core-close {
-      0% { transform: scale(1.08); }
-      38% { transform: scale(1.7); }
-      100% { transform: scale(3); }
-    }
-
-    .home-link,
-    .page-title,
-    .page-select {
-      position: absolute;
-      top: max(16px, env(safe-area-inset-top));
       z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+      width: 100%;
+      padding:
+        max(16px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        0
+        max(16px, env(safe-area-inset-left));
+    }
+
+    .site-name,
+    .page-title {
       margin: 0;
       color: var(--green);
-      font-family: "Courier New", Courier, monospace;
       font-size: clamp(16px, 2vw, 24px);
       font-style: italic;
       font-weight: 700;
@@ -534,52 +77,148 @@
       text-shadow: 0 2px 8px #000, 0 0 12px rgba(114, 255, 25, .38);
     }
 
-    .home-link {
-      left: max(16px, env(safe-area-inset-left));
+    .site-name {
+      justify-self: start;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .site-name:hover,
+    .site-name:focus-visible {
+      color: var(--magenta);
+      outline: none;
+      text-shadow: 0 2px 8px #000, 0 0 14px rgba(255, 43, 214, .58);
     }
 
     .page-title {
-      left: 50%;
-      transform: translateX(-50%);
-      pointer-events: none;
+      grid-column: 2;
+      justify-self: center;
     }
 
-    .page-select {
-      right: max(16px, env(safe-area-inset-right));
-      border: 0;
-      border-radius: 0;
-      padding: 0 .15em .1em;
-      background: #000;
-      cursor: pointer;
+    .main-area {
+      position: relative;
+      z-index: 1;
+      width: min(920px, calc(100vw - 40px));
+      margin: clamp(42px, 7vh, 86px) auto 48px;
+      text-shadow: 0 2px 8px #000;
     }
 
-    .page-select:hover,
-    .page-select:focus-visible {
-      color: var(--magenta);
-      outline: 1px solid var(--magenta);
-      outline-offset: 4px;
+    .identity-content {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(12px, 2vh, 20px);
     }
 
-    .page-select option {
+    .eyebrow {
+      margin: 0;
       color: var(--green);
-      background: #000;
-      font-style: normal;
+      font-size: clamp(9px, 1.15vw, 12px);
       font-weight: 700;
+      letter-spacing: .14em;
+      line-height: 1.35;
+      text-transform: uppercase;
     }
 
-    .home-link:visited { color: var(--green); }
-
-    .home-link:hover,
-    .home-link:focus-visible {
+    .eyebrow::before {
+      content: "● ";
       color: var(--magenta);
-      text-shadow: 0 2px 8px #000, 0 0 14px rgba(255, 43, 214, .58);
+    }
+
+    #artist-name {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(54px, 10vw, 124px);
+      font-weight: 900;
+      letter-spacing: -.075em;
+      line-height: .78;
+      text-transform: uppercase;
+      text-shadow: 0 0 18px rgba(114, 255, 25, .28), 0 3px 0 #000;
+    }
+
+    #artist-name span {
+      display: block;
+      margin-left: .3em;
+      color: var(--magenta);
+    }
+
+    .discipline {
+      margin: 0;
+      border-left: 3px solid var(--magenta);
+      padding-left: 12px;
+      color: var(--green);
+      font-size: clamp(12px, 1.55vw, 17px);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .statement {
+      max-width: 68ch;
+      margin: 0;
+      color: #d8e8d2;
+      font-size: clamp(11px, 1.3vw, 15px);
+      line-height: 1.58;
+    }
+
+    .statement strong { color: #fff; }
+
+    .warning {
+      max-width: 74ch;
+      margin: 0;
+      border: 1px solid rgba(255, 176, 0, .48);
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, .48);
+      color: #ffd27a;
+      font-size: clamp(9px, 1.05vw, 12px);
+      line-height: 1.4;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 760px;
+    }
+
+    .action {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--green);
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, .72);
+      color: var(--green);
+      font: 700 clamp(9px, 1vw, 12px) / 1.25 "Courier New", Courier, monospace;
+      letter-spacing: .065em;
+      text-align: center;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .action.secondary {
+      border-color: var(--magenta);
+      color: #ff7ae7;
+    }
+
+    .action:hover,
+    .action:focus-visible {
+      background: var(--green);
+      color: #000;
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    .action.secondary:hover,
+    .action.secondary:focus-visible {
+      background: var(--magenta);
+      color: #000;
     }
 
     .cursor-lens {
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 3;
+      z-index: 5;
       width: 50px;
       height: 50px;
       border: 3px solid #fff;
@@ -596,195 +235,44 @@
 
     .cursor-lens.is-visible { opacity: 1; }
 
-    @media (max-width: 520px) {
-      .navigation {
-        top: 55%;
-        width: 88vmin;
-        height: 88vmin;
+    @media (max-width: 700px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        gap: 10px;
       }
 
-      .portal-button { width: 23vmin; }
-      .core { width: 16vmin; font-size: clamp(15px, 3.7vmin, 24px); }
-    }
-    .space-copy {
-      position: absolute;
-      top: 54%;
-      left: 50%;
-      z-index: 1;
-      width: min(760px, calc(100vw - 40px));
-      max-height: calc(100dvh - 104px);
-      overflow: auto;
-      transform: translate(-50%, -50%);
-      scrollbar-width: none;
-      text-shadow: 0 2px 8px #000;
-    }
+      .site-name,
+      .page-title {
+        grid-column: 1;
+        justify-self: start;
+      }
 
-    .space-copy::-webkit-scrollbar { display: none; }
-
-    .identity-content {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(10px, 1.8vh, 18px);
-    }
-
-    .eyebrow {
-      margin: 0;
-      color: var(--green);
-      font-size: clamp(9px, 1.15vw, 12px);
-      font-weight: 700;
-      letter-spacing: .14em;
-      line-height: 1.35;
-      text-transform: uppercase;
-    }
-
-    .eyebrow::before { content: "● "; color: var(--magenta); }
-
-    #artist-name {
-      margin: 0;
-      color: #fff;
-      font-size: clamp(48px, 9vw, 112px);
-      font-weight: 900;
-      letter-spacing: -.075em;
-      line-height: .78;
-      text-transform: uppercase;
-      text-shadow: 0 0 18px rgba(114, 255, 25, .28), 0 3px 0 #000;
-    }
-
-    #artist-name span {
-      display: block;
-      color: var(--magenta);
-      margin-left: .3em;
-    }
-
-    .discipline {
-      margin: 0;
-      border-left: 3px solid var(--magenta);
-      padding-left: 12px;
-      color: var(--green);
-      font-size: clamp(11px, 1.5vw, 16px);
-      font-weight: 700;
-      line-height: 1.4;
-    }
-
-    .statement {
-      max-width: 62ch;
-      margin: 0;
-      color: #d8e8d2;
-      font-size: clamp(10px, 1.25vw, 14px);
-      line-height: 1.52;
-    }
-
-    .statement strong { color: #fff; }
-
-    .warning {
-      margin: 0;
-      border: 1px solid rgba(255, 176, 0, .48);
-      padding: 8px 10px;
-      background: rgba(0, 0, 0, .4);
-      color: #ffd27a;
-      font-size: clamp(8px, 1vw, 11px);
-      line-height: 1.35;
-    }
-
-    .actions {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .action {
-      display: flex;
-      min-height: 44px;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--green);
-      padding: 9px 11px;
-      background: rgba(0, 0, 0, .68);
-      color: var(--green);
-      font: 700 clamp(9px, 1vw, 12px) / 1.25 "Courier New", Courier, monospace;
-      letter-spacing: .065em;
-      text-align: center;
-      text-decoration: none;
-      text-transform: uppercase;
-    }
-
-    .action.secondary { border-color: var(--magenta); color: #ff7ae7; }
-    .action:hover, .action:focus-visible { background: var(--green); color: #000; outline: 2px solid #fff; outline-offset: 2px; }
-    .action.secondary:hover, .action.secondary:focus-visible { background: var(--magenta); color: #000; }
-
-    @media (max-width: 520px) {
-      .space-copy {
-        top: 55%;
+      .main-area {
         width: calc(100vw - 30px);
-        max-height: calc(100dvh - 92px);
+        margin-top: 34px;
       }
 
-      #artist-name { font-size: clamp(42px, 16vw, 72px); }
-      .identity-content { gap: 8px; }
-      .statement { font-size: clamp(9px, 2.7vw, 11px); line-height: 1.35; }
-      .warning { font-size: clamp(8px, 2.25vw, 10px); }
+      #artist-name {
+        font-size: clamp(46px, 17vw, 82px);
+      }
+
       .actions { grid-template-columns: 1fr; }
-      .action { min-height: 36px; }
     }
-
-    .home-link.site-drawer-toggle {
-      border: 0;
-      padding: 0;
-      background: transparent;
-      cursor: pointer;
-      white-space: nowrap;
-      appearance: none;
-    }
-
-    .home-link.site-drawer-toggle[aria-expanded="true"] {
-      color: var(--magenta);
-      text-shadow: 0 2px 8px #000, 0 0 14px rgba(255, 43, 214, .58);
-    }
-
-    .space-copy {
-      top: var(--drawer-top, 54px);
-      left: var(--drawer-left, 16px);
-      width: var(--drawer-width, 250px);
-      max-height: calc(100dvh - var(--drawer-top, 54px) - 16px);
-      transform: translateX(calc(-100% - var(--drawer-left, 16px) - 12px));
-      opacity: 0;
-      pointer-events: none;
-      transition: transform 520ms cubic-bezier(.16, 1, .3, 1), opacity 220ms linear;
-      will-change: transform, opacity;
-    }
-
-    .space-copy.is-open {
-      transform: translateX(0);
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .space-copy #artist-name {
-      font-size: clamp(26px, 3vw, 38px);
-      letter-spacing: -.06em;
-      line-height: .84;
-    }
-
-    .space-copy .eyebrow { font-size: 8px; }
-    .space-copy .discipline { font-size: 10px; line-height: 1.3; }
-    .space-copy .statement { font-size: 9px; line-height: 1.35; }
-    .space-copy .warning { font-size: 8px; }
-    .space-copy .actions { grid-template-columns: 1fr; }
-    .space-copy .action { min-height: 34px; font-size: 8px; padding: 7px; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .space-copy { transition-duration: 1ms; }
-    }
-
   </style>
 </head>
 <body>
-  <main class="portal" data-transition-root>
-    <iframe class="starfield"
-            src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-3"
-            title="Animated starfield background"></iframe>
+  <main class="space" data-transition-root>
+    <iframe
+      class="starfield"
+      src="/dead/experiments/canvas-backgrounds/starfield-background.html?v=20260809-3"
+      title="Animated starfield background"></iframe>
 
-    <section class="space-copy" id="site-drawer" aria-labelledby="artist-name" aria-hidden="true">
+    <header class="topbar">
+      <a class="site-name" href="/">☠️ theinternetisdead.org</a>
+      <h1 class="page-title">Space</h1>
+    </header>
+
+    <section class="main-area" aria-labelledby="artist-name">
       <div class="identity-content">
         <p class="eyebrow">Thomas Harrison // Honestly Thomas // Tektite</p>
 
@@ -812,20 +300,15 @@
           <a class="action secondary" href="https://github.com/honestlythomas/theinternetisdead">Dig Into My GitHub Repo</a>
         </nav>
       </div>
-    
     </section>
 
-    <button class="home-link site-drawer-toggle" id="site-drawer-toggle" type="button" aria-controls="site-drawer" aria-expanded="false">☠️ theinternetisdead.org</button>
-    <h1 class="page-title">Space</h1>
     <div class="cursor-lens" aria-hidden="true"></div>
   </main>
 
   <script>
-    const portal = document.querySelector(".portal");
+    const space = document.querySelector(".space");
     const starfield = document.querySelector(".starfield");
     const cursorLens = document.querySelector(".cursor-lens");
-    const drawer = document.getElementById("site-drawer");
-    const drawerToggle = document.getElementById("site-drawer-toggle");
     let pointerFrame = 0;
     let pointerX = 0;
     let pointerY = 0;
@@ -848,8 +331,6 @@
 
     const publishPointer = () => {
       pointerFrame = 0;
-      document.documentElement.style.setProperty("--vortex-x", `${pointerX * 15}px`);
-      document.documentElement.style.setProperty("--vortex-y", `${pointerY * 15}px`);
       starfield.contentWindow?.postMessage({
         type: "portal-starfield-parallax",
         active: pointerActive,
@@ -867,13 +348,13 @@
       if (!pointerFrame) pointerFrame = window.requestAnimationFrame(publishPointer);
     };
 
-    portal.addEventListener("pointermove", event => updatePointer(event), { passive: true });
-    portal.addEventListener("pointerdown", event => updatePointer(event), { passive: true });
-    portal.addEventListener("pointerup", event => {
+    space.addEventListener("pointermove", event => updatePointer(event), { passive: true });
+    space.addEventListener("pointerdown", event => updatePointer(event), { passive: true });
+    space.addEventListener("pointerup", event => {
       if (event.pointerType !== "mouse") updatePointer(event, false);
     }, { passive: true });
-    portal.addEventListener("pointercancel", event => updatePointer(event, false), { passive: true });
-    portal.addEventListener("pointerleave", event => {
+    space.addEventListener("pointercancel", event => updatePointer(event, false), { passive: true });
+    space.addEventListener("pointerleave", event => {
       pointerX = 0;
       pointerY = 0;
       pointerActive = false;
@@ -881,41 +362,6 @@
       if (!pointerFrame) pointerFrame = window.requestAnimationFrame(publishPointer);
     });
     window.addEventListener("blur", () => cursorLens.classList.remove("is-visible"));
-
-    const syncDrawerGeometry = () => {
-      const rect = drawerToggle.getBoundingClientRect();
-      drawer.style.setProperty("--drawer-left", `${Math.round(rect.left)}px`);
-      drawer.style.setProperty("--drawer-top", `${Math.round(rect.bottom + 12)}px`);
-      drawer.style.setProperty("--drawer-width", `${Math.ceil(rect.width)}px`);
-    };
-
-    const setDrawerOpen = open => {
-      drawer.classList.toggle("is-open", open);
-      drawer.setAttribute("aria-hidden", open ? "false" : "true");
-      drawer.inert = !open;
-      drawerToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    };
-
-    drawerToggle.addEventListener("click", () => {
-      syncDrawerGeometry();
-      setDrawerOpen(!drawer.classList.contains("is-open"));
-    });
-
-    document.addEventListener("pointerdown", event => {
-      if (!drawer.classList.contains("is-open")) return;
-      if (drawer.contains(event.target) || drawerToggle.contains(event.target)) return;
-      setDrawerOpen(false);
-    });
-
-    document.addEventListener("keydown", event => {
-      if (event.key !== "Escape" || !drawer.classList.contains("is-open")) return;
-      setDrawerOpen(false);
-      drawerToggle.focus();
-    });
-
-    window.addEventListener("resize", syncDrawerGeometry);
-    syncDrawerGeometry();
-    setDrawerOpen(false);
   </script>
   <script src="/dead/scripts/page-transitions.js?v=20260809-8"></script>
 </body>
