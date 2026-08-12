@@ -37,11 +37,23 @@
   transform: translateY(-50%) scale(1.12) rotate(-8deg);
 }
 
-/* Shared right-side gear, visually matching the skull square. */
+/* Topbar emoji controls: no boxes, borders, shadows, or underline. */
+.site-name-icon {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.site-name:hover .site-name-icon,
+.site-name:focus-visible .site-name-icon {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
 .topbar-clock {
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  text-decoration: none !important;
 }
 
 .topbar-clock::after {
@@ -52,13 +64,13 @@
   flex: 0 0 34px;
   place-items: center;
   overflow: hidden;
-  border: 1px solid rgba(114, 255, 25, .68);
-  background: rgba(0, 0, 0, .78);
-  box-shadow: 0 0 10px rgba(114, 255, 25, .18);
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
   font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
   font-size: 25px;
   line-height: 1;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 @media (max-width: 520px) {
