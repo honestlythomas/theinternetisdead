@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#00000000">
   <meta name="color-scheme" content="dark">
   <title>theinternetisdead.org - Top Bar</title>
   <style>
-    :root{color-scheme:dark;--green:#72ff19;--magenta:#ff2bd6}
+    :root{color-scheme:dark;--green:#72ff19;--magenta:#ff2bd6;background:transparent}
     *{box-sizing:border-box}
-    html,body{width:100%;margin:0;background:#000}
+    html,body{width:100%;margin:0;background:transparent!important}
     body{color:var(--green);font-family:"Courier New",Courier,monospace}
 
-    .topbar{position:relative;z-index:5;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left));height:54px;background:#000}
+    .topbar{position:relative;z-index:5;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left));height:54px;background:transparent!important}
     .site-name,.page-title,.topbar-clock{color:var(--green);font:900 clamp(15px,1.65vw,21px)/.9 "Courier New",Courier,monospace;letter-spacing:-.075em;text-shadow:0 2px 8px #000,0 0 12px rgba(114,255,25,.38)}
     .site-name{grid-column:1;justify-self:start;align-self:center;display:inline-flex;align-items:center;gap:9px;border:0;padding:0;background:transparent;color:inherit;text-decoration:none;cursor:pointer;white-space:nowrap}
     .site-name-icon{position:relative;display:block;width:34px;height:34px;aspect-ratio:1/1;flex:0 0 34px;overflow:hidden;border:0;background:transparent;font-size:0;line-height:0;box-shadow:none}
