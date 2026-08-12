@@ -8,7 +8,7 @@
     :root {
       color-scheme: dark;
       --cols: 5;
-      --rows: 4;
+      --rows: 5;
       --cell-w: 260px;
       --cell-h: 146px;
       --gap: 18px;
@@ -21,390 +21,125 @@
       --muted: #777;
       --accent: #aaff00;
     }
-
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     body { overflow: auto; }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      min-height: 52px;
-      background: rgba(5,5,5,.92);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #151515;
-    }
-
+    .topbar { position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 52px; background: rgba(5,5,5,.92); backdrop-filter: blur(10px); border-bottom: 1px solid #151515; }
     .topbar label { display: flex; align-items: center; gap: 5px; color: #8a8a8a; font-size: 11px; }
-    input, select, button { font: inherit; color: var(--text); background: #0d0d0d; border: 1px solid #313131; border-radius: 5px; }
+    input, button { font: inherit; color: var(--text); background: #0d0d0d; border: 1px solid #313131; border-radius: 5px; }
     input { width: 58px; padding: 5px 6px; }
     button { padding: 6px 9px; cursor: pointer; }
     button:hover { border-color: var(--accent); }
     .spacer { flex: 1; }
     #saveBtn { border-color: #465c20; color: var(--accent); }
     #status { color: #666; font-size: 11px; }
-
-    .world {
-      min-width: max-content;
-      min-height: calc(100vh - 52px);
-      padding: 34px;
-    }
-
-    .grid {
-      position: relative;
-      display: grid;
-      grid-template-columns: repeat(var(--cols), var(--cell-w));
-      grid-template-rows: repeat(var(--rows), var(--cell-h));
-      gap: var(--gap);
-      width: max-content;
-      height: max-content;
-    }
-
-    .cell {
-      position: relative;
-      width: var(--cell-w);
-      height: var(--cell-h);
-      border: 1px solid #171717;
-      background: #070707;
-      overflow: hidden;
-    }
-
+    .world { min-width: max-content; min-height: calc(100vh - 52px); padding: 34px; display: grid; place-items: center; }
+    .grid { position: relative; display: grid; grid-template-columns: repeat(var(--cols), var(--cell-w)); grid-template-rows: repeat(var(--rows), var(--cell-h)); gap: var(--gap); width: max-content; height: max-content; }
+    .cell { position: relative; width: var(--cell-w); height: var(--cell-h); border: 1px solid #171717; background: #070707; overflow: hidden; }
     .cell.empty { display: grid; place-items: center; }
-
-    .plus {
-      width: 54px;
-      height: 54px;
-      border: 0;
-      background: transparent;
-      color: #353535;
-      font-size: 38px;
-      line-height: 1;
-      display: grid;
-      place-items: center;
-      transition: color .12s ease, transform .12s ease;
-    }
+    .cell.origin { border-color: #4f6d22; box-shadow: 0 0 0 1px rgba(170,255,0,.12), 0 0 26px rgba(170,255,0,.08); }
+    .plus { width: 54px; height: 54px; border: 0; background: transparent; color: #353535; font-size: 38px; line-height: 1; display: grid; place-items: center; transition: color .12s ease, transform .12s ease; }
     .cell:hover .plus { color: var(--accent); transform: scale(1.08); }
-
     .page-card { position: absolute; inset: 0; background: #000; }
     .page-card iframe { width: 1280px; height: 720px; border: 0; transform-origin: 0 0; pointer-events: none; background: white; }
-    .page-label {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      padding: 5px 7px;
-      background: rgba(0,0,0,.82);
-      color: #d7d7d7;
-      font-size: 10px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .replace {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      width: 24px;
-      height: 24px;
-      padding: 0;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.76);
-      color: white;
-      z-index: 2;
-    }
-
-    .edge {
-      position: absolute;
-      z-index: 50;
-      background: var(--line);
-      cursor: pointer;
-      transition: background .1s ease, box-shadow .1s ease;
-    }
+    .page-label { position: absolute; left: 0; right: 0; bottom: 0; padding: 5px 7px; background: rgba(0,0,0,.82); color: #d7d7d7; font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .replace { position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; padding: 0; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.76); color: white; z-index: 2; }
+    .origin .replace { display: none; }
+    .edge { position: absolute; z-index: 50; background: var(--line); cursor: pointer; transition: background .1s ease, box-shadow .1s ease; }
     .edge:hover { background: var(--line-hover); box-shadow: 0 0 12px var(--line-hover); }
     .edge.active { background: var(--line-active); box-shadow: 0 0 12px var(--line-active); }
     .edge.horizontal { height: 5px; }
     .edge.vertical { width: 5px; }
-
-    dialog {
-      width: min(640px, calc(100vw - 20px));
-      max-height: min(760px, calc(100vh - 20px));
-      padding: 0;
-      border: 1px solid #333;
-      background: #090909;
-      color: white;
-    }
+    dialog { width: min(640px, calc(100vw - 20px)); max-height: min(760px, calc(100vh - 20px)); padding: 0; border: 1px solid #333; background: #090909; color: white; }
     dialog::backdrop { background: rgba(0,0,0,.72); }
     .picker-head { display: flex; gap: 8px; padding: 10px; border-bottom: 1px solid #222; }
     .picker-head input { flex: 1; width: auto; }
     .page-list { max-height: 66vh; overflow: auto; padding: 7px; display: grid; gap: 3px; }
     .page-option { text-align: left; padding: 9px; border-color: transparent; overflow-wrap: anywhere; }
     .page-option:hover { background: #171717; }
-
-    @media (max-width: 800px) {
-      .topbar { flex-wrap: wrap; }
-      .spacer { display: none; }
-    }
+    @media (max-width: 800px) { .topbar { flex-wrap: wrap; } .spacer { display: none; } }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <label>cols <input id="cols" type="number" min="1" max="20" value="5"></label>
-    <label>rows <input id="rows" type="number" min="1" max="20" value="4"></label>
+    <label>cols <input id="cols" type="number" min="3" max="21" step="2" value="5"></label>
+    <label>rows <input id="rows" type="number" min="3" max="21" step="2" value="5"></label>
     <label>width <input id="cellW" type="number" min="120" max="1000" value="260"></label>
     <label>height <input id="cellH" type="number" min="80" max="800" value="146"></label>
     <label>gap <input id="gap" type="number" min="8" max="120" value="18"></label>
     <div class="spacer"></div>
     <span id="status">loading pages…</span>
-    <button id="clearBtn" type="button">clear</button>
+    <button id="clearBtn" type="button">reset</button>
     <button id="saveBtn" type="button">save</button>
   </header>
-
-  <div class="world">
-    <main id="grid" class="grid"></main>
-  </div>
-
-  <dialog id="picker">
-    <div class="picker-head">
-      <input id="search" type="search" placeholder="Select repository page…" autocomplete="off">
-      <button id="closePicker" type="button">close</button>
-    </div>
-    <div id="pageList" class="page-list"></div>
-  </dialog>
-
+  <div class="world"><main id="grid" class="grid"></main></div>
+  <dialog id="picker"><div class="picker-head"><input id="search" type="search" placeholder="Select repository page…" autocomplete="off"><button id="closePicker" type="button">close</button></div><div id="pageList" class="page-list"></div></dialog>
   <script>
   (() => {
     const OWNER = 'honestlythomas';
     const REPO = 'theinternetisdead';
     const BRANCH = 'main';
     const TREE_API = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
-    const STORAGE_KEY = 'theinternetisdead-spatial-grid-v1';
-
+    const STORAGE_KEY = 'theinternetisdead-spatial-grid-v2';
     const grid = document.getElementById('grid');
     const picker = document.getElementById('picker');
     const search = document.getElementById('search');
     const pageList = document.getElementById('pageList');
     const status = document.getElementById('status');
-    const controls = {
-      cols: document.getElementById('cols'),
-      rows: document.getElementById('rows'),
-      cellW: document.getElementById('cellW'),
-      cellH: document.getElementById('cellH'),
-      gap: document.getElementById('gap')
-    };
-
+    const controls = { cols: document.getElementById('cols'), rows: document.getElementById('rows'), cellW: document.getElementById('cellW'), cellH: document.getElementById('cellH'), gap: document.getElementById('gap') };
     let allPages = [];
     let selectedCell = null;
     let state = loadState();
-
-    state.settings ||= { cols: 5, rows: 4, cellW: 260, cellH: 146, gap: 18 };
+    state.settings ||= { cols: 5, rows: 5, cellW: 260, cellH: 146, gap: 18 };
     state.cells ||= {};
     state.edges ||= {};
 
-    function loadState() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-      catch { return {}; }
-    }
-
-    function persist() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function applySettings() {
-      const s = state.settings;
-      document.documentElement.style.setProperty('--cols', s.cols);
-      document.documentElement.style.setProperty('--rows', s.rows);
-      document.documentElement.style.setProperty('--cell-w', s.cellW + 'px');
-      document.documentElement.style.setProperty('--cell-h', s.cellH + 'px');
-      document.documentElement.style.setProperty('--gap', s.gap + 'px');
-      Object.entries(controls).forEach(([k, el]) => el.value = s[k]);
-    }
-
+    function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; } }
+    function persist() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    function odd(n) { n = Math.max(3, Math.min(21, Number(n) || 5)); return n % 2 ? n : n + 1; }
+    function originKey() { return cellKey(Math.floor(state.settings.rows / 2), Math.floor(state.settings.cols / 2)); }
+    function ensureOrigin() { state.settings.cols = odd(state.settings.cols); state.settings.rows = odd(state.settings.rows); state.cells[originKey()] = 'index.html'; }
+    function applySettings() { ensureOrigin(); const s = state.settings; document.documentElement.style.setProperty('--cols', s.cols); document.documentElement.style.setProperty('--rows', s.rows); document.documentElement.style.setProperty('--cell-w', s.cellW + 'px'); document.documentElement.style.setProperty('--cell-h', s.cellH + 'px'); document.documentElement.style.setProperty('--gap', s.gap + 'px'); Object.entries(controls).forEach(([k, el]) => el.value = s[k]); }
     function cellKey(r, c) { return `${r},${c}`; }
     function pageUrl(path) { return new URL('/' + path.replace(/^\/+/, ''), location.origin).href; }
 
     function render() {
       applySettings();
       grid.innerHTML = '';
-      const { rows, cols, cellW, cellH, gap } = state.settings;
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const key = cellKey(r, c);
-          const cell = document.createElement('section');
-          cell.className = 'cell';
-          cell.dataset.key = key;
-          const path = state.cells[key];
-
-          if (!path) {
-            cell.classList.add('empty');
-            const plus = document.createElement('button');
-            plus.className = 'plus';
-            plus.type = 'button';
-            plus.textContent = '+';
-            plus.title = `Add page to ${key}`;
-            plus.addEventListener('click', () => openPicker(key));
-            cell.appendChild(plus);
-          } else {
-            const card = document.createElement('div');
-            card.className = 'page-card';
-            const iframe = document.createElement('iframe');
-            iframe.src = pageUrl(path);
-            iframe.loading = 'lazy';
-            iframe.title = path;
-            iframe.style.transform = `scale(${cellW / 1280}, ${cellH / 720})`;
-            const label = document.createElement('div');
-            label.className = 'page-label';
-            label.textContent = '/' + path;
-            label.title = '/' + path;
-            const replace = document.createElement('button');
-            replace.className = 'replace';
-            replace.type = 'button';
-            replace.textContent = '+';
-            replace.title = 'Replace page';
-            replace.addEventListener('click', () => openPicker(key));
-            card.append(iframe, label, replace);
-            cell.appendChild(card);
-          }
-          grid.appendChild(cell);
+      const { rows, cols, cellW, cellH } = state.settings;
+      const origin = originKey();
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+        const key = cellKey(r, c);
+        const cell = document.createElement('section');
+        cell.className = 'cell';
+        cell.dataset.key = key;
+        if (key === origin) cell.classList.add('origin');
+        const path = key === origin ? 'index.html' : state.cells[key];
+        if (!path) {
+          cell.classList.add('empty');
+          const plus = document.createElement('button'); plus.className = 'plus'; plus.type = 'button'; plus.textContent = '+'; plus.title = `Add page to ${key}`; plus.addEventListener('click', () => openPicker(key)); cell.appendChild(plus);
+        } else {
+          const card = document.createElement('div'); card.className = 'page-card';
+          const iframe = document.createElement('iframe'); iframe.src = pageUrl(path); iframe.loading = 'lazy'; iframe.title = path; iframe.style.transform = `scale(${cellW / 1280}, ${cellH / 720})`;
+          const label = document.createElement('div'); label.className = 'page-label'; label.textContent = '/' + path; label.title = '/' + path;
+          const replace = document.createElement('button'); replace.className = 'replace'; replace.type = 'button'; replace.textContent = '+'; replace.title = 'Replace page'; replace.addEventListener('click', () => openPicker(key));
+          card.append(iframe, label, replace); cell.appendChild(card);
         }
+        grid.appendChild(cell);
       }
-
-      renderEdges();
+      renderEdges(); persist();
     }
 
-    function edgeId(a, b) {
-      return [a, b].sort().join('|');
-    }
-
-    function makeEdge(a, b, orientation, x, y, w, h) {
-      const id = edgeId(a, b);
-      const edge = document.createElement('button');
-      edge.type = 'button';
-      edge.className = `edge ${orientation}` + (state.edges[id] ? ' active' : '');
-      edge.title = `${a} ↔ ${b}`;
-      edge.style.left = x + 'px';
-      edge.style.top = y + 'px';
-      if (orientation === 'horizontal') edge.style.width = w + 'px';
-      else edge.style.height = h + 'px';
-      edge.addEventListener('click', () => {
-        if (state.edges[id]) delete state.edges[id];
-        else state.edges[id] = { from: a, to: b, bidirectional: true };
-        persist();
-        edge.classList.toggle('active', !!state.edges[id]);
-      });
-      grid.appendChild(edge);
-    }
-
-    function renderEdges() {
-      const { rows, cols, cellW, cellH, gap } = state.settings;
-      const horizontalInset = Math.max(8, gap * .15);
-      const verticalInset = Math.max(8, gap * .15);
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const a = cellKey(r, c);
-          if (c < cols - 1) {
-            const b = cellKey(r, c + 1);
-            const x = (c + 1) * cellW + c * gap + 1;
-            const y = r * (cellH + gap) + verticalInset;
-            makeEdge(a, b, 'vertical', x + gap / 2 - 2.5, y, 5, cellH - verticalInset * 2);
-          }
-          if (r < rows - 1) {
-            const b = cellKey(r + 1, c);
-            const x = c * (cellW + gap) + horizontalInset;
-            const y = (r + 1) * cellH + r * gap + gap / 2 - 2.5;
-            makeEdge(a, b, 'horizontal', x, y, cellW - horizontalInset * 2, 5);
-          }
-        }
-      }
-    }
-
-    function openPicker(key) {
-      selectedCell = key;
-      search.value = '';
-      renderPageList('');
-      picker.showModal();
-      setTimeout(() => search.focus(), 0);
-    }
-
-    function renderPageList(filter) {
-      const q = filter.trim().toLowerCase();
-      const items = allPages.filter(p => !q || p.toLowerCase().includes(q));
-      pageList.innerHTML = '';
-      items.forEach(path => {
-        const btn = document.createElement('button');
-        btn.className = 'page-option';
-        btn.type = 'button';
-        btn.textContent = '/' + path;
-        btn.addEventListener('click', () => {
-          if (selectedCell) state.cells[selectedCell] = path;
-          persist();
-          picker.close();
-          render();
-        });
-        pageList.appendChild(btn);
-      });
-    }
-
-    async function discoverPages() {
-      try {
-        const res = await fetch(TREE_API, { headers: { Accept: 'application/vnd.github+json' } });
-        if (!res.ok) throw new Error(`GitHub ${res.status}`);
-        const data = await res.json();
-        allPages = (data.tree || [])
-          .filter(x => x.type === 'blob' && x.path.toLowerCase().endsWith('.html') && x.path !== 'preview/index.html')
-          .map(x => x.path)
-          .sort((a,b) => a.localeCompare(b));
-        status.textContent = `${allPages.length} pages`;
-      } catch (err) {
-        status.textContent = 'page discovery failed';
-        console.error(err);
-      }
-    }
-
-    function exportGrid() {
-      const payload = {
-        version: 1,
-        repository: `${OWNER}/${REPO}`,
-        branch: BRANCH,
-        grid: { ...state.settings },
-        pages: Object.entries(state.cells).map(([cell, path]) => ({ cell, path: '/' + path })),
-        transitions: Object.entries(state.edges).map(([id, edge]) => ({ id, ...edge }))
-      };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'theinternetisdead-transition-grid.json';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    Object.entries(controls).forEach(([key, el]) => {
-      el.addEventListener('change', () => {
-        state.settings[key] = Number(el.value);
-        persist();
-        render();
-      });
-    });
-
-    search.addEventListener('input', () => renderPageList(search.value));
-    document.getElementById('closePicker').addEventListener('click', () => picker.close());
-    document.getElementById('saveBtn').addEventListener('click', exportGrid);
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      state.cells = {};
-      state.edges = {};
-      persist();
-      render();
-    });
-
-    discoverPages();
-    render();
+    function edgeId(a, b) { return [a, b].sort().join('|'); }
+    function makeEdge(a, b, orientation, x, y, w, h) { const id = edgeId(a, b); const edge = document.createElement('button'); edge.type = 'button'; edge.className = `edge ${orientation}` + (state.edges[id] ? ' active' : ''); edge.title = `${a} ↔ ${b}`; edge.style.left = x + 'px'; edge.style.top = y + 'px'; if (orientation === 'horizontal') edge.style.width = w + 'px'; else edge.style.height = h + 'px'; edge.addEventListener('click', () => { if (state.edges[id]) delete state.edges[id]; else state.edges[id] = { from: a, to: b, bidirectional: true }; persist(); edge.classList.toggle('active', !!state.edges[id]); }); grid.appendChild(edge); }
+    function renderEdges() { const { rows, cols, cellW, cellH, gap } = state.settings; const horizontalInset = Math.max(8, gap * .15), verticalInset = Math.max(8, gap * .15); for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const a = cellKey(r,c); if (c < cols - 1) { const b = cellKey(r,c+1); const x = (c+1)*cellW + c*gap + 1; const y = r*(cellH+gap)+verticalInset; makeEdge(a,b,'vertical',x+gap/2-2.5,y,5,cellH-verticalInset*2); } if (r < rows - 1) { const b = cellKey(r+1,c); const x = c*(cellW+gap)+horizontalInset; const y = (r+1)*cellH+r*gap+gap/2-2.5; makeEdge(a,b,'horizontal',x,y,cellW-horizontalInset*2,5); } } }
+    function openPicker(key) { if (key === originKey()) return; selectedCell = key; search.value = ''; renderPageList(''); picker.showModal(); setTimeout(() => search.focus(), 0); }
+    function renderPageList(filter) { const q = filter.trim().toLowerCase(); const items = allPages.filter(p => !q || p.toLowerCase().includes(q)); pageList.innerHTML=''; items.forEach(path => { const btn=document.createElement('button'); btn.className='page-option'; btn.type='button'; btn.textContent='/'+path; btn.addEventListener('click',()=>{ if(selectedCell && selectedCell!==originKey()) state.cells[selectedCell]=path; persist(); picker.close(); render(); }); pageList.appendChild(btn); }); }
+    async function discoverPages() { try { const res = await fetch(TREE_API,{headers:{Accept:'application/vnd.github+json'}}); if(!res.ok) throw new Error(`GitHub ${res.status}`); const data=await res.json(); allPages=(data.tree||[]).filter(x=>x.type==='blob'&&x.path.toLowerCase().endsWith('.html')&&x.path!=='preview/index.html').map(x=>x.path).sort((a,b)=>a.localeCompare(b)); status.textContent=`${allPages.length} pages`; } catch(err){ status.textContent='page discovery failed'; console.error(err); } }
+    function exportGrid(){ ensureOrigin(); const payload={version:2,repository:`${OWNER}/${REPO}`,branch:BRANCH,origin:{cell:originKey(),path:'/index.html'},grid:{...state.settings},pages:Object.entries(state.cells).map(([cell,path])=>({cell,path:'/'+path})),transitions:Object.entries(state.edges).map(([id,edge])=>({id,...edge}))}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='theinternetisdead-transition-grid.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),0); }
+    Object.entries(controls).forEach(([k,el])=>el.addEventListener('change',()=>{ const oldOrigin=originKey(); if(k==='cols'||k==='rows') state.settings[k]=odd(el.value); else state.settings[k]=Math.max(1,Number(el.value)||1); const newOrigin=originKey(); if(oldOrigin!==newOrigin){ delete state.cells[oldOrigin]; state.cells[newOrigin]='index.html'; state.edges={}; } persist(); render(); }));
+    search.addEventListener('input',()=>renderPageList(search.value)); document.getElementById('closePicker').addEventListener('click',()=>picker.close()); document.getElementById('saveBtn').addEventListener('click',exportGrid); document.getElementById('clearBtn').addEventListener('click',()=>{ state={settings:{cols:5,rows:5,cellW:260,cellH:146,gap:18},cells:{},edges:{}}; ensureOrigin(); persist(); render(); });
+    ensureOrigin(); render(); discoverPages();
   })();
   </script>
 </body>
