@@ -14,15 +14,15 @@
 
     .topbar{position:relative;z-index:5;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left));height:54px;background:transparent!important}
     .site-name,.page-title,.topbar-clock{color:var(--green);font:900 clamp(15px,1.65vw,21px)/.9 "Courier New",Courier,monospace;letter-spacing:-.075em;text-shadow:0 2px 8px #000,0 0 12px rgba(114,255,25,.38);height:34px;align-items:center}
-    .site-name{grid-column:1;justify-self:start;display:inline-flex;gap:9px;border:0;padding:0;background:transparent;color:inherit;text-decoration:none;cursor:pointer;white-space:nowrap}
-    .site-name-icon{position:relative;display:block;width:34px;height:34px;aspect-ratio:1/1;flex:0 0 34px;overflow:hidden;border:0;background:transparent;font-size:0;line-height:0;box-shadow:none}
+    .site-name{grid-column:1;justify-self:start;display:inline-flex;gap:9px;white-space:nowrap}
+    .site-name-icon{position:relative;display:block;width:34px;height:34px;aspect-ratio:1/1;flex:0 0 34px;overflow:hidden;border:0;padding:0;background:transparent;color:inherit;font-size:0;line-height:0;box-shadow:none;cursor:pointer}
     .site-name-icon::before{content:"☠️";position:absolute;inset:0;display:grid;place-items:center;width:100%;height:100%;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:1;transform:scale(.92);transform-origin:center}
-    .site-name-label{display:inline-flex;align-items:center;height:34px;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
+    .site-name-label{display:inline-flex;align-items:center;height:34px;color:var(--green);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
+    .site-name-label:hover,.site-name-label:focus-visible,.site-name-icon:hover,.site-name-icon:focus-visible,.site-name-icon[aria-expanded="true"]{color:var(--magenta);outline:none;text-shadow:0 2px 8px #000,0 0 14px rgba(255,43,214,.58)}
     .page-title{grid-column:2;justify-self:center;position:relative;display:inline-flex;margin:0;font-style:normal;white-space:nowrap;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
     .topbar-clock{grid-column:3;justify-self:end;display:inline-flex;gap:9px;white-space:nowrap;text-decoration:none}
     .topbar-clock-text{display:inline-flex;align-items:center;height:34px;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
     .topbar-clock::after{content:"⚙️";display:inline-grid;width:34px;height:34px;flex:0 0 34px;place-items:center;overflow:hidden;border:0;background:transparent;box-shadow:none;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:1;text-decoration:none}
-    .site-name:hover,.site-name:focus-visible,.site-name[aria-expanded="true"]{color:var(--magenta);outline:none;text-shadow:0 2px 8px #000,0 0 14px rgba(255,43,214,.58)}
 
     .sidebar-backdrop{position:fixed;left:0;right:0;top:54px;bottom:0;z-index:3;background:transparent;opacity:0;pointer-events:none}
     .sidebar-backdrop.is-open{opacity:1;pointer-events:auto}
@@ -52,7 +52,7 @@
 </head>
 <body>
   <header class="topbar">
-    <button class="site-name" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle site sidebar"><span class="site-name-icon" aria-hidden="true">☠️</span><span class="site-name-label">theinternetisdead.org</span></button>
+    <div class="site-name"><button class="site-name-icon" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle site sidebar">☠️</button><a class="site-name-label" href="/" target="_top">theinternetisdead.org</a></div>
     <h1 class="page-title" id="page-title">Main Space</h1>
     <time class="topbar-clock" id="topbar-clock" aria-label="Local time"><span class="topbar-clock-text" id="topbar-clock-text"></span></time>
   </header>
