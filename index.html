@@ -92,6 +92,7 @@
     }
     .eyebrow::before { content: "● "; color: var(--magenta); }
     #artist-name {
+      position: relative;
       margin: 0;
       color: #fff;
       font-size: clamp(42px,min(8vw,11dvh),102px);
@@ -101,8 +102,25 @@
       text-transform: uppercase;
       white-space: nowrap;
       text-shadow: 0 0 18px rgba(114,255,25,.28), 0 3px 0 #000;
+      will-change: transform, opacity, filter;
     }
     #artist-name .artist-name-accent { color: var(--magenta); }
+    #artist-name.glitch-out { animation: artistGlitchOut .22s steps(2,end) forwards; }
+    #artist-name.glitch-in { animation: artistGlitchIn .28s steps(3,end) forwards; }
+    @keyframes artistGlitchOut {
+      0% { transform: translateX(0) skewX(0); opacity: 1; filter: none; }
+      22% { transform: translateX(6px) skewX(-3deg); opacity: .9; filter: drop-shadow(-5px 0 0 var(--magenta)) drop-shadow(5px 0 0 var(--green)); }
+      45% { transform: translateX(-10px) skewX(5deg); opacity: .7; filter: drop-shadow(8px 0 0 var(--magenta)) drop-shadow(-6px 0 0 var(--green)); }
+      68% { transform: translateX(18px) skewX(-7deg); opacity: .45; filter: drop-shadow(-10px 0 0 var(--magenta)) drop-shadow(10px 0 0 var(--green)); }
+      100% { transform: translateX(-42px) skewX(10deg); opacity: 0; filter: blur(1px); }
+    }
+    @keyframes artistGlitchIn {
+      0% { transform: translateX(42px) skewX(-10deg); opacity: 0; filter: blur(1px); }
+      28% { transform: translateX(-16px) skewX(7deg); opacity: .48; filter: drop-shadow(10px 0 0 var(--magenta)) drop-shadow(-8px 0 0 var(--green)); }
+      52% { transform: translateX(9px) skewX(-5deg); opacity: .72; filter: drop-shadow(-7px 0 0 var(--magenta)) drop-shadow(7px 0 0 var(--green)); }
+      76% { transform: translateX(-4px) skewX(2deg); opacity: .92; filter: drop-shadow(3px 0 0 var(--magenta)) drop-shadow(-3px 0 0 var(--green)); }
+      100% { transform: translateX(0) skewX(0); opacity: 1; filter: none; }
+    }
     .discipline {
       margin: 0;
       border-left: 3px solid var(--magenta);
@@ -193,6 +211,10 @@
       .actions { grid-template-columns: 1fr; }
       .action { min-height: 34px; }
     }
+    @media (prefers-reduced-motion: reduce) {
+      #artist-name.glitch-out,
+      #artist-name.glitch-in { animation: none; }
+    }
   </style>
 </head>
 <body>
@@ -241,11 +263,19 @@
         ? `${primary} <span class="artist-name-accent">${accent}</span>`
         : `<span class="artist-name-accent">${primary}</span>`;
     };
+    const transitionArtistName=()=>{
+      artistName.classList.remove('glitch-in');
+      artistName.classList.add('glitch-out');
+      setTimeout(()=>{
+        artistNameIndex=(artistNameIndex+1)%artistNames.length;
+        renderArtistName();
+        artistName.classList.remove('glitch-out');
+        void artistName.offsetWidth;
+        artistName.classList.add('glitch-in');
+      },220);
+    };
     renderArtistName();
-    setInterval(()=>{
-      artistNameIndex=(artistNameIndex+1)%artistNames.length;
-      renderArtistName();
-    },3500);
+    setInterval(transitionArtistName,3500);
 
     const topBarFrame=document.getElementById('top-bar-frame');
     window.addEventListener('message',event=>{
