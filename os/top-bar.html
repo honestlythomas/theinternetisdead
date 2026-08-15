@@ -7,7 +7,7 @@
   <meta name="color-scheme" content="dark">
   <title>theinternetisdead.org - Top Bar</title>
   <style>
-    :root{color-scheme:dark;--green:#72ff19;--magenta:#ff2bd6;background:transparent}
+    :root{color-scheme:dark;--green:#72ff19;--magenta:#ff2bd6;--sidebar-solid-width:276px;--sidebar-fade-width:34px;background:transparent}
     *{box-sizing:border-box}
     html,body{width:100%;height:100%;margin:0;background:transparent!important}
     body{color:var(--green);font-family:"Courier New",Courier,monospace;overflow:hidden}
@@ -26,7 +26,7 @@
 
     .sidebar-backdrop{position:fixed;left:0;right:0;top:54px;bottom:0;z-index:3;background:transparent;opacity:0;pointer-events:none}
     .sidebar-backdrop.is-open{opacity:1;pointer-events:auto}
-    .sidebar{position:fixed;left:0;top:54px;bottom:0;z-index:4;display:grid;grid-template-rows:auto minmax(120px,1fr) auto;gap:clamp(24px,6vh,64px);width:min(310px,96vw);overflow-y:auto;padding:18px 36px 18px 12px;background:linear-gradient(to right,rgba(0,0,0,.65) 0%,rgba(0,0,0,.65) calc(100% - 34px),rgba(0,0,0,0) 100%);text-align:center;scrollbar-width:none;transform:translateX(-105%);transition:transform .34s cubic-bezier(.16,1,.3,1);will-change:transform}
+    .sidebar{position:fixed;left:0;top:54px;bottom:0;z-index:4;display:grid;grid-template-rows:auto minmax(120px,1fr) auto;gap:clamp(24px,6vh,64px);width:min(calc(var(--sidebar-solid-width) + var(--sidebar-fade-width)),96vw);overflow-y:auto;padding:18px var(--sidebar-fade-width) 18px 12px;background:linear-gradient(to right,rgba(0,0,0,.65) 0,var(--sidebar-solid-width),rgba(0,0,0,0) calc(var(--sidebar-solid-width) + var(--sidebar-fade-width)));text-align:center;scrollbar-width:none;transform:translateX(-105%);transition:transform .34s cubic-bezier(.16,1,.3,1);will-change:transform}
     .sidebar.is-open{transform:translateX(0)}
     .sidebar::-webkit-scrollbar{display:none}
     .sidebar-top-section{align-self:start}
@@ -90,14 +90,22 @@
 
     const sidebar=document.getElementById('sidebar');
     const sidebarToggle=document.getElementById('sidebar-toggle');
+    const sidebarLabel=document.querySelector('.site-name-label');
     const sidebarBackdrop=document.getElementById('sidebar-backdrop');
+    const syncSidebarWidth=()=>{
+      const labelRect=sidebarLabel.getBoundingClientRect();
+      document.documentElement.style.setProperty('--sidebar-solid-width',`${Math.ceil(labelRect.right)}px`);
+    };
     const setSidebarOpen=open=>{
+      syncSidebarWidth();
       sidebar.classList.toggle('is-open',open);
       sidebarBackdrop.classList.toggle('is-open',open);
       sidebar.setAttribute('aria-hidden',open?'false':'true');
       sidebarToggle.setAttribute('aria-expanded',open?'true':'false');
       window.parent.postMessage({type:'topbar-sidebar',open},window.location.origin);
     };
+    syncSidebarWidth();
+    window.addEventListener('resize',syncSidebarWidth);
     sidebarToggle.addEventListener('click',()=>setSidebarOpen(!sidebar.classList.contains('is-open')));
     sidebarBackdrop.addEventListener('click',()=>setSidebarOpen(false));
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&sidebar.classList.contains('is-open')){setSidebarOpen(false);sidebarToggle.focus()}});
