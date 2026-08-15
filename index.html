@@ -97,7 +97,22 @@
       white-space: nowrap;
     }
     .eyebrow::before { content: "● "; color: var(--magenta); }
-    .eyebrow-alias { position: relative; display: inline-block; }
+    .eyebrow-alias {
+      position: relative;
+      display: inline-block;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      text-transform: inherit;
+      cursor: pointer;
+    }
+    .eyebrow-alias:hover,
+    .eyebrow-alias:focus-visible { color: #fff; outline: none; text-shadow: 0 0 7px rgba(255,255,255,.7); }
     .eyebrow-separator { display: inline-block; }
     .eyebrow-underline {
       position: absolute;
@@ -259,25 +274,14 @@
   </style>
 </head>
 <body>
-  <iframe
-    class="starfield-background"
-    src="/dead/backgrounds/starfield-background.html"
-    title="Animated starfield background"
-    aria-hidden="true"
-  ></iframe>
+  <iframe class="starfield-background" src="/dead/backgrounds/starfield-background.html" title="Animated starfield background" aria-hidden="true"></iframe>
 
-  <iframe
-    class="top-bar-frame"
-    id="top-bar-frame"
-    src="/os/top-bar.html"
-    title="Site top bar"
-    allowtransparency="true"
-  ></iframe>
+  <iframe class="top-bar-frame" id="top-bar-frame" src="/os/top-bar.html" title="Site top bar" allowtransparency="true"></iframe>
 
   <div class="main-rectangle">
     <section class="identity-content" aria-labelledby="artist-name">
       <img class="portrait-banner" src="/dead/assets/images/honestly-thomas-recursive-portrait.webp" alt="Honestly Thomas recursive portrait">
-      <p class="eyebrow" id="identity-eyebrow"><span class="eyebrow-alias" data-alias-index="0">Thomas Harrison</span><span class="eyebrow-separator"> // </span><span class="eyebrow-alias" data-alias-index="1">Honestly Thomas</span><span class="eyebrow-separator"> // </span><span class="eyebrow-alias" data-alias-index="2">Tektite</span><span class="eyebrow-separator"> // </span><span class="eyebrow-alias" data-alias-index="3">Jinclops</span><span class="eyebrow-underline" id="eyebrow-underline" aria-hidden="true"></span></p>
+      <p class="eyebrow" id="identity-eyebrow"><button class="eyebrow-alias" type="button" data-alias-index="0">Thomas Harrison</button><span class="eyebrow-separator"> // </span><button class="eyebrow-alias" type="button" data-alias-index="1">Honestly Thomas</button><span class="eyebrow-separator"> // </span><button class="eyebrow-alias" type="button" data-alias-index="2">Tektite</button><span class="eyebrow-separator"> // </span><button class="eyebrow-alias" type="button" data-alias-index="3">Jinclops</button><span class="eyebrow-underline" id="eyebrow-underline" aria-hidden="true"></span></p>
       <h1 id="artist-name" aria-live="off">Thomas <span class="artist-name-accent">Harrison</span></h1>
       <p class="discipline">Neurodivergent Canadian interdisciplinary artist working across rap, video, writing, code, web design, games and experimental media.</p>
       <p class="statement"><strong>theinternetisdead.org</strong> is art first: a recursive archive of web-native grief, absurdity, identity and survival. It is also my personal symbolic operating system—a place to gather the work, document the experience, and leave proof that I was here and that it mattered.</p>
@@ -301,12 +305,16 @@
       ['Jinclops','']
     ];
     let artistNameIndex=0;
+    let artistCycleTimer=null;
+    let transitionTimer=null;
+
     const renderArtistName=()=>{
       const [primary,accent]=artistNames[artistNameIndex];
       artistName.innerHTML=accent
         ? `${primary} <span class="artist-name-accent">${accent}</span>`
         : `<span class="artist-name-accent">${primary}</span>`;
     };
+
     const positionEyebrowUnderline=(index,animate=true)=>{
       const target=eyebrowAliases[index];
       if(!target)return;
@@ -320,13 +328,26 @@
         eyebrowUnderline.style.transition='';
       }
     };
-    const transitionArtistName=()=>{
+
+    const scheduleArtistCycle=()=>{
+      clearTimeout(artistCycleTimer);
+      artistCycleTimer=setTimeout(()=>transitionArtistName((artistNameIndex+1)%artistNames.length),3500);
+    };
+
+    const transitionArtistName=(nextIndex=(artistNameIndex+1)%artistNames.length)=>{
+      clearTimeout(artistCycleTimer);
+      clearTimeout(transitionTimer);
+      if(nextIndex===artistNameIndex){
+        positionEyebrowUnderline(artistNameIndex,true);
+        scheduleArtistCycle();
+        return;
+      }
       eyebrowUnderline.classList.remove('glitch-in');
       eyebrowUnderline.classList.add('glitch-out');
       artistName.classList.remove('glitch-in');
       artistName.classList.add('glitch-out');
-      setTimeout(()=>{
-        artistNameIndex=(artistNameIndex+1)%artistNames.length;
+      transitionTimer=setTimeout(()=>{
+        artistNameIndex=nextIndex;
         renderArtistName();
         positionEyebrowUnderline(artistNameIndex,true);
         eyebrowUnderline.classList.remove('glitch-out');
@@ -335,12 +356,19 @@
         void artistName.offsetWidth;
         eyebrowUnderline.classList.add('glitch-in');
         artistName.classList.add('glitch-in');
+        scheduleArtistCycle();
       },220);
     };
+
+    eyebrowAliases.forEach(button=>button.addEventListener('click',()=>{
+      const nextIndex=Number(button.dataset.aliasIndex);
+      if(Number.isInteger(nextIndex))transitionArtistName(nextIndex);
+    }));
+
     renderArtistName();
     requestAnimationFrame(()=>positionEyebrowUnderline(artistNameIndex,false));
     window.addEventListener('resize',()=>positionEyebrowUnderline(artistNameIndex,false));
-    setInterval(transitionArtistName,3500);
+    scheduleArtistCycle();
 
     const topBarFrame=document.getElementById('top-bar-frame');
     window.addEventListener('message',event=>{
