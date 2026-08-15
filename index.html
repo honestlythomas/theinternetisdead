@@ -99,13 +99,10 @@
       letter-spacing: -.075em;
       line-height: .76;
       text-transform: uppercase;
+      white-space: nowrap;
       text-shadow: 0 0 18px rgba(114,255,25,.28), 0 3px 0 #000;
     }
-    #artist-name span {
-      display: block;
-      margin-left: .3em;
-      color: var(--magenta);
-    }
+    #artist-name .artist-name-accent { color: var(--magenta); }
     .discipline {
       margin: 0;
       border-left: 3px solid var(--magenta);
@@ -217,8 +214,8 @@
   <div class="main-rectangle">
     <section class="identity-content" aria-labelledby="artist-name">
       <img class="portrait-banner" src="/dead/assets/images/honestly-thomas-recursive-portrait.webp" alt="Honestly Thomas recursive portrait">
-      <p class="eyebrow">Thomas Harrison // Honestly Thomas // Tektite</p>
-      <h1 id="artist-name">Honestly<span>Thomas</span></h1>
+      <p class="eyebrow">Thomas Harrison // Honestly Thomas // Tektite // Jinclops</p>
+      <h1 id="artist-name" aria-live="off">Thomas <span class="artist-name-accent">Harrison</span></h1>
       <p class="discipline">Neurodivergent Canadian interdisciplinary artist working across rap, video, writing, code, web design, games and experimental media.</p>
       <p class="statement"><strong>theinternetisdead.org</strong> is art first: a recursive archive of web-native grief, absurdity, identity and survival. It is also my personal symbolic operating system—a place to gather the work, document the experience, and leave proof that I was here and that it mattered.</p>
       <p class="warning">⚠ Enter expecting haunted interfaces, dense symbolism, flashing imagery, unexpected sound, gallows humour, unfinished ruins and sincerity hiding inside the debris.</p>
@@ -230,6 +227,26 @@
   </div>
 
   <script>
+    const artistName=document.getElementById('artist-name');
+    const artistNames=[
+      ['Thomas','Harrison'],
+      ['Honestly','Thomas'],
+      ['Tektite',''],
+      ['Jinclops','']
+    ];
+    let artistNameIndex=0;
+    const renderArtistName=()=>{
+      const [primary,accent]=artistNames[artistNameIndex];
+      artistName.innerHTML=accent
+        ? `${primary} <span class="artist-name-accent">${accent}</span>`
+        : `<span class="artist-name-accent">${primary}</span>`;
+    };
+    renderArtistName();
+    setInterval(()=>{
+      artistNameIndex=(artistNameIndex+1)%artistNames.length;
+      renderArtistName();
+    },3500);
+
     const topBarFrame=document.getElementById('top-bar-frame');
     window.addEventListener('message',event=>{
       if(event.origin!==window.location.origin||event.source!==topBarFrame.contentWindow)return;
