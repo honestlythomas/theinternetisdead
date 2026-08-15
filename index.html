@@ -102,26 +102,30 @@
       display: inline-block;
       border: 0;
       margin: 0;
-      padding: 0;
+      padding: 0 0 3px;
       background: transparent;
       color: inherit;
       font: inherit;
       letter-spacing: inherit;
       line-height: inherit;
       text-transform: inherit;
+      text-decoration: underline;
+      text-decoration-color: #fff;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
       cursor: pointer;
     }
     .eyebrow-alias:hover,
     .eyebrow-alias:focus-visible { color: #fff; outline: none; text-shadow: 0 0 7px rgba(255,255,255,.7); }
-    .eyebrow-separator { display: inline-block; }
+    .eyebrow-separator { display: inline-block; padding-bottom: 3px; }
     .eyebrow-underline {
       position: absolute;
       left: 0;
-      bottom: -3px;
+      bottom: 0;
       width: 0;
       height: 2px;
-      background: #fff;
-      box-shadow: 0 0 5px rgba(255,255,255,.65);
+      background: var(--green);
+      box-shadow: 0 0 6px rgba(114,255,25,.8);
       transform: translateX(0) skewX(0);
       transform-origin: left center;
       opacity: 1;
@@ -305,16 +309,14 @@
       ['Jinclops','']
     ];
     let artistNameIndex=0;
-    let artistCycleTimer=null;
-    let transitionTimer=null;
-
+    let artistCycleTimer;
+    let transitionTimer;
     const renderArtistName=()=>{
       const [primary,accent]=artistNames[artistNameIndex];
       artistName.innerHTML=accent
         ? `${primary} <span class="artist-name-accent">${accent}</span>`
         : `<span class="artist-name-accent">${primary}</span>`;
     };
-
     const positionEyebrowUnderline=(index,animate=true)=>{
       const target=eyebrowAliases[index];
       if(!target)return;
@@ -328,26 +330,14 @@
         eyebrowUnderline.style.transition='';
       }
     };
-
-    const scheduleArtistCycle=()=>{
-      clearTimeout(artistCycleTimer);
-      artistCycleTimer=setTimeout(()=>transitionArtistName((artistNameIndex+1)%artistNames.length),3500);
-    };
-
-    const transitionArtistName=(nextIndex=(artistNameIndex+1)%artistNames.length)=>{
-      clearTimeout(artistCycleTimer);
+    const runTransitionTo=index=>{
       clearTimeout(transitionTimer);
-      if(nextIndex===artistNameIndex){
-        positionEyebrowUnderline(artistNameIndex,true);
-        scheduleArtistCycle();
-        return;
-      }
       eyebrowUnderline.classList.remove('glitch-in');
       eyebrowUnderline.classList.add('glitch-out');
       artistName.classList.remove('glitch-in');
       artistName.classList.add('glitch-out');
       transitionTimer=setTimeout(()=>{
-        artistNameIndex=nextIndex;
+        artistNameIndex=index;
         renderArtistName();
         positionEyebrowUnderline(artistNameIndex,true);
         eyebrowUnderline.classList.remove('glitch-out');
@@ -356,19 +346,25 @@
         void artistName.offsetWidth;
         eyebrowUnderline.classList.add('glitch-in');
         artistName.classList.add('glitch-in');
-        scheduleArtistCycle();
       },220);
     };
-
-    eyebrowAliases.forEach(button=>button.addEventListener('click',()=>{
-      const nextIndex=Number(button.dataset.aliasIndex);
-      if(Number.isInteger(nextIndex))transitionArtistName(nextIndex);
+    const scheduleNextArtist=()=>{
+      clearTimeout(artistCycleTimer);
+      artistCycleTimer=setTimeout(()=>{
+        const nextIndex=(artistNameIndex+1)%artistNames.length;
+        runTransitionTo(nextIndex);
+        scheduleNextArtist();
+      },3500);
+    };
+    eyebrowAliases.forEach((alias,index)=>alias.addEventListener('click',()=>{
+      clearTimeout(artistCycleTimer);
+      if(index!==artistNameIndex)runTransitionTo(index);
+      scheduleNextArtist();
     }));
-
     renderArtistName();
     requestAnimationFrame(()=>positionEyebrowUnderline(artistNameIndex,false));
     window.addEventListener('resize',()=>positionEyebrowUnderline(artistNameIndex,false));
-    scheduleArtistCycle();
+    scheduleNextArtist();
 
     const topBarFrame=document.getElementById('top-bar-frame');
     window.addEventListener('message',event=>{
