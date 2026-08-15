@@ -53,7 +53,7 @@
 <body>
   <header class="topbar">
     <button class="site-name" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle site sidebar"><span class="site-name-icon" aria-hidden="true">☠️</span><span class="site-name-label">theinternetisdead.org</span></button>
-    <h1 class="page-title">Main Space</h1>
+    <h1 class="page-title" id="page-title">Main Space</h1>
     <time class="topbar-clock" id="topbar-clock" aria-label="Local time"><span class="topbar-clock-text" id="topbar-clock-text"></span></time>
   </header>
 
@@ -82,6 +82,10 @@
   </aside>
 
   <script>
+    const pageTitle=document.getElementById('page-title');
+    const requestedTitle=new URLSearchParams(window.location.search).get('title');
+    if(requestedTitle)pageTitle.textContent=requestedTitle;
+
     const topbarClockText=document.getElementById('topbar-clock-text');
     const clockFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true});
     const updateTopbarClock=()=>{topbarClockText.textContent=clockFormatter.format(new Date())};
