@@ -21,7 +21,7 @@
     .site-name-label:hover,.site-name-label:focus-visible,.site-name-icon:hover,.site-name-icon:focus-visible,.site-name-icon[aria-expanded="true"]{color:var(--magenta);outline:none;text-shadow:0 2px 8px #000,0 0 14px rgba(255,43,214,.58)}
 
     .page-title{grid-column:2;justify-self:center;position:relative;display:inline-flex;align-items:center;gap:.45em;margin:0;font-style:normal;white-space:nowrap;text-decoration:none}
-    .page-cycle{display:inline-flex;align-items:center;justify-content:center;border:0;margin:0;padding:0;background:transparent;color:var(--green);font:900 2em/.65 "Courier New",Courier,monospace;letter-spacing:0;text-decoration:none;text-shadow:inherit;cursor:pointer;user-select:none;-webkit-user-select:none}
+    .page-cycle{display:inline-flex;align-items:center;justify-content:center;border:0;margin:0;padding:0;background:transparent;color:var(--green);font:900 1em/.65 "Courier New",Courier,monospace;letter-spacing:0;text-decoration:none;text-shadow:inherit;cursor:pointer;user-select:none;-webkit-user-select:none}
     .page-cycle:hover,.page-cycle:focus-visible{color:var(--magenta);outline:none}
     .page-nav-button{display:inline-flex;align-items:center;border:0;margin:0;padding:0;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;text-shadow:inherit;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em;cursor:pointer;caret-color:transparent;user-select:none;-webkit-user-select:none}
     .page-nav-button:hover,.page-nav-button:focus-visible,.page-nav-button[aria-expanded="true"]{color:var(--magenta);outline:none}
@@ -114,8 +114,9 @@
     const normalizedTitle=pages.some(page=>page.title===requestedTitle)?requestedTitle:'Main Space';
     pageNavButton.textContent=normalizedTitle;
     pageNavOptions.forEach(option=>option.toggleAttribute('aria-current',option.dataset.pageTitle===normalizedTitle));
-    const closePageMenu=()=>{pageNavMenu.classList.remove('is-open');pageNavButton.setAttribute('aria-expanded','false')};
-    const togglePageMenu=()=>{const open=!pageNavMenu.classList.contains('is-open');pageNavMenu.classList.toggle('is-open',open);pageNavButton.setAttribute('aria-expanded',open?'true':'false')};
+    const publishMenuState=open=>window.parent.postMessage({type:'topbar-menu',open},window.location.origin);
+    const closePageMenu=()=>{pageNavMenu.classList.remove('is-open');pageNavButton.setAttribute('aria-expanded','false');publishMenuState(false)};
+    const togglePageMenu=()=>{const open=!pageNavMenu.classList.contains('is-open');pageNavMenu.classList.toggle('is-open',open);pageNavButton.setAttribute('aria-expanded',open?'true':'false');publishMenuState(open)};
     const cyclePage=direction=>{
       const currentIndex=Math.max(0,pages.findIndex(page=>page.title===normalizedTitle));
       const nextIndex=(currentIndex+direction+pages.length)%pages.length;
