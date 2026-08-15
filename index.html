@@ -82,6 +82,11 @@
       background: #000;
     }
     .eyebrow {
+      position: relative;
+      display: inline-flex;
+      align-items: flex-end;
+      width: max-content;
+      max-width: 100%;
       margin: 0;
       color: var(--green);
       font-size: clamp(8px,1.1vw,11px);
@@ -89,8 +94,40 @@
       letter-spacing: .14em;
       line-height: 1.2;
       text-transform: uppercase;
+      white-space: nowrap;
     }
     .eyebrow::before { content: "● "; color: var(--magenta); }
+    .eyebrow-alias { position: relative; display: inline-block; }
+    .eyebrow-separator { display: inline-block; }
+    .eyebrow-underline {
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 0;
+      height: 2px;
+      background: #fff;
+      box-shadow: 0 0 5px rgba(255,255,255,.65);
+      transform: translateX(0) skewX(0);
+      transform-origin: left center;
+      opacity: 1;
+      pointer-events: none;
+      will-change: left, width, transform, opacity, filter;
+      transition: left .26s cubic-bezier(.16,1,.3,1), width .26s cubic-bezier(.16,1,.3,1);
+    }
+    .eyebrow-underline.glitch-out { animation: underlineGlitchOut .18s steps(2,end) forwards; }
+    .eyebrow-underline.glitch-in { animation: underlineGlitchIn .24s steps(3,end) forwards; }
+    @keyframes underlineGlitchOut {
+      0% { transform: translateX(0) scaleX(1) skewX(0); opacity: 1; filter: none; }
+      35% { transform: translateX(5px) scaleX(.82) skewX(-8deg); opacity: .9; filter: drop-shadow(-3px 0 0 var(--magenta)) drop-shadow(3px 0 0 var(--green)); }
+      70% { transform: translateX(-7px) scaleX(.45) skewX(12deg); opacity: .5; filter: drop-shadow(5px 0 0 var(--magenta)) drop-shadow(-4px 0 0 var(--green)); }
+      100% { transform: translateX(18px) scaleX(.08) skewX(-16deg); opacity: 0; filter: blur(.5px); }
+    }
+    @keyframes underlineGlitchIn {
+      0% { transform: translateX(-18px) scaleX(.08) skewX(16deg); opacity: 0; filter: blur(.5px); }
+      32% { transform: translateX(7px) scaleX(.58) skewX(-10deg); opacity: .55; filter: drop-shadow(-4px 0 0 var(--magenta)) drop-shadow(4px 0 0 var(--green)); }
+      68% { transform: translateX(-3px) scaleX(.9) skewX(5deg); opacity: .9; filter: drop-shadow(2px 0 0 var(--magenta)) drop-shadow(-2px 0 0 var(--green)); }
+      100% { transform: translateX(0) scaleX(1) skewX(0); opacity: 1; filter: none; }
+    }
     #artist-name {
       position: relative;
       margin: 0;
@@ -204,6 +241,7 @@
         flex: 1 1 160px;
         object-position: center 30%;
       }
+      .eyebrow { max-width: 100%; font-size: clamp(7px,2.3vw,10px); letter-spacing: .09em; }
       #artist-name { font-size: clamp(38px,min(15vw,10dvh),72px); }
       .discipline { font-size: clamp(9px,2.6vw,13px); }
       .statement { font-size: clamp(8px,2.35vw,11px); line-height: 1.3; }
@@ -213,7 +251,10 @@
     }
     @media (prefers-reduced-motion: reduce) {
       #artist-name.glitch-out,
-      #artist-name.glitch-in { animation: none; }
+      #artist-name.glitch-in,
+      .eyebrow-underline.glitch-out,
+      .eyebrow-underline.glitch-in { animation: none; }
+      .eyebrow-underline { transition: none; }
     }
   </style>
 </head>
@@ -236,7 +277,7 @@
   <div class="main-rectangle">
     <section class="identity-content" aria-labelledby="artist-name">
       <img class="portrait-banner" src="/dead/assets/images/honestly-thomas-recursive-portrait.webp" alt="Honestly Thomas recursive portrait">
-      <p class="eyebrow">Thomas Harrison // Honestly Thomas // Tektite // Jinclops</p>
+      <p class="eyebrow" id="identity-eyebrow"><span class="eyebrow-alias" data-alias-index="0">Thomas Harrison</span><span class="eyebrow-separator"> // </span><span class="eyebrow-alias" data-alias-index="1">Honestly Thomas</span><span class="eyebrow-separator"> // </span><span class="eyebrow-alias" data-alias-index="2">Tektite</span><span class="eyebrow-separator"> // </span><span class="eyebrow-alias" data-alias-index="3">Jinclops</span><span class="eyebrow-underline" id="eyebrow-underline" aria-hidden="true"></span></p>
       <h1 id="artist-name" aria-live="off">Thomas <span class="artist-name-accent">Harrison</span></h1>
       <p class="discipline">Neurodivergent Canadian interdisciplinary artist working across rap, video, writing, code, web design, games and experimental media.</p>
       <p class="statement"><strong>theinternetisdead.org</strong> is art first: a recursive archive of web-native grief, absurdity, identity and survival. It is also my personal symbolic operating system—a place to gather the work, document the experience, and leave proof that I was here and that it mattered.</p>
@@ -250,6 +291,9 @@
 
   <script>
     const artistName=document.getElementById('artist-name');
+    const eyebrow=document.getElementById('identity-eyebrow');
+    const eyebrowAliases=[...document.querySelectorAll('.eyebrow-alias')];
+    const eyebrowUnderline=document.getElementById('eyebrow-underline');
     const artistNames=[
       ['Thomas','Harrison'],
       ['Honestly','Thomas'],
@@ -263,18 +307,39 @@
         ? `${primary} <span class="artist-name-accent">${accent}</span>`
         : `<span class="artist-name-accent">${primary}</span>`;
     };
+    const positionEyebrowUnderline=(index,animate=true)=>{
+      const target=eyebrowAliases[index];
+      if(!target)return;
+      const eyebrowRect=eyebrow.getBoundingClientRect();
+      const targetRect=target.getBoundingClientRect();
+      if(!animate)eyebrowUnderline.style.transition='none';
+      eyebrowUnderline.style.left=`${targetRect.left-eyebrowRect.left}px`;
+      eyebrowUnderline.style.width=`${targetRect.width}px`;
+      if(!animate){
+        void eyebrowUnderline.offsetWidth;
+        eyebrowUnderline.style.transition='';
+      }
+    };
     const transitionArtistName=()=>{
+      eyebrowUnderline.classList.remove('glitch-in');
+      eyebrowUnderline.classList.add('glitch-out');
       artistName.classList.remove('glitch-in');
       artistName.classList.add('glitch-out');
       setTimeout(()=>{
         artistNameIndex=(artistNameIndex+1)%artistNames.length;
         renderArtistName();
+        positionEyebrowUnderline(artistNameIndex,true);
+        eyebrowUnderline.classList.remove('glitch-out');
         artistName.classList.remove('glitch-out');
+        void eyebrowUnderline.offsetWidth;
         void artistName.offsetWidth;
+        eyebrowUnderline.classList.add('glitch-in');
         artistName.classList.add('glitch-in');
       },220);
     };
     renderArtistName();
+    requestAnimationFrame(()=>positionEyebrowUnderline(artistNameIndex,false));
+    window.addEventListener('resize',()=>positionEyebrowUnderline(artistNameIndex,false));
     setInterval(transitionArtistName,3500);
 
     const topBarFrame=document.getElementById('top-bar-frame');
