@@ -7,281 +7,49 @@
   <meta name="color-scheme" content="dark">
   <title>TheInternetIsDead.org</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --green: #72ff19;
-      --magenta: #ff2bd6;
-    }
+    :root { color-scheme: dark; --green: #72ff19; --magenta: #ff2bd6; }
     * { box-sizing: border-box; }
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      overflow: hidden;
-      background: #000;
-    }
-    body {
-      position: relative;
-      color: var(--green);
-      font-family: "Courier New", Courier, monospace;
-    }
-    .starfield-background {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      background: #000;
-    }
-    .top-bar-frame {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      display: block;
-      width: 100%;
-      height: 54px;
-      border: 0;
-      background: transparent !important;
-      color-scheme: normal;
-      transition: height .01s linear;
-    }
-    .top-bar-frame.sidebar-open,
-    .top-bar-frame.menu-open { height: 100vh; height: 100dvh; }
-    .main-rectangle {
-      position: fixed;
-      top: 64px;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
-      z-index: 5;
-      overflow: hidden;
-      border: 3px solid #fff;
-      padding: 10px 14px 14px;
-      background: rgba(0,0,0,.65);
-      text-shadow: 0 2px 8px #000;
-    }
-    .identity-content {
-      display: grid;
-      grid-template-rows: minmax(0,1fr) auto auto auto auto auto auto;
-      width: 100%;
-      height: 100%;
-      gap: clamp(6px,1.2dvh,12px);
-    }
-    .portrait-banner {
-      display: block;
-      width: 100%;
-      height: 100%;
-      min-height: 0;
-      border: 1px solid rgba(114,255,25,.65);
-      object-fit: cover;
-      object-position: center 34%;
-      box-shadow: 0 0 22px rgba(114,255,25,.12);
-      background: #000;
-    }
-    .eyebrow {
-      position: relative;
-      display: inline-flex;
-      align-items: flex-end;
-      width: max-content;
-      max-width: 100%;
-      margin: 0;
-      color: var(--green);
-      font-size: clamp(8px,1.1vw,11px);
-      font-weight: 700;
-      letter-spacing: .14em;
-      line-height: 1.2;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #000; }
+    body { position: relative; color: var(--green); font-family: "Courier New", Courier, monospace; }
+    .starfield-background { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; border: 0; background: #000; }
+    .top-bar-frame { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: block; width: 100%; height: 54px; border: 0; background: transparent !important; color-scheme: normal; transition: height .01s linear; }
+    .top-bar-frame.sidebar-open, .top-bar-frame.menu-open { height: 100vh; height: 100dvh; }
+    .main-rectangle { position: fixed; top: 64px; left: 10px; right: 10px; bottom: 10px; z-index: 5; overflow: hidden; border: 3px solid #fff; padding: 10px 14px 14px; background: rgba(0,0,0,.65); text-shadow: 0 2px 8px #000; }
+    .identity-content { display: grid; grid-template-rows: minmax(0,1fr) auto auto auto auto auto auto; width: 100%; height: 100%; gap: clamp(6px,1.2dvh,12px); }
+    .portrait-banner { display: block; width: 100%; height: 100%; min-height: 0; border: 1px solid rgba(114,255,25,.65); object-fit: cover; object-position: center 34%; box-shadow: 0 0 22px rgba(114,255,25,.12); background: #000; }
+    .eyebrow { position: relative; display: inline-flex; align-items: flex-end; width: max-content; max-width: 100%; margin: 0; color: var(--green); font-size: clamp(8px,1.1vw,11px); font-weight: 700; letter-spacing: .14em; line-height: 1.2; text-transform: uppercase; white-space: nowrap; }
     .eyebrow::before { content: "● "; color: var(--magenta); }
-    .eyebrow-alias {
-      position: relative;
-      display: inline-block;
-      border: 0;
-      margin: 0;
-      padding: 0 0 3px;
-      background: transparent;
-      color: inherit;
-      font: inherit;
-      letter-spacing: inherit;
-      line-height: inherit;
-      text-transform: inherit;
-      text-decoration: underline;
-      text-decoration-color: #fff;
-      text-decoration-thickness: 2px;
-      text-underline-offset: 3px;
-      cursor: pointer;
-    }
-    .eyebrow-alias:hover,
-    .eyebrow-alias:focus-visible { color: #fff; outline: none; text-shadow: 0 0 7px rgba(255,255,255,.7); }
+    .eyebrow-alias { position: relative; display: inline-block; border: 0; margin: 0; padding: 0 0 3px; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; line-height: inherit; text-transform: inherit; text-decoration: underline; text-decoration-color: #fff; text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; }
+    .eyebrow-alias:hover, .eyebrow-alias:focus-visible { color: #fff; outline: none; text-shadow: 0 0 7px rgba(255,255,255,.7); }
     .eyebrow-separator { display: inline-block; padding-bottom: 3px; }
-    .eyebrow-underline {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 0;
-      height: 2px;
-      background: var(--green);
-      box-shadow: 0 0 6px rgba(114,255,25,.8);
-      transform: translateX(0) skewX(0);
-      transform-origin: left center;
-      opacity: 1;
-      pointer-events: none;
-      will-change: left, width, transform, opacity, filter;
-      transition: left .26s cubic-bezier(.16,1,.3,1), width .26s cubic-bezier(.16,1,.3,1);
-    }
+    .eyebrow-underline { position: absolute; left: 0; bottom: 3px; width: 0; height: 2px; background: var(--green); box-shadow: 0 0 6px rgba(114,255,25,.8); transform: translateX(0) skewX(0); transform-origin: left center; opacity: 1; pointer-events: none; will-change: left, width, transform, opacity, filter; transition: left .26s cubic-bezier(.16,1,.3,1), width .26s cubic-bezier(.16,1,.3,1); }
     .eyebrow-underline.glitch-out { animation: underlineGlitchOut .18s steps(2,end) forwards; }
     .eyebrow-underline.glitch-in { animation: underlineGlitchIn .24s steps(3,end) forwards; }
-    @keyframes underlineGlitchOut {
-      0% { transform: translateX(0) scaleX(1) skewX(0); opacity: 1; filter: none; }
-      35% { transform: translateX(5px) scaleX(.82) skewX(-8deg); opacity: .9; filter: drop-shadow(-3px 0 0 var(--magenta)) drop-shadow(3px 0 0 var(--green)); }
-      70% { transform: translateX(-7px) scaleX(.45) skewX(12deg); opacity: .5; filter: drop-shadow(5px 0 0 var(--magenta)) drop-shadow(-4px 0 0 var(--green)); }
-      100% { transform: translateX(18px) scaleX(.08) skewX(-16deg); opacity: 0; filter: blur(.5px); }
-    }
-    @keyframes underlineGlitchIn {
-      0% { transform: translateX(-18px) scaleX(.08) skewX(16deg); opacity: 0; filter: blur(.5px); }
-      32% { transform: translateX(7px) scaleX(.58) skewX(-10deg); opacity: .55; filter: drop-shadow(-4px 0 0 var(--magenta)) drop-shadow(4px 0 0 var(--green)); }
-      68% { transform: translateX(-3px) scaleX(.9) skewX(5deg); opacity: .9; filter: drop-shadow(2px 0 0 var(--magenta)) drop-shadow(-2px 0 0 var(--green)); }
-      100% { transform: translateX(0) scaleX(1) skewX(0); opacity: 1; filter: none; }
-    }
-    #artist-name {
-      position: relative;
-      margin: 0;
-      color: #fff;
-      font-size: clamp(42px,min(8vw,11dvh),102px);
-      font-weight: 900;
-      letter-spacing: -.075em;
-      line-height: .76;
-      text-transform: uppercase;
-      white-space: nowrap;
-      text-shadow: 0 0 18px rgba(114,255,25,.28), 0 3px 0 #000;
-      will-change: transform, opacity, filter;
-    }
+    @keyframes underlineGlitchOut { 0% { transform: translateX(0) scaleX(1) skewX(0); opacity: 1; filter: none; } 35% { transform: translateX(5px) scaleX(.82) skewX(-8deg); opacity: .9; filter: drop-shadow(-3px 0 0 var(--magenta)) drop-shadow(3px 0 0 var(--green)); } 70% { transform: translateX(-7px) scaleX(.45) skewX(12deg); opacity: .5; filter: drop-shadow(5px 0 0 var(--magenta)) drop-shadow(-4px 0 0 var(--green)); } 100% { transform: translateX(18px) scaleX(.08) skewX(-16deg); opacity: 0; filter: blur(.5px); } }
+    @keyframes underlineGlitchIn { 0% { transform: translateX(-18px) scaleX(.08) skewX(16deg); opacity: 0; filter: blur(.5px); } 32% { transform: translateX(7px) scaleX(.58) skewX(-10deg); opacity: .55; filter: drop-shadow(-4px 0 0 var(--magenta)) drop-shadow(4px 0 0 var(--green)); } 68% { transform: translateX(-3px) scaleX(.9) skewX(5deg); opacity: .9; filter: drop-shadow(2px 0 0 var(--magenta)) drop-shadow(-2px 0 0 var(--green)); } 100% { transform: translateX(0) scaleX(1) skewX(0); opacity: 1; filter: none; } }
+    #artist-name { position: relative; margin: 0; color: #fff; font-size: clamp(42px,min(8vw,11dvh),102px); font-weight: 900; letter-spacing: -.075em; line-height: .76; text-transform: uppercase; white-space: nowrap; text-shadow: 0 0 18px rgba(114,255,25,.28), 0 3px 0 #000; will-change: transform, opacity, filter; }
     #artist-name .artist-name-accent { color: var(--magenta); }
     #artist-name.glitch-out { animation: artistGlitchOut .22s steps(2,end) forwards; }
     #artist-name.glitch-in { animation: artistGlitchIn .28s steps(3,end) forwards; }
-    @keyframes artistGlitchOut {
-      0% { transform: translateX(0) skewX(0); opacity: 1; filter: none; }
-      22% { transform: translateX(6px) skewX(-3deg); opacity: .9; filter: drop-shadow(-5px 0 0 var(--magenta)) drop-shadow(5px 0 0 var(--green)); }
-      45% { transform: translateX(-10px) skewX(5deg); opacity: .7; filter: drop-shadow(8px 0 0 var(--magenta)) drop-shadow(-6px 0 0 var(--green)); }
-      68% { transform: translateX(18px) skewX(-7deg); opacity: .45; filter: drop-shadow(-10px 0 0 var(--magenta)) drop-shadow(10px 0 0 var(--green)); }
-      100% { transform: translateX(-42px) skewX(10deg); opacity: 0; filter: blur(1px); }
-    }
-    @keyframes artistGlitchIn {
-      0% { transform: translateX(42px) skewX(-10deg); opacity: 0; filter: blur(1px); }
-      28% { transform: translateX(-16px) skewX(7deg); opacity: .48; filter: drop-shadow(10px 0 0 var(--magenta)) drop-shadow(-8px 0 0 var(--green)); }
-      52% { transform: translateX(9px) skewX(-5deg); opacity: .72; filter: drop-shadow(-7px 0 0 var(--magenta)) drop-shadow(7px 0 0 var(--green)); }
-      76% { transform: translateX(-4px) skewX(2deg); opacity: .92; filter: drop-shadow(3px 0 0 var(--magenta)) drop-shadow(-3px 0 0 var(--green)); }
-      100% { transform: translateX(0) skewX(0); opacity: 1; filter: none; }
-    }
-    .discipline {
-      margin: 0;
-      border-left: 3px solid var(--magenta);
-      padding-left: 10px;
-      color: var(--green);
-      font-size: clamp(10px,min(1.35vw,1.9dvh),15px);
-      font-weight: 700;
-      line-height: 1.3;
-    }
-    .statement {
-      max-width: none;
-      margin: 0;
-      color: #d8e8d2;
-      font-size: clamp(9px,min(1.05vw,1.65dvh),13px);
-      line-height: 1.38;
-    }
+    @keyframes artistGlitchOut { 0% { transform: translateX(0) skewX(0); opacity: 1; filter: none; } 22% { transform: translateX(6px) skewX(-3deg); opacity: .9; filter: drop-shadow(-5px 0 0 var(--magenta)) drop-shadow(5px 0 0 var(--green)); } 45% { transform: translateX(-10px) skewX(5deg); opacity: .7; filter: drop-shadow(8px 0 0 var(--magenta)) drop-shadow(-6px 0 0 var(--green)); } 68% { transform: translateX(18px) skewX(-7deg); opacity: .45; filter: drop-shadow(-10px 0 0 var(--magenta)) drop-shadow(10px 0 0 var(--green)); } 100% { transform: translateX(-42px) skewX(10deg); opacity: 0; filter: blur(1px); } }
+    @keyframes artistGlitchIn { 0% { transform: translateX(42px) skewX(-10deg); opacity: 0; filter: blur(1px); } 28% { transform: translateX(-16px) skewX(7deg); opacity: .48; filter: drop-shadow(10px 0 0 var(--magenta)) drop-shadow(-8px 0 0 var(--green)); } 52% { transform: translateX(9px) skewX(-5deg); opacity: .72; filter: drop-shadow(-7px 0 0 var(--magenta)) drop-shadow(7px 0 0 var(--green)); } 76% { transform: translateX(-4px) skewX(2deg); opacity: .92; filter: drop-shadow(3px 0 0 var(--magenta)) drop-shadow(-3px 0 0 var(--green)); } 100% { transform: translateX(0) skewX(0); opacity: 1; filter: none; } }
+    .discipline { margin: 0; border-left: 3px solid var(--magenta); padding-left: 10px; color: var(--green); font-size: clamp(10px,min(1.35vw,1.9dvh),15px); font-weight: 700; line-height: 1.3; }
+    .statement { max-width: none; margin: 0; color: #d8e8d2; font-size: clamp(9px,min(1.05vw,1.65dvh),13px); line-height: 1.38; }
     .statement strong { color: #fff; }
-    .warning {
-      max-width: none;
-      margin: 0;
-      border: 1px solid rgba(255,176,0,.48);
-      padding: 7px 9px;
-      background: rgba(0,0,0,.48);
-      color: #ffd27a;
-      font-size: clamp(8px,min(.95vw,1.45dvh),11px);
-      line-height: 1.28;
-    }
-    .actions {
-      display: grid;
-      grid-template-columns: repeat(2,minmax(0,1fr));
-      gap: 8px;
-      width: 100%;
-      max-width: none;
-    }
-    .action {
-      display: flex;
-      min-height: 38px;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--green);
-      padding: 7px 10px;
-      background: rgba(0,0,0,.72);
-      color: var(--green);
-      font: 700 clamp(8px,min(.95vw,1.45dvh),11px)/1.2 "Courier New",Courier,monospace;
-      letter-spacing: .06em;
-      text-align: center;
-      text-decoration: none;
-      text-transform: uppercase;
-    }
+    .warning { max-width: none; margin: 0; border: 1px solid rgba(255,176,0,.48); padding: 7px 9px; background: rgba(0,0,0,.48); color: #ffd27a; font-size: clamp(8px,min(.95vw,1.45dvh),11px); line-height: 1.28; }
+    .actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; width: 100%; max-width: none; }
+    .action { display: flex; min-height: 38px; align-items: center; justify-content: center; border: 1px solid var(--green); padding: 7px 10px; background: rgba(0,0,0,.72); color: var(--green); font: 700 clamp(8px,min(.95vw,1.45dvh),11px)/1.2 "Courier New",Courier,monospace; letter-spacing: .06em; text-align: center; text-decoration: none; text-transform: uppercase; }
     .action.secondary { border-color: var(--magenta); color: #ff7ae7; }
-    .action:hover, .action:focus-visible {
-      background: var(--green);
-      color: #000;
-      outline: 2px solid #fff;
-      outline-offset: 2px;
-    }
-    .action.secondary:hover, .action.secondary:focus-visible {
-      background: var(--magenta);
-      color: #000;
-    }
-    @media (max-height: 720px) {
-      .identity-content { gap: 5px; }
-      #artist-name { font-size: clamp(38px,9dvh,76px); }
-      .action { min-height: 34px; }
-    }
-    @media (max-width: 820px) {
-      .top-bar-frame { height: 48px; }
-      .top-bar-frame.sidebar-open,
-      .top-bar-frame.menu-open { height: 100vh; height: 100dvh; }
-      .main-rectangle { top: 58px; padding: 8px 12px 12px; }
-      .identity-content {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        gap: clamp(5px,1dvh,9px);
-      }
-      .portrait-banner {
-        height: auto;
-        min-height: 90px;
-        max-height: 24dvh;
-        flex: 1 1 160px;
-        object-position: center 30%;
-      }
-      .eyebrow { max-width: 100%; font-size: clamp(7px,2.3vw,10px); letter-spacing: .09em; }
-      #artist-name { font-size: clamp(38px,min(15vw,10dvh),72px); }
-      .discipline { font-size: clamp(9px,2.6vw,13px); }
-      .statement { font-size: clamp(8px,2.35vw,11px); line-height: 1.3; }
-      .warning { font-size: clamp(8px,2.2vw,10px); padding: 6px 8px; }
-      .actions { grid-template-columns: 1fr; }
-      .action { min-height: 34px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #artist-name.glitch-out,
-      #artist-name.glitch-in,
-      .eyebrow-underline.glitch-out,
-      .eyebrow-underline.glitch-in { animation: none; }
-      .eyebrow-underline { transition: none; }
-    }
+    .action:hover, .action:focus-visible { background: var(--green); color: #000; outline: 2px solid #fff; outline-offset: 2px; }
+    .action.secondary:hover, .action.secondary:focus-visible { background: var(--magenta); color: #000; }
+    @media (max-height: 720px) { .identity-content { gap: 5px; } #artist-name { font-size: clamp(38px,9dvh,76px); } .action { min-height: 34px; } }
+    @media (max-width: 820px) { .top-bar-frame { height: 48px; } .top-bar-frame.sidebar-open, .top-bar-frame.menu-open { height: 100vh; height: 100dvh; } .main-rectangle { top: 58px; padding: 8px 12px 12px; } .identity-content { display: flex; flex-direction: column; height: 100%; gap: clamp(5px,1dvh,9px); } .portrait-banner { height: auto; min-height: 90px; max-height: 24dvh; flex: 1 1 160px; object-position: center 30%; } .eyebrow { max-width: 100%; font-size: clamp(7px,2.3vw,10px); letter-spacing: .09em; } #artist-name { font-size: clamp(38px,min(15vw,10dvh),72px); } .discipline { font-size: clamp(9px,2.6vw,13px); } .statement { font-size: clamp(8px,2.35vw,11px); line-height: 1.3; } .warning { font-size: clamp(8px,2.2vw,10px); padding: 6px 8px; } .actions { grid-template-columns: 1fr; } .action { min-height: 34px; } }
+    @media (prefers-reduced-motion: reduce) { #artist-name.glitch-out, #artist-name.glitch-in, .eyebrow-underline.glitch-out, .eyebrow-underline.glitch-in { animation: none; } .eyebrow-underline { transition: none; } }
   </style>
 </head>
 <body>
   <iframe class="starfield-background" src="/dead/backgrounds/starfield-background.html" title="Animated starfield background" aria-hidden="true"></iframe>
-
   <iframe class="top-bar-frame" id="top-bar-frame" src="/os/top-bar.html" title="Site top bar" allowtransparency="true"></iframe>
-
   <div class="main-rectangle">
     <section class="identity-content" aria-labelledby="artist-name">
       <img class="portrait-banner" src="/dead/assets/images/honestly-thomas-recursive-portrait.webp" alt="Honestly Thomas recursive portrait">
@@ -296,82 +64,26 @@
       </nav>
     </section>
   </div>
-
   <script>
     const artistName=document.getElementById('artist-name');
     const eyebrow=document.getElementById('identity-eyebrow');
     const eyebrowAliases=[...document.querySelectorAll('.eyebrow-alias')];
     const eyebrowUnderline=document.getElementById('eyebrow-underline');
-    const artistNames=[
-      ['Thomas','Harrison'],
-      ['Honestly','Thomas'],
-      ['Tektite',''],
-      ['Jinclops','']
-    ];
+    const artistNames=[['Thomas','Harrison'],['Honestly','Thomas'],['Tektite',''],['Jinclops','']];
     let artistNameIndex=0;
-    let artistCycleTimer;
-    let transitionTimer;
-    const renderArtistName=()=>{
-      const [primary,accent]=artistNames[artistNameIndex];
-      artistName.innerHTML=accent
-        ? `${primary} <span class="artist-name-accent">${accent}</span>`
-        : `<span class="artist-name-accent">${primary}</span>`;
-    };
-    const positionEyebrowUnderline=(index,animate=true)=>{
-      const target=eyebrowAliases[index];
-      if(!target)return;
-      const eyebrowRect=eyebrow.getBoundingClientRect();
-      const targetRect=target.getBoundingClientRect();
-      if(!animate)eyebrowUnderline.style.transition='none';
-      eyebrowUnderline.style.left=`${targetRect.left-eyebrowRect.left}px`;
-      eyebrowUnderline.style.width=`${targetRect.width}px`;
-      if(!animate){
-        void eyebrowUnderline.offsetWidth;
-        eyebrowUnderline.style.transition='';
-      }
-    };
-    const runTransitionTo=index=>{
-      clearTimeout(transitionTimer);
-      eyebrowUnderline.classList.remove('glitch-in');
-      eyebrowUnderline.classList.add('glitch-out');
-      artistName.classList.remove('glitch-in');
-      artistName.classList.add('glitch-out');
-      transitionTimer=setTimeout(()=>{
-        artistNameIndex=index;
-        renderArtistName();
-        positionEyebrowUnderline(artistNameIndex,true);
-        eyebrowUnderline.classList.remove('glitch-out');
-        artistName.classList.remove('glitch-out');
-        void eyebrowUnderline.offsetWidth;
-        void artistName.offsetWidth;
-        eyebrowUnderline.classList.add('glitch-in');
-        artistName.classList.add('glitch-in');
-      },220);
-    };
-    const scheduleNextArtist=()=>{
-      clearTimeout(artistCycleTimer);
-      artistCycleTimer=setTimeout(()=>{
-        const nextIndex=(artistNameIndex+1)%artistNames.length;
-        runTransitionTo(nextIndex);
-        scheduleNextArtist();
-      },3500);
-    };
-    eyebrowAliases.forEach((alias,index)=>alias.addEventListener('click',()=>{
-      clearTimeout(artistCycleTimer);
-      if(index!==artistNameIndex)runTransitionTo(index);
-      scheduleNextArtist();
-    }));
+    let artistCycleTimer=null;
+    let artistTransitionTimer=null;
+    const renderArtistName=()=>{ const [primary,accent]=artistNames[artistNameIndex]; artistName.innerHTML=accent ? `${primary} <span class="artist-name-accent">${accent}</span>` : `<span class="artist-name-accent">${primary}</span>`; };
+    const positionEyebrowUnderline=(index,animate=true)=>{ const target=eyebrowAliases[index]; if(!target)return; const eyebrowRect=eyebrow.getBoundingClientRect(); const targetRect=target.getBoundingClientRect(); if(!animate)eyebrowUnderline.style.transition='none'; eyebrowUnderline.style.left=`${targetRect.left-eyebrowRect.left}px`; eyebrowUnderline.style.width=`${targetRect.width}px`; if(!animate){ void eyebrowUnderline.offsetWidth; eyebrowUnderline.style.transition=''; } };
+    const scheduleArtistCycle=()=>{ clearTimeout(artistCycleTimer); artistCycleTimer=setTimeout(()=>transitionArtistName((artistNameIndex+1)%artistNames.length),3500); };
+    const transitionArtistName=targetIndex=>{ clearTimeout(artistCycleTimer); clearTimeout(artistTransitionTimer); if(targetIndex===artistNameIndex){ scheduleArtistCycle(); return; } eyebrowUnderline.classList.remove('glitch-in'); eyebrowUnderline.classList.add('glitch-out'); artistName.classList.remove('glitch-in'); artistName.classList.add('glitch-out'); artistTransitionTimer=setTimeout(()=>{ artistNameIndex=targetIndex; renderArtistName(); positionEyebrowUnderline(artistNameIndex,true); eyebrowUnderline.classList.remove('glitch-out'); artistName.classList.remove('glitch-out'); void eyebrowUnderline.offsetWidth; void artistName.offsetWidth; eyebrowUnderline.classList.add('glitch-in'); artistName.classList.add('glitch-in'); scheduleArtistCycle(); },220); };
+    eyebrowAliases.forEach(button=>button.addEventListener('click',()=>transitionArtistName(Number(button.dataset.aliasIndex))));
     renderArtistName();
     requestAnimationFrame(()=>positionEyebrowUnderline(artistNameIndex,false));
     window.addEventListener('resize',()=>positionEyebrowUnderline(artistNameIndex,false));
-    scheduleNextArtist();
-
+    scheduleArtistCycle();
     const topBarFrame=document.getElementById('top-bar-frame');
-    window.addEventListener('message',event=>{
-      if(event.origin!==window.location.origin||event.source!==topBarFrame.contentWindow)return;
-      if(event.data?.type==='topbar-sidebar')topBarFrame.classList.toggle('sidebar-open',Boolean(event.data.open));
-      if(event.data?.type==='topbar-menu')topBarFrame.classList.toggle('menu-open',Boolean(event.data.open));
-    });
+    window.addEventListener('message',event=>{ if(event.origin!==window.location.origin||event.source!==topBarFrame.contentWindow)return; if(event.data?.type==='topbar-sidebar')topBarFrame.classList.toggle('sidebar-open',Boolean(event.data.open)); if(event.data?.type==='topbar-menu')topBarFrame.classList.toggle('menu-open',Boolean(event.data.open)); });
   </script>
 </body>
 </html>
