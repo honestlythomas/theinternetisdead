@@ -42,7 +42,25 @@
     .sidebar.is-open{transform:translateX(0)}
     .sidebar::-webkit-scrollbar{display:none}
     .settings-sidebar{left:auto;right:0;padding:18px 12px 18px var(--sidebar-fade-width);background:linear-gradient(to left,rgba(0,0,0,.65) 0,var(--sidebar-solid-width),rgba(0,0,0,0) calc(var(--sidebar-solid-width) + var(--sidebar-fade-width)));transform:translateX(105%)}
-    .settings-audio-controls{grid-row:1;display:grid;gap:12px;align-self:start;width:100%;border:1px solid var(--magenta);padding:12px;background:#000;color:var(--green);font-size:.78rem;font-weight:700;box-shadow:0 0 12px rgba(255,43,214,.24)}
+    .settings-top-controls{grid-row:1;display:grid;gap:12px;align-self:start;width:100%}
+    .settings-action-button{width:100%;border:1px solid var(--green);padding:9px 12px;background:#000;color:var(--magenta);font:900 .78rem/1 "Courier New",Courier,monospace;cursor:pointer}
+    .settings-action-button:hover,.settings-action-button:focus-visible{border-color:#fff;color:#fff;outline:none;box-shadow:0 0 12px rgba(255,255,255,.28)}
+    .color-options-panel{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .3s ease,opacity .3s ease;margin-top:-12px}
+    .color-options-panel.is-open{grid-template-rows:1fr;opacity:1}
+    .color-options-inner{display:grid;gap:9px;min-height:0;overflow:hidden;border:0 solid var(--magenta);background:#000;color:var(--green);font-size:.72rem;font-weight:700;transition:border-width .3s ease,padding .3s ease}
+    .color-options-panel.is-open .color-options-inner{border-width:1px;padding:11px}
+    .color-option-label{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;text-align:left}
+    .color-option-label input[type="color"]{width:42px;height:25px;border:1px solid var(--green);padding:1px;background:#000;cursor:pointer}
+    .color-option-label select{min-width:104px;border:1px solid var(--green);padding:4px;background:#000;color:var(--magenta);font:700 .68rem "Courier New",Courier,monospace;cursor:pointer}
+    .color-option-range{grid-column:1/-1;width:100%;margin:0;accent-color:var(--green);cursor:pointer}
+    .color-shift-label{display:flex;gap:7px;align-items:center;justify-content:center;color:var(--magenta);cursor:pointer}
+    .color-shift-label input{width:15px;height:15px;margin:0;accent-color:var(--green);cursor:pointer}
+    .hue-speed-panel{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .28s ease,opacity .28s ease}
+    .hue-speed-panel.is-open{grid-template-rows:1fr;opacity:1}
+    .hue-speed-inner{min-height:0;overflow:hidden}
+    .reset-colors-button{justify-self:center;border:0;padding:0;background:transparent;color:#ff2b2b;font:700 .72rem/1.2 "Courier New",Courier,monospace;text-decoration:underline;text-underline-offset:.2em;cursor:pointer}
+    .reset-colors-button:hover,.reset-colors-button:focus-visible{color:#ff6666;outline:none;text-shadow:0 0 8px rgba(255,43,43,.7)}
+    .settings-audio-controls{display:grid;gap:12px;width:100%;border:1px solid var(--magenta);padding:12px;background:#000;color:var(--green);font-size:.78rem;font-weight:700;box-shadow:0 0 12px rgba(255,43,214,.24)}
     .settings-volume-label{display:block}
     .settings-volume-slider{width:100%;margin:0;accent-color:var(--green);cursor:pointer}
     .settings-mute-label{display:inline-flex;gap:7px;align-items:center;justify-content:center;cursor:pointer}
@@ -111,10 +129,31 @@
     </div>
   </aside>
   <aside class="sidebar settings-sidebar" id="settings-sidebar" aria-label="Settings sidebar" aria-hidden="true">
-    <div class="settings-audio-controls">
-      <label class="settings-volume-label" for="site-volume">Volume <span id="site-volume-value">100%</span></label>
-      <input class="settings-volume-slider" id="site-volume" type="range" min="0" max="100" step="1" value="100" aria-label="Site volume">
-      <label class="settings-mute-label" for="site-muted"><input class="settings-mute-checkbox" id="site-muted" type="checkbox"> Mute</label>
+    <div class="settings-top-controls">
+      <button class="settings-action-button" id="color-options-toggle" type="button" aria-expanded="false" aria-controls="color-options-panel">Color Options</button>
+      <div class="color-options-panel" id="color-options-panel" aria-hidden="true">
+        <div class="color-options-inner">
+          <label class="color-option-label" for="overlay-color"><span>Overlay Color</span><input id="overlay-color" type="color" value="#72ff19"></label>
+          <label class="color-option-label" for="overlay-blend"><span>Blend Mode</span><select id="overlay-blend"><option value="difference">Difference</option><option value="exclusion">Exclusion</option><option value="multiply">Multiply</option><option value="screen">Screen</option><option value="overlay">Overlay</option><option value="color">Color</option><option value="hue">Hue</option><option value="color-dodge">Color Dodge</option><option value="luminosity">Luminosity</option></select></label>
+          <label class="color-option-label" for="overlay-opacity"><span>Opacity</span><span id="overlay-opacity-value">25%</span><input class="color-option-range" id="overlay-opacity" type="range" min="0" max="100" value="25"></label>
+          <label class="color-option-label" for="overlay-saturation"><span>Saturation</span><span id="overlay-saturation-value">100%</span><input class="color-option-range" id="overlay-saturation" type="range" min="0" max="300" value="100"></label>
+          <label class="color-option-label" for="overlay-brightness"><span>Brightness</span><span id="overlay-brightness-value">100%</span><input class="color-option-range" id="overlay-brightness" type="range" min="25" max="200" value="100"></label>
+          <label class="color-shift-label" for="overlay-hue-shift"><input id="overlay-hue-shift" type="checkbox"> Hueshift</label>
+          <div class="hue-speed-panel" id="hue-speed-panel" aria-hidden="true">
+            <div class="hue-speed-inner">
+              <label class="color-option-label" for="overlay-hue-speed"><span>Hue Speed</span><span id="overlay-hue-speed-value">1×</span><input class="color-option-range" id="overlay-hue-speed" type="range" min="1" max="4" step="1" value="1" list="hue-speed-steps"></label>
+              <datalist id="hue-speed-steps"><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option></datalist>
+            </div>
+          </div>
+          <button class="reset-colors-button" id="reset-colors" type="button">Reset Colors</button>
+        </div>
+      </div>
+      <button class="settings-action-button" id="warp-toggle" type="button">Enable Warp</button>
+      <div class="settings-audio-controls">
+        <label class="settings-volume-label" for="site-volume">Volume <span id="site-volume-value">100%</span></label>
+        <input class="settings-volume-slider" id="site-volume" type="range" min="0" max="100" step="1" value="100" aria-label="Site volume">
+        <label class="settings-mute-label" for="site-muted"><input class="settings-mute-checkbox" id="site-muted" type="checkbox"> Mute</label>
+      </div>
     </div>
     <button class="reset-site-button" id="reset-site" type="button">Reset Site</button>
   </aside>
@@ -153,7 +192,9 @@
 
     const topbarClockText=document.getElementById('topbar-clock-text');
     const clockFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true});
-    const updateTopbarClock=()=>{topbarClockText.textContent=clockFormatter.format(new Date())};
+    const clockDateFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'});
+    let topbarClockDate=clockDateFormatter.format(new Date());
+    const updateTopbarClock=()=>{const now=new Date();topbarClockText.textContent=clockFormatter.format(now);const nextClockDate=clockDateFormatter.format(now);if(nextClockDate!==topbarClockDate){topbarClockDate=nextClockDate;window.parent.postMessage({type:'topbar-midnight'},window.location.origin)}};
     updateTopbarClock();
     setInterval(updateTopbarClock,250);
 
@@ -163,6 +204,22 @@
     const sidebarBackdrop=document.getElementById('sidebar-backdrop');
     const settingsSidebar=document.getElementById('settings-sidebar');
     const settingsToggle=document.getElementById('settings-toggle');
+    const colorOptionsToggle=document.getElementById('color-options-toggle');
+    const colorOptionsPanel=document.getElementById('color-options-panel');
+    const overlayColor=document.getElementById('overlay-color');
+    const overlayBlend=document.getElementById('overlay-blend');
+    const overlayOpacity=document.getElementById('overlay-opacity');
+    const overlayOpacityValue=document.getElementById('overlay-opacity-value');
+    const overlaySaturation=document.getElementById('overlay-saturation');
+    const overlaySaturationValue=document.getElementById('overlay-saturation-value');
+    const overlayBrightness=document.getElementById('overlay-brightness');
+    const overlayBrightnessValue=document.getElementById('overlay-brightness-value');
+    const overlayHueShift=document.getElementById('overlay-hue-shift');
+    const hueSpeedPanel=document.getElementById('hue-speed-panel');
+    const overlayHueSpeed=document.getElementById('overlay-hue-speed');
+    const overlayHueSpeedValue=document.getElementById('overlay-hue-speed-value');
+    const resetColors=document.getElementById('reset-colors');
+    const warpToggle=document.getElementById('warp-toggle');
     const syncSidebarWidth=()=>{
       const labelRect=sidebarLabel.getBoundingClientRect();
       document.documentElement.style.setProperty('--sidebar-solid-width',`${Math.ceil(labelRect.right)}px`);
@@ -193,6 +250,65 @@
     window.addEventListener('resize',syncSidebarWidth);
     sidebarToggle.addEventListener('click',()=>setSidebarOpen(!sidebar.classList.contains('is-open')));
     settingsToggle.addEventListener('click',()=>setSettingsSidebarOpen(!settingsSidebar.classList.contains('is-open')));
+    const siteColorSettingsKey='theinternetisdead.colors';
+    const setColorOptionsOpen=open=>{
+      const nextOpen=Boolean(open);
+      colorOptionsPanel.classList.toggle('is-open',nextOpen);
+      colorOptionsPanel.setAttribute('aria-hidden',nextOpen?'false':'true');
+      colorOptionsPanel.inert=!nextOpen;
+      colorOptionsToggle.setAttribute('aria-expanded',nextOpen?'true':'false');
+    };
+    const setHueSpeedOpen=open=>{
+      hueSpeedPanel.classList.toggle('is-open',open);
+      hueSpeedPanel.setAttribute('aria-hidden',open?'false':'true');
+      hueSpeedPanel.inert=!open;
+    };
+    const publishColorSettings=()=>{
+      const settings={enabled:colorsActivated,activated:colorsActivated,color:overlayColor.value,blendMode:overlayBlend.value,opacity:Number(overlayOpacity.value),saturation:Number(overlaySaturation.value),brightness:Number(overlayBrightness.value),hueShift:overlayHueShift.checked,hueSpeed:Number(overlayHueSpeed.value)};
+      overlayOpacityValue.textContent=`${settings.opacity}%`;
+      overlaySaturationValue.textContent=`${settings.saturation}%`;
+      overlayBrightnessValue.textContent=`${settings.brightness}%`;
+      overlayHueSpeedValue.textContent=`${settings.hueSpeed}×`;
+      localStorage.setItem(siteColorSettingsKey,JSON.stringify(settings));
+      window.parent.postMessage({type:'topbar-color-update',settings},window.location.origin);
+    };
+    let colorsActivated=false;
+    try{
+      const savedColors=JSON.parse(localStorage.getItem(siteColorSettingsKey)||'null');
+      colorsActivated=Boolean(savedColors?.activated);
+      if(/^#[0-9a-f]{6}$/i.test(savedColors?.color||''))overlayColor.value=savedColors.color;
+      if([...overlayBlend.options].some(option=>option.value===savedColors?.blendMode))overlayBlend.value=savedColors.blendMode;
+      if(Number.isFinite(savedColors?.opacity))overlayOpacity.value=String(savedColors.opacity);
+      if(Number.isFinite(savedColors?.saturation))overlaySaturation.value=String(savedColors.saturation);
+      if(Number.isFinite(savedColors?.brightness))overlayBrightness.value=String(savedColors.brightness);
+      overlayHueShift.checked=Boolean(savedColors?.hueShift);
+      if(Number.isFinite(savedColors?.hueSpeed))overlayHueSpeed.value=String(savedColors.hueSpeed);
+    }catch(error){}
+    setColorOptionsOpen(false);
+    setHueSpeedOpen(overlayHueShift.checked);
+    colorOptionsToggle.addEventListener('click',()=>setColorOptionsOpen(!colorOptionsPanel.classList.contains('is-open')));
+    const activateColors=()=>{colorsActivated=true;publishColorSettings()};
+    overlayHueShift.addEventListener('change',()=>{setHueSpeedOpen(overlayHueShift.checked);activateColors()});
+    [overlayColor,overlayBlend,overlayOpacity,overlaySaturation,overlayBrightness,overlayHueSpeed].forEach(control=>control.addEventListener('input',activateColors));
+    resetColors.addEventListener('click',()=>{
+      colorsActivated=false;
+      overlayColor.value='#72ff19';
+      overlayBlend.value='difference';
+      overlayOpacity.value='25';
+      overlaySaturation.value='100';
+      overlayBrightness.value='100';
+      overlayHueShift.checked=false;
+      overlayHueSpeed.value='1';
+      setHueSpeedOpen(false);
+      publishColorSettings();
+    });
+    publishColorSettings();
+    warpToggle.addEventListener('click',()=>{
+      const destinations=pages.filter(page=>page.title!==normalizedTitle);
+      const destination=destinations[Math.floor(Math.random()*destinations.length)]||pages[0];
+      window.parent.postMessage({type:'topbar-warp-launch',href:new URL(destination.href,window.location.origin).href},window.location.origin);
+      setSettingsSidebarOpen(false);
+    });
     sidebarBackdrop.addEventListener('click',()=>{setSidebarOpen(false);setSettingsSidebarOpen(false)});
     document.addEventListener('keydown',event=>{if(event.key!=='Escape')return;if(sidebar.classList.contains('is-open')){setSidebarOpen(false);sidebarToggle.focus()}else if(settingsSidebar.classList.contains('is-open')){setSettingsSidebarOpen(false);settingsToggle.focus()}});
 

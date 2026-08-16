@@ -7,7 +7,11 @@
   <meta name="color-scheme" content="dark">
   <title>TheInternetIsDead.org</title>
   <link rel="stylesheet" href="/os/page-glitch-transition.css">
+  <link rel="stylesheet" href="/os/midnight-hyperspace.css">
   <script src="/os/page-glitch-transition.js" defer></script>
+  <script src="/os/site-color-overlay.js" defer></script>
+  <script src="/os/midnight-hyperspace.js" defer></script>
+  <script src="/os/page-warp.js" defer></script>
   <style>
     :root { color-scheme: dark; --green: #72ff19; --magenta: #ff2bd6; }
     * { box-sizing: border-box; }
@@ -18,7 +22,9 @@
     .top-bar-frame.sidebar-open, .top-bar-frame.menu-open { height: 100vh; height: 100dvh; }
     .main-rectangle { position: fixed; top: 64px; left: 10px; right: 10px; bottom: 10px; z-index: 5; overflow: hidden; border: 3px solid #fff; padding: 10px 14px 14px; background: rgba(0,0,0,.65); text-shadow: 0 2px 8px #000; }
     .identity-content { display: grid; grid-template-rows: minmax(0,1fr) auto auto auto auto auto auto; width: 100%; height: 100%; gap: clamp(6px,1.2dvh,12px); }
-    .portrait-banner { display: block; width: 100%; height: 100%; min-height: 0; border: 1px solid rgba(114,255,25,.65); object-fit: cover; object-position: center 34%; box-shadow: 0 0 22px rgba(114,255,25,.12); background: #000; }
+    .portrait-banner { display: block; width: 100%; height: 100%; min-height: 0; border: 1px solid rgba(114,255,25,.65); object-fit: cover; object-position: center 34%; box-shadow: 0 0 22px rgba(114,255,25,.12); background: #000; cursor: pointer; }
+    .portrait-banner.stretch-to-fit { object-fit: fill; object-position: center; }
+    .portrait-banner:hover, .portrait-banner:focus-visible { border-color: var(--magenta); outline: 2px solid #fff; outline-offset: 2px; box-shadow: 0 0 28px rgba(255,43,214,.32); }
     .eyebrow { position: relative; display: inline-flex; align-items: flex-end; width: max-content; max-width: 100%; margin: 0; color: var(--green); font-size: clamp(8px,1.1vw,11px); font-weight: 700; letter-spacing: .14em; line-height: 1.2; text-transform: uppercase; white-space: nowrap; }
     .eyebrow::before { content: "● "; color: var(--magenta); }
     .eyebrow-alias { position: relative; display: inline-block; border: 0; margin: 0; padding: 0 0 3px; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; line-height: inherit; text-transform: inherit; text-decoration: underline; text-decoration-color: #fff; text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; }
@@ -50,11 +56,11 @@
   </style>
 </head>
 <body>
-  <iframe class="starfield-background" src="/dead/backgrounds/starfield-background.html" title="Animated starfield background" aria-hidden="true"></iframe>
+  <iframe class="starfield-background" src="/dead/backgrounds/starfield-background.html?v=20260816-4" title="Animated starfield background" aria-hidden="true"></iframe>
   <iframe class="top-bar-frame" id="top-bar-frame" src="/os/top-bar.html" title="Site top bar" allowtransparency="true"></iframe>
   <div class="main-rectangle">
     <section class="identity-content" aria-labelledby="artist-name">
-      <img class="portrait-banner" src="/dead/assets/images/honestly-thomas-recursive-portrait.webp" alt="Honestly Thomas recursive portrait">
+      <img class="portrait-banner" id="splash-image" src="/dead/assets/images/honestly-thomas-recursive-portrait.webp" alt="Honestly Thomas recursive portrait" role="button" tabindex="0" aria-label="Show alternate splash image">
       <p class="eyebrow" id="identity-eyebrow"><button class="eyebrow-alias" type="button" data-alias-index="0">Thomas Harrison</button><span class="eyebrow-separator"> // </span><button class="eyebrow-alias" type="button" data-alias-index="1">Honestly Thomas</button><span class="eyebrow-separator"> // </span><button class="eyebrow-alias" type="button" data-alias-index="2">Tektite</button><span class="eyebrow-separator"> // </span><button class="eyebrow-alias" type="button" data-alias-index="3">Jinclops</button><span class="eyebrow-underline" id="eyebrow-underline" aria-hidden="true"></span></p>
       <h1 id="artist-name" aria-live="off">Thomas <span class="artist-name-accent">Harrison</span></h1>
       <p class="discipline">Neurodivergent Canadian interdisciplinary artist working across rap, video, writing, code, web design, games and experimental media.</p>
@@ -67,6 +73,22 @@
     </section>
   </div>
   <script>
+    const splashImage=document.getElementById('splash-image');
+    const splashImages=[
+      {src:'/dead/assets/images/honestly-thomas-recursive-portrait.webp',alt:'Honestly Thomas recursive portrait',label:'Show Art Is Soul splash image'},
+      {src:'/dead/assets/images/art-is-soul-spirit-alive.png',alt:'Colorful artwork reading Art Is Soul, Art Is Spirit, Art Is Alive',label:'Show glitched riverside splash image',stretch:true},
+      {src:'/dead/assets/images/20221020_094650_8_1_1.png',alt:'Glitched riverside landscape',label:'Show glitched portrait'},
+      {src:'/dead/assets/images/glitched-portrait-2026.png',alt:'Glitched magenta and green portrait',label:'Show Eat Dragon artwork',stretch:true},
+      {src:'/dead/assets/images/eat-dragon-meat-burger.png',alt:'Pop-art Eat Dragon Meat Burger artwork',label:'Show recursive portrait',stretch:true}
+    ];
+    const chooseInitialSplashImage=()=>{if(splashImages.length<2||Math.random()<3/5)return 0;return 1+Math.floor(Math.random()*(splashImages.length-1))};
+    let splashImageIndex=chooseInitialSplashImage();
+    const renderSplashImage=()=>{const currentImage=splashImages[splashImageIndex];splashImage.src=currentImage.src;splashImage.alt=currentImage.alt;splashImage.setAttribute('aria-label',currentImage.label);splashImage.classList.toggle('stretch-to-fit',Boolean(currentImage.stretch))};
+    const cycleSplashImage=()=>{splashImageIndex=(splashImageIndex+1)%splashImages.length;renderSplashImage()};
+    renderSplashImage();
+    splashImages.slice(1).forEach(image=>{new Image().src=image.src});
+    splashImage.addEventListener('click',cycleSplashImage);
+    splashImage.addEventListener('keydown',event=>{if(event.key!=='Enter'&&event.key!==' ')return;event.preventDefault();cycleSplashImage()});
     const artistName=document.getElementById('artist-name');
     const eyebrow=document.getElementById('identity-eyebrow');
     const eyebrowAliases=[...document.querySelectorAll('.eyebrow-alias')];
