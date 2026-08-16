@@ -1,0 +1,19 @@
+body.site-glitch-out { animation:sitePageGlitchOut .22s steps(2,end) forwards; pointer-events:none; will-change:transform,opacity,filter; }
+body.site-glitch-in { animation:sitePageGlitchIn .28s steps(3,end) both; will-change:transform,opacity,filter; }
+@keyframes sitePageGlitchOut {
+  0% { transform:translateX(0) skewX(0); opacity:1; filter:none; }
+  22% { transform:translateX(6px) skewX(-3deg); opacity:.9; filter:drop-shadow(-5px 0 0 #ff2bd6) drop-shadow(5px 0 0 #72ff19); }
+  45% { transform:translateX(-10px) skewX(5deg); opacity:.7; filter:drop-shadow(8px 0 0 #ff2bd6) drop-shadow(-6px 0 0 #72ff19); }
+  68% { transform:translateX(18px) skewX(-7deg); opacity:.45; filter:drop-shadow(-10px 0 0 #ff2bd6) drop-shadow(10px 0 0 #72ff19); }
+  100% { transform:translateX(-42px) skewX(10deg); opacity:0; filter:blur(1px); }
+}
+@keyframes sitePageGlitchIn {
+  0% { transform:translateX(42px) skewX(-10deg); opacity:0; filter:blur(1px); }
+  28% { transform:translateX(-16px) skewX(7deg); opacity:.48; filter:drop-shadow(10px 0 0 #ff2bd6) drop-shadow(-8px 0 0 #72ff19); }
+  52% { transform:translateX(9px) skewX(-5deg); opacity:.72; filter:drop-shadow(-7px 0 0 #ff2bd6) drop-shadow(7px 0 0 #72ff19); }
+  76% { transform:translateX(-4px) skewX(2deg); opacity:.92; filter:drop-shadow(3px 0 0 #ff2bd6) drop-shadow(-3px 0 0 #72ff19); }
+  100% { transform:translateX(0) skewX(0); opacity:1; filter:none; }
+}
+@media(prefers-reduced-motion:reduce) {
+  body.site-glitch-out,body.site-glitch-in { animation:none; }
+}
