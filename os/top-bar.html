@@ -11,7 +11,6 @@
     *{box-sizing:border-box}
     html,body{width:100%;height:100%;margin:0;background:transparent!important}
     body{color:var(--green);font-family:"Courier New",Courier,monospace;overflow:hidden}
-
     .topbar{position:relative;z-index:5;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left));height:54px;background:transparent!important}
     .site-name,.page-title,.topbar-clock{color:var(--green);font:900 clamp(15px,1.65vw,21px)/.9 "Courier New",Courier,monospace;letter-spacing:-.075em;text-shadow:0 2px 8px #000,0 0 12px rgba(114,255,25,.38);height:34px;align-items:center}
     .site-name{grid-column:1;justify-self:start;display:inline-flex;gap:9px;white-space:nowrap}
@@ -19,7 +18,6 @@
     .site-name-icon::before{content:"☠️";position:absolute;inset:0;display:grid;place-items:center;width:100%;height:100%;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:1;transform:scale(.92);transform-origin:center}
     .site-name-label{display:inline-flex;align-items:center;height:34px;color:var(--green);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
     .site-name-label:hover,.site-name-label:focus-visible,.site-name-icon:hover,.site-name-icon:focus-visible,.site-name-icon[aria-expanded="true"]{color:var(--magenta);outline:none;text-shadow:0 2px 8px #000,0 0 14px rgba(255,43,214,.58)}
-
     .page-title{grid-column:2;justify-self:center;position:relative;display:inline-flex;align-items:center;gap:.45em;margin:0;font-style:normal;white-space:nowrap;text-decoration:none}
     .page-cycle{display:inline-flex;align-items:center;justify-content:center;border:0;margin:0;padding:0;background:transparent;color:var(--green);font:900 1em/.65 "Courier New",Courier,monospace;letter-spacing:0;text-decoration:none;text-shadow:inherit;cursor:pointer;user-select:none;-webkit-user-select:none}
     .page-cycle:hover,.page-cycle:focus-visible{color:var(--magenta);outline:none}
@@ -30,12 +28,10 @@
     .page-nav-option{display:block;width:100%;border:0;padding:7px 10px;background:#000;color:var(--green);font:900 clamp(15px,1.65vw,21px)/1 "Courier New",Courier,monospace;letter-spacing:-.075em;text-align:center;text-decoration:none;white-space:nowrap;cursor:pointer}
     .page-nav-option:hover,.page-nav-option:focus-visible{background:var(--green);color:#000;outline:none}
     .page-nav-option[aria-current="page"]{color:var(--magenta)}
-
     .topbar-clock{grid-column:3;justify-self:end;display:inline-flex;gap:9px;white-space:nowrap;text-decoration:none}
     .topbar-clock-text{display:inline-flex;align-items:center;height:34px;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.18em}
     .settings-toggle{display:inline-grid;width:34px;height:34px;flex:0 0 34px;place-items:center;overflow:hidden;border:0;padding:0;background:transparent;color:inherit;box-shadow:none;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;font-size:25px;line-height:1;text-decoration:none;cursor:pointer}
     .settings-toggle:hover,.settings-toggle:focus-visible,.settings-toggle[aria-expanded="true"]{outline:none;filter:drop-shadow(0 0 7px rgba(255,43,214,.72))}
-
     .sidebar-backdrop{position:fixed;left:0;right:0;top:54px;bottom:0;z-index:3;background:transparent;opacity:0;pointer-events:none}
     .sidebar-backdrop.is-open{opacity:1;pointer-events:auto}
     .sidebar{position:fixed;left:0;top:54px;bottom:0;z-index:4;display:grid;grid-template-rows:auto minmax(120px,1fr) auto;gap:clamp(24px,6vh,64px);width:min(calc(var(--sidebar-solid-width) + var(--sidebar-fade-width)),96vw);overflow-y:auto;padding:18px var(--sidebar-fade-width) 18px 12px;background:linear-gradient(to right,rgba(0,0,0,.65) 0,var(--sidebar-solid-width),rgba(0,0,0,0) calc(var(--sidebar-solid-width) + var(--sidebar-fade-width)));text-align:center;scrollbar-width:none;transform:translateX(-105%);transition:transform .34s cubic-bezier(.16,1,.3,1);will-change:transform}
@@ -82,9 +78,21 @@
     .sidebar-radio-current option{background:#000;color:var(--magenta);text-align:center}
     .sidebar-bottom{align-self:end;margin-top:0;padding-top:0;opacity:.86}
     .privacy-note,.copyright-note{margin-top:6px;color:#ccc}
-
     @media(max-height:720px){.sidebar{grid-template-rows:auto minmax(105px,1fr) auto;gap:16px}.sidebar-owner-avatar{width:58px;height:58px}.sidebar-bottom{padding-top:0}}
-    @media(max-width:820px){.topbar{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;height:48px}.site-name,.page-title,.topbar-clock{font-size:clamp(13px,4vw,17px);height:30px}.site-name{gap:7px}.site-name-icon{width:30px;height:30px;flex-basis:30px}.site-name-icon::before{font-size:22px}.site-name-label,.topbar-clock-text{height:30px}.page-title{gap:.3em}.page-nav-option{font-size:clamp(13px,4vw,17px)}.topbar-clock{gap:7px}.settings-toggle{width:30px;height:30px;flex-basis:30px;font-size:22px}.sidebar,.sidebar-backdrop{top:48px}}
+    @media(max-width:820px){
+      .topbar{grid-template-columns:1fr auto 1fr;grid-template-rows:32px 25px 32px;gap:0 8px;height:89px;padding:0 max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));align-items:center}
+      .site-name,.page-title,.topbar-clock{font-size:clamp(13px,4vw,17px);height:auto}
+      .site-name{display:contents}
+      .site-name-icon{grid-column:1;grid-row:1;justify-self:start;width:30px;height:30px;flex-basis:30px}
+      .site-name-icon::before{font-size:22px}
+      .site-name-label{grid-column:1/-1;grid-row:2;justify-self:center;height:25px;display:inline-flex;align-items:center}
+      .page-title{grid-column:1/3;grid-row:3;justify-self:end;gap:.3em;margin-right:6px}
+      .page-nav-option{font-size:clamp(13px,4vw,17px)}
+      .topbar-clock{display:contents}
+      .topbar-clock-text{grid-column:3;grid-row:3;justify-self:start;height:25px;display:inline-flex;align-items:center;margin-left:6px}
+      .settings-toggle{grid-column:3;grid-row:1;justify-self:end;width:30px;height:30px;flex-basis:30px;font-size:22px}
+      .sidebar,.sidebar-backdrop{top:89px}
+    }
     @media(prefers-reduced-motion:reduce){.sidebar{transition-duration:1ms}}
   </style>
 </head>
@@ -104,7 +112,6 @@
     </h1>
     <time class="topbar-clock" id="topbar-clock" aria-label="Local time"><span class="topbar-clock-text" id="topbar-clock-text"></span><button class="settings-toggle" id="settings-toggle" type="button" aria-controls="settings-sidebar" aria-expanded="false" aria-label="Toggle settings sidebar">⚙️</button></time>
   </header>
-
   <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
   <aside class="sidebar" id="sidebar" aria-label="Honestly Thomas sidebar" aria-hidden="true">
     <div class="sidebar-top-section">
@@ -116,48 +123,28 @@
     <div class="radio-block" aria-label="My Local Radio Stations">
       <span class="sidebar-radio-title">My Local Radio Stations</span>
       <div class="sidebar-social-card"><iframe class="sidebar-tunein-player" id="sidebar-radio-player" src="https://tunein.com/embed/player/s31188/" scrolling="no" title="Q107 - Toronto's Rock"></iframe></div>
-      <div class="sidebar-radio-caption">
-        <button class="sidebar-radio-caret" type="button" data-radio-direction="-1" aria-label="Previous radio station">&lt;</button>
-        <select class="sidebar-radio-current" id="sidebar-radio-current" aria-label="Select radio station"></select>
-        <button class="sidebar-radio-caret" type="button" data-radio-direction="1" aria-label="Next radio station">&gt;</button>
-      </div>
+      <div class="sidebar-radio-caption"><button class="sidebar-radio-caret" type="button" data-radio-direction="-1" aria-label="Previous radio station">&lt;</button><select class="sidebar-radio-current" id="sidebar-radio-current" aria-label="Select radio station"></select><button class="sidebar-radio-caret" type="button" data-radio-direction="1" aria-label="Next radio station">&gt;</button></div>
     </div>
-    <div class="sidebar-bottom">
-      <span class="sidebar-footer-row"><a href="/portal/" target="_top">Portal</a></span>
-      <span class="privacy-note">No accounts. No server saves.<br>Your browser hoards the cursed data.</span>
-      <span class="copyright-note">Copyright - 2025 <a href="/" target="_top">theinternetisdead.org</a></span>
-    </div>
+    <div class="sidebar-bottom"><span class="sidebar-footer-row"><a href="/portal/" target="_top">Portal</a></span><span class="privacy-note">No accounts. No server saves.<br>Your browser hoards the cursed data.</span><span class="copyright-note">Copyright - 2025 <a href="/" target="_top">theinternetisdead.org</a></span></div>
   </aside>
   <aside class="sidebar settings-sidebar" id="settings-sidebar" aria-label="Settings sidebar" aria-hidden="true">
     <div class="settings-top-controls">
       <button class="settings-action-button" id="color-options-toggle" type="button" aria-expanded="false" aria-controls="color-options-panel">Color Options</button>
-      <div class="color-options-panel" id="color-options-panel" aria-hidden="true">
-        <div class="color-options-inner">
-          <label class="color-option-label" for="overlay-color"><span>Overlay Color</span><input id="overlay-color" type="color" value="#72ff19"></label>
-          <label class="color-option-label" for="overlay-blend"><span>Blend Mode</span><select id="overlay-blend"><option value="difference">Difference</option><option value="exclusion">Exclusion</option><option value="multiply">Multiply</option><option value="screen">Screen</option><option value="overlay">Overlay</option><option value="color">Color</option><option value="hue">Hue</option><option value="color-dodge">Color Dodge</option><option value="luminosity">Luminosity</option></select></label>
-          <label class="color-option-label" for="overlay-opacity"><span>Opacity</span><span id="overlay-opacity-value">25%</span><input class="color-option-range" id="overlay-opacity" type="range" min="0" max="100" value="25"></label>
-          <label class="color-option-label" for="overlay-saturation"><span>Saturation</span><span id="overlay-saturation-value">100%</span><input class="color-option-range" id="overlay-saturation" type="range" min="0" max="300" value="100"></label>
-          <label class="color-option-label" for="overlay-brightness"><span>Brightness</span><span id="overlay-brightness-value">100%</span><input class="color-option-range" id="overlay-brightness" type="range" min="25" max="200" value="100"></label>
-          <label class="color-shift-label" for="overlay-hue-shift"><input id="overlay-hue-shift" type="checkbox"> Hueshift</label>
-          <div class="hue-speed-panel" id="hue-speed-panel" aria-hidden="true">
-            <div class="hue-speed-inner">
-              <label class="color-option-label" for="overlay-hue-speed"><span>Hue Speed</span><span id="overlay-hue-speed-value">1×</span><input class="color-option-range" id="overlay-hue-speed" type="range" min="1" max="4" step="1" value="1" list="hue-speed-steps"></label>
-              <datalist id="hue-speed-steps"><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option></datalist>
-            </div>
-          </div>
-          <button class="reset-colors-button" id="reset-colors" type="button">Reset Colors</button>
-        </div>
-      </div>
+      <div class="color-options-panel" id="color-options-panel" aria-hidden="true"><div class="color-options-inner">
+        <label class="color-option-label" for="overlay-color"><span>Overlay Color</span><input id="overlay-color" type="color" value="#72ff19"></label>
+        <label class="color-option-label" for="overlay-blend"><span>Blend Mode</span><select id="overlay-blend"><option value="difference">Difference</option><option value="exclusion">Exclusion</option><option value="multiply">Multiply</option><option value="screen">Screen</option><option value="overlay">Overlay</option><option value="color">Color</option><option value="hue">Hue</option><option value="color-dodge">Color Dodge</option><option value="luminosity">Luminosity</option></select></label>
+        <label class="color-option-label" for="overlay-opacity"><span>Opacity</span><span id="overlay-opacity-value">25%</span><input class="color-option-range" id="overlay-opacity" type="range" min="0" max="100" value="25"></label>
+        <label class="color-option-label" for="overlay-saturation"><span>Saturation</span><span id="overlay-saturation-value">100%</span><input class="color-option-range" id="overlay-saturation" type="range" min="0" max="300" value="100"></label>
+        <label class="color-option-label" for="overlay-brightness"><span>Brightness</span><span id="overlay-brightness-value">100%</span><input class="color-option-range" id="overlay-brightness" type="range" min="25" max="200" value="100"></label>
+        <label class="color-shift-label" for="overlay-hue-shift"><input id="overlay-hue-shift" type="checkbox"> Hueshift</label>
+        <div class="hue-speed-panel" id="hue-speed-panel" aria-hidden="true"><div class="hue-speed-inner"><label class="color-option-label" for="overlay-hue-speed"><span>Hue Speed</span><span id="overlay-hue-speed-value">1×</span><input class="color-option-range" id="overlay-hue-speed" type="range" min="1" max="4" step="1" value="1" list="hue-speed-steps"></label><datalist id="hue-speed-steps"><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option></datalist></div></div>
+        <button class="reset-colors-button" id="reset-colors" type="button">Reset Colors</button>
+      </div></div>
       <button class="settings-action-button" id="warp-toggle" type="button">Enable Warp</button>
-      <div class="settings-audio-controls">
-        <label class="settings-volume-label" for="site-volume">Volume <span id="site-volume-value">100%</span></label>
-        <input class="settings-volume-slider" id="site-volume" type="range" min="0" max="100" step="1" value="100" aria-label="Site volume">
-        <label class="settings-mute-label" for="site-muted"><input class="settings-mute-checkbox" id="site-muted" type="checkbox"> Mute</label>
-      </div>
+      <div class="settings-audio-controls"><label class="settings-volume-label" for="site-volume">Volume <span id="site-volume-value">100%</span></label><input class="settings-volume-slider" id="site-volume" type="range" min="0" max="100" step="1" value="100" aria-label="Site volume"><label class="settings-mute-label" for="site-muted"><input class="settings-mute-checkbox" id="site-muted" type="checkbox"> Mute</label></div>
     </div>
     <button class="reset-site-button" id="reset-site" type="button">Reset Site</button>
   </aside>
-
   <script>
     const pageNavButton=document.getElementById('page-nav-button');
     const pageNavMenu=document.getElementById('page-nav-menu');
@@ -165,12 +152,7 @@
     const pagePrev=document.getElementById('page-prev');
     const pageNext=document.getElementById('page-next');
     const requestedTitle=new URLSearchParams(window.location.search).get('title');
-    const pages=[
-      {title:'Main Space',href:'/'},
-      {title:'Portal',href:'/portal/'},
-      {title:'Games',href:'/dead/games/'},
-      {title:'Experiments',href:'/dead/experiments/'}
-    ];
+    const pages=[{title:'Main Space',href:'/'},{title:'Portal',href:'/portal/'},{title:'Games',href:'/dead/games/'},{title:'Experiments',href:'/dead/experiments/'}];
     const normalizedTitle=pages.some(page=>page.title===requestedTitle)?requestedTitle:'Main Space';
     pageNavButton.textContent=normalizedTitle;
     pageNavOptions.forEach(option=>option.toggleAttribute('aria-current',option.dataset.pageTitle===normalizedTitle));
@@ -178,203 +160,40 @@
     const requestTopNavigation=href=>window.parent.postMessage({type:'topbar-navigate',href:new URL(href,window.location.origin).href},window.location.origin);
     const closePageMenu=()=>{pageNavMenu.classList.remove('is-open');pageNavButton.setAttribute('aria-expanded','false');publishMenuState(false)};
     const togglePageMenu=()=>{const open=!pageNavMenu.classList.contains('is-open');pageNavMenu.classList.toggle('is-open',open);pageNavButton.setAttribute('aria-expanded',open?'true':'false');publishMenuState(open)};
-    const cyclePage=direction=>{
-      const currentIndex=Math.max(0,pages.findIndex(page=>page.title===normalizedTitle));
-      const nextIndex=(currentIndex+direction+pages.length)%pages.length;
-      requestTopNavigation(pages[nextIndex].href);
-    };
-    pageNavButton.addEventListener('click',togglePageMenu);
-    pagePrev.addEventListener('click',()=>cyclePage(-1));
-    pageNext.addEventListener('click',()=>cyclePage(1));
+    const cyclePage=direction=>{const currentIndex=Math.max(0,pages.findIndex(page=>page.title===normalizedTitle));const nextIndex=(currentIndex+direction+pages.length)%pages.length;requestTopNavigation(pages[nextIndex].href)};
+    pageNavButton.addEventListener('click',togglePageMenu);pagePrev.addEventListener('click',()=>cyclePage(-1));pageNext.addEventListener('click',()=>cyclePage(1));
     document.addEventListener('click',event=>{if(!document.getElementById('page-title').contains(event.target))closePageMenu()});
     document.addEventListener('click',event=>{const link=event.target.closest('a[href]');if(!link)return;const destination=new URL(link.href,window.location.href);if(destination.origin!==window.location.origin)return;event.preventDefault();closePageMenu();requestTopNavigation(destination.href)});
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&pageNavMenu.classList.contains('is-open')){closePageMenu();pageNavButton.focus()}});
-
     const topbarClockText=document.getElementById('topbar-clock-text');
     const clockFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true});
     const clockDateFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'});
     let topbarClockDate=clockDateFormatter.format(new Date());
     const updateTopbarClock=()=>{const now=new Date();topbarClockText.textContent=clockFormatter.format(now);const nextClockDate=clockDateFormatter.format(now);if(nextClockDate!==topbarClockDate){topbarClockDate=nextClockDate;window.parent.postMessage({type:'topbar-midnight'},window.location.origin)}};
-    updateTopbarClock();
-    setInterval(updateTopbarClock,250);
-
-    const sidebar=document.getElementById('sidebar');
-    const sidebarToggle=document.getElementById('sidebar-toggle');
-    const sidebarLabel=document.querySelector('.site-name-label');
-    const sidebarBackdrop=document.getElementById('sidebar-backdrop');
-    const settingsSidebar=document.getElementById('settings-sidebar');
-    const settingsToggle=document.getElementById('settings-toggle');
-    const colorOptionsToggle=document.getElementById('color-options-toggle');
-    const colorOptionsPanel=document.getElementById('color-options-panel');
-    const overlayColor=document.getElementById('overlay-color');
-    const overlayBlend=document.getElementById('overlay-blend');
-    const overlayOpacity=document.getElementById('overlay-opacity');
-    const overlayOpacityValue=document.getElementById('overlay-opacity-value');
-    const overlaySaturation=document.getElementById('overlay-saturation');
-    const overlaySaturationValue=document.getElementById('overlay-saturation-value');
-    const overlayBrightness=document.getElementById('overlay-brightness');
-    const overlayBrightnessValue=document.getElementById('overlay-brightness-value');
-    const overlayHueShift=document.getElementById('overlay-hue-shift');
-    const hueSpeedPanel=document.getElementById('hue-speed-panel');
-    const overlayHueSpeed=document.getElementById('overlay-hue-speed');
-    const overlayHueSpeedValue=document.getElementById('overlay-hue-speed-value');
-    const resetColors=document.getElementById('reset-colors');
-    const warpToggle=document.getElementById('warp-toggle');
-    const syncSidebarWidth=()=>{
-      const labelRect=sidebarLabel.getBoundingClientRect();
-      document.documentElement.style.setProperty('--sidebar-solid-width',`${Math.ceil(labelRect.right)}px`);
-    };
-    const setSidebarOpen=open=>{
-      syncSidebarWidth();
-      if(open)setSettingsSidebarOpen(false);
-      sidebar.classList.toggle('is-open',open);
-      sidebarBackdrop.classList.toggle('is-open',open);
-      sidebar.setAttribute('aria-hidden',open?'false':'true');
-      sidebarToggle.setAttribute('aria-expanded',open?'true':'false');
-      window.parent.postMessage({type:'topbar-sidebar',open},window.location.origin);
-    };
-    const setSettingsSidebarOpen=open=>{
-      syncSidebarWidth();
-      if(open&&sidebar.classList.contains('is-open')){
-        sidebar.classList.remove('is-open');
-        sidebar.setAttribute('aria-hidden','true');
-        sidebarToggle.setAttribute('aria-expanded','false');
-      }
-      settingsSidebar.classList.toggle('is-open',open);
-      sidebarBackdrop.classList.toggle('is-open',open);
-      settingsSidebar.setAttribute('aria-hidden',open?'false':'true');
-      settingsToggle.setAttribute('aria-expanded',open?'true':'false');
-      window.parent.postMessage({type:'topbar-sidebar',open},window.location.origin);
-    };
-    syncSidebarWidth();
-    window.addEventListener('resize',syncSidebarWidth);
-    sidebarToggle.addEventListener('click',()=>setSidebarOpen(!sidebar.classList.contains('is-open')));
-    settingsToggle.addEventListener('click',()=>setSettingsSidebarOpen(!settingsSidebar.classList.contains('is-open')));
+    updateTopbarClock();setInterval(updateTopbarClock,250);
+    const sidebar=document.getElementById('sidebar'),sidebarToggle=document.getElementById('sidebar-toggle'),sidebarLabel=document.querySelector('.site-name-label'),sidebarBackdrop=document.getElementById('sidebar-backdrop'),settingsSidebar=document.getElementById('settings-sidebar'),settingsToggle=document.getElementById('settings-toggle'),colorOptionsToggle=document.getElementById('color-options-toggle'),colorOptionsPanel=document.getElementById('color-options-panel'),overlayColor=document.getElementById('overlay-color'),overlayBlend=document.getElementById('overlay-blend'),overlayOpacity=document.getElementById('overlay-opacity'),overlayOpacityValue=document.getElementById('overlay-opacity-value'),overlaySaturation=document.getElementById('overlay-saturation'),overlaySaturationValue=document.getElementById('overlay-saturation-value'),overlayBrightness=document.getElementById('overlay-brightness'),overlayBrightnessValue=document.getElementById('overlay-brightness-value'),overlayHueShift=document.getElementById('overlay-hue-shift'),hueSpeedPanel=document.getElementById('hue-speed-panel'),overlayHueSpeed=document.getElementById('overlay-hue-speed'),overlayHueSpeedValue=document.getElementById('overlay-hue-speed-value'),resetColors=document.getElementById('reset-colors'),warpToggle=document.getElementById('warp-toggle');
+    const syncSidebarWidth=()=>{const labelRect=sidebarLabel.getBoundingClientRect();document.documentElement.style.setProperty('--sidebar-solid-width',`${Math.ceil(labelRect.right)}px`)};
+    const setSidebarOpen=open=>{syncSidebarWidth();if(open)setSettingsSidebarOpen(false);sidebar.classList.toggle('is-open',open);sidebarBackdrop.classList.toggle('is-open',open);sidebar.setAttribute('aria-hidden',open?'false':'true');sidebarToggle.setAttribute('aria-expanded',open?'true':'false');window.parent.postMessage({type:'topbar-sidebar',open},window.location.origin)};
+    const setSettingsSidebarOpen=open=>{syncSidebarWidth();if(open&&sidebar.classList.contains('is-open')){sidebar.classList.remove('is-open');sidebar.setAttribute('aria-hidden','true');sidebarToggle.setAttribute('aria-expanded','false')}settingsSidebar.classList.toggle('is-open',open);sidebarBackdrop.classList.toggle('is-open',open);settingsSidebar.setAttribute('aria-hidden',open?'false':'true');settingsToggle.setAttribute('aria-expanded',open?'true':'false');window.parent.postMessage({type:'topbar-sidebar',open},window.location.origin)};
+    syncSidebarWidth();window.addEventListener('resize',syncSidebarWidth);sidebarToggle.addEventListener('click',()=>setSidebarOpen(!sidebar.classList.contains('is-open')));settingsToggle.addEventListener('click',()=>setSettingsSidebarOpen(!settingsSidebar.classList.contains('is-open')));
     const siteColorSettingsKey='theinternetisdead.colors';
-    const setColorOptionsOpen=open=>{
-      const nextOpen=Boolean(open);
-      colorOptionsPanel.classList.toggle('is-open',nextOpen);
-      colorOptionsPanel.setAttribute('aria-hidden',nextOpen?'false':'true');
-      colorOptionsPanel.inert=!nextOpen;
-      colorOptionsToggle.setAttribute('aria-expanded',nextOpen?'true':'false');
-    };
-    const setHueSpeedOpen=open=>{
-      hueSpeedPanel.classList.toggle('is-open',open);
-      hueSpeedPanel.setAttribute('aria-hidden',open?'false':'true');
-      hueSpeedPanel.inert=!open;
-    };
-    const publishColorSettings=()=>{
-      const settings={enabled:colorsActivated,activated:colorsActivated,color:overlayColor.value,blendMode:overlayBlend.value,opacity:Number(overlayOpacity.value),saturation:Number(overlaySaturation.value),brightness:Number(overlayBrightness.value),hueShift:overlayHueShift.checked,hueSpeed:Number(overlayHueSpeed.value)};
-      overlayOpacityValue.textContent=`${settings.opacity}%`;
-      overlaySaturationValue.textContent=`${settings.saturation}%`;
-      overlayBrightnessValue.textContent=`${settings.brightness}%`;
-      overlayHueSpeedValue.textContent=`${settings.hueSpeed}×`;
-      localStorage.setItem(siteColorSettingsKey,JSON.stringify(settings));
-      window.parent.postMessage({type:'topbar-color-update',settings},window.location.origin);
-    };
-    let colorsActivated=false;
-    try{
-      const savedColors=JSON.parse(localStorage.getItem(siteColorSettingsKey)||'null');
-      colorsActivated=Boolean(savedColors?.activated);
-      if(/^#[0-9a-f]{6}$/i.test(savedColors?.color||''))overlayColor.value=savedColors.color;
-      if([...overlayBlend.options].some(option=>option.value===savedColors?.blendMode))overlayBlend.value=savedColors.blendMode;
-      if(Number.isFinite(savedColors?.opacity))overlayOpacity.value=String(savedColors.opacity);
-      if(Number.isFinite(savedColors?.saturation))overlaySaturation.value=String(savedColors.saturation);
-      if(Number.isFinite(savedColors?.brightness))overlayBrightness.value=String(savedColors.brightness);
-      overlayHueShift.checked=Boolean(savedColors?.hueShift);
-      if(Number.isFinite(savedColors?.hueSpeed))overlayHueSpeed.value=String(savedColors.hueSpeed);
-    }catch(error){}
-    setColorOptionsOpen(false);
-    setHueSpeedOpen(overlayHueShift.checked);
-    colorOptionsToggle.addEventListener('click',()=>setColorOptionsOpen(!colorOptionsPanel.classList.contains('is-open')));
-    const activateColors=()=>{colorsActivated=true;publishColorSettings()};
-    overlayHueShift.addEventListener('change',()=>{setHueSpeedOpen(overlayHueShift.checked);activateColors()});
-    [overlayColor,overlayBlend,overlayOpacity,overlaySaturation,overlayBrightness,overlayHueSpeed].forEach(control=>control.addEventListener('input',activateColors));
-    resetColors.addEventListener('click',()=>{
-      colorsActivated=false;
-      overlayColor.value='#72ff19';
-      overlayBlend.value='difference';
-      overlayOpacity.value='25';
-      overlaySaturation.value='100';
-      overlayBrightness.value='100';
-      overlayHueShift.checked=false;
-      overlayHueSpeed.value='1';
-      setHueSpeedOpen(false);
-      publishColorSettings();
-    });
-    publishColorSettings();
-    warpToggle.addEventListener('click',()=>{
-      const destinations=pages.filter(page=>page.title!==normalizedTitle);
-      const destination=destinations[Math.floor(Math.random()*destinations.length)]||pages[0];
-      window.parent.postMessage({type:'topbar-warp-launch',href:new URL(destination.href,window.location.origin).href},window.location.origin);
-      setSettingsSidebarOpen(false);
-    });
-    sidebarBackdrop.addEventListener('click',()=>{setSidebarOpen(false);setSettingsSidebarOpen(false)});
-    document.addEventListener('keydown',event=>{if(event.key!=='Escape')return;if(sidebar.classList.contains('is-open')){setSidebarOpen(false);sidebarToggle.focus()}else if(settingsSidebar.classList.contains('is-open')){setSettingsSidebarOpen(false);settingsToggle.focus()}});
-
-    const siteVolume=document.getElementById('site-volume');
-    const siteVolumeValue=document.getElementById('site-volume-value');
-    const siteMuted=document.getElementById('site-muted');
-    const resetSite=document.getElementById('reset-site');
-    const siteAudioSettingsKey='theinternetisdead.audio';
-    const getSiteDocuments=()=>{
-      const documents=[];
-      const visit=currentWindow=>{
-        try{
-          if(documents.includes(currentWindow.document))return;
-          documents.push(currentWindow.document);
-          [...currentWindow.frames].forEach(visit);
-        }catch(error){}
-      };
-      visit(window.top);
-      return documents;
-    };
-    const applySiteAudio=()=>{
-      const volume=Number(siteVolume.value)/100;
-      const muted=siteMuted.checked;
-      siteVolumeValue.textContent=`${siteVolume.value}%`;
-      getSiteDocuments().forEach(currentDocument=>{
-        currentDocument.querySelectorAll('audio,video').forEach(media=>{
-          media.volume=volume;
-          media.muted=muted;
-        });
-      });
-      localStorage.setItem(siteAudioSettingsKey,JSON.stringify({volume:Number(siteVolume.value),muted}));
-    };
-    try{
-      const savedAudioSettings=JSON.parse(localStorage.getItem(siteAudioSettingsKey)||'null');
-      if(Number.isFinite(savedAudioSettings?.volume))siteVolume.value=String(Math.min(100,Math.max(0,savedAudioSettings.volume)));
-      siteMuted.checked=Boolean(savedAudioSettings?.muted);
-    }catch(error){}
-    siteVolume.addEventListener('input',applySiteAudio);
-    siteMuted.addEventListener('change',applySiteAudio);
-    window.top.document.addEventListener('play',applySiteAudio,true);
-    applySiteAudio();
-    resetSite.addEventListener('click',()=>{
-      if(!window.confirm('Reset all saved data and settings for this site?'))return;
-      localStorage.clear();
-      sessionStorage.clear();
-      document.cookie.split(';').forEach(cookie=>{document.cookie=`${cookie.split('=')[0].trim()}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`});
-      window.top.location.reload();
-    });
-
-    const sidebarRadioStations=[
-      {title:"Q107 - Toronto's Rock",src:'https://tunein.com/embed/player/s31188/'},
-      {title:'Country 102 Bracebridge',src:'https://tunein.com/embed/player/s307771/'},
-      {title:'Bounce 104.1 Midland',src:'https://tunein.com/embed/player/s2802/'},
-      {title:'BIG 101.1 Barrie',src:'https://tunein.com/embed/player/s31196/'},
-      {title:'Moose FM 99.5 Bracebridge',src:'https://tunein.com/embed/player/s12325/'},
-      {title:'Moose FM 105.5 Huntsville',src:'https://tunein.com/embed/player/s12327/'}
-    ];
-    const sidebarRadioPlayer=document.getElementById('sidebar-radio-player');
-    const sidebarRadioCurrent=document.getElementById('sidebar-radio-current');
-    const sidebarRadioCarets=document.querySelectorAll('.sidebar-radio-caret');
-    let sidebarRadioStationIndex=0;
-    function setSidebarRadioStation(index){const nextIndex=(index+sidebarRadioStations.length)%sidebarRadioStations.length;const station=sidebarRadioStations[nextIndex];sidebarRadioStationIndex=nextIndex;sidebarRadioPlayer.src=station.src;sidebarRadioPlayer.title=station.title;sidebarRadioCurrent.value=String(nextIndex)}
-    sidebarRadioStations.forEach((station,index)=>{const option=document.createElement('option');option.value=String(index);option.textContent=station.title;sidebarRadioCurrent.appendChild(option)});
-    sidebarRadioCurrent.addEventListener('change',()=>setSidebarRadioStation(Number(sidebarRadioCurrent.value)||0));
-    sidebarRadioCarets.forEach(button=>button.addEventListener('click',()=>setSidebarRadioStation(sidebarRadioStationIndex+(Number(button.dataset.radioDirection)||1))));
-    setSidebarRadioStation(0);
+    const setColorOptionsOpen=open=>{const nextOpen=Boolean(open);colorOptionsPanel.classList.toggle('is-open',nextOpen);colorOptionsPanel.setAttribute('aria-hidden',nextOpen?'false':'true');colorOptionsPanel.inert=!nextOpen;colorOptionsToggle.setAttribute('aria-expanded',nextOpen?'true':'false')};
+    const setHueSpeedOpen=open=>{hueSpeedPanel.classList.toggle('is-open',open);hueSpeedPanel.setAttribute('aria-hidden',open?'false':'true');hueSpeedPanel.inert=!open};
+    const publishColorSettings=()=>{const settings={enabled:colorsActivated,activated:colorsActivated,color:overlayColor.value,blendMode:overlayBlend.value,opacity:Number(overlayOpacity.value),saturation:Number(overlaySaturation.value),brightness:Number(overlayBrightness.value),hueShift:overlayHueShift.checked,hueSpeed:Number(overlayHueSpeed.value)};overlayOpacityValue.textContent=`${settings.opacity}%`;overlaySaturationValue.textContent=`${settings.saturation}%`;overlayBrightnessValue.textContent=`${settings.brightness}%`;overlayHueSpeedValue.textContent=`${settings.hueSpeed}×`;localStorage.setItem(siteColorSettingsKey,JSON.stringify(settings));window.parent.postMessage({type:'topbar-color-update',settings},window.location.origin)};
+    let colorsActivated=false;try{const savedColors=JSON.parse(localStorage.getItem(siteColorSettingsKey)||'null');colorsActivated=Boolean(savedColors?.activated);if(/^#[0-9a-f]{6}$/i.test(savedColors?.color||''))overlayColor.value=savedColors.color;if([...overlayBlend.options].some(option=>option.value===savedColors?.blendMode))overlayBlend.value=savedColors.blendMode;if(Number.isFinite(savedColors?.opacity))overlayOpacity.value=String(savedColors.opacity);if(Number.isFinite(savedColors?.saturation))overlaySaturation.value=String(savedColors.saturation);if(Number.isFinite(savedColors?.brightness))overlayBrightness.value=String(savedColors.brightness);overlayHueShift.checked=Boolean(savedColors?.hueShift);if(Number.isFinite(savedColors?.hueSpeed))overlayHueSpeed.value=String(savedColors.hueSpeed)}catch(error){}
+    setColorOptionsOpen(false);setHueSpeedOpen(overlayHueShift.checked);colorOptionsToggle.addEventListener('click',()=>setColorOptionsOpen(!colorOptionsPanel.classList.contains('is-open')));const activateColors=()=>{colorsActivated=true;publishColorSettings()};overlayHueShift.addEventListener('change',()=>{setHueSpeedOpen(overlayHueShift.checked);activateColors()});[overlayColor,overlayBlend,overlayOpacity,overlaySaturation,overlayBrightness,overlayHueSpeed].forEach(control=>control.addEventListener('input',activateColors));resetColors.addEventListener('click',()=>{colorsActivated=false;overlayColor.value='#72ff19';overlayBlend.value='difference';overlayOpacity.value='25';overlaySaturation.value='100';overlayBrightness.value='100';overlayHueShift.checked=false;overlayHueSpeed.value='1';setHueSpeedOpen(false);publishColorSettings()});publishColorSettings();
+    warpToggle.addEventListener('click',()=>{const destinations=pages.filter(page=>page.title!==normalizedTitle);const destination=destinations[Math.floor(Math.random()*destinations.length)]||pages[0];window.parent.postMessage({type:'topbar-warp-launch',href:new URL(destination.href,window.location.origin).href},window.location.origin);setSettingsSidebarOpen(false)});
+    sidebarBackdrop.addEventListener('click',()=>{setSidebarOpen(false);setSettingsSidebarOpen(false)});document.addEventListener('keydown',event=>{if(event.key!=='Escape')return;if(sidebar.classList.contains('is-open')){setSidebarOpen(false);sidebarToggle.focus()}else if(settingsSidebar.classList.contains('is-open')){setSettingsSidebarOpen(false);settingsToggle.focus()}});
+    const siteVolume=document.getElementById('site-volume'),siteVolumeValue=document.getElementById('site-volume-value'),siteMuted=document.getElementById('site-muted'),resetSite=document.getElementById('reset-site'),siteAudioSettingsKey='theinternetisdead.audio';
+    const getSiteDocuments=()=>{const documents=[];const visit=currentWindow=>{try{if(documents.includes(currentWindow.document))return;documents.push(currentWindow.document);[...currentWindow.frames].forEach(visit)}catch(error){}};visit(window.top);return documents};
+    const applySiteAudio=()=>{const volume=Number(siteVolume.value)/100,muted=siteMuted.checked;siteVolumeValue.textContent=`${siteVolume.value}%`;getSiteDocuments().forEach(currentDocument=>{currentDocument.querySelectorAll('audio,video').forEach(media=>{media.volume=volume;media.muted=muted})});localStorage.setItem(siteAudioSettingsKey,JSON.stringify({volume:Number(siteVolume.value),muted}))};
+    try{const savedAudioSettings=JSON.parse(localStorage.getItem(siteAudioSettingsKey)||'null');if(Number.isFinite(savedAudioSettings?.volume))siteVolume.value=String(Math.min(100,Math.max(0,savedAudioSettings.volume)));siteMuted.checked=Boolean(savedAudioSettings?.muted)}catch(error){}
+    siteVolume.addEventListener('input',applySiteAudio);siteMuted.addEventListener('change',applySiteAudio);window.top.document.addEventListener('play',applySiteAudio,true);applySiteAudio();
+    resetSite.addEventListener('click',()=>{if(!window.confirm('Reset all saved data and settings for this site?'))return;localStorage.clear();sessionStorage.clear();document.cookie.split(';').forEach(cookie=>{document.cookie=`${cookie.split('=')[0].trim()}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`});window.top.location.reload()});
+    const sidebarRadioStations=[{title:"Q107 - Toronto's Rock",src:'https://tunein.com/embed/player/s31188/'},{title:'Country 102 Bracebridge',src:'https://tunein.com/embed/player/s307771/'},{title:'Bounce 104.1 Midland',src:'https://tunein.com/embed/player/s2802/'},{title:'BIG 101.1 Barrie',src:'https://tunein.com/embed/player/s31196/'},{title:'Moose FM 99.5 Bracebridge',src:'https://tunein.com/embed/player/s12325/'},{title:'Moose FM 105.5 Huntsville',src:'https://tunein.com/embed/player/s12327/'}];
+    const sidebarRadioPlayer=document.getElementById('sidebar-radio-player'),sidebarRadioCurrent=document.getElementById('sidebar-radio-current'),sidebarRadioCarets=document.querySelectorAll('.sidebar-radio-caret');let sidebarRadioStationIndex=0;
+    function setSidebarRadioStation(index){const nextIndex=(index+sidebarRadioStations.length)%sidebarRadioStations.length,station=sidebarRadioStations[nextIndex];sidebarRadioStationIndex=nextIndex;sidebarRadioPlayer.src=station.src;sidebarRadioPlayer.title=station.title;sidebarRadioCurrent.value=String(nextIndex)}
+    sidebarRadioStations.forEach((station,index)=>{const option=document.createElement('option');option.value=String(index);option.textContent=station.title;sidebarRadioCurrent.appendChild(option)});sidebarRadioCurrent.addEventListener('change',()=>setSidebarRadioStation(Number(sidebarRadioCurrent.value)||0));sidebarRadioCarets.forEach(button=>button.addEventListener('click',()=>setSidebarRadioStation(sidebarRadioStationIndex+(Number(button.dataset.radioDirection)||1))));setSidebarRadioStation(0);
   </script>
 </body>
 </html>
