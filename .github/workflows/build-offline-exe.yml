@@ -1,0 +1,254 @@
+name: Build Offline EXE
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: offline-exe-main
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Assemble offline Chromium app
+        shell: pwsh
+        run: |
+          $project = Join-Path $env:RUNNER_TEMP "theinternetisdead-offline"
+          $site = Join-Path $project "site"
+          New-Item -ItemType Directory -Force -Path $site | Out-Null
+
+          robocopy . $site /E /XD .git .github node_modules /XF theinternetisdead.exe
+          if ($LASTEXITCODE -ge 8) {
+            throw "Copying the public site failed with robocopy exit code $LASTEXITCODE"
+          }
+
+          @'
+          {
+            "name": "theinternetisdead-offline",
+            "version": "1.0.0",
+            "private": true,
+            "main": "main.cjs",
+            "devDependencies": {
+              "electron": "latest",
+              "electron-builder": "latest"
+            },
+            "build": {
+              "appId": "org.theinternetisdead.offline",
+              "productName": "theinternetisdead",
+              "asar": true,
+              "compression": "maximum",
+              "files": [
+                "main.cjs"
+              ],
+              "extraResources": [
+                {
+                  "from": "site",
+                  "to": "site"
+                }
+              ],
+              "win": {
+                "target": [
+                  {
+                    "target": "portable",
+                    "arch": ["x64"]
+                  }
+                ],
+                "artifactName": "theinternetisdead.exe"
+              }
+            }
+          }
+          '@ | Set-Content -Encoding utf8 (Join-Path $project "package.json")
+
+          @'
+          const { app, BrowserWindow, shell } = require("electron");
+          const http = require("http");
+          const fs = require("fs");
+          const path = require("path");
+
+          const siteRoot = path.join(process.resourcesPath, "site");
+          const mime = {
+            ".html": "text/html; charset=utf-8",
+            ".htm": "text/html; charset=utf-8",
+            ".css": "text/css; charset=utf-8",
+            ".js": "text/javascript; charset=utf-8",
+            ".mjs": "text/javascript; charset=utf-8",
+            ".json": "application/json; charset=utf-8",
+            ".xml": "application/xml; charset=utf-8",
+            ".txt": "text/plain; charset=utf-8",
+            ".md": "text/markdown; charset=utf-8",
+            ".svg": "image/svg+xml",
+            ".png": "image/png",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".gif": "image/gif",
+            ".webp": "image/webp",
+            ".ico": "image/x-icon",
+            ".pdf": "application/pdf",
+            ".mp3": "audio/mpeg",
+            ".wav": "audio/wav",
+            ".ogg": "audio/ogg",
+            ".mp4": "video/mp4",
+            ".webm": "video/webm",
+            ".wasm": "application/wasm",
+            ".woff": "font/woff",
+            ".woff2": "font/woff2",
+            ".ttf": "font/ttf"
+          };
+
+          function locate(urlPath) {
+            let pathname;
+            try {
+              pathname = decodeURIComponent(new URL(urlPath, "http://offline.local").pathname);
+            } catch {
+              return null;
+            }
+
+            const relative = pathname.replace(/^[/\\]+/, "") || "index.html";
+            const candidate = path.resolve(siteRoot, relative);
+            if (candidate !== siteRoot && !candidate.startsWith(siteRoot + path.sep)) return null;
+
+            const attempts = [candidate];
+            if (!path.extname(candidate)) {
+              attempts.push(candidate + ".html");
+              attempts.push(path.join(candidate, "index.html"));
+            }
+
+            for (const item of attempts) {
+              try {
+                const stat = fs.statSync(item);
+                if (stat.isDirectory()) {
+                  const index = path.join(item, "index.html");
+                  if (fs.existsSync(index)) return index;
+                } else {
+                  return item;
+                }
+              } catch {}
+            }
+            return null;
+          }
+
+          function sendFile(req, res, file) {
+            const stat = fs.statSync(file);
+            const type = mime[path.extname(file).toLowerCase()] || "application/octet-stream";
+            const range = req.headers.range;
+
+            res.setHeader("Content-Type", type);
+            res.setHeader("Accept-Ranges", "bytes");
+            res.setHeader("Cache-Control", "no-cache");
+
+            if (range) {
+              const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+              if (!match) {
+                res.writeHead(416, { "Content-Range": `bytes */${stat.size}` });
+                return res.end();
+              }
+              const start = match[1] ? Number(match[1]) : 0;
+              const end = match[2] ? Number(match[2]) : stat.size - 1;
+              if (start > end || end >= stat.size) {
+                res.writeHead(416, { "Content-Range": `bytes */${stat.size}` });
+                return res.end();
+              }
+              res.writeHead(206, {
+                "Content-Range": `bytes ${start}-${end}/${stat.size}`,
+                "Content-Length": end - start + 1
+              });
+              if (req.method === "HEAD") return res.end();
+              return fs.createReadStream(file, { start, end }).pipe(res);
+            }
+
+            res.setHeader("Content-Length", stat.size);
+            res.writeHead(200);
+            if (req.method === "HEAD") return res.end();
+            fs.createReadStream(file).pipe(res);
+          }
+
+          let server;
+
+          app.whenReady().then(() => {
+            server = http.createServer((req, res) => {
+              const file = locate(req.url);
+              if (!file) {
+                res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+                return res.end("This file is dead.");
+              }
+              try {
+                sendFile(req, res, file);
+              } catch {
+                res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+                res.end("The archive coughed.");
+              }
+            });
+
+            server.listen(0, "127.0.0.1", () => {
+              const port = server.address().port;
+              const localOrigin = `http://127.0.0.1:${port}`;
+              const win = new BrowserWindow({
+                width: 1440,
+                height: 900,
+                backgroundColor: "#000000",
+                autoHideMenuBar: true,
+                webPreferences: {
+                  nodeIntegration: false,
+                  contextIsolation: true,
+                  sandbox: true
+                }
+              });
+
+              win.webContents.setWindowOpenHandler(({ url }) => {
+                if (!url.startsWith(localOrigin)) shell.openExternal(url);
+                return { action: "deny" };
+              });
+
+              win.webContents.on("will-navigate", (event, url) => {
+                if (!url.startsWith(localOrigin)) {
+                  event.preventDefault();
+                  shell.openExternal(url);
+                }
+              });
+
+              win.loadURL(localOrigin + "/");
+            });
+          });
+
+          app.on("window-all-closed", () => {
+            if (server) server.close();
+            app.quit();
+          });
+          '@ | Set-Content -Encoding utf8 (Join-Path $project "main.cjs")
+
+          Push-Location $project
+          npm install --no-audit --no-fund
+          npx electron-builder --win portable --x64 --publish never
+          Pop-Location
+
+          $exe = Join-Path $project "dist\theinternetisdead.exe"
+          if (!(Test-Path $exe)) {
+            throw "The EXE was not created."
+          }
+          "EXE_PATH=$exe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Publish stable download
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view offline-latest --repo "${{ github.repository }}" 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create offline-latest --repo "${{ github.repository }}" --target main --title "theinternetisdead — Offline Edition" --notes "Unsigned Windows x64 offline Chromium edition. Built automatically from the public files on main."
+          }
+          gh release upload offline-latest "$env:EXE_PATH" --repo "${{ github.repository }}" --clobber
