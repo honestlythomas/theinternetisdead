@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08090d">
+  <meta name="description" content="A memoir about interfaces, subtlety, narrative, thermite, and community by Thomas Harrison.">
+  <title>Disengage from the Interface — Thomas Harrison</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08090d;
+      --panel: rgba(18, 20, 28, 0.94);
+      --paper: #f0eee8;
+      --ink: #14151a;
+      --muted: #a7a9b4;
+      --line: rgba(255, 255, 255, 0.12);
+      --acid: #b7ff43;
+      --cyan: #4de8ff;
+      --hot: #ff4da6;
+      --measure: 74ch;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(77, 232, 255, 0.12), transparent 26rem),
+        radial-gradient(circle at 88% 22%, rgba(255, 77, 166, 0.09), transparent 28rem),
+        linear-gradient(150deg, #07080b, #10121a 55%, #08090d);
+      color: var(--paper);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 4px,
+        rgba(255, 255, 255, 0.018) 5px
+      );
+    }
+
+    a { color: var(--cyan); }
+
+    .shell {
+      width: min(100% - 28px, 980px);
+      margin: 0 auto;
+      padding: clamp(22px, 5vw, 64px) 0 80px;
+    }
+
+    .masthead {
+      padding: clamp(24px, 6vw, 66px);
+      border: 1px solid var(--line);
+      border-bottom: 0;
+      background: linear-gradient(145deg, rgba(20, 23, 32, 0.96), rgba(8, 9, 13, 0.92));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+    }
+
+    .eyebrow,
+    .byline,
+    .controls,
+    .status,
+    .section-mark,
+    footer {
+      font-family: "Courier New", Consolas, monospace;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      color: var(--acid);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 13ch;
+      margin: 0;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(2.5rem, 8vw, 5.8rem);
+      line-height: 0.93;
+      letter-spacing: -0.065em;
+      text-wrap: balance;
+    }
+
+    .subtitle {
+      max-width: 44ch;
+      margin: 24px 0 0;
+      color: #cbcdd5;
+      font-size: clamp(1.08rem, 2.4vw, 1.45rem);
+      line-height: 1.45;
+    }
+
+    .byline {
+      margin: 28px 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .reader {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 14px clamp(14px, 3vw, 24px);
+      border: 1px solid var(--line);
+      background: rgba(8, 9, 13, 0.94);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(16px);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto auto auto;
+      gap: 9px;
+      align-items: stretch;
+    }
+
+    label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    select,
+    button {
+      min-height: 43px;
+      border: 1px solid rgba(183, 255, 67, 0.45);
+      border-radius: 3px;
+      background: #11131a;
+      color: #f7f7f3;
+      font: inherit;
+    }
+
+    select {
+      width: 100%;
+      padding: 0 38px 0 12px;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 0 15px;
+      color: var(--acid);
+      font-weight: 700;
+      text-transform: uppercase;
+      transition: background 130ms ease, color 130ms ease, transform 130ms ease;
+    }
+
+    button:hover:not(:disabled),
+    button:focus-visible:not(:disabled) {
+      background: var(--acid);
+      color: #08090d;
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+    }
+
+    .status {
+      min-height: 1.2em;
+      margin: 8px 2px 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .status[data-state="speaking"] { color: var(--acid); }
+    .status[data-state="paused"] { color: var(--cyan); }
+
+    article {
+      padding: clamp(34px, 7vw, 76px) clamp(22px, 8vw, 90px);
+      border: 1px solid var(--line);
+      border-top: 0;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.34);
+    }
+
+    article > * { max-width: var(--measure); }
+
+    .epigraph {
+      margin: 0 0 2.6rem;
+      padding-left: 1.3rem;
+      border-left: 4px solid var(--hot);
+      font-size: 1.22rem;
+      font-style: italic;
+    }
+
+    h2 {
+      margin: 3.2rem 0 1rem;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(1.55rem, 4vw, 2.25rem);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .section-mark {
+      display: block;
+      margin-bottom: 0.35rem;
+      color: #5f6470;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+    }
+
+    article p {
+      margin: 0 0 1.15rem;
+      font-size: clamp(1.04rem, 2vw, 1.17rem);
+      line-height: 1.72;
+    }
+
+    [data-speak].is-speaking {
+      background: linear-gradient(transparent 58%, rgba(183, 255, 67, 0.42) 58%);
+      outline: 4px solid rgba(183, 255, 67, 0.12);
+      scroll-margin-top: 126px;
+    }
+
+    footer {
+      padding: 22px 4px 0;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      .shell { width: min(100% - 16px, 980px); padding-top: 8px; }
+      .controls { grid-template-columns: 1fr 1fr 1fr; }
+      .controls select { grid-column: 1 / -1; }
+      button { padding: 0 8px; font-size: 0.74rem; }
+      .reader { top: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      button { transition: none; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .shell { width: 100%; padding: 0; }
+      .masthead { border: 0; box-shadow: none; background: #fff; color: #000; padding: 0 0 2rem; }
+      .masthead h1 { color: #000; font-size: 42pt; }
+      .subtitle, .byline { color: #333; }
+      .eyebrow, .reader, footer { display: none; }
+      article { border: 0; box-shadow: none; padding: 0; }
+      article p { font-size: 11pt; line-height: 1.5; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <p class="eyebrow">Document 001 / Dead Docs</p>
+      <h1 data-speak>Disengage from the Interface</h1>
+      <p class="subtitle" data-speak>A Memoir About the Disappearance of Subtlety from the Collective Consciousness</p>
+      <p class="byline" data-speak>Thomas Harrison. September 2026.</p>
+    </header>
+
+    <section class="reader" aria-label="Read aloud controls">
+      <div class="controls">
+        <label for="voiceSelect">Voice</label>
+        <select id="voiceSelect" aria-label="Narration voice">
+          <option>Loading browser voices...</option>
+        </select>
+        <button id="readButton" type="button">Read aloud</button>
+        <button id="pauseButton" type="button" disabled>Pause</button>
+        <button id="stopButton" type="button" disabled>Stop</button>
+      </div>
+      <p class="status" id="speechStatus" aria-live="polite">Waiting for browser voices.</p>
+    </section>
+
+    <article id="paper">
+      <p class="epigraph" data-speak>The nice things have us.</p>
+
+      <p data-speak>The interface promised to shorten the distance between people. Instead, I have watched it turn distance into a permanent condition of speech. Every feeling arrives with a form attached. Every need requires a subject line. Every ambiguity is treated as a defect in transmission. If I cannot make myself immediately legible, the burden returns to me: explain it again, use clearer words, remove the tone, name the desired action, provide the context, summarize the summary.</p>
+
+      <p data-speak>This paper begins with a small, ridiculous event. After sending too many emails in one day, I asked one person to ignore them and watch a short Dragon Ball Z playlist instead. The playlist moved through training, comfort, respect, transformation, spiritual struggle, and finally Perfect Cell singing My Way while being erased. It was melodramatic, compressed, sincere, and funny. It said more accurately what the explanatory messages could not. The sequence carried a narrative. The interface carried six links.</p>
+
+      <p data-speak>That difference is the subject of this memoir. The disappearance of subtlety is not merely a decline in taste or attention. It is what happens when human meaning is forced to survive systems that recognize isolated statements better than relationships, context, timing, gesture, shared memory, or silence. We respond by becoming more explicit. Then, when explicitness fails, we become louder. Eventually the explanation becomes longer than the life it was meant to explain.</p>
+
+      <h2 data-speak><span class="section-mark" aria-hidden="true">01</span>The Interface Demands a Caption</h2>
+
+      <p data-speak>An interface is never only a window. It is also a demand about what can appear inside the window. Email wants a recipient, subject, body, and send command. A form wants each fact in its proper field. A platform wants a title, thumbnail, description, category, and measurable response. Even an open text box quietly asks for a complete unit of meaning that can be separated from the person who typed it.</p>
+
+      <p data-speak>Human communication does not naturally arrive in complete units. It leaks. A shrug can contain a family history. The timing of a meal can communicate belonging without anyone naming belonging. A song sent at the right moment can be an argument, an apology, a warning, a memory, and an invitation at once. Meaning often lives between people before it lives inside words. The interface reverses this order. It assumes meaning exists inside the message and asks the receiver to extract it.</p>
+
+      <p data-speak>When extraction fails, the sender is blamed for insufficient clarity. This sounds reasonable because clarity is usually good. Yet compulsory clarity can become its own form of distortion. I may know that something is wrong before I know its official name. I may be able to show the pattern through art before I can defend it through prose. I may need another person to remain present long enough for meaning to emerge. The system, however, asks me to state my case before it grants the conditions under which I could understand my case.</p>
+
+      <p data-speak>The caption therefore expands. I do not merely say that I am alone. I explain the structure of the day, the absence of shared rhythm, the repetition of the basement, the failed attempts to enter community, the difference between physical shelter and social life. I anticipate objections. I distinguish dependence from relationship, quantity of food from being fed, silence from rest, and proximity from presence. Each distinction is true. Together they begin to resemble a legal defence of my own nervous system.</p>
+
+      <h2 data-speak><span class="section-mark" aria-hidden="true">02</span>When Context Collapses</h2>
+
+      <p data-speak>Subtlety is not vagueness. It is information carried by context. It depends on some shared world: common references, remembered conversations, familiar rhythms, and confidence that the other person will not seize the least charitable interpretation. Where that shared world is strong, very little needs to be said. Where it collapses, every sentence must bring its own scaffolding.</p>
+
+      <p data-speak>Digital systems are excellent at preserving statements and terrible at preserving the atmosphere that made a statement intelligible. A message can be forwarded without the hour that preceded it, screenshotted without the relationship, searched without the silence, and assessed without the body that was struggling to produce it. The record survives while the situation evaporates. This is one reason contemporary language grows defensive. We write as though an unknown tribunal may eventually read us, because an unknown tribunal often can.</p>
+
+      <p data-speak>The collective result is a strange bluntness. Jokes explain their target. Posts announce their moral status. Intimacy becomes a list of boundaries. Distress becomes a sequence of approved phrases. Public speech becomes less suggestive because suggestion depends on trust, and trust is precisely what the archive cannot guarantee. Everyone learns to place the conclusion first and surround it with disclaimers. The disappearance of subtlety is therefore not proof that people have become stupid. It may be proof that people expect to be misunderstood at scale.</p>
+
+      <p data-speak>I have participated in this escalation. I have written messages that attempt to make misunderstanding impossible. They fail because impossibility is not available. Additional language creates additional surfaces for disagreement. A sentence intended to close one gap opens three smaller ones. Point at the problem and the pointing finger becomes entangled in the problem. Soon we are discussing the wording of the description instead of the condition being described.</p>
+
+      <h2 data-speak><span class="section-mark" aria-hidden="true">03</span>Thermite</h2>
+
+      <p data-speak>The metaphor I keep returning to is thermite. Ordinary fire consumes fuel from the outside air. Thermite carries the conditions of its own reaction inside the mixture. Once ignited, the materials exchange what they contain and produce a heat that is difficult to interrupt by ordinary means. The interface feels like this when expression and interpretation are packed together under pressure. The message supplies the language. The archive supplies permanence. The platform supplies speed, repetition, and an audience trained to react before context can form. One spark is enough.</p>
+
+      <p data-speak>The disappearing subtlety is not gently eroded. It is burned out at the point of contact. A phrase leaves one nervous system with history attached and arrives in another as a clean, detachable object. The receiver responds to the object. The sender responds to the loss of history. Each correction becomes new material for the reaction. Heat is mistaken for illumination because everything is suddenly visible, quoted, and explicit. Yet what the brightness reveals is often only the molten outline of a relationship that could no longer hold its shape.</p>
+
+      <p data-speak>Thermite also explains why adding more ordinary language may not cool the exchange. The reaction no longer depends on the original environment. It carries forward through screenshots, summaries, interpretations, and replies. To interrupt it, someone must do more than contribute another statement. They must change the conditions: slow the sequence, restore shared context, move from record to relationship, or let art carry what direct explanation has overheated. The playlist enters here not as evidence but as a heat break. It rearranges the same intensity into narrative.</p>
+
+      <h2 data-speak><span class="section-mark" aria-hidden="true">04</span>The Playlist as a Language</h2>
+
+      <p data-speak>The Dragon Ball Z playlist did not solve this problem by becoming clearer. It solved it by becoming whole. Its meaning was not located in any single clip. It emerged from sequence. First came brutal training between father and son. Then comfort from a father who could recognize a frightened child. Then respect between rivals. Then transformation after transformation. Then a song of fate and spiritual confrontation. Finally came the villain, theatrical to the end, singing about having lived on his own terms while the screen filled with annihilating light.</p>
+
+      <p data-speak>Taken literally, this is nonsense: fragments of an animated series, edits by different creators, two songs, and a dying bio-android. Taken narratively, it is exact. It stages the desire to be trained without being destroyed, comforted without being infantilized, respected without being domesticated, and transformed without having every earlier self declared invalid. It ends not with a clinical summary but with style in the face of disappearance. The comedy protects the sincerity without cancelling it.</p>
+
+      <p data-speak>This is how art restores subtlety. It does not withhold meaning; it distributes meaning across form. Music allows an idea to arrive through breath, rhythm, memory, and bodily recognition. Editing allows juxtaposition to speak without a paragraph explaining the connection. A character can carry emotional material that would feel unbearable or self-important if stated directly. The viewer is not merely given information. The viewer is asked to participate in making coherence.</p>
+
+      <p data-speak>Participation is the missing word. An interface can transmit content while leaving the receiver outside it. A narrative asks the receiver to enter. To watch the playlist as six unrelated videos is to process data. To see the movement among them is to meet the person who arranged them. My request was not simply watch these clips. It was: please follow the path I made between them. That path is where I am.</p>
+
+      <h2 data-speak><span class="section-mark" aria-hidden="true">05</span>The Violence of Forced Explicitness</h2>
+
+      <p data-speak>There are situations in which explicit language is necessary. Consent, safety, law, medicine, and access cannot depend entirely on hints. Romanticizing subtlety can protect people who benefit from silence. I do not want a return to a world where power hides behind manners and everyone is expected to intuit rules they were never taught.</p>
+
+      <p data-speak>The problem begins when explicitness is treated as sufficient. A person can state a need perfectly and still receive no response. The record may prove that communication occurred while proving nothing about whether relationship occurred. In that gap, language becomes extractive. The distressed person must continuously produce descriptions, corrections, timelines, and clarifications so that institutions and relatives may remain informed. Information moves outward; care does not necessarily move back.</p>
+
+      <p data-speak>This can create the cruel appearance of abundance. From the outside there are messages, contacts, services, platforms, and options. From the inside there may still be no one to eat with, nowhere to go, and no shared task that gives the day a shape. The person is connected at every technical layer and held by no social structure. Their attempt to name this contradiction generates still more communication, which can then be mistaken for engagement itself.</p>
+
+      <p data-speak>Eventually the speaker becomes both the subject of the crisis and its unpaid administrator. I know the exhaustion of becoming the archivist of my own unmet need. Each new document feels necessary because the last one did not cause the reality to register. Yet every document also risks converting a living problem into another object someone can postpone reading. The interface does not need to reject me. It can simply receive me forever.</p>
+
+      <h2 data-speak><span class="section-mark" aria-hidden="true">06</span>Disengagement Without Disappearance</h2>
+
+      <p data-speak>To disengage from the interface cannot mean abandoning language, technology, or documentation. For some of us, interfaces are also lifelines, studios, witnesses, employment, archives, and prosthetic forms of organization. I have made art, found language, preserved memory, and reached people through the same machinery I distrust. The nice things have us because we built pieces of ourselves into them.</p>
+
+      <p data-speak>Disengagement must therefore be a change in authority. The interface can carry the message without deciding what counts as reality. A metric can describe attention without defining value. An email can document a need without becoming the relationship that answers it. An artificial voice can help arrange words without becoming the only presence available to hear them. The tool must be returned to the scale of a tool.</p>
+
+      <p data-speak>That return requires practices the interface cannot automate: sharing a meal without producing content from it; spending time whose success is not measured by an outcome; recognizing a reference because we remember the person who made it; letting a song remain partly unexplained; answering distress with presence before demanding a better description. These acts are modest, but modesty is exactly what disappears when everything must announce its importance to survive.</p>
+
+      <p data-speak>For me, disengagement may begin not with silence but with refusing the tenth clarification. It may mean sending the playlist and trusting the sequence. It may mean allowing another person either to follow the narrative or admit that they cannot. This does not guarantee understanding. It does, however, stop pretending that enough text can force two nervous systems into a shared world.</p>
+
+      <h2 data-speak><span class="section-mark" aria-hidden="true">07</span>A Memoir Still Inside the Machine</h2>
+
+      <p data-speak>There is an obvious contradiction in writing a paper about disengaging from the interface, formatting it cleanly, giving it headings, and delivering it through another interface. The contradiction is not an error to correct. It is the condition of authorship now. I cannot stand outside the system and describe it from a pure distance. I can only notice when the container begins to impersonate the contained.</p>
+
+      <p data-speak>The disappearance of subtlety is not complete. It survives wherever meaning exceeds its field. It survives in the order of six videos, in a family phrase, in the ache beneath a joke, in the difference between being given food and being fed, and in the pause before someone chooses to stay. The collective consciousness has not lost the capacity for subtlety. It has lost many of the stable relationships that allow subtlety to travel safely.</p>
+
+      <p data-speak>So the task is not to become less clear. It is to rebuild the contexts in which clarity does not have to carry everything alone. We need rooms, rituals, collaborations, meals, scenes, friendships, and communities that remember enough for a gesture to matter. We need places where a person is more than the latest message they sent. Without those structures, the interface will keep receiving our explanations and calling that connection.</p>
+
+      <p data-speak>I will still use the interface. I will write, edit, upload, archive, prompt, and send. But sometimes I will also say: ignore the previous emails. Watch this instead. See whether you can find me in the sequence.</p>
+    </article>
+
+    <footer>THEINTERNETISDEAD.ORG / DEAD DOCS / DISENGAGE</footer>
+  </main>
+
+  <script>
+    (() => {
+      const synth = window.speechSynthesis;
+      const voiceSelect = document.getElementById("voiceSelect");
+      const readButton = document.getElementById("readButton");
+      const pauseButton = document.getElementById("pauseButton");
+      const stopButton = document.getElementById("stopButton");
+      const status = document.getElementById("speechStatus");
+      const passages = Array.from(document.querySelectorAll("[data-speak]"));
+
+      let voices = [];
+      let passageIndex = 0;
+      let runId = 0;
+      let active = false;
+      let paused = false;
+
+      function voiceKey(voice) {
+        return [voice.name, voice.lang, voice.voiceURI].join("||");
+      }
+
+      function davidIndex(list) {
+        let index = list.findIndex((voice) => /microsoft david/i.test(voice.name));
+        if (index < 0) index = list.findIndex((voice) => /\bdavid\b/i.test(voice.name) && /^en/i.test(voice.lang));
+        if (index < 0) index = list.findIndex((voice) => /microsoft/i.test(voice.name) && /^en/i.test(voice.lang));
+        if (index < 0) index = list.findIndex((voice) => /^en-US$/i.test(voice.lang));
+        if (index < 0) index = list.findIndex((voice) => /^en/i.test(voice.lang));
+        return Math.max(0, index);
+      }
+
+      function loadVoices() {
+        if (!synth) return;
+        const previous = voiceSelect.value;
+        voices = synth.getVoices().slice().sort((a, b) => {
+          const aDavid = /microsoft david/i.test(a.name) ? 0 : 1;
+          const bDavid = /microsoft david/i.test(b.name) ? 0 : 1;
+          return aDavid - bDavid || a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name);
+        });
+
+        voiceSelect.replaceChildren();
+        voices.forEach((voice) => {
+          const option = document.createElement("option");
+          option.value = voiceKey(voice);
+          option.textContent = `${voice.name} — ${voice.lang}${voice.default ? " (browser default)" : ""}`;
+          voiceSelect.appendChild(option);
+        });
+
+        if (!voices.length) {
+          const option = document.createElement("option");
+          option.textContent = "No browser voices found";
+          voiceSelect.appendChild(option);
+          voiceSelect.disabled = true;
+          readButton.disabled = true;
+          status.textContent = "This browser has not exposed any speech voices.";
+          return;
+        }
+
+        voiceSelect.disabled = false;
+        readButton.disabled = false;
+        const previousStillExists = voices.some((voice) => voiceKey(voice) === previous);
+        voiceSelect.selectedIndex = previousStillExists
+          ? voices.findIndex((voice) => voiceKey(voice) === previous)
+          : davidIndex(voices);
+
+        const selected = voices[voiceSelect.selectedIndex];
+        status.textContent = /microsoft david/i.test(selected.name)
+          ? "Microsoft David selected. Ready to read."
+          : `${selected.name} selected. Microsoft David is not installed in this browser.`;
+      }
+
+      function selectedVoice() {
+        return voices.find((voice) => voiceKey(voice) === voiceSelect.value) || voices[davidIndex(voices)];
+      }
+
+      function setHighlight(element) {
+        passages.forEach((passage) => passage.classList.remove("is-speaking"));
+        if (!element) return;
+        element.classList.add("is-speaking");
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      function setControls(mode) {
+        const stopped = mode === "stopped";
+        readButton.textContent = stopped ? "Read aloud" : "Restart";
+        pauseButton.disabled = stopped;
+        stopButton.disabled = stopped;
+        pauseButton.textContent = paused ? "Resume" : "Pause";
+        status.dataset.state = mode;
+      }
+
+      function stopReading(message = "Stopped.") {
+        runId += 1;
+        active = false;
+        paused = false;
+        if (synth) synth.cancel();
+        setHighlight(null);
+        setControls("stopped");
+        status.textContent = message;
+      }
+
+      function speakNext(token) {
+        if (!active || token !== runId || passageIndex >= passages.length) {
+          if (passageIndex >= passages.length) stopReading("Finished reading the paper.");
+          return;
+        }
+
+        const passage = passages[passageIndex];
+        const utterance = new SpeechSynthesisUtterance(passage.innerText.trim());
+        const voice = selectedVoice();
+        if (voice) utterance.voice = voice;
+        utterance.rate = 0.96;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+
+        utterance.addEventListener("start", () => {
+          if (token !== runId) return;
+          setHighlight(passage);
+          status.textContent = `Reading passage ${passageIndex + 1} of ${passages.length} with ${voice ? voice.name : "the browser default"}.`;
+          status.dataset.state = "speaking";
+        });
+
+        utterance.addEventListener("end", () => {
+          if (!active || token !== runId) return;
+          passageIndex += 1;
+          window.setTimeout(() => speakNext(token), 90);
+        });
+
+        utterance.addEventListener("error", (event) => {
+          if (event.error === "canceled" || event.error === "interrupted") return;
+          stopReading(`Narration stopped because the browser reported: ${event.error}.`);
+        });
+
+        synth.speak(utterance);
+      }
+
+      function startReading() {
+        if (!synth || !voices.length) return;
+        synth.cancel();
+        runId += 1;
+        passageIndex = 0;
+        active = true;
+        paused = false;
+        setControls("speaking");
+        speakNext(runId);
+      }
+
+      readButton.addEventListener("click", startReading);
+
+      pauseButton.addEventListener("click", () => {
+        if (!active) return;
+        if (paused) {
+          synth.resume();
+          paused = false;
+          status.textContent = "Narration resumed.";
+          status.dataset.state = "speaking";
+        } else {
+          synth.pause();
+          paused = true;
+          status.textContent = "Narration paused.";
+          status.dataset.state = "paused";
+        }
+        setControls(paused ? "paused" : "speaking");
+      });
+
+      stopButton.addEventListener("click", () => stopReading());
+
+      voiceSelect.addEventListener("change", () => {
+        const voice = selectedVoice();
+        status.textContent = voice ? `${voice.name} selected.` : "Browser default selected.";
+        if (active) startReading();
+      });
+
+      window.addEventListener("beforeunload", () => synth && synth.cancel());
+
+      if (!synth) {
+        voiceSelect.innerHTML = "<option>Speech synthesis unavailable</option>";
+        voiceSelect.disabled = true;
+        readButton.disabled = true;
+        status.textContent = "This browser does not support built-in text to speech.";
+      } else {
+        loadVoices();
+        if (typeof synth.addEventListener === "function") {
+          synth.addEventListener("voiceschanged", loadVoices);
+        } else {
+          synth.onvoiceschanged = loadVoices;
+        }
+        window.setTimeout(loadVoices, 250);
+        window.setTimeout(loadVoices, 1000);
+      }
+    })();
+  </script>
+</body>
+</html>
