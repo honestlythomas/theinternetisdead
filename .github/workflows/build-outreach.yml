@@ -3,10 +3,11 @@ name: Build outreach chronology
 on:
   push:
     paths:
-      - 'outreach/source.csv'
+      - 'outreach/raw_messages.csv'
+      - 'outreach/thread_messages.csv'
+      - 'outreach/annotations.csv'
+      - 'outreach/expected_counts.json'
       - 'outreach/build.py'
-      - 'outreach/response_status.csv'
-      - 'outreach/apply_response_status.py'
 
 permissions:
   contents: write
@@ -20,14 +21,12 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build webpage and SQLite archive
-        run: |
-          python outreach/build.py
-          python outreach/apply_response_status.py
+        run: python outreach/build.py
       - name: Commit generated archive
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add outreach/index.html outreach/outreach.sqlite
           git diff --cached --quiet && exit 0
-          git commit -m 'Build outreach chronology archive'
+          git commit -m 'Build raw outreach archive'
           git push
