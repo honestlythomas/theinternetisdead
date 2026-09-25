@@ -703,15 +703,14 @@
     }
 
     .bush-carry-ghost {
-      zoom: 2;
       position: fixed;
       left: 0;
       top: 0;
       z-index: 9999;
-      width: 35px;
-      height: 35px;
+      width: 70px;
+      height: 70px;
       box-sizing: border-box;
-      padding: 3px;
+      padding: 6px;
       border: 1px dashed rgba(255, 255, 255, 0.95);
       border-radius: 4px;
       pointer-events: none;
@@ -801,9 +800,14 @@
 
 
     @media (max-width: 639px) {
-      .bush-inventory,
-      .bush-carry-ghost {
+      .bush-inventory {
         zoom: 1;
+      }
+
+      .bush-carry-ghost {
+        width: 35px;
+        height: 35px;
+        padding: 3px;
       }
     }
 
