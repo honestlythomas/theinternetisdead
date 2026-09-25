@@ -63,9 +63,12 @@
     color: #b5fff1;
     font: 11px/1.5 monospace;
     letter-spacing: .025em;
-    pointer-events: none;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    cursor: move;
   }
-  body.debug-grid #grid-hud { display: block; }
+  body.debug-grid.hud-enabled #grid-hud { display: block; }
   #grid-hud strong { color: #fff; font-weight: 600; }
   #grid-hud .help { color: #90aaa9; }
 
@@ -109,6 +112,33 @@
     outline: 2px solid #b2fff0;
     outline-offset: 2px;
   }
+  #debug-mode-control {
+    margin-top: 8px;
+    border: 1px solid #5bc9bb;
+    background: #0c262d;
+  }
+  #debug-menu #toggle-debug {
+    margin: 0;
+    border: 0;
+  }
+  #hud-option-row[hidden] { display: none; }
+  #hud-option-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 12px 12px;
+    border-top: 1px solid #386b68;
+    color: #d7fff8;
+    font: 12px/1.4 monospace;
+    cursor: pointer;
+  }
+  #hud-option-row input {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: #77e8d5;
+    cursor: pointer;
+  }
   #debug-menu #close-debug-menu {
     border-color: #486368;
     background: transparent;
@@ -128,7 +158,13 @@
   <div id="debug-menu-panel">
     <h2 id="debug-menu-title">Viewport controls</h2>
     <p>World origin: 0,0 at the top-left corner.</p>
-    <button id="toggle-debug" type="button" aria-pressed="false">Enable debug mode</button>
+    <div id="debug-mode-control">
+      <button id="toggle-debug" type="button" aria-pressed="false">Enable debug mode</button>
+      <label id="hud-option-row" hidden>
+        <input id="show-grid-hud" type="checkbox" autocomplete="off">
+        Show info HUD (drag to move)
+      </label>
+    </div>
     <button id="reset-zoom" type="button">Reset to default zoom</button>
     <button id="close-debug-menu" type="button">Close menu</button>
   </div>
@@ -345,6 +381,17 @@ requestAnimationFrame(frame);
   const toggleButton = document.getElementById("toggle-debug");
   const resetButton = document.getElementById("reset-zoom");
   const closeButton = document.getElementById("close-debug-menu");
+  const hud = document.getElementById("grid-hud");
+  const hudCheckbox = document.getElementById("show-grid-hud");
+  const hudOptionRow = document.getElementById("hud-option-row");
+  const hudStorageKey = "theinternetisdead-grid-hud-position";
+  hudCheckbox.checked = false;
+  let hudPosition = null;
+  let hudDrag = null;
+  try {
+    const saved = JSON.parse(localStorage.getItem(hudStorageKey));
+    if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) hudPosition = saved;
+  } catch (_) {}
   const pointers = new Map();
   const HOLD_MS = 5000;
   const HOLD_TOLERANCE = 18;
@@ -371,6 +418,7 @@ requestAnimationFrame(frame);
     grid.height = Math.round(viewportHeight * dpr);
     pen.setTransform(dpr, 0, 0, dpr, 0, 0);
     draw();
+    placeHud();
   }
 
   function setGrid(next) {
@@ -378,6 +426,9 @@ requestAnimationFrame(frame);
     document.body.classList.toggle("debug-grid", enabled);
     toggleButton.textContent = enabled ? "Disable debug mode" : "Enable debug mode";
     toggleButton.setAttribute("aria-pressed", String(enabled));
+    hudOptionRow.hidden = !enabled;
+    document.body.classList.toggle("hud-enabled", enabled && hudCheckbox.checked);
+    if (enabled && hudCheckbox.checked) placeHud();
     pointers.clear();
     draw();
   }
@@ -408,6 +459,10 @@ requestAnimationFrame(frame);
     setGrid(!enabled);
     closeMenu();
   });
+  hudCheckbox.addEventListener("change", () => {
+    document.body.classList.toggle("hud-enabled", enabled && hudCheckbox.checked);
+    if (enabled && hudCheckbox.checked) placeHud();
+  });
   resetButton.addEventListener("click", () => {
     zoom = 1;
     draw();
@@ -417,6 +472,39 @@ requestAnimationFrame(frame);
   menu.addEventListener("click", event => {
     if (event.target === menu) closeMenu();
   });
+
+  function placeHud() {
+    if (!hudPosition || !enabled || !hudCheckbox.checked) return;
+    const x = Math.max(0, Math.min(hudPosition.x, window.innerWidth - hud.offsetWidth));
+    const y = Math.max(0, Math.min(hudPosition.y, window.innerHeight - hud.offsetHeight));
+    hudPosition = { x, y };
+    hud.style.left = x + "px";
+    hud.style.top = y + "px";
+    hud.style.bottom = "auto";
+  }
+
+  hud.addEventListener("pointerdown", event => {
+    if (event.button !== 0 || !enabled || !hudCheckbox.checked) return;
+    const rect = hud.getBoundingClientRect();
+    hudDrag = { pointerId: event.pointerId, dx: event.clientX - rect.left, dy: event.clientY - rect.top };
+    hud.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+  hud.addEventListener("pointermove", event => {
+    if (!hudDrag || hudDrag.pointerId !== event.pointerId) return;
+    hudPosition = {
+      x: Math.max(0, Math.min(event.clientX - hudDrag.dx, window.innerWidth - hud.offsetWidth)),
+      y: Math.max(0, Math.min(event.clientY - hudDrag.dy, window.innerHeight - hud.offsetHeight))
+    };
+    placeHud();
+  });
+  function stopHudDrag(event) {
+    if (!hudDrag || hudDrag.pointerId !== event.pointerId) return;
+    hudDrag = null;
+    try { localStorage.setItem(hudStorageKey, JSON.stringify(hudPosition)); } catch (_) {}
+  }
+  hud.addEventListener("pointerup", stopHudDrag);
+  hud.addEventListener("pointercancel", stopHudDrag);
 
   function cancelHold() {
     if (holdTimer !== null) clearTimeout(holdTimer);
