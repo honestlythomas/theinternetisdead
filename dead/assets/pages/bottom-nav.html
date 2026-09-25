@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bottom Navigation</title>
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    width: 100%;
+    height: 56px;
+    box-sizing: border-box;
+    padding: 10px 16px;
+    color: #0f0;
+    font: bold 20pt "Courier New", Courier, monospace;
+    white-space: nowrap;
+  }
+
+  .bottom-nav > :first-child {
+    justify-self: start;
+  }
+
+  #fullscreen-toggle {
+    justify-self: end;
+  }
+
+  .bottom-nav__center {
+    display: flex;
+    align-items: center;
+    justify-self: center;
+    gap: 1ch;
+  }
+
+  .bottom-nav__select {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    field-sizing: content;
+    text-align: center;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .bottom-nav__select option {
+    background: #000;
+    color: #0f0;
+  }
+
+  .bottom-nav__ok {
+    display: inline-grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    box-sizing: border-box;
+    border: 1px solid #0f0;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: bold 12pt "Courier New", Courier, monospace;
+    cursor: pointer;
+  }
+
+  .bottom-nav__select:hover,
+  .bottom-nav__select:focus-visible,
+  .bottom-nav__ok:hover,
+  .bottom-nav__ok:focus-visible {
+    color: #f0f;
+    border-color: #f0f;
+  }
+
+  .bottom-nav__label {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    opacity: .5;
+    cursor: pointer;
+    transition: color 120ms ease, opacity 120ms ease;
+  }
+
+  .bottom-nav__label:hover,
+  .bottom-nav__label:focus-visible {
+    color: #f0f;
+    opacity: 1;
+  }
+
+  a.bottom-nav__label {
+    opacity: 1;
+  }
+
+  .bottom-nav__label:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 700px) {
+    .bottom-nav {
+      display: flex;
+      justify-content: center;
+    }
+
+    .bottom-nav__label {
+      opacity: 1;
+    }
+
+    .bottom-nav__center,
+    #fullscreen-toggle {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="bottom-nav">
+    <a class="bottom-nav__label" href="/" target="_top">WHO MADE THIS?</a>
+    <div class="bottom-nav__center">
+      <select class="bottom-nav__select" id="page-action" aria-label="Page action">
+        <option value="barrel-roll">DO A BARREL ROLL</option>
+        <option value="exit">EXIT</option>
+        <option value="random" selected>RANDOM PAGE</option>
+      </select>
+      <button class="bottom-nav__ok" id="page-action-ok" type="button">OK</button>
+    </div>
+    <button class="bottom-nav__label" id="fullscreen-toggle" type="button">Fullscreen Mode</button>
+  </div>
+
+<script>
+(() => {
+  const fullscreenToggle = document.getElementById("fullscreen-toggle");
+  const pageAction = document.getElementById("page-action");
+  const pageActionOk = document.getElementById("page-action-ok");
+
+  function fitSelectedAction() {
+    const selectedText = pageAction.options[pageAction.selectedIndex].text;
+    pageAction.style.width = selectedText.length + "ch";
+  }
+
+  pageAction.addEventListener("change", fitSelectedAction);
+  fitSelectedAction();
+
+  pageActionOk.addEventListener("click", () => {
+    const hostDocument = window.parent === window ? document : window.parent.document;
+
+    if (pageAction.value === "barrel-roll") {
+      const centerX = window.parent === window ? innerWidth / 2 : window.parent.innerWidth / 2;
+      const centerY = window.parent === window ? innerHeight / 2 : window.parent.innerHeight / 2;
+      const rollTargets = ["content-area", "top-nav-frame", "bottom-nav-frame"]
+        .map(id => hostDocument.getElementById(id))
+        .filter(Boolean);
+
+      for (const target of rollTargets) {
+        const bounds = target.getBoundingClientRect();
+        const transformOrigin = centerX - bounds.left + "px " + (centerY - bounds.top) + "px";
+
+        target.animate(
+          [
+            { transform: "rotate(0deg) scale(1)", transformOrigin, offset: 0 },
+            { transform: "rotate(360deg) scale(.08)", transformOrigin, offset: .5 },
+            { transform: "rotate(720deg) scale(1)", transformOrigin, offset: 1 }
+          ],
+          { duration: 1800, easing: "ease-in-out" }
+        );
+      }
+      return;
+    }
+
+    if (pageAction.value === "exit") {
+      hostDocument.documentElement.replaceChildren();
+      hostDocument.documentElement.style.cssText = "background:#000;";
+    }
+  });
+
+  fullscreenToggle.addEventListener("click", async () => {
+    const hostDocument = window.parent === window ? document : window.parent.document;
+
+    try {
+      if (hostDocument.fullscreenElement) await hostDocument.exitFullscreen();
+      else await hostDocument.documentElement.requestFullscreen();
+    } catch (_) {}
+  });
+
+  let pointerFrame = 0;
+  let pendingPointer = null;
+
+  function publishPointer(active, event) {
+    if (window.parent === window) return;
+
+    if (!active) {
+      pendingPointer = { active: false, x: 0, y: 0 };
+    } else {
+      const frame = window.frameElement;
+      const rect = frame.getBoundingClientRect();
+      const hostWidth = Math.max(1, window.parent.innerWidth);
+      const hostHeight = Math.max(1, window.parent.innerHeight);
+      const hostX = rect.left + event.clientX * (rect.width / Math.max(1, innerWidth));
+      const hostY = rect.top + event.clientY * (rect.height / Math.max(1, innerHeight));
+
+      pendingPointer = {
+        active: true,
+        x: Math.max(-1, Math.min(1, hostX / hostWidth * 2 - 1)),
+        y: Math.max(-1, Math.min(1, hostY / hostHeight * 2 - 1))
+      };
+    }
+
+    if (pointerFrame) return;
+    pointerFrame = requestAnimationFrame(() => {
+      pointerFrame = 0;
+      window.parent.postMessage(
+        { type: "portal-starfield-parallax", ...pendingPointer },
+        window.location.origin
+      );
+    });
+  }
+
+  window.addEventListener("pointermove", event => publishPointer(true, event), { passive: true });
+  window.addEventListener("pointerdown", event => publishPointer(true, event), { passive: true });
+  window.addEventListener("pointerout", event => {
+    if (!event.relatedTarget) publishPointer(false, event);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

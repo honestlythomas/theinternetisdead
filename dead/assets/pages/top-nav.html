@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Navigation</title>
+<style>
+  html,
+  body {
+    margin: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  :root {
+    --top-nav-height: 56px;
+  }
+
+  .top-nav {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 16px;
+    color: #0f0;
+    font: bold 20pt "Courier New", Courier, monospace;
+  }
+
+  .top-nav__sidebar {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    top: var(--top-nav-height);
+    bottom: 0;
+    width: min(360px, 88vw);
+    background: rgba(255, 0, 255, .25);
+  }
+
+  .top-nav__sidebar--left,
+  .top-nav__sidebar--ghost {
+    left: 0;
+  }
+
+  .top-nav__sidebar--right,
+  .top-nav__sidebar--clock {
+    right: 0;
+  }
+
+  body.sidebar-left-open .top-nav__sidebar--left,
+  body.sidebar-ghost-open .top-nav__sidebar--ghost,
+  body.sidebar-right-open .top-nav__sidebar--right,
+  body.sidebar-clock-open .top-nav__sidebar--clock {
+    display: block;
+  }
+
+  @media (min-width: 701px) {
+    body.sidebar-left-open .top-nav__sidebar--left,
+    body.sidebar-ghost-open .top-nav__sidebar--ghost,
+    body.sidebar-right-open .top-nav__sidebar--right,
+    body.sidebar-clock-open .top-nav__sidebar--clock {
+      box-sizing: border-box;
+      border-top: 3px solid #0f0;
+    }
+
+    body.sidebar-left-open .top-nav__sidebar--left,
+    body.sidebar-ghost-open .top-nav__sidebar--ghost {
+      border-right: 3px solid #0f0;
+    }
+
+    body.sidebar-right-open .top-nav__sidebar--right,
+    body.sidebar-clock-open .top-nav__sidebar--clock {
+      border-left: 3px solid #0f0;
+    }
+  }
+
+  .top-nav__site {
+    text-align: left;
+  }
+
+  .top-nav__page {
+    text-align: center;
+  }
+
+  .top-nav__clock {
+    text-align: right;
+  }
+
+  .top-nav__site-label,
+  .top-nav__page-label,
+  .top-nav__clock-time {
+    text-decoration: underline;
+  }
+
+  .top-nav__ghost,
+  .top-nav__clock-icon {
+    display: inline-block;
+    color: inherit;
+    font-family: "Segoe UI Symbol", "Courier New", monospace;
+    font-size: .78em;
+    line-height: 1;
+    vertical-align: .04em;
+  }
+
+  .top-nav > * {
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .top-nav__site-label,
+  .top-nav__page-label,
+  .top-nav__bracket,
+  .top-nav__skull,
+  .top-nav__ghost,
+  .top-nav__clock-icon,
+  .top-nav__clock-time,
+  .top-nav__gear {
+    transition: color 120ms ease;
+  }
+
+  .top-nav__site-label:hover,
+  .top-nav__page-label:hover,
+  .top-nav__bracket:hover,
+  .top-nav__skull:hover,
+  .top-nav__ghost:hover,
+  .top-nav__clock-icon:hover,
+  .top-nav__clock-time:hover,
+  .top-nav__gear:hover {
+    color: #f0f;
+  }
+
+  .top-nav a {
+    color: inherit;
+  }
+
+  .top-nav__domain-break {
+    display: none;
+  }
+
+  .top-nav__skull,
+  .top-nav__gear {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    cursor: pointer;
+  }
+
+  .top-nav__ghost {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .top-nav__clock-icon {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  @media (max-width: 700px) {
+    :root {
+      --top-nav-height: min(350px, calc(50.2vw + 24px));
+    }
+
+    .top-nav {
+      --mobile-font-size: min(26pt, 6.7vw);
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: repeat(3, auto);
+      gap: 4px;
+      padding: 8px;
+      line-height: 1.1;
+      min-height: var(--top-nav-height);
+      background: #000;
+      border-bottom: 3px solid #0f0;
+    }
+
+    .top-nav__sidebar {
+      width: 100%;
+    }
+
+    .top-nav__site,
+    .top-nav__page,
+    .top-nav__clock {
+      width: 100%;
+      font-size: var(--mobile-font-size);
+      text-align: center;
+    }
+
+    .top-nav__page,
+    .top-nav__clock {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .top-nav__scaled-content {
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: .6em;
+      white-space: nowrap;
+      transform-origin: center;
+    }
+
+    .top-nav__domain-break {
+      display: block;
+    }
+
+    .top-nav__site-label {
+      grid-column: 2;
+      font-size: min(46pt, 11.5vw);
+      text-align: center;
+    }
+
+    .top-nav__skull,
+    .top-nav__site .top-nav__ghost {
+      font-size: min(46pt, 11.5vw);
+    }
+
+    .top-nav__site {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      transform-origin: center;
+    }
+
+    .top-nav__skull {
+      justify-self: end;
+      margin-right: .6em;
+    }
+
+    .top-nav__site .top-nav__ghost {
+      grid-column: 3;
+      justify-self: start;
+      margin-left: .6em;
+    }
+  }
+</style>
+</head>
+<body>
+  <nav class="top-nav" aria-label="Main navigation">
+    <div class="top-nav__site"><button class="top-nav__skull" id="sidebar-toggle" type="button" aria-label="Toggle left sidebar" aria-expanded="false">☠</button> <a class="top-nav__site-label" href="/" target="_top">theinternet<br class="top-nav__domain-break">isdead.org</a> <button class="top-nav__ghost" id="ghost-sidebar-toggle" type="button" aria-label="Toggle ghost sidebar" aria-expanded="false">&#x1F47B;&#xFE0E;</button></div>
+    <div class="top-nav__page"><span class="top-nav__scaled-content"><span class="top-nav__bracket">&lt;</span> <span class="top-nav__page-label">Main Page</span> <span class="top-nav__bracket">&gt;</span></span></div>
+    <time class="top-nav__clock" id="top-nav-clock" aria-label="Current Toronto time"><span class="top-nav__scaled-content"><button class="top-nav__clock-icon" id="clock-sidebar-toggle" type="button" aria-label="Toggle clock sidebar" aria-expanded="false">&#x1F558;&#xFE0E;</button> <span class="top-nav__clock-time" id="top-nav-clock-time">11:22:20 PM</span> <button class="top-nav__gear" id="right-sidebar-toggle" type="button" aria-label="Toggle right sidebar" aria-expanded="false">⚙</button></span></time>
+  </nav>
+  <aside class="top-nav__sidebar top-nav__sidebar--left" id="left-sidebar" aria-label="Left sidebar" aria-hidden="true"></aside>
+  <aside class="top-nav__sidebar top-nav__sidebar--ghost" id="ghost-sidebar" aria-label="Ghost sidebar" aria-hidden="true"></aside>
+  <aside class="top-nav__sidebar top-nav__sidebar--right" id="right-sidebar" aria-label="Right sidebar" aria-hidden="true"></aside>
+  <aside class="top-nav__sidebar top-nav__sidebar--clock" id="clock-sidebar" aria-label="Clock sidebar" aria-hidden="true"></aside>
+
+<script>
+(() => {
+  const clock = document.getElementById("top-nav-clock");
+  const clockTime = document.getElementById("top-nav-clock-time");
+  const leftSidebar = document.getElementById("left-sidebar");
+  const ghostSidebar = document.getElementById("ghost-sidebar");
+  const rightSidebar = document.getElementById("right-sidebar");
+  const clockSidebar = document.getElementById("clock-sidebar");
+  const leftSidebarToggle = document.getElementById("sidebar-toggle");
+  const ghostSidebarToggle = document.getElementById("ghost-sidebar-toggle");
+  const rightSidebarToggle = document.getElementById("right-sidebar-toggle");
+  const clockSidebarToggle = document.getElementById("clock-sidebar-toggle");
+  const torontoClock = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Toronto",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  function updateClock() {
+    const now = new Date();
+    const parts = Object.fromEntries(
+      torontoClock.formatToParts(now).map(part => [part.type, part.value])
+    );
+    const time = parts.hour + ":" + parts.minute + ":" + parts.second + " " + parts.dayPeriod;
+
+    const lengthChanged = clockTime.textContent.length !== time.length;
+    clockTime.textContent = time;
+    clock.dateTime = now.toISOString();
+    clock.setAttribute("aria-label", "Current Toronto time: " + time);
+    if (lengthChanged) scheduleMobileFit();
+  }
+
+  const mobileLayout = window.matchMedia("(max-width: 700px)");
+  const siteRow = document.querySelector(".top-nav__site");
+  const scalableRows = Array.from(document.querySelectorAll(".top-nav__page, .top-nav__clock"));
+  let fitFrame = 0;
+
+  function fitMobileRows() {
+    fitFrame = 0;
+    siteRow.style.transform = "none";
+    siteRow.style.height = "";
+
+    for (const row of scalableRows) {
+      const content = row.querySelector(".top-nav__scaled-content");
+      content.style.transform = "none";
+      row.style.height = "";
+
+      if (!mobileLayout.matches) continue;
+
+      const naturalBounds = content.getBoundingClientRect();
+      const availableWidth = Math.max(1, row.clientWidth - 2);
+      const scale = Math.max(1, availableWidth / Math.max(1, naturalBounds.width));
+      content.style.transform = "scale(" + scale + ")";
+      row.style.height = naturalBounds.height * scale + "px";
+    }
+
+    if (mobileLayout.matches) {
+      const siteBounds = siteRow.getBoundingClientRect();
+      const itemBounds = Array.from(siteRow.children, item => item.getBoundingClientRect());
+      const contentLeft = Math.min(...itemBounds.map(bounds => bounds.left));
+      const contentRight = Math.max(...itemBounds.map(bounds => bounds.right));
+      const contentWidth = Math.max(1, contentRight - contentLeft);
+      const availableWidth = Math.max(1, siteRow.clientWidth - 2);
+      const scale = Math.min(1, availableWidth / contentWidth);
+
+      siteRow.style.transform = "scale(" + scale + ")";
+      siteRow.style.height = siteBounds.height * scale + "px";
+    }
+  }
+
+  function scheduleMobileFit() {
+    if (fitFrame) cancelAnimationFrame(fitFrame);
+    fitFrame = requestAnimationFrame(fitMobileRows);
+  }
+
+  window.addEventListener("resize", scheduleMobileFit);
+  mobileLayout.addEventListener("change", scheduleMobileFit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleMobileFit);
+  updateClock();
+  setInterval(updateClock, 250);
+  scheduleMobileFit();
+
+  let openSidebar = null;
+
+  function toggleSidebar(side) {
+    openSidebar = openSidebar === side ? null : side;
+    const leftOpen = openSidebar === "left";
+    const ghostOpen = openSidebar === "ghost";
+    const rightOpen = openSidebar === "right";
+    const clockOpen = openSidebar === "clock";
+
+    document.body.classList.toggle("sidebar-left-open", leftOpen);
+    document.body.classList.toggle("sidebar-ghost-open", ghostOpen);
+    document.body.classList.toggle("sidebar-right-open", rightOpen);
+    document.body.classList.toggle("sidebar-clock-open", clockOpen);
+    leftSidebarToggle.setAttribute("aria-expanded", String(leftOpen));
+    ghostSidebarToggle.setAttribute("aria-expanded", String(ghostOpen));
+    rightSidebarToggle.setAttribute("aria-expanded", String(rightOpen));
+    clockSidebarToggle.setAttribute("aria-expanded", String(clockOpen));
+    leftSidebar.setAttribute("aria-hidden", String(!leftOpen));
+    ghostSidebar.setAttribute("aria-hidden", String(!ghostOpen));
+    rightSidebar.setAttribute("aria-hidden", String(!rightOpen));
+    clockSidebar.setAttribute("aria-hidden", String(!clockOpen));
+
+    if (window.parent !== window) {
+      window.parent.postMessage(
+        { type: "top-nav-sidebar", open: openSidebar !== null },
+        window.location.origin
+      );
+    }
+  }
+
+  leftSidebarToggle.addEventListener("click", () => toggleSidebar("left"));
+  ghostSidebarToggle.addEventListener("click", () => toggleSidebar("ghost"));
+  rightSidebarToggle.addEventListener("click", () => toggleSidebar("right"));
+  clockSidebarToggle.addEventListener("click", () => toggleSidebar("clock"));
+
+  // Keep the parent starfield tracking the pointer while this iframe owns it.
+  // The iframe still receives normal events, so its links remain clickable.
+  let pointerFrame = 0;
+  let pendingPointer = null;
+
+  function publishPointer(active, event) {
+    if (window.parent === window) return;
+
+    if (!active) {
+      pendingPointer = { active: false, x: 0, y: 0 };
+    } else {
+      const frame = window.frameElement;
+      const rect = frame ? frame.getBoundingClientRect() : { left: 0, top: 0, width: innerWidth, height: innerHeight };
+      const hostWidth = Math.max(1, window.parent.innerWidth);
+      const hostHeight = Math.max(1, window.parent.innerHeight);
+      const hostX = rect.left + event.clientX * (rect.width / Math.max(1, innerWidth));
+      const hostY = rect.top + event.clientY * (rect.height / Math.max(1, innerHeight));
+
+      pendingPointer = {
+        active: true,
+        x: Math.max(-1, Math.min(1, hostX / hostWidth * 2 - 1)),
+        y: Math.max(-1, Math.min(1, hostY / hostHeight * 2 - 1))
+      };
+    }
+
+    if (pointerFrame) return;
+    pointerFrame = requestAnimationFrame(() => {
+      pointerFrame = 0;
+      window.parent.postMessage(
+        { type: "portal-starfield-parallax", ...pendingPointer },
+        window.location.origin
+      );
+    });
+  }
+
+  window.addEventListener("pointermove", event => publishPointer(true, event), { passive: true });
+  window.addEventListener("pointerdown", event => publishPointer(true, event), { passive: true });
+  window.addEventListener("pointerup", event => {
+    if (event.pointerType !== "mouse") publishPointer(false, event);
+  }, { passive: true });
+  window.addEventListener("pointercancel", event => publishPointer(false, event), { passive: true });
+  window.addEventListener("pointerout", event => {
+    if (!event.relatedTarget) publishPointer(false, event);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>
