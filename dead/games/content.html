@@ -30,7 +30,20 @@
     };
     const gameLinks=[...document.querySelectorAll('.bubble[href]')];
     gameLinks.forEach(link=>link.addEventListener('click',event=>{
-      if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+      if(event.shiftKey&&event.button===0){
+        event.preventDefault();
+        const standaloneUrl=new URL(link.href);
+        standaloneUrl.searchParams.set('standalone','true');
+        const standaloneTab=document.createElement('a');
+        standaloneTab.href=standaloneUrl.href;
+        standaloneTab.target='_blank';
+        standaloneTab.rel='noopener';
+        document.body.appendChild(standaloneTab);
+        standaloneTab.click();
+        standaloneTab.remove();
+        return;
+      }
+      if(event.button!==0||event.metaKey||event.ctrlKey||event.altKey)return;
       event.preventDefault();
       navigateThroughShell(link.getAttribute('href'));
     }));
