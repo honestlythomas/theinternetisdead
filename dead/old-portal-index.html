@@ -133,9 +133,9 @@
     .portal-button:hover,
     .portal-button:focus-visible { border-color: var(--magenta); color: #ff8deb; outline: 2px solid #fff; outline-offset: 6px; box-shadow: 0 0 0 4px rgba(0,0,0,.85),0 0 0 5px rgba(255,43,214,.45),0 0 48px rgba(255,43,214,.42); }
     .north { grid-column: 2; grid-row: 1; --from-x: 0%; --from-y: 134%; --over-x: 0%; --over-y: -10%; --spiral: -620deg; --delay: 0ms; }
-    .east { grid-column: 3; grid-row: 2; --portal-image: url("/dead/assets/images/static.gif"); --from-x: -134%; --from-y: 0%; --over-x: 10%; --over-y: 0%; --spiral: 620deg; --delay: 70ms; }
-    .south { grid-column: 2; grid-row: 3; --portal-image: url("/dead/assets/images/static.gif"); --from-x: 0%; --from-y: -134%; --over-x: 0%; --over-y: 10%; --spiral: -620deg; --delay: 140ms; }
-    .west { grid-column: 1; grid-row: 2; --portal-image: url("/dead/assets/images/static.gif"); --from-x: 134%; --from-y: 0%; --over-x: -10%; --over-y: 0%; --spiral: 620deg; --delay: 210ms; }
+    .east { grid-column: 3; grid-row: 2; --portal-image: url("/dead/images/static.gif"); --from-x: -134%; --from-y: 0%; --over-x: 10%; --over-y: 0%; --spiral: 620deg; --delay: 70ms; }
+    .south { grid-column: 2; grid-row: 3; --portal-image: url("/dead/images/static.gif"); --from-x: 0%; --from-y: -134%; --over-x: 0%; --over-y: 10%; --spiral: -620deg; --delay: 140ms; }
+    .west { grid-column: 1; grid-row: 2; --portal-image: url("/dead/images/static.gif"); --from-x: 134%; --from-y: 0%; --over-x: -10%; --over-y: 0%; --spiral: 620deg; --delay: 210ms; }
     .portal-open .portal-button { visibility: visible; pointer-events: auto; opacity: 1; transform: translate3d(0,0,0) rotate(0deg) scale(1); filter: none; }
     .portal-opening .portal-button { visibility: visible; pointer-events: auto; animation: portal-emerge 1050ms cubic-bezier(.12,.72,.18,1.12) calc(var(--delay) + 240ms) both; }
     .portal-closing .portal-button { visibility: visible; pointer-events: none; animation: portal-emerge 720ms cubic-bezier(.62,0,.88,.38) calc(210ms - var(--delay)) reverse both; }

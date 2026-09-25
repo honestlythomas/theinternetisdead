@@ -80,6 +80,37 @@
     color: #f0f;
   }
 
+  #splash-content.splash-content--idle-message > :not(.splash-selection-message) {
+    visibility: hidden;
+  }
+
+  .splash-selection-message {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    box-sizing: border-box;
+    padding: clamp(10px, 3vmin, 32px);
+    align-items: center;
+    justify-content: center;
+    color: #0f0;
+    font: bold clamp(28px, 5vw, 72px)/1.15 "Courier New", Courier, monospace;
+    pointer-events: none;
+    animation: splash-idle-pulse 1.1s ease-in-out infinite;
+  }
+
+  @keyframes splash-idle-pulse {
+    0%, 100% {
+      opacity: .55;
+      transform: scale(.97);
+      text-shadow: 0 0 6px rgba(0, 255, 0, .45);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.03);
+      text-shadow: 0 0 22px #0f0;
+    }
+  }
+
   #top-nav-frame {
     position: fixed;
     top: 0;
@@ -127,14 +158,14 @@
 </main>
 <iframe
   id="top-nav-frame"
-  src="/dead/assets/pages/top-nav.html"
+  src="/dead/pages/top-nav.html"
   title="Top navigation"
   allowtransparency="true"
   scrolling="no"
 ></iframe>
 <iframe
   id="bottom-nav-frame"
-  src="/dead/assets/pages/bottom-nav.html"
+  src="/dead/pages/bottom-nav.html"
   title="Bottom navigation"
   allowtransparency="true"
   allow="fullscreen"
@@ -171,6 +202,9 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const splashContent = document.getElementById("splash-content");
 let splashFitFrame = 0;
+let splashSelectionTimer = 0;
+let splashSelectionMessageActive = false;
+let starfieldPaused = false;
 
 function fitSplashContent() {
   splashFitFrame = 0;
@@ -188,9 +222,9 @@ function scheduleSplashFit() {
   splashFitFrame = requestAnimationFrame(fitSplashContent);
 }
 
-fetch("/splash.md")
+fetch("/dead/text/splash-01.md")
   .then(response => {
-    if (!response.ok) throw new Error("Unable to load splash.md");
+    if (!response.ok) throw new Error("Unable to load /dead/text/splash-01.md");
     return response.text();
   })
   .then(markdown => {
@@ -208,6 +242,62 @@ fetch("/splash.md")
   });
 
 window.addEventListener("resize", scheduleSplashFit);
+
+function selectionTouchesSplash() {
+  const selection = window.getSelection();
+  if (!selection || selection.isCollapsed || !selection.toString().trim()) return false;
+
+  for (let index = 0; index < selection.rangeCount; index++) {
+    const range = selection.getRangeAt(index);
+    if (range.intersectsNode(splashContent)) return true;
+  }
+
+  return false;
+}
+
+function triggerSplashSelectionMessage() {
+  splashSelectionTimer = 0;
+  if (!selectionTouchesSplash()) return;
+
+  starfieldPaused = true;
+  splashSelectionMessageActive = true;
+  if (splashFitFrame) cancelAnimationFrame(splashFitFrame);
+  splashContent.classList.add("splash-content--idle-message");
+
+  const message = document.createElement("div");
+  message.className = "splash-selection-message";
+  message.textContent = "Why do you do things like this, just to mess with me?";
+  splashContent.append(message);
+}
+
+function restoreSplashAfterSelection() {
+  starfieldPaused = false;
+  splashSelectionMessageActive = false;
+  splashContent.classList.remove("splash-content--idle-message");
+  splashContent.querySelector(".splash-selection-message")?.remove();
+  scheduleSplashFit();
+}
+
+function watchSplashSelection() {
+  clearTimeout(splashSelectionTimer);
+  splashSelectionTimer = 0;
+
+  const hasSplashSelection = selectionTouchesSplash();
+
+  if (splashSelectionMessageActive) {
+    if (!hasSplashSelection) restoreSplashAfterSelection();
+    return;
+  }
+
+  if (hasSplashSelection) {
+    splashSelectionTimer = window.setTimeout(triggerSplashSelectionMessage, 11000);
+  }
+}
+
+document.addEventListener("selectionchange", watchSplashSelection);
+["pointerdown", "keydown", "wheel", "touchstart"].forEach(eventName => {
+  window.addEventListener(eventName, watchSplashSelection, { passive: true });
+});
 
 document.body.style.touchAction = "none";
 canvas.style.touchAction = "none";
@@ -376,6 +466,12 @@ function resize(){
 window.addEventListener("resize", resize);
 
 function frame(now){
+  if (starfieldPaused) {
+    last = now;
+    requestAnimationFrame(frame);
+    return;
+  }
+
   const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
   last = now;
   time += dt;

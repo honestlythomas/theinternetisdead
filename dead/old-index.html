@@ -60,7 +60,7 @@
   <iframe class="top-bar-frame" id="top-bar-frame" src="/os/top-bar.html" title="Site top bar" allowtransparency="true"></iframe>
   <div class="main-rectangle">
     <section class="identity-content" aria-labelledby="artist-name">
-      <img class="portrait-banner" id="splash-image" src="/dead/assets/images/honestly-thomas-recursive-portrait.webp" alt="Honestly Thomas recursive portrait" role="button" tabindex="0" aria-label="Show alternate splash image">
+      <img class="portrait-banner" id="splash-image" src="/dead/images/honestly-thomas-recursive-portrait.webp" alt="Honestly Thomas recursive portrait" role="button" tabindex="0" aria-label="Show alternate splash image">
       <p class="eyebrow" id="identity-eyebrow"><button class="eyebrow-alias" type="button" data-alias-index="0">Thomas Harrison</button><span class="eyebrow-separator"> // </span><button class="eyebrow-alias" type="button" data-alias-index="1">Honestly Thomas</button><span class="eyebrow-separator"> // </span><button class="eyebrow-alias" type="button" data-alias-index="2">Tektite</button><span class="eyebrow-separator"> // </span><button class="eyebrow-alias" type="button" data-alias-index="3">Jinclops</button><span class="eyebrow-underline" id="eyebrow-underline" aria-hidden="true"></span></p>
       <h1 id="artist-name" aria-live="off">Thomas <span class="artist-name-accent">Harrison</span></h1>
       <p class="discipline">Neurodivergent Canadian interdisciplinary artist working across rap, video, writing, code, web design, games and experimental media.</p>
@@ -75,11 +75,11 @@
   <script>
     const splashImage=document.getElementById('splash-image');
     const splashImages=[
-      {src:'/dead/assets/images/honestly-thomas-recursive-portrait.webp',alt:'Honestly Thomas recursive portrait',label:'Show Art Is Soul splash image'},
-      {src:'/dead/assets/images/art-is-soul-spirit-alive.png',alt:'Colorful artwork reading Art Is Soul, Art Is Spirit, Art Is Alive',label:'Show glitched riverside splash image',stretch:true},
-      {src:'/dead/assets/images/20221020_094650_8_1_1.png',alt:'Glitched riverside landscape',label:'Show glitched portrait'},
-      {src:'/dead/assets/images/glitched-portrait-2026.png',alt:'Glitched magenta and green portrait',label:'Show Eat Dragon artwork',stretch:true},
-      {src:'/dead/assets/images/eat-dragon-meat-burger.png',alt:'Pop-art Eat Dragon Meat Burger artwork',label:'Show recursive portrait',stretch:true}
+      {src:'/dead/images/honestly-thomas-recursive-portrait.webp',alt:'Honestly Thomas recursive portrait',label:'Show Art Is Soul splash image'},
+      {src:'/dead/images/art-is-soul-spirit-alive.png',alt:'Colorful artwork reading Art Is Soul, Art Is Spirit, Art Is Alive',label:'Show glitched riverside splash image',stretch:true},
+      {src:'/dead/images/20221020_094650_8_1_1.png',alt:'Glitched riverside landscape',label:'Show glitched portrait'},
+      {src:'/dead/images/glitched-portrait-2026.png',alt:'Glitched magenta and green portrait',label:'Show Eat Dragon artwork',stretch:true},
+      {src:'/dead/images/eat-dragon-meat-burger.png',alt:'Pop-art Eat Dragon Meat Burger artwork',label:'Show recursive portrait',stretch:true}
     ];
     const chooseInitialSplashImage=()=>{if(splashImages.length<2||Math.random()<3/5)return 0;return 1+Math.floor(Math.random()*(splashImages.length-1))};
     let splashImageIndex=chooseInitialSplashImage();
