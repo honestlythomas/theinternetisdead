@@ -78,7 +78,7 @@
 <div id="grid-hud" aria-live="off">
   <strong>WORLD GRID / DEBUG</strong><br>
   <span id="grid-readout"></span><br>
-  <span class="help">Drag to pan · Wheel or pinch to zoom · Shift+Esc or hold 3 fingers for 5s to hide</span>
+  <span class="help">Drag to pan · Wheel or pinch to zoom · Esc or hold 3 fingers for 5s to hide</span>
 </div>
 
 <script>
@@ -327,7 +327,7 @@ requestAnimationFrame(frame);
   }
 
   window.addEventListener("keydown", event => {
-    if (event.code === "Escape" && event.shiftKey && !event.repeat) {
+    if (event.code === "Escape" && !event.repeat) {
       event.preventDefault();
       toggleGrid();
     }
