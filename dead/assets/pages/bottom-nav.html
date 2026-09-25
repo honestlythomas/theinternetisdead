@@ -134,7 +134,7 @@
     <div class="bottom-nav__center">
       <select class="bottom-nav__select" id="page-action" aria-label="Page action">
         <option value="barrel-roll">DO A BARREL ROLL</option>
-        <option value="exit">EXIT</option>
+        <option value="kill-page">KILL THE PAGE</option>
         <option value="random" selected>RANDOM PAGE</option>
       </select>
       <button class="bottom-nav__ok" id="page-action-ok" type="button">OK</button>
@@ -182,7 +182,7 @@
       return;
     }
 
-    if (pageAction.value === "exit") {
+    if (pageAction.value === "kill-page") {
       hostDocument.documentElement.replaceChildren();
       hostDocument.documentElement.style.cssText = "background:#000;";
     }

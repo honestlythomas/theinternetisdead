@@ -36,7 +36,7 @@
     top: var(--top-nav-height);
     bottom: 0;
     width: min(360px, 88vw);
-    background: rgba(255, 0, 255, .25);
+    background: #000;
   }
 
   .top-nav__sidebar--left,
@@ -57,6 +57,10 @@
   }
 
   @media (min-width: 701px) {
+    .top-nav__sidebar {
+      top: calc(var(--top-nav-height) - 3px);
+    }
+
     body.sidebar-left-open .top-nav__sidebar--left,
     body.sidebar-ghost-open .top-nav__sidebar--ghost,
     body.sidebar-right-open .top-nav__sidebar--right,

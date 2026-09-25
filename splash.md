@@ -8,4 +8,4 @@ Some of this place is finished. Some of it is still becoming. If you find an emp
 
 The stars are moving. So is the site.
 
-Welcome to theinternetisdead.org.
+Welcome to theinternetisdead.org

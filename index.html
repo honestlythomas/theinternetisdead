@@ -44,10 +44,40 @@
     bottom: 56px;
     left: 0;
     z-index: 5;
-    margin: 5px 10px;
+    margin: 0 10px 5px;
     outline: 3px solid #0f0;
-    overflow: auto;
+    overflow: hidden;
     background: rgba(0, 255, 0, .25);
+  }
+
+  #splash-content {
+    display: flex;
+    height: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: clamp(10px, 3vmin, 32px);
+    flex-direction: column;
+    justify-content: center;
+    color: #fff;
+    font: bold clamp(12pt, 1.6vw, 18pt)/1.6 "Courier New", Courier, monospace;
+    text-align: center;
+    text-shadow: 0 1px 0 #000, 0 0 8px rgba(0, 0, 0, .9);
+  }
+
+  #splash-content p {
+    margin: 0 0 .85em;
+  }
+
+  #splash-content p:first-child {
+    color: #0f0;
+    font-size: 1.45em;
+    line-height: 1.25;
+  }
+
+  #splash-content p:last-child {
+    margin-bottom: 0;
+    color: #f0f;
   }
 
   #top-nav-frame {
@@ -92,7 +122,9 @@
 </head>
 <body>
 <canvas id="game"></canvas>
-<main id="content-area" aria-label="Content area"></main>
+<main id="content-area" aria-label="Content area">
+  <article id="splash-content" aria-live="polite"></article>
+</main>
 <iframe
   id="top-nav-frame"
   src="/dead/assets/pages/top-nav.html"
@@ -137,6 +169,45 @@
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+const splashContent = document.getElementById("splash-content");
+let splashFitFrame = 0;
+
+function fitSplashContent() {
+  splashFitFrame = 0;
+  splashContent.style.fontSize = "";
+  let fontSize = parseFloat(getComputedStyle(splashContent).fontSize);
+
+  while (fontSize > 8 && splashContent.scrollHeight > splashContent.clientHeight) {
+    fontSize -= .5;
+    splashContent.style.fontSize = fontSize + "px";
+  }
+}
+
+function scheduleSplashFit() {
+  if (splashFitFrame) cancelAnimationFrame(splashFitFrame);
+  splashFitFrame = requestAnimationFrame(fitSplashContent);
+}
+
+fetch("/splash.md")
+  .then(response => {
+    if (!response.ok) throw new Error("Unable to load splash.md");
+    return response.text();
+  })
+  .then(markdown => {
+    const paragraphs = markdown.trim().split(/\r?\n\s*\r?\n/);
+    splashContent.replaceChildren(...paragraphs.map(text => {
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text.replace(/\r?\n/g, " ");
+      return paragraph;
+    }));
+    scheduleSplashFit();
+  })
+  .catch(() => {
+    splashContent.textContent = "The entrance is temporarily unavailable.";
+    scheduleSplashFit();
+  });
+
+window.addEventListener("resize", scheduleSplashFit);
 
 document.body.style.touchAction = "none";
 canvas.style.touchAction = "none";
