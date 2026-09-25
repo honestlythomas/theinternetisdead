@@ -11,14 +11,14 @@
       saveSpawnPoint as saveStoredSpawnPoint,
       setLocalStorageStatus as setStoredLocalStorageStatus,
       createSaveLoadState
-    } from "./storage-state.js?v=rubble-slot-projectile-20260508";
+    } from "./storage-state.js?v=grindstone-20260925";
     import { createAudioHandler } from "./audio-handler.js?v=rubble-slot-projectile-20260508";
     import {
       createBushInventoryController,
       createPlayerController,
       createSurfaceObjects,
       isTextEntryTarget
-    } from "./surface-entities.js?v=stick-crafting-20260710";
+    } from "./surface-entities.js?v=grindstone-20260925";
     import { createBaseGenerator } from "./base-generator.js?v=stackable-rubble-stick-20260710";
     import {
       createCloudLayer,
@@ -27,6 +27,7 @@
       createSceneSetup
     } from "./graphics-pipeline.js?v=rubble-slot-projectile-20260508";
     import { createNpcEnemiesController } from "./npc-enemies-controller.js?v=rare-spring-boss-rate-333-20260710";
+    import { createGrindstoneModel } from "./grindstone-model.js?v=grindstone-20260925";
     import {
       hideLoadingScreen as hideLoadingPanel,
       setupEscMenuPanels,
@@ -93,15 +94,18 @@
     const setInventorySpringCounts = bushInventoryController.setSpringCounts;
     const setInventoryPlankCounts = bushInventoryController.setPlankCounts;
     const setInventoryStickCounts = bushInventoryController.setStickCounts;
+    const setInventoryGrindstoneCounts = bushInventoryController.setGrindstoneCounts;
     const normalizeRubbleInventorySlotCounts = bushInventoryController.normalizeRubbleSlotCounts;
     const normalizeSpringInventorySlotCounts = bushInventoryController.normalizeSpringSlotCounts;
     const normalizePlankInventorySlotCounts = bushInventoryController.normalizePlankSlotCounts;
     const normalizeStickInventorySlotCounts = bushInventoryController.normalizeStickSlotCounts;
+    const normalizeGrindstoneInventorySlotCounts = bushInventoryController.normalizeGrindstoneSlotCounts;
     const getBushInventorySlotCounts = bushInventoryController.getCounts;
     const getRubbleInventorySlotCounts = bushInventoryController.getRubbleCounts;
     const getSpringInventorySlotCounts = bushInventoryController.getSpringCounts;
     const getPlankInventorySlotCounts = bushInventoryController.getPlankCounts;
     const getStickInventorySlotCounts = bushInventoryController.getStickCounts;
+    const getGrindstoneInventorySlotCounts = bushInventoryController.getGrindstoneCounts;
     const toggleBushInventory = bushInventoryController.toggleOpen;
     const getActiveBushCarryCount = bushInventoryController.getActiveCarryCount;
     const cancelBushCarryToLeftmostSlot = bushInventoryController.cancelCarryToLeftmostSlot;
@@ -525,6 +529,8 @@
       const springInventoryStorageKey = `new-3D-game.spring-inventory.${seedText}`;
       const plankInventoryStorageKey = `new-3D-game.plank-inventory.${seedText}`;
       const stickInventoryStorageKey = `new-3D-game.stick-inventory.${seedText}`;
+      const grindstoneInventoryStorageKey = `new-3D-game.grindstone-inventory.${seedText}`;
+      const placedGrindstoneStorageKey = `new-3D-game.placed-grindstones.${seedText}`;
       const worldCacheVersion = 3;
       const worldCacheSaveIntervalMs = 2500;
       let worldCacheLoadedChunkCount = 0;
@@ -708,6 +714,16 @@
         return normalizeStickInventorySlotCounts(total, layout);
       }
 
+      function loadGrindstoneInventorySlotCounts() {
+        const layout = shouldRestoreFullState && Array.isArray(savedFullState?.inventory?.grindstones)
+          ? savedFullState.inventory.grindstones
+          : loadLocalJsonArray(grindstoneInventoryStorageKey, {
+            warningMessage: "Could not load grindstone inventory:"
+          });
+        const total = layout.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0);
+        return normalizeGrindstoneInventorySlotCounts(total, layout);
+      }
+
       function saveBushInventorySlotCounts(counts = getBushInventorySlotCounts()) {
         saveLocalJson(
           bushInventoryStorageKey,
@@ -754,12 +770,20 @@
         );
       }
 
-      bushInventoryController.setLayoutChangedHandler((bushCounts, rubbleCounts, springCounts, plankCounts, stickCounts) => {
+      function saveGrindstoneInventorySlotCounts(counts = getGrindstoneInventorySlotCounts()) {
+        const total = counts.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0);
+        saveLocalJson(grindstoneInventoryStorageKey, normalizeGrindstoneInventorySlotCounts(total, counts), {
+          warningMessage: "Could not save grindstone inventory:"
+        });
+      }
+
+      bushInventoryController.setLayoutChangedHandler((bushCounts, rubbleCounts, springCounts, plankCounts, stickCounts, grindstoneCounts) => {
         saveBushInventorySlotCounts(bushCounts);
         saveRubbleInventorySlotCounts(rubbleCounts);
         saveSpringInventorySlotCounts(springCounts);
         savePlankInventorySlotCounts(plankCounts);
         saveStickInventorySlotCounts(stickCounts);
+        saveGrindstoneInventorySlotCounts(grindstoneCounts);
       });
       setBushInventoryCounts(bushesCollectedCount, loadBushInventorySlotCounts());
       setInventoryRubbleCounts(rubbleCollectedCount, loadRubbleInventorySlotCounts());
@@ -773,6 +797,11 @@
       setInventoryStickCounts(
         stickInventorySlotCounts.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0),
         stickInventorySlotCounts
+      );
+      const grindstoneInventorySlotCounts = loadGrindstoneInventorySlotCounts();
+      setInventoryGrindstoneCounts(
+        grindstoneInventorySlotCounts.reduce((sum, value) => sum + Math.max(0, Math.round(Number(value) || 0)), 0),
+        grindstoneInventorySlotCounts
       );
 
       function updateCollectedReadouts() {
@@ -825,6 +854,15 @@
       bushInventoryController.setStickCraftedHandler(() => {
         savePlankInventorySlotCounts();
         saveStickInventorySlotCounts();
+      });
+
+      bushInventoryController.setGrindstoneCraftedHandler(() => {
+        rubbleCollectedCount = Math.max(0, rubbleCollectedCount - 1);
+        saveRubbleCollectedCount();
+        saveRubbleInventorySlotCounts();
+        savePlankInventorySlotCounts();
+        saveGrindstoneInventorySlotCounts();
+        updateCollectedReadouts();
       });
 
       function saveBushesCollectedCount() {
@@ -1215,6 +1253,7 @@
         getSpringInventorySlotCounts,
         getPlankInventorySlotCounts,
         getStickInventorySlotCounts,
+        getGrindstoneInventorySlotCounts,
         getCameraState: () => state,
         getPlayer: () => player,
         getIsThirdPersonMode: () => isThirdPersonMode,
@@ -1252,6 +1291,7 @@
         saveSpringInventorySlotCounts();
         savePlankInventorySlotCounts();
         saveStickInventorySlotCounts();
+        saveGrindstoneInventorySlotCounts();
         saveLoadState.saveFullGameState();
       };
       const clearAllLocalStorage = saveLoadState.clearAllLocalStorage;
@@ -1433,6 +1473,7 @@
       scene.add(blueSlotPlacementGroup);
       const placedPlankObjects = new Map();
       const placedStickObjects = new Map();
+      const placedGrindstoneObjects = new Map();
       const stackableTileHeights = new Map();
       const stackablePlacementTypes = new Set(["rubble", "planks", "stick"]);
 
@@ -1577,6 +1618,8 @@
           const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, tileSize, 8), ghostMaterial.clone());
           stick.position.y = tileSize * 0.5;
           group.add(stick);
+        } else if (type === "grindstone") {
+          group.add(createGrindstoneModel(THREE, tileSize, { ghost: true }));
         }
 
         return group;
@@ -1617,18 +1660,31 @@
 
         const tileX = Math.floor(hit.point.x / tileSize);
         const tileZ = Math.floor(hit.point.z / tileSize);
-        const x = tileToWorldX(tileX + 0.5);
-        const z = tileToWorldZ(tileZ + 0.5);
+        const footprint = item.type === "grindstone" ? 2 : 1;
+        const x = tileToWorldX(tileX + footprint / 2);
+        const z = tileToWorldZ(tileZ + footprint / 2);
         const sample = getTerrainSampleAtTile(tileX, tileZ);
         if (!sample || (sample.waterLevel === seaLevel && sample.landLevel < seaLevel)) return null;
 
         const key = `${tileX},${tileZ}`;
-        const occupiedByTree = treeColliders.has(key) && treeColliders.get(key)?.sprite?.parent;
-        const occupiedByRubble = Boolean(findRubblePileAtWorld(x, z));
-        const occupiedByPlanks = getPlacedStackCount(placedPlankObjects, key) > 0;
-        const occupiedByStick = getPlacedStackCount(placedStickObjects, key) > 0;
-        const occupiedByStackable = occupiedByRubble || occupiedByPlanks || occupiedByStick;
-        if (occupiedByTree || (occupiedByStackable && !isStackablePlacementType(item.type))) return null;
+        let occupiedByStackable = false;
+        for (let dx = 0; dx < footprint; dx += 1) {
+          for (let dz = 0; dz < footprint; dz += 1) {
+            const tx = tileX + dx;
+            const tz = tileZ + dz;
+            const tile = getTerrainSampleAtTile(tx, tz);
+            if (!tile || tile.landLevel !== sample.landLevel || (tile.waterLevel === seaLevel && tile.landLevel < seaLevel)) return null;
+            const tileKey = `${tx},${tz}`;
+            if (placedGrindstoneObjects.has(tileKey)) return null;
+            if (treeColliders.get(tileKey)?.sprite?.parent) return null;
+            const centerX = tileToWorldX(tx + 0.5);
+            const centerZ = tileToWorldZ(tz + 0.5);
+            occupiedByStackable ||= Boolean(findRubblePileAtWorld(centerX, centerZ)) ||
+              getPlacedStackCount(placedPlankObjects, tileKey) > 0 ||
+              getPlacedStackCount(placedStickObjects, tileKey) > 0;
+          }
+        }
+        if (occupiedByStackable && !isStackablePlacementType(item.type)) return null;
 
         const baseY = sample.landLevel * heightStep;
         const stackHeight = isStackablePlacementType(item.type)
@@ -1644,6 +1700,7 @@
           y: baseY + stackHeight,
           stackBaseY: baseY,
           stackHeight,
+          footprint,
           valid: true
         };
       }
@@ -1657,6 +1714,7 @@
 
         Object.assign(blueSlotPlacementTile, target);
         syncBlueSlotPlacementGhost(target.type);
+        blueSlotPlacementTileMesh.scale.setScalar(target.footprint || 1);
         blueSlotPlacementGroup.position.set(target.x, target.y + 0.055, target.z);
         blueSlotPlacementTileMesh.material.color.set(0xffd64a);
         blueSlotPlacementTileMesh.material.opacity = 0.34;
@@ -1696,6 +1754,8 @@
           syncPlankInventorySlots();
         } else if (type === "stick") {
           syncStickInventorySlots();
+        } else if (type === "grindstone") {
+          saveGrindstoneInventorySlotCounts();
         }
         updateCollectedReadouts();
         return true;
@@ -1829,6 +1889,58 @@
         return true;
       }
 
+      function savePlacedGrindstones() {
+        const positions = [...new Set(placedGrindstoneObjects.values())].map((object) => ({
+          tileX: object.userData.tileX,
+          tileZ: object.userData.tileZ
+        }));
+        saveLocalJson(placedGrindstoneStorageKey, positions, {
+          warningMessage: "Could not save placed grindstones:"
+        });
+      }
+
+      function placeGrindstoneAtTile(target, { restoring = false } = {}) {
+        const { tileX, tileZ } = target;
+        if (!Number.isInteger(tileX) || !Number.isInteger(tileZ)) return false;
+        const sample = getTerrainSampleAtTile(tileX, tileZ);
+        if (!sample) return false;
+        for (let dx = 0; dx < 2; dx += 1) {
+          for (let dz = 0; dz < 2; dz += 1) {
+            const tx = tileX + dx;
+            const tz = tileZ + dz;
+            const tile = getTerrainSampleAtTile(tx, tz);
+            if (!tile || tile.landLevel !== sample.landLevel ||
+                (tile.waterLevel === seaLevel && tile.landLevel < seaLevel) ||
+                placedGrindstoneObjects.has(`${tx},${tz}`)) return false;
+          }
+        }
+
+        const group = createGrindstoneModel(THREE, tileSize);
+        group.position.set(tileToWorldX(tileX + 1), sample.landLevel * heightStep, tileToWorldZ(tileZ + 1));
+        group.userData.tileX = tileX;
+        group.userData.tileZ = tileZ;
+        scene.add(group);
+        for (let dx = 0; dx < 2; dx += 1) {
+          for (let dz = 0; dz < 2; dz += 1) {
+            const key = `${tileX + dx},${tileZ + dz}`;
+            placedGrindstoneObjects.set(key, group);
+            setStackableTileHeight(key, group.userData.heightWorld);
+          }
+        }
+        if (!restoring) savePlacedGrindstones();
+        return true;
+      }
+
+      function restorePlacedGrindstones() {
+        const saved = loadLocalJsonArray(placedGrindstoneStorageKey, {
+          warningMessage: "Could not load placed grindstones:"
+        });
+        for (const item of saved) {
+          if (!item || !Number.isInteger(item.tileX) || !Number.isInteger(item.tileZ)) continue;
+          placeGrindstoneAtTile(item, { restoring: true });
+        }
+      }
+
       function handleBlueSlotPlacementClick(event) {
         if (activeInventoryActionSlot !== "blue") return false;
         const target = getBlueSlotPlacementTarget(event);
@@ -1844,6 +1956,8 @@
                 ? placePlanksAtTile(target)
                 : target.type === "stick"
                   ? placeStickAtTile(target)
+                  : target.type === "grindstone"
+                    ? placeGrindstoneAtTile(target)
                   : false;
         if (!placed) return false;
         if (!spendBlueSlotPlacementItem(target.type)) return false;
@@ -2199,6 +2313,7 @@
       syncModeReadout();
       resetCamera();
       restoreFullGameState();
+      restorePlacedGrindstones();
       animate();
 
       window.addEventListener("beforeunload", () => {

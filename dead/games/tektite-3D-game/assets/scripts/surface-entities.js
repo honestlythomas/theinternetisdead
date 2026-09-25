@@ -12,6 +12,7 @@ export function createBushInventoryController({
   rubbleIconSrc = "assets/png/rubble-pile.png",
   springIconSrc = "assets/png/magenta-spring-item.png",
   planksIconSrc = "assets/png/planks.png",
+  grindstoneIconSrc = "assets/png/grindstone.png",
   stickIconSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cline x1='32' y1='8' x2='32' y2='56' stroke='%23723f18' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E"
 } = {}) {
   const slots = Array.from(bushInventorySlots || []);
@@ -22,6 +23,7 @@ export function createBushInventoryController({
     rubble: rubbleIconSrc,
     spring: springIconSrc,
     planks: planksIconSrc,
+    grindstone: grindstoneIconSrc,
     stick: stickIconSrc
   };
   const altByType = {
@@ -29,9 +31,10 @@ export function createBushInventoryController({
     rubble: "Collected rubble",
     spring: "Collected spring",
     planks: "Planks",
+    grindstone: "Grindstone",
     stick: "Stick"
   };
-  const validItemTypes = new Set(["bush", "rubble", "spring", "planks", "stick"]);
+  const validItemTypes = new Set(["bush", "rubble", "spring", "planks", "stick", "grindstone"]);
 
   let slotItems = slots.map(() => null);
   let activeCarryType = null;
@@ -39,6 +42,7 @@ export function createBushInventoryController({
   let onLayoutChanged = null;
   let onPlanksCrafted = null;
   let onStickCrafted = null;
+  let onGrindstoneCrafted = null;
   let rightSpreadActive = false;
   let leftShiftHeld = false;
   let pendingSingleClickTimer = null;
@@ -229,6 +233,15 @@ export function createBushInventoryController({
     return getCountsByType("stick");
   }
 
+  function getGrindstoneCounts() {
+    return getCountsByType("grindstone");
+  }
+
+  function setGrindstoneCounts(totalCount, counts = getGrindstoneCounts()) {
+    placeCountsForType("grindstone", normalizeCountsForType(totalCount, counts, "grindstone"));
+    renderItems();
+  }
+
   function setPlankCounts(totalCount, counts = getPlankCounts()) {
     placeCountsForType("planks", normalizeCountsForType(totalCount, counts, "planks"));
     renderItems();
@@ -253,7 +266,7 @@ export function createBushInventoryController({
 
   function saveLayoutIfReady() {
     if (typeof onLayoutChanged === "function") {
-      onLayoutChanged(getCounts(), getRubbleCounts(), getSpringCounts(), getPlankCounts(), getStickCounts());
+      onLayoutChanged(getCounts(), getRubbleCounts(), getSpringCounts(), getPlankCounts(), getStickCounts(), getGrindstoneCounts());
     }
   }
 
@@ -583,7 +596,35 @@ export function createBushInventoryController({
     });
   }
 
+  function hasGrindstoneRecipe() {
+    return [2, 4].every((index) => slotItems[index]?.type === "planks" && slotItems[index].count > 0) &&
+      slotItems[3]?.type === "rubble" && slotItems[3].count > 0;
+  }
+
+  function craftGrindstone() {
+    if (!hasGrindstoneRecipe()) return false;
+    const room = getAutoFillSlotOrder().reduce((total, index) => {
+      const item = normalizeItem(slotItems[index]);
+      const remaining = [2, 3, 4].includes(index) && item ? item.count - 1 : item?.count || 0;
+      return total + (remaining > 0 && item.type !== "grindstone" ? 0 : stackMax - remaining);
+    }, 0);
+    if (room < 1) return false;
+
+    for (const index of [2, 3, 4]) {
+      const item = slotItems[index];
+      slotItems[index] = item.count > 1 ? { ...item, count: item.count - 1 } : null;
+    }
+    addItemToInventory("grindstone", 1);
+    onGrindstoneCrafted?.();
+    renderItems();
+    saveLayoutIfReady();
+    return true;
+  }
+
   function getActiveRecipe() {
+    if (hasGrindstoneRecipe()) {
+      return { outputType: "grindstone", title: "Grindstone (plank + rubble + plank)", craft: craftGrindstone };
+    }
     if (hasItemInYellowInventorySlots("bush")) {
       return {
         outputType: "planks",
@@ -629,7 +670,7 @@ export function createBushInventoryController({
 
     for (const slot of slots) {
       slot.innerHTML = "";
-      slot.classList.remove("has-bush", "has-rubble", "has-spring", "has-planks", "has-stick");
+      slot.classList.remove("has-bush", "has-rubble", "has-spring", "has-planks", "has-stick", "has-grindstone");
       delete slot.dataset.itemType;
     }
 
@@ -661,7 +702,7 @@ export function createBushInventoryController({
 
     for (const slot of plankRecipeSlots) {
       slot.innerHTML = "";
-      slot.classList.remove("has-planks", "has-stick", "planks-enabled");
+      slot.classList.remove("has-planks", "has-stick", "has-grindstone", "planks-enabled");
       slot.classList.add("planks-locked");
       delete slot.dataset.itemType;
       slot.removeAttribute("title");
@@ -841,16 +882,19 @@ export function createBushInventoryController({
     normalizeSpringSlotCounts: (totalCount, counts = getSpringCounts()) => normalizeCountsForType(totalCount, counts, "spring"),
     normalizePlankSlotCounts: (totalCount, counts = getPlankCounts()) => normalizeCountsForType(totalCount, counts, "planks"),
     normalizeStickSlotCounts: (totalCount, counts = getStickCounts()) => normalizeCountsForType(totalCount, counts, "stick"),
+    normalizeGrindstoneSlotCounts: (totalCount, counts = getGrindstoneCounts()) => normalizeCountsForType(totalCount, counts, "grindstone"),
     setCounts,
     setRubbleCounts,
     setSpringCounts,
     setPlankCounts,
     setStickCounts,
+    setGrindstoneCounts,
     getCounts,
     getRubbleCounts,
     getSpringCounts,
     getPlankCounts,
     getStickCounts,
+    getGrindstoneCounts,
     setRubbleCount,
     setSpringCount,
     setPlankCount,
@@ -861,6 +905,9 @@ export function createBushInventoryController({
     },
     setStickCraftedHandler: (handler) => {
       onStickCrafted = typeof handler === "function" ? handler : null;
+    },
+    setGrindstoneCraftedHandler: (handler) => {
+      onGrindstoneCrafted = typeof handler === "function" ? handler : null;
     },
     getActiveCarryCount: () => activeCarryCount,
     getActiveCarryType: () => activeCarryType,

@@ -277,6 +277,7 @@ export function createSaveLoadState({
       getSpringInventorySlotCounts = () => [],
       getPlankInventorySlotCounts = () => [],
       getStickInventorySlotCounts = () => [],
+      getGrindstoneInventorySlotCounts = () => [],
   getCameraState,
   getPlayer,
   getIsThirdPersonMode,
@@ -363,7 +364,8 @@ export function createSaveLoadState({
         rubble: Array.isArray(getRubbleInventorySlotCounts()) ? getRubbleInventorySlotCounts() : [],
         springs: Array.isArray(getSpringInventorySlotCounts()) ? getSpringInventorySlotCounts() : [],
         planks: Array.isArray(getPlankInventorySlotCounts()) ? getPlankInventorySlotCounts() : [],
-        sticks: Array.isArray(getStickInventorySlotCounts()) ? getStickInventorySlotCounts() : []
+        sticks: Array.isArray(getStickInventorySlotCounts()) ? getStickInventorySlotCounts() : [],
+        grindstones: Array.isArray(getGrindstoneInventorySlotCounts()) ? getGrindstoneInventorySlotCounts() : []
       },
       ui: {
         showGridLines: getShowGridLines(),
