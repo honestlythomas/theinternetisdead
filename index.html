@@ -4,7 +4,7 @@
   <script src="/dead/js/shell-route.js"></script><link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>/dead/experiments/canvas-backgrounds/starfield-background.html</title>
+<title>theinternetisdead.org · world grid</title>
 <style>
   /*
     background.html
@@ -36,10 +36,50 @@
     display: block;
     touch-action: none;
   }
+
+  /* The map uses a single world-space origin; the viewport only clips it. */
+  #map-grid {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: none;
+    touch-action: none;
+    cursor: grab;
+  }
+  body.debug-grid #map-grid { display: block; }
+  body.debug-grid #map-grid.dragging { cursor: grabbing; }
+
+  #grid-hud {
+    display: none;
+    position: fixed;
+    z-index: 11;
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    max-width: calc(100vw - 32px);
+    box-sizing: border-box;
+    padding: 9px 12px;
+    border: 1px solid rgba(115, 245, 223, .55);
+    background: rgba(0, 11, 17, .82);
+    color: #b5fff1;
+    font: 11px/1.5 monospace;
+    letter-spacing: .025em;
+    pointer-events: none;
+  }
+  body.debug-grid #grid-hud { display: block; }
+  #grid-hud strong { color: #fff; font-weight: 600; }
+  #grid-hud .help { color: #90aaa9; }
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
+<canvas id="map-grid" aria-hidden="true"></canvas>
+<div id="grid-hud" aria-live="off">
+  <strong>WORLD GRID / DEBUG</strong><br>
+  <span id="grid-readout"></span><br>
+  <span class="help">Drag to pan · Wheel or pinch to zoom · Shift+Esc or hold 3 fingers for 5s to hide</span>
+</div>
 
 <script>
 /*
@@ -242,6 +282,205 @@ function frame(now){
 
 resize();
 requestAnimationFrame(frame);
+</script>
+<script>
+(() => {
+  const grid = document.getElementById("map-grid");
+  const pen = grid.getContext("2d");
+  const readout = document.getElementById("grid-readout");
+  const pointers = new Map();
+  const HOLD_MS = 5000;
+  const HOLD_TOLERANCE = 18;
+  let holdTimer = null;
+  let holdStart = null;
+  let enabled = false;
+  let zoom = 1;
+  let panX = 0;
+  let panY = 0;
+  let baseCell = 1;
+  let viewportWidth = 0;
+  let viewportHeight = 0;
+
+  // The nominal frame is 16 x 9 in landscape and 9 x 16 in portrait.
+  // Its cells always stay square; other viewport ratios reveal more world.
+  function measure() {
+    viewportWidth = window.innerWidth;
+    viewportHeight = window.innerHeight;
+    const landscape = viewportWidth >= viewportHeight;
+    baseCell = Math.max(1, Math.min(
+      viewportWidth / (landscape ? 16 : 9),
+      viewportHeight / (landscape ? 9 : 16)
+    ));
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    grid.width = Math.round(viewportWidth * dpr);
+    grid.height = Math.round(viewportHeight * dpr);
+    pen.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+
+  function toggleGrid() {
+    enabled = !enabled;
+    document.body.classList.toggle("debug-grid", enabled);
+    pointers.clear();
+    grid.classList.remove("dragging");
+    draw();
+  }
+
+  window.addEventListener("keydown", event => {
+    if (event.code === "Escape" && event.shiftKey && !event.repeat) {
+      event.preventDefault();
+      toggleGrid();
+    }
+  });
+
+  function cancelHold() {
+    if (holdTimer !== null) clearTimeout(holdTimer);
+    holdTimer = null;
+    holdStart = null;
+  }
+
+  // Native touch events keep the gesture independent of grid visibility.
+  document.addEventListener("touchstart", event => {
+    if (event.touches.length !== 3) {
+      cancelHold();
+      return;
+    }
+    cancelHold();
+    holdStart = Array.from(event.touches, touch => ({
+      id: touch.identifier, x: touch.clientX, y: touch.clientY
+    }));
+    holdTimer = setTimeout(() => {
+      holdTimer = null;
+      holdStart = null;
+      toggleGrid();
+    }, HOLD_MS);
+    event.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener("touchmove", event => {
+    if (!holdStart) return;
+    if (event.touches.length !== 3 || holdStart.some(start => {
+      const touch = Array.from(event.touches).find(t => t.identifier === start.id);
+      return !touch || Math.hypot(touch.clientX - start.x, touch.clientY - start.y) > HOLD_TOLERANCE;
+    })) {
+      cancelHold();
+    } else {
+      event.preventDefault();
+    }
+  }, { passive: false });
+  document.addEventListener("touchend", cancelHold);
+  document.addEventListener("touchcancel", cancelHold);
+  window.addEventListener("blur", cancelHold);
+
+  function zoomAt(factor, x, y) {
+    const oldSize = baseCell * zoom;
+    const nextZoom = Math.max(.35, Math.min(8, zoom * factor));
+    const ratio = nextZoom / zoom;
+    // Keep the world point under the cursor in the same screen position.
+    panX = x - viewportWidth / 2 - (x - viewportWidth / 2 - panX) * ratio;
+    panY = y - viewportHeight / 2 - (y - viewportHeight / 2 - panY) * ratio;
+    zoom = nextZoom;
+    if (oldSize !== baseCell * zoom) draw();
+  }
+
+  grid.addEventListener("wheel", event => {
+    event.preventDefault();
+    zoomAt(Math.exp(-event.deltaY * .001), event.clientX, event.clientY);
+  }, { passive: false });
+
+  grid.addEventListener("pointerdown", event => {
+    grid.setPointerCapture(event.pointerId);
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    grid.classList.add("dragging");
+  });
+  grid.addEventListener("pointermove", event => {
+    if (!pointers.has(event.pointerId)) return;
+    const before = Array.from(pointers.values());
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const after = Array.from(pointers.values());
+    if (after.length === 1) {
+      panX += after[0].x - before[0].x;
+      panY += after[0].y - before[0].y;
+    } else if (after.length === 2) {
+      const oldCenterX = (before[0].x + before[1].x) / 2;
+      const oldCenterY = (before[0].y + before[1].y) / 2;
+      const centerX = (after[0].x + after[1].x) / 2;
+      const centerY = (after[0].y + after[1].y) / 2;
+      const oldDistance = Math.hypot(before[0].x - before[1].x, before[0].y - before[1].y);
+      const distance = Math.hypot(after[0].x - after[1].x, after[0].y - after[1].y);
+      if (oldDistance > 0) zoomAt(distance / oldDistance, oldCenterX, oldCenterY);
+      panX += centerX - oldCenterX;
+      panY += centerY - oldCenterY;
+    }
+    draw();
+  });
+  function releasePointer(event) {
+    pointers.delete(event.pointerId);
+    if (!pointers.size) grid.classList.remove("dragging");
+  }
+  grid.addEventListener("pointerup", releasePointer);
+  grid.addEventListener("pointercancel", releasePointer);
+
+  function lines(spacing, color, strokeWidth, originX, originY) {
+    if (spacing < 16) return;
+    pen.beginPath();
+    for (let x = originX % spacing; x <= viewportWidth; x += spacing) {
+      pen.moveTo(Math.round(x) + .5, 0);
+      pen.lineTo(Math.round(x) + .5, viewportHeight);
+    }
+    for (let y = originY % spacing; y <= viewportHeight; y += spacing) {
+      pen.moveTo(0, Math.round(y) + .5);
+      pen.lineTo(viewportWidth, Math.round(y) + .5);
+    }
+    pen.strokeStyle = color;
+    pen.lineWidth = strokeWidth;
+    pen.stroke();
+  }
+
+  function draw() {
+    if (!enabled || !viewportWidth || !viewportHeight) return;
+    const size = baseCell * zoom;
+    const originX = viewportWidth / 2 + panX;
+    const originY = viewportHeight / 2 + panY;
+    pen.clearRect(0, 0, viewportWidth, viewportHeight);
+    pen.fillStyle = "rgba(2, 24, 33, .12)";
+    pen.fillRect(0, 0, viewportWidth, viewportHeight);
+    // Nested squares: quarter cells, half cells, cells, and 4-cell sectors.
+    lines(size / 4, "rgba(90, 233, 213, .12)", 1, originX, originY);
+    lines(size / 2, "rgba(90, 233, 213, .20)", 1, originX, originY);
+    lines(size, "rgba(110, 246, 229, .54)", 1, originX, originY);
+    lines(size * 4, "rgba(240, 255, 250, .70)", 1.5, originX, originY);
+
+    if (size >= 32) {
+      pen.font = "10px monospace";
+      pen.fillStyle = "rgba(193, 255, 244, .75)";
+      for (let col = Math.floor(-originX / size); col <= Math.ceil((viewportWidth - originX) / size); col++) {
+        for (let row = Math.floor(-originY / size); row <= Math.ceil((viewportHeight - originY) / size); row++) {
+          const x = originX + col * size + 5;
+          const y = originY + row * size + 14;
+          if (x >= 0 && y >= 0 && x < viewportWidth - 32 && y < viewportHeight) {
+            pen.fillText(col + "," + row, x, y);
+          }
+        }
+      }
+    }
+
+    pen.strokeStyle = "#fff";
+    pen.lineWidth = 2;
+    pen.beginPath();
+    pen.moveTo(originX - 9, originY);
+    pen.lineTo(originX + 9, originY);
+    pen.moveTo(originX, originY - 9);
+    pen.lineTo(originX, originY + 9);
+    pen.stroke();
+    readout.textContent =
+      Math.round(viewportWidth) + "×" + Math.round(viewportHeight) + " viewport · " +
+      size.toFixed(1) + "px squares · " + zoom.toFixed(2) + "× zoom";
+  }
+
+  window.addEventListener("resize", measure);
+  measure();
+})();
 </script>
 <script src="/dead/backgrounds/starfield-pointer-sync.js?v=20260816-4"></script>
 </body>
