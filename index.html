@@ -46,10 +46,8 @@
     z-index: 10;
     display: none;
     touch-action: none;
-    cursor: grab;
   }
   body.debug-grid #map-grid { display: block; }
-  body.debug-grid #map-grid.dragging { cursor: grabbing; }
 
   #grid-hud {
     display: none;
@@ -78,7 +76,7 @@
 <div id="grid-hud" aria-live="off">
   <strong>WORLD GRID / DEBUG</strong><br>
   <span id="grid-readout"></span><br>
-  <span class="help">Drag to pan · Wheel or pinch to zoom · Esc or hold 3 fingers for 5s to hide</span>
+  <span class="help">Origin 0,0 fixed at top-left · Wheel or pinch to zoom · Esc or hold 3 fingers for 5s to hide</span>
 </div>
 
 <script>
@@ -295,8 +293,6 @@ requestAnimationFrame(frame);
   let holdStart = null;
   let enabled = false;
   let zoom = 1;
-  let panX = 0;
-  let panY = 0;
   let baseCell = 1;
   let viewportWidth = 0;
   let viewportHeight = 0;
@@ -322,7 +318,6 @@ requestAnimationFrame(frame);
     enabled = !enabled;
     document.body.classList.toggle("debug-grid", enabled);
     pointers.clear();
-    grid.classList.remove("dragging");
     draw();
   }
 
@@ -372,51 +367,34 @@ requestAnimationFrame(frame);
   document.addEventListener("touchcancel", cancelHold);
   window.addEventListener("blur", cancelHold);
 
-  function zoomAt(factor, x, y) {
-    const oldSize = baseCell * zoom;
-    const nextZoom = Math.max(.35, Math.min(8, zoom * factor));
-    const ratio = nextZoom / zoom;
-    // Keep the world point under the cursor in the same screen position.
-    panX = x - viewportWidth / 2 - (x - viewportWidth / 2 - panX) * ratio;
-    panY = y - viewportHeight / 2 - (y - viewportHeight / 2 - panY) * ratio;
-    zoom = nextZoom;
-    if (oldSize !== baseCell * zoom) draw();
+  function setZoom(factor) {
+    zoom = Math.max(.35, Math.min(8, zoom * factor));
+    draw();
   }
 
   grid.addEventListener("wheel", event => {
     event.preventDefault();
-    zoomAt(Math.exp(-event.deltaY * .001), event.clientX, event.clientY);
+    setZoom(Math.exp(-event.deltaY * .001));
   }, { passive: false });
 
+  // Pinch changes the scale around the fixed world origin (0,0).
   grid.addEventListener("pointerdown", event => {
     grid.setPointerCapture(event.pointerId);
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    grid.classList.add("dragging");
   });
   grid.addEventListener("pointermove", event => {
     if (!pointers.has(event.pointerId)) return;
     const before = Array.from(pointers.values());
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     const after = Array.from(pointers.values());
-    if (after.length === 1) {
-      panX += after[0].x - before[0].x;
-      panY += after[0].y - before[0].y;
-    } else if (after.length === 2) {
-      const oldCenterX = (before[0].x + before[1].x) / 2;
-      const oldCenterY = (before[0].y + before[1].y) / 2;
-      const centerX = (after[0].x + after[1].x) / 2;
-      const centerY = (after[0].y + after[1].y) / 2;
+    if (after.length === 2) {
       const oldDistance = Math.hypot(before[0].x - before[1].x, before[0].y - before[1].y);
       const distance = Math.hypot(after[0].x - after[1].x, after[0].y - after[1].y);
-      if (oldDistance > 0) zoomAt(distance / oldDistance, oldCenterX, oldCenterY);
-      panX += centerX - oldCenterX;
-      panY += centerY - oldCenterY;
+      if (oldDistance > 0) setZoom(distance / oldDistance);
     }
-    draw();
   });
   function releasePointer(event) {
     pointers.delete(event.pointerId);
-    if (!pointers.size) grid.classList.remove("dragging");
   }
   grid.addEventListener("pointerup", releasePointer);
   grid.addEventListener("pointercancel", releasePointer);
@@ -440,8 +418,8 @@ requestAnimationFrame(frame);
   function draw() {
     if (!enabled || !viewportWidth || !viewportHeight) return;
     const size = baseCell * zoom;
-    const originX = viewportWidth / 2 + panX;
-    const originY = viewportHeight / 2 + panY;
+    const originX = 0;
+    const originY = 0;
     pen.clearRect(0, 0, viewportWidth, viewportHeight);
     pen.fillStyle = "rgba(2, 24, 33, .12)";
     pen.fillRect(0, 0, viewportWidth, viewportHeight);
@@ -465,14 +443,10 @@ requestAnimationFrame(frame);
       }
     }
 
-    pen.strokeStyle = "#fff";
-    pen.lineWidth = 2;
+    pen.fillStyle = "#fff";
     pen.beginPath();
-    pen.moveTo(originX - 9, originY);
-    pen.lineTo(originX + 9, originY);
-    pen.moveTo(originX, originY - 9);
-    pen.lineTo(originX, originY + 9);
-    pen.stroke();
+    pen.arc(0, 0, 5, 0, Math.PI * 2);
+    pen.fill();
     readout.textContent =
       Math.round(viewportWidth) + "×" + Math.round(viewportHeight) + " viewport · " +
       size.toFixed(1) + "px squares · " + zoom.toFixed(2) + "× zoom";
