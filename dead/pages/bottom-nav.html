@@ -232,6 +232,11 @@
 
   window.addEventListener("pointermove", event => publishPointer(true, event), { passive: true });
   window.addEventListener("pointerdown", event => publishPointer(true, event), { passive: true });
+  window.addEventListener("click", () => {
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: "portal-user-click" }, window.location.origin);
+    }
+  }, true);
   window.addEventListener("pointerout", event => {
     if (!event.relatedTarget) publishPointer(false, event);
   }, { passive: true });

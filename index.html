@@ -69,10 +69,42 @@
     margin: 0 0 .85em;
   }
 
-  #splash-content p:first-child {
+  #splash-read-aloud {
+    display: block;
+    margin: 0 0 .85em;
+    padding: 0;
+    align-self: center;
+    border: 0;
+    background: transparent;
+    color: #0f0;
+    font: inherit;
+    font-size: .75em;
+    font-weight: bold;
+    text-decoration: none;
+    text-shadow: inherit;
+    white-space: nowrap;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  #splash-read-aloud:hover,
+  #splash-read-aloud:focus-visible {
+    color: #f0f;
+  }
+
+  .splash-read-aloud__label {
+    text-decoration: underline;
+  }
+
+  #splash-read-aloud.is-reading .splash-read-aloud__label {
+    color: #f00;
+  }
+
+  #splash-content p:first-of-type {
     color: #0f0;
     font-size: 1.45em;
     line-height: 1.25;
+    white-space: nowrap;
   }
 
   #splash-content p:last-child {
@@ -90,12 +122,27 @@
     display: flex;
     box-sizing: border-box;
     padding: clamp(10px, 3vmin, 32px);
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     color: #0f0;
-    font: bold clamp(28px, 5vw, 72px)/1.15 "Courier New", Courier, monospace;
+    font: bold clamp(12pt, 1.6vw, 18pt)/1.6 "Courier New", Courier, monospace;
+    text-align: center;
     pointer-events: none;
     animation: splash-idle-pulse 1.1s ease-in-out infinite;
+  }
+
+  .splash-selection-message p {
+    margin: 0 0 .85em;
+  }
+
+  .splash-selection-message p:first-child {
+    font-size: 1.45em;
+    line-height: 1.25;
+  }
+
+  .splash-selection-message p:last-child {
+    margin-bottom: 0;
   }
 
   @keyframes splash-idle-pulse {
@@ -154,7 +201,9 @@
 <body>
 <canvas id="game"></canvas>
 <main id="content-area" aria-label="Content area">
-  <article id="splash-content" aria-live="polite"></article>
+  <article id="splash-content" aria-live="polite">
+    <button id="splash-read-aloud" type="button">🔊 <span class="splash-read-aloud__label">(READ ALOUD)</span></button>
+  </article>
 </main>
 <iframe
   id="top-nav-frame"
@@ -201,9 +250,18 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const splashContent = document.getElementById("splash-content");
+const splashReadAloud = document.getElementById("splash-read-aloud");
+const splashReadAloudLabel = splashReadAloud.querySelector(".splash-read-aloud__label");
 let splashFitFrame = 0;
 let splashSelectionTimer = 0;
 let splashSelectionMessageActive = false;
+let splashAudioContext = null;
+const splashAudioBufferPromises = new Map();
+const splashMarkdownPromises = new Map();
+let splashAudioSource = null;
+let splashReadAloudActive = false;
+let splashReadAloudRun = 0;
+let splashCycleRun = 0;
 let starfieldPaused = false;
 
 function fitSplashContent() {
@@ -211,7 +269,10 @@ function fitSplashContent() {
   splashContent.style.fontSize = "";
   let fontSize = parseFloat(getComputedStyle(splashContent).fontSize);
 
-  while (fontSize > 8 && splashContent.scrollHeight > splashContent.clientHeight) {
+  while (fontSize > 8 && (
+    splashContent.scrollHeight > splashContent.clientHeight
+    || splashContent.scrollWidth > splashContent.clientWidth
+  )) {
     fontSize -= .5;
     splashContent.style.fontSize = fontSize + "px";
   }
@@ -222,24 +283,214 @@ function scheduleSplashFit() {
   splashFitFrame = requestAnimationFrame(fitSplashContent);
 }
 
-fetch("/dead/text/splash-01.md")
+fetch("/dead/text/splash-markdown/splash-00.md")
   .then(response => {
-    if (!response.ok) throw new Error("Unable to load /dead/text/splash-01.md");
+    if (!response.ok) throw new Error("Unable to load /dead/text/splash-markdown/splash-00.md");
     return response.text();
   })
   .then(markdown => {
     const paragraphs = markdown.trim().split(/\r?\n\s*\r?\n/);
-    splashContent.replaceChildren(...paragraphs.map(text => {
+    const renderedParagraphs = paragraphs.map(text => {
       const paragraph = document.createElement("p");
       paragraph.textContent = text.replace(/\r?\n/g, " ");
       return paragraph;
-    }));
+    });
+
+    splashContent.replaceChildren(splashReadAloud, ...renderedParagraphs);
     scheduleSplashFit();
   })
   .catch(() => {
-    splashContent.textContent = "The entrance is temporarily unavailable.";
+    const errorMessage = document.createElement("p");
+    errorMessage.textContent = "The entrance is temporarily unavailable.";
+    splashContent.replaceChildren(splashReadAloud, errorMessage);
     scheduleSplashFit();
   });
+
+function ensureSplashAudioContext() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+
+  if (!splashAudioContext) splashAudioContext = new AudioContextClass();
+  if (splashAudioContext.state === "suspended") {
+    splashAudioContext.resume().catch(() => {});
+  }
+
+  return splashAudioContext;
+}
+
+function loadSplashAudio(splashNumber) {
+  if (!splashAudioBufferPromises.has(splashNumber)) {
+    const audioPromise = fetch(`/dead/audio/splash-audio/splash-${splashNumber}-david.mp3`)
+      .then(response => {
+        if (!response.ok) throw new Error(`Unable to load David audio for splash ${splashNumber}`);
+        return response.arrayBuffer();
+      })
+      .then(audioData => splashAudioContext.decodeAudioData(audioData))
+      .catch(error => {
+        splashAudioBufferPromises.delete(splashNumber);
+        throw error;
+      });
+
+    splashAudioBufferPromises.set(splashNumber, audioPromise);
+  }
+
+  return splashAudioBufferPromises.get(splashNumber);
+}
+
+function stopSplashAudio() {
+  if (!splashAudioSource) return;
+  try { splashAudioSource.stop(); } catch (_) {}
+  splashAudioSource = null;
+}
+
+function playSplashAudioBuffer(audioBuffer) {
+  stopSplashAudio();
+
+  return new Promise(resolve => {
+    const source = splashAudioContext.createBufferSource();
+    const startTime = splashAudioContext.currentTime;
+    const modulationLength = audioBuffer.duration * 1.4;
+    let modulationTime = 0;
+    let modulationStep = 0;
+
+    source.buffer = audioBuffer;
+    source.connect(splashAudioContext.destination);
+    source.detune.setValueAtTime(0, startTime);
+
+    while (modulationTime < modulationLength) {
+      modulationTime += .13 + Math.random() * .1;
+      const sway = Math.sin(modulationStep * .83) * 190;
+      const stumble = (Math.random() - .5) * 220;
+      const cents = Math.max(-360, Math.min(360, sway + stumble));
+      source.detune.linearRampToValueAtTime(cents, startTime + modulationTime);
+      modulationStep++;
+    }
+
+    source.onended = () => {
+      if (splashAudioSource === source) splashAudioSource = null;
+      resolve();
+    };
+    splashAudioSource = source;
+    source.start(startTime);
+  });
+}
+
+async function playSplashAudio(splashNumber) {
+  const context = ensureSplashAudioContext();
+  if (!context) return;
+  await context.resume();
+  const audioBuffer = await loadSplashAudio(splashNumber);
+  return playSplashAudioBuffer(audioBuffer);
+}
+
+function updateSplashReadAloudControl() {
+  splashReadAloudLabel.textContent = splashReadAloudActive
+    ? "[STOP READING]"
+    : "(READ ALOUD)";
+  splashReadAloud.classList.toggle("is-reading", splashReadAloudActive);
+  splashReadAloud.setAttribute(
+    "aria-label",
+    splashReadAloudActive ? "Stop reading splash text" : "Read splash text aloud"
+  );
+}
+
+function cancelSplashReadAloud() {
+  splashReadAloudRun++;
+  splashReadAloudActive = false;
+  updateSplashReadAloudControl();
+  stopSplashAudio();
+}
+
+async function readSplashAloud() {
+  const run = ++splashReadAloudRun;
+
+  if (splashReadAloudActive) {
+    splashReadAloudActive = false;
+    updateSplashReadAloudControl();
+    stopSplashAudio();
+    return;
+  }
+
+  splashReadAloudActive = true;
+  updateSplashReadAloudControl();
+
+  try {
+    await playSplashAudio("00");
+  } finally {
+    if (run === splashReadAloudRun) {
+      splashReadAloudActive = false;
+      updateSplashReadAloudControl();
+    }
+  }
+}
+
+function loadSplashMarkdown(splashNumber) {
+  if (!splashMarkdownPromises.has(splashNumber)) {
+    const markdownPromise = fetch(`/dead/text/splash-markdown/splash-${splashNumber}.md`)
+      .then(response => {
+        if (!response.ok) throw new Error(`Unable to load splash ${splashNumber}`);
+        return response.text();
+      })
+      .catch(error => {
+        splashMarkdownPromises.delete(splashNumber);
+        throw error;
+      });
+
+    splashMarkdownPromises.set(splashNumber, markdownPromise);
+  }
+
+  return splashMarkdownPromises.get(splashNumber);
+}
+
+function renderCyclingSplash(message, markdown) {
+  const paragraphs = markdown.trim().split(/\r?\n\s*\r?\n/).map(text => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = text.replace(/\r?\n/g, " ");
+    return paragraph;
+  });
+
+  message.style.fontSize = "";
+  message.replaceChildren(...paragraphs);
+
+  requestAnimationFrame(() => {
+    let fontSize = parseFloat(getComputedStyle(message).fontSize);
+    while (fontSize > 8 && (
+      message.scrollHeight > message.clientHeight
+      || message.scrollWidth > message.clientWidth
+    )) {
+      fontSize -= .5;
+      message.style.fontSize = fontSize + "px";
+    }
+  });
+}
+
+async function cycleSelectionSplashes(run, message) {
+  const splashNumbers = ["01", "02", "03", "04"];
+
+  while (splashSelectionMessageActive && run === splashCycleRun) {
+    for (const splashNumber of splashNumbers) {
+      if (!splashSelectionMessageActive || run !== splashCycleRun) return;
+
+      try {
+        const [markdown, audioBuffer] = await Promise.all([
+          loadSplashMarkdown(splashNumber),
+          loadSplashAudio(splashNumber)
+        ]);
+        if (!splashSelectionMessageActive || run !== splashCycleRun) return;
+
+        renderCyclingSplash(message, markdown);
+        await playSplashAudioBuffer(audioBuffer);
+      } catch (_) {
+        // Skip a missing splash pair and continue the loop.
+      }
+
+      if (!splashSelectionMessageActive || run !== splashCycleRun) return;
+      await new Promise(resolve => window.setTimeout(resolve, 2000));
+    }
+  }
+}
+
+splashReadAloud.addEventListener("click", readSplashAloud);
 
 window.addEventListener("resize", scheduleSplashFit);
 
@@ -259,22 +510,32 @@ function triggerSplashSelectionMessage() {
   splashSelectionTimer = 0;
   if (!selectionTouchesSplash()) return;
 
+  const context = ensureSplashAudioContext();
+  if (!context) return;
+
   starfieldPaused = true;
   splashSelectionMessageActive = true;
+  cancelSplashReadAloud();
   if (splashFitFrame) cancelAnimationFrame(splashFitFrame);
   splashContent.classList.add("splash-content--idle-message");
 
   const message = document.createElement("div");
   message.className = "splash-selection-message";
-  message.textContent = "Why do you do things like this, just to mess with me?";
   splashContent.append(message);
+  const run = ++splashCycleRun;
+  cycleSelectionSplashes(run, message);
 }
 
 function restoreSplashAfterSelection() {
+  if (!splashSelectionMessageActive) return;
+
+  splashCycleRun++;
+  stopSplashAudio();
   starfieldPaused = false;
   splashSelectionMessageActive = false;
   splashContent.classList.remove("splash-content--idle-message");
   splashContent.querySelector(".splash-selection-message")?.remove();
+  window.getSelection()?.removeAllRanges();
   scheduleSplashFit();
 }
 
@@ -296,8 +557,14 @@ function watchSplashSelection() {
 
 document.addEventListener("selectionchange", watchSplashSelection);
 ["pointerdown", "keydown", "wheel", "touchstart"].forEach(eventName => {
-  window.addEventListener(eventName, watchSplashSelection, { passive: true });
+  window.addEventListener(eventName, () => {
+    ensureSplashAudioContext();
+    watchSplashSelection();
+  }, { passive: true });
 });
+window.addEventListener("click", () => {
+  if (splashSelectionMessageActive) restoreSplashAfterSelection();
+}, true);
 
 document.body.style.touchAction = "none";
 canvas.style.touchAction = "none";
@@ -340,6 +607,11 @@ const MENU_IDLE_SWAY_STRENGTH = 0.15;
 window.addEventListener("message", event => {
   if (event.origin !== window.location.origin) return;
   if (!event.data) return;
+
+  if (event.data.type === "portal-user-click") {
+    if (splashSelectionMessageActive) restoreSplashAfterSelection();
+    return;
+  }
 
   if (event.data.type === "top-nav-sidebar") {
     document.getElementById("top-nav-frame").classList.toggle("sidebar-open", Boolean(event.data.open));
