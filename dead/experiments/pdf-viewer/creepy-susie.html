@@ -4,7 +4,7 @@
   <script src="/dead/js/shell-route.js"></script><link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>/dead/tools/pdf-viewer/creepy-susie.html</title>
+  <title>/dead/experiments/pdf-viewer/creepy-susie.html</title>
   <style>
     html, body {
       margin: 0;
@@ -613,9 +613,9 @@
     async function loadDefaultPdf() {
       loading.style.display = 'grid';
       try {
-        const response = await fetch('/dead/tools/pdf-viewer/pdfs/creepy-susie.pdf');
+        const response = await fetch('/dead/experiments/pdf-viewer/pdfs/creepy-susie.pdf');
         if (!response.ok) {
-          throw new Error('Failed to load /dead/tools/pdf-viewer/pdfs/creepy-susie.pdf');
+          throw new Error('Failed to load /dead/experiments/pdf-viewer/pdfs/creepy-susie.pdf');
         }
         const bytes = await response.arrayBuffer();
         await loadPdfBytes(bytes);

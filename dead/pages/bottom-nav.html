@@ -147,6 +147,34 @@
   const fullscreenToggle = document.getElementById("fullscreen-toggle");
   const pageAction = document.getElementById("page-action");
   const pageActionOk = document.getElementById("page-action-ok");
+  const randomPages = [
+    "/",
+    "/dead/games/shooter-game/",
+    "/dead/games/inferno-trainer/",
+    "/dead/games/tektite-3D-game/",
+    "/dead/experiments/background/",
+    "/dead/experiments/blotter-visualizer/",
+    "/dead/experiments/bookmark-manager/",
+    "/dead/experiments/business-card/",
+    "/dead/experiments/camera-experiment/",
+    "/dead/experiments/camera-studio/",
+    "/dead/experiments/canvas-backgrounds/",
+    "/dead/experiments/chat-sandbox/",
+    "/dead/experiments/dead-tv/",
+    "/dead/experiments/gods-eye/",
+    "/dead/experiments/habisky-mofo/",
+    "/dead/experiments/karaoke-machine/",
+    "/dead/experiments/mandala-visuals/",
+    "/dead/experiments/multimedia-editor/",
+    "/dead/experiments/music-crunchifier/",
+    "/dead/experiments/music-player/",
+    "/dead/experiments/pdf-viewer/",
+    "/dead/experiments/photosphere/",
+    "/dead/experiments/sound-machine/",
+    "/dead/experiments/stacks/",
+    "/dead/experiments/weird-secret/",
+    "/dead/experiments/world-in-thing/"
+  ];
 
   function fitSelectedAction() {
     const selectedText = pageAction.options[pageAction.selectedIndex].text;
@@ -158,6 +186,16 @@
 
   pageActionOk.addEventListener("click", () => {
     const hostDocument = window.parent === window ? document : window.parent.document;
+
+    if (pageAction.value === "random") {
+      const destination = randomPages[Math.floor(Math.random() * randomPages.length)];
+      if (window.parent === window) window.location.assign(destination);
+      else window.parent.postMessage(
+        { type: "portal-shell-route", path: destination },
+        window.location.origin
+      );
+      return;
+    }
 
     if (pageAction.value === "barrel-roll") {
       const centerX = window.parent === window ? innerWidth / 2 : window.parent.innerWidth / 2;

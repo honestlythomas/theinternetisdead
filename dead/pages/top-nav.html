@@ -36,7 +36,7 @@
     top: var(--top-nav-height);
     bottom: 0;
     width: min(360px, 88vw);
-    background: #000;
+    background: rgba(0, 0, 0, .5);
   }
 
   .top-nav__sidebar--left,
@@ -93,9 +93,29 @@
   }
 
   .top-nav__site-label,
-  .top-nav__page-label,
+  .top-nav__page-select,
   .top-nav__clock-time {
     text-decoration: underline;
+  }
+
+  .top-nav__page-select {
+    appearance: none;
+    -webkit-appearance: none;
+    max-width: 13ch;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: inherit;
+    text-align: center;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .top-nav__page-select option {
+    background: #000;
+    color: #0f0;
   }
 
   .top-nav__ghost,
@@ -114,7 +134,7 @@
   }
 
   .top-nav__site-label,
-  .top-nav__page-label,
+  .top-nav__page-select,
   .top-nav__bracket,
   .top-nav__skull,
   .top-nav__ghost,
@@ -125,7 +145,8 @@
   }
 
   .top-nav__site-label:hover,
-  .top-nav__page-label:hover,
+  .top-nav__page-select:hover,
+  .top-nav__page-select:focus-visible,
   .top-nav__bracket:hover,
   .top-nav__skull:hover,
   .top-nav__ghost:hover,
@@ -254,7 +275,7 @@
 <body>
   <nav class="top-nav" aria-label="Main navigation">
     <div class="top-nav__site"><button class="top-nav__skull" id="sidebar-toggle" type="button" aria-label="Toggle left sidebar" aria-expanded="false">☠</button> <a class="top-nav__site-label" href="/" target="_top">theinternet<br class="top-nav__domain-break">isdead.org</a> <button class="top-nav__ghost" id="ghost-sidebar-toggle" type="button" aria-label="Toggle ghost sidebar" aria-expanded="false">&#x1F47B;&#xFE0E;</button></div>
-    <div class="top-nav__page"><span class="top-nav__scaled-content"><span class="top-nav__bracket">&lt;</span> <span class="top-nav__page-label">Main Page</span> <span class="top-nav__bracket">&gt;</span></span></div>
+    <div class="top-nav__page"><span class="top-nav__scaled-content"><span class="top-nav__bracket">&lt;</span> <select class="top-nav__page-select" id="section-select" aria-label="Content section"><option value="experiments">Experiments</option><option value="games">Games</option><option value="main" selected>Main Page</option></select> <span class="top-nav__bracket">&gt;</span></span></div>
     <time class="top-nav__clock" id="top-nav-clock" aria-label="Current Toronto time"><span class="top-nav__scaled-content"><button class="top-nav__clock-icon" id="clock-sidebar-toggle" type="button" aria-label="Toggle clock sidebar" aria-expanded="false">&#x1F558;&#xFE0E;</button> <span class="top-nav__clock-time" id="top-nav-clock-time">11:22:20 PM</span> <button class="top-nav__gear" id="right-sidebar-toggle" type="button" aria-label="Toggle right sidebar" aria-expanded="false">⚙</button></span></time>
   </nav>
   <aside class="top-nav__sidebar top-nav__sidebar--left" id="left-sidebar" aria-label="Left sidebar" aria-hidden="true"></aside>
@@ -266,6 +287,7 @@
 (() => {
   const clock = document.getElementById("top-nav-clock");
   const clockTime = document.getElementById("top-nav-clock-time");
+  const sectionSelect = document.getElementById("section-select");
   const leftSidebar = document.getElementById("left-sidebar");
   const ghostSidebar = document.getElementById("ghost-sidebar");
   const rightSidebar = document.getElementById("right-sidebar");
@@ -274,6 +296,22 @@
   const ghostSidebarToggle = document.getElementById("ghost-sidebar-toggle");
   const rightSidebarToggle = document.getElementById("right-sidebar-toggle");
   const clockSidebarToggle = document.getElementById("clock-sidebar-toggle");
+
+  function publishSection(section) {
+    if (window.parent === window) return;
+    window.parent.postMessage({ type: "portal-shell-section", section }, window.location.origin);
+  }
+
+  sectionSelect.addEventListener("change", () => publishSection(sectionSelect.value));
+
+  window.addEventListener("message", event => {
+    if (event.origin !== window.location.origin) return;
+    if (event.data?.type !== "portal-shell-section-state") return;
+    if (["main", "games", "experiments"].includes(event.data.section)) {
+      sectionSelect.value = event.data.section;
+      scheduleMobileFit();
+    }
+  });
   const torontoClock = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Toronto",
     hour: "numeric",

@@ -1,20 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="/dead/js/shell-route.js"></script><link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
+<script src="/dead/scripts/ensure-shell.js"></script>
+<link rel="icon" type="image/png" href="/dead/images/pngs/dead-favicon.png" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>/dead/tools/multimedia-editor/multimedia-editor.html</title>
-<script>
-const standaloneParams = new URLSearchParams(window.location.search);
-const allowStandalone = standaloneParams.get('standalone') === 'true';
-
-if (window.top === window.self && !allowStandalone && !window.__deadShellGuardActive) {
-  const shellFramePath = '/dead/tools/multimedia-editor/' + window.location.search + window.location.hash;
-  window.sessionStorage.setItem('deadRootShellFramePath', shellFramePath);
-  window.location.replace('/?frame=' + encodeURIComponent(shellFramePath));
-}
-</script>
+<title>/dead/experiments/multimedia-editor/</title>
 <style>
 :root{
   --bg:#111;
