@@ -498,6 +498,7 @@
 
     .bush-inventory {
       --inventory-peek-height: 29px;
+      zoom: 2;
       position: fixed;
       left: 50%;
       bottom: 0;
@@ -702,6 +703,7 @@
     }
 
     .bush-carry-ghost {
+      zoom: 2;
       position: fixed;
       left: 0;
       top: 0;
@@ -797,6 +799,13 @@
       image-rendering: pixelated;
     }
 
+
+    @media (max-width: 639px) {
+      .bush-inventory,
+      .bush-carry-ghost {
+        zoom: 1;
+      }
+    }
 
     @media (max-width: 560px) {
       .hud {
