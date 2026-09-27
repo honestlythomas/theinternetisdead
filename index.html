@@ -752,6 +752,20 @@ const playerSpeed = 7;
 // gameplay input. To mimic gameplay with no left/right movement, set this to 0.
 const MENU_IDLE_SWAY_STRENGTH = 0.15;
 
+window.addEventListener("keydown", event => {
+  if (event.key !== "/" || event.ctrlKey || event.metaKey || event.altKey) return;
+  const target = event.target;
+  const tag = target && target.tagName ? target.tagName.toLowerCase() : "";
+  if (tag === "input" || tag === "textarea" || tag === "select" || target?.isContentEditable) return;
+
+  event.preventDefault();
+  const topNavFrame = document.getElementById("top-nav-frame");
+  topNavFrame?.contentWindow?.postMessage(
+    { type: "portal-open-chat", seedSlash: true },
+    window.location.origin
+  );
+});
+
 window.addEventListener("message", event => {
   if (event.origin !== window.location.origin) return;
   if (!event.data) return;
