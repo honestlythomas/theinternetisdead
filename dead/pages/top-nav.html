@@ -39,6 +39,14 @@
     background: rgba(0, 0, 0, .5);
   }
 
+  .top-nav__sidebar-frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: transparent;
+  }
+
   .top-nav__sidebar--left,
   .top-nav__sidebar--ghost {
     left: 0;
@@ -279,7 +287,16 @@
     <time class="top-nav__clock" id="top-nav-clock" aria-label="Current Toronto time"><span class="top-nav__scaled-content"><button class="top-nav__clock-icon" id="clock-sidebar-toggle" type="button" aria-label="Toggle clock sidebar" aria-expanded="false">&#x1F558;&#xFE0E;</button> <span class="top-nav__clock-time" id="top-nav-clock-time">11:22:20 PM</span> <button class="top-nav__gear" id="right-sidebar-toggle" type="button" aria-label="Toggle right sidebar" aria-expanded="false">⚙</button></span></time>
   </nav>
   <aside class="top-nav__sidebar top-nav__sidebar--left" id="left-sidebar" aria-label="Left sidebar" aria-hidden="true"></aside>
-  <aside class="top-nav__sidebar top-nav__sidebar--ghost" id="ghost-sidebar" aria-label="Ghost sidebar" aria-hidden="true"></aside>
+  <aside class="top-nav__sidebar top-nav__sidebar--ghost" id="ghost-sidebar" aria-label="Ghost sidebar" aria-hidden="true">
+    <iframe
+      class="top-nav__sidebar-frame"
+      id="ghost-chat-frame"
+      src="/dead/chat/chat.html"
+      title="Chat"
+      loading="eager"
+      allowtransparency="true"
+    ></iframe>
+  </aside>
   <aside class="top-nav__sidebar top-nav__sidebar--right" id="right-sidebar" aria-label="Right sidebar" aria-hidden="true"></aside>
   <aside class="top-nav__sidebar top-nav__sidebar--clock" id="clock-sidebar" aria-label="Clock sidebar" aria-hidden="true"></aside>
 
@@ -294,6 +311,7 @@
   const clockSidebar = document.getElementById("clock-sidebar");
   const leftSidebarToggle = document.getElementById("sidebar-toggle");
   const ghostSidebarToggle = document.getElementById("ghost-sidebar-toggle");
+  const ghostChatFrame = document.getElementById("ghost-chat-frame");
   const rightSidebarToggle = document.getElementById("right-sidebar-toggle");
   const clockSidebarToggle = document.getElementById("clock-sidebar-toggle");
 
@@ -405,6 +423,13 @@
     ghostSidebar.setAttribute("aria-hidden", String(!ghostOpen));
     rightSidebar.setAttribute("aria-hidden", String(!rightOpen));
     clockSidebar.setAttribute("aria-hidden", String(!clockOpen));
+
+    if (ghostChatFrame?.contentWindow) {
+      ghostChatFrame.contentWindow.postMessage(
+        { type: ghostOpen ? "chatSandboxOpen" : "chatSandboxClose", focus: ghostOpen },
+        window.location.origin
+      );
+    }
 
     if (window.parent !== window) {
       window.parent.postMessage(
