@@ -106,10 +106,15 @@
     text-decoration: underline;
   }
 
+  .top-nav__page-menu {
+    position: relative;
+    display: inline-block;
+  }
+
   .top-nav__page-select {
     appearance: none;
     -webkit-appearance: none;
-    max-width: 13ch;
+    max-width: 15ch;
     border: 0;
     padding: 0;
     background: transparent;
@@ -121,9 +126,61 @@
     cursor: pointer;
   }
 
-  .top-nav__page-select option {
-    background: #000;
-    color: #0f0;
+  .top-nav__page-menu-list {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 6px);
+    left: 50%;
+    display: none;
+    min-width: 230px;
+    transform: translateX(-50%);
+    border: 1px solid #0f0;
+    background: rgba(0, 0, 0, .96);
+    box-shadow: 0 0 14px rgba(0, 255, 0, .18);
+  }
+
+  .top-nav__page-menu-list.open {
+    display: grid;
+  }
+
+  .top-nav__page-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 6px;
+  }
+
+  .top-nav__page-row:hover,
+  .top-nav__page-row:focus-within {
+    background: rgba(0, 255, 0, .08);
+  }
+
+  .top-nav__favorite-star,
+  .top-nav__page-choice {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .top-nav__favorite-star {
+    width: 1.4em;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .top-nav__favorite-star[data-favorite="true"] {
+    color: #ffd54a;
+    text-shadow: 0 0 8px rgba(255, 213, 74, .45);
+  }
+
+  .top-nav__page-choice {
+    text-align: left;
+    text-decoration: underline;
   }
 
   .top-nav__ghost,
@@ -155,6 +212,10 @@
   .top-nav__site-label:hover,
   .top-nav__page-select:hover,
   .top-nav__page-select:focus-visible,
+  .top-nav__page-choice:hover,
+  .top-nav__page-choice:focus-visible,
+  .top-nav__favorite-star:hover,
+  .top-nav__favorite-star:focus-visible,
   .top-nav__bracket:hover,
   .top-nav__skull:hover,
   .top-nav__ghost:hover,
@@ -283,7 +344,16 @@
 <body>
   <nav class="top-nav" aria-label="Main navigation">
     <div class="top-nav__site"><button class="top-nav__skull" id="sidebar-toggle" type="button" aria-label="Toggle left sidebar" aria-expanded="false">☠</button> <a class="top-nav__site-label" href="/" target="_top">theinternet<br class="top-nav__domain-break">isdead.org</a> <button class="top-nav__ghost" id="ghost-sidebar-toggle" type="button" aria-label="Toggle ghost sidebar" aria-expanded="false">&#x1F47B;&#xFE0E;</button></div>
-    <div class="top-nav__page"><span class="top-nav__scaled-content"><span class="top-nav__bracket">&lt;</span> <select class="top-nav__page-select" id="section-select" aria-label="Content section"><option value="experiments">Experiments</option><option value="games">Games</option><option value="main" selected>Main Page</option></select> <span class="top-nav__bracket">&gt;</span></span></div>
+    <div class="top-nav__page"><span class="top-nav__scaled-content"><span class="top-nav__bracket">&lt;</span>
+      <span class="top-nav__page-menu" id="section-menu">
+        <button class="top-nav__page-select" id="section-select" type="button" aria-haspopup="true" aria-expanded="false">Main Page</button>
+        <span class="top-nav__page-menu-list" id="section-menu-list" role="menu" aria-label="Content section">
+          <span class="top-nav__page-row" data-section="experiments"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Experiments" title="Favorite Experiments">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Experiments</button></span>
+          <span class="top-nav__page-row" data-section="games"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Games" title="Favorite Games">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Games</button></span>
+          <span class="top-nav__page-row" data-section="main"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Main Page" title="Favorite Main Page">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Main Page</button></span>
+        </span>
+      </span>
+      <span class="top-nav__bracket">&gt;</span></span></div>
     <time class="top-nav__clock" id="top-nav-clock" aria-label="Current Toronto time"><span class="top-nav__scaled-content"><button class="top-nav__clock-icon" id="clock-sidebar-toggle" type="button" aria-label="Toggle clock sidebar" aria-expanded="false">&#x1F558;&#xFE0E;</button> <span class="top-nav__clock-time" id="top-nav-clock-time">11:22:20 PM</span> <button class="top-nav__gear" id="right-sidebar-toggle" type="button" aria-label="Toggle right sidebar" aria-expanded="false">⚙</button></span></time>
   </nav>
   <aside class="top-nav__sidebar top-nav__sidebar--left" id="left-sidebar" aria-label="Left sidebar" aria-hidden="true"></aside>
@@ -305,6 +375,11 @@
   const clock = document.getElementById("top-nav-clock");
   const clockTime = document.getElementById("top-nav-clock-time");
   const sectionSelect = document.getElementById("section-select");
+  const sectionMenu = document.getElementById("section-menu");
+  const sectionMenuList = document.getElementById("section-menu-list");
+  const sectionRows = Array.from(document.querySelectorAll(".top-nav__page-row"));
+  const FAVORITE_SECTION_KEY = "theinternetisdead.favoriteSection";
+  let currentSection = "main";
   const leftSidebar = document.getElementById("left-sidebar");
   const ghostSidebar = document.getElementById("ghost-sidebar");
   const rightSidebar = document.getElementById("right-sidebar");
@@ -320,7 +395,78 @@
     window.parent.postMessage({ type: "portal-shell-section", section }, window.location.origin);
   }
 
-  sectionSelect.addEventListener("change", () => publishSection(sectionSelect.value));
+  function sectionLabel(section) {
+    return {
+      experiments: "Experiments",
+      games: "Games",
+      main: "Main Page"
+    }[section] || "Main Page";
+  }
+
+  function loadFavoriteSection() {
+    try {
+      const saved = localStorage.getItem(FAVORITE_SECTION_KEY) || "";
+      return ["main", "games", "experiments"].includes(saved) ? saved : "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function saveFavoriteSection(section) {
+    try {
+      if (section) localStorage.setItem(FAVORITE_SECTION_KEY, section);
+      else localStorage.removeItem(FAVORITE_SECTION_KEY);
+    } catch (error) {}
+    renderFavoriteStars();
+  }
+
+  function renderFavoriteStars() {
+    const favorite = loadFavoriteSection();
+    sectionRows.forEach(row => {
+      const star = row.querySelector(".top-nav__favorite-star");
+      const isFavorite = row.dataset.section === favorite;
+      if (!star) return;
+      star.textContent = isFavorite ? "★" : "☆";
+      star.dataset.favorite = String(isFavorite);
+      star.setAttribute("aria-pressed", String(isFavorite));
+    });
+  }
+
+  function setSectionMenuOpen(open) {
+    sectionMenuList.classList.toggle("open", !!open);
+    sectionSelect.setAttribute("aria-expanded", String(!!open));
+  }
+
+  function setCurrentSection(section, publish = false) {
+    if (!["main", "games", "experiments"].includes(section)) return;
+    currentSection = section;
+    sectionSelect.textContent = sectionLabel(section);
+    setSectionMenuOpen(false);
+    scheduleMobileFit();
+    if (publish) publishSection(section);
+  }
+
+  sectionSelect.addEventListener("click", () => {
+    setSectionMenuOpen(!sectionMenuList.classList.contains("open"));
+  });
+
+  sectionRows.forEach(row => {
+    const section = row.dataset.section;
+    row.querySelector(".top-nav__page-choice")?.addEventListener("click", () => {
+      setCurrentSection(section, true);
+    });
+    row.querySelector(".top-nav__favorite-star")?.addEventListener("click", event => {
+      event.stopPropagation();
+      const favorite = loadFavoriteSection();
+      saveFavoriteSection(favorite === section ? "" : section);
+    });
+  });
+
+  document.addEventListener("click", event => {
+    if (!sectionMenu.contains(event.target)) setSectionMenuOpen(false);
+  });
+
+  renderFavoriteStars();
 
   window.addEventListener("message", event => {
     if (event.origin !== window.location.origin) return;
@@ -338,8 +484,7 @@
 
     if (event.data?.type !== "portal-shell-section-state") return;
     if (["main", "games", "experiments"].includes(event.data.section)) {
-      sectionSelect.value = event.data.section;
-      scheduleMobileFit();
+      setCurrentSection(event.data.section, false);
     }
   });
   const torontoClock = new Intl.DateTimeFormat("en-US", {
