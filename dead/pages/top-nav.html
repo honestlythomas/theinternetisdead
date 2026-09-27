@@ -324,6 +324,18 @@
 
   window.addEventListener("message", event => {
     if (event.origin !== window.location.origin) return;
+
+    if (event.data?.type === "portal-open-chat") {
+      if (openSidebar !== "ghost") toggleSidebar("ghost");
+      if (ghostChatFrame?.contentWindow) {
+        ghostChatFrame.contentWindow.postMessage(
+          { type: "chatSandboxOpen", focus: true, seedSlash: !!event.data.seedSlash },
+          window.location.origin
+        );
+      }
+      return;
+    }
+
     if (event.data?.type !== "portal-shell-section-state") return;
     if (["main", "games", "experiments"].includes(event.data.section)) {
       sectionSelect.value = event.data.section;
