@@ -404,6 +404,17 @@
 
   let openSidebar = null;
 
+  function syncGhostChatState() {
+    if (!ghostChatFrame?.contentWindow) return;
+    const ghostOpen = openSidebar === "ghost";
+    ghostChatFrame.contentWindow.postMessage(
+      { type: ghostOpen ? "chatSandboxOpen" : "chatSandboxClose", focus: ghostOpen },
+      window.location.origin
+    );
+  }
+
+  ghostChatFrame?.addEventListener("load", syncGhostChatState);
+
   function toggleSidebar(side) {
     openSidebar = openSidebar === side ? null : side;
     const leftOpen = openSidebar === "left";
@@ -424,12 +435,7 @@
     rightSidebar.setAttribute("aria-hidden", String(!rightOpen));
     clockSidebar.setAttribute("aria-hidden", String(!clockOpen));
 
-    if (ghostChatFrame?.contentWindow) {
-      ghostChatFrame.contentWindow.postMessage(
-        { type: ghostOpen ? "chatSandboxOpen" : "chatSandboxClose", focus: ghostOpen },
-        window.location.origin
-      );
-    }
+    syncGhostChatState();
 
     if (window.parent !== window) {
       window.parent.postMessage(
