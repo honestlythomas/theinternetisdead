@@ -423,7 +423,7 @@
           <span class="top-nav__page-row" data-section="experiments"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Experiments" title="Favorite Experiments">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Experiments</button></span>
           <span class="top-nav__page-row" data-section="games"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Games" title="Favorite Games">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Games</button></span>
           <span class="top-nav__page-row" data-section="main"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Main Page" title="Favorite Main Page">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Main Page</button></span>
-          <span class="top-nav__page-row" data-section="dead-chat" data-path="/dead/chat/chat.html"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Dead Chat" title="Favorite Dead Chat">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Dead Chat</button></span>
+          <span class="top-nav__page-row" data-section="dead-chat" data-path="/dead/chat/"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Dead Chat" title="Favorite Dead Chat">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Dead Chat</button></span>
         </span>
       </span>
       <button class="top-nav__bracket" id="history-forward" type="button" aria-label="Go forward">&gt;</button></span></div>
@@ -434,7 +434,7 @@
     <iframe
       class="top-nav__sidebar-frame"
       id="ghost-chat-frame"
-      src="/dead/chat/chat.html"
+      src="/dead/chat/"
       title="Chat"
       loading="eager"
       allowtransparency="true"
@@ -653,7 +653,7 @@
     }
 
     if (event.data?.type !== "portal-shell-section-state") return;
-    const stateSection = event.data.path === "/dead/chat/chat.html"
+    const stateSection = event.data.path === "/dead/chat/"
       ? "dead-chat"
       : event.data.section;
     if (["main", "games", "experiments", "dead-chat"].includes(stateSection)) {
