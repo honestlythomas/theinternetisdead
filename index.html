@@ -565,10 +565,10 @@ function routeFromPath(pathname) {
   if (path === "/dead/experiments" || path === "/dead/experiments/") {
     return { ...shellSections.experiments, section: "experiments" };
   }
-  if (path === "/dead/chat/" || path === "/dead/chat/" || path === "/dead/chat") {
+  if (path === "/dead/chat/" || path === "/dead/chat") {
     return {
-      path: route,
-      src: "/dead/chat/",
+      path: "/dead/chat/",
+      src: "/dead/chat/content.html",
       title: "Dead Chat",
       section: "main"
     };
@@ -630,7 +630,7 @@ function setShellRoute(destination, historyMode = "push") {
           .forEach(element => element.remove());
       } catch (_) {}
 
-      if (destination.src === "/dead/chat/") {
+      if (destination.src === "/dead/chat/content.html") {
         frame.contentWindow?.postMessage(
           { type: "chatSandboxOpen", focus: false },
           window.location.origin
