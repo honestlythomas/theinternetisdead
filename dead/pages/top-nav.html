@@ -12,6 +12,11 @@
     overflow: hidden;
   }
 
+  html.page-menu-open,
+  body.page-menu-open {
+    overflow: visible;
+  }
+
   :root {
     --top-nav-height: 56px;
   }
@@ -444,6 +449,8 @@
     const isOpen = !!open;
     sectionMenuList.classList.toggle("open", isOpen);
     sectionSelect.setAttribute("aria-expanded", String(isOpen));
+    document.documentElement.classList.toggle("page-menu-open", isOpen);
+    document.body.classList.toggle("page-menu-open", isOpen);
     if (window.parent !== window) {
       window.parent.postMessage(
         { type: "top-nav-menu", open: isOpen },
