@@ -52,6 +52,61 @@
     background: transparent;
   }
 
+  .top-nav__sidebar--clock {
+    box-sizing: border-box;
+    overflow-y: auto;
+    padding: 18px 20px;
+    color: #0f0;
+    font: bold 12pt/1.35 "Courier New", Courier, monospace;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .top-nav__sidebar--clock::-webkit-scrollbar {
+    display: none;
+  }
+
+  .history-title {
+    margin: 0 0 14px;
+    color: #f0f;
+    font-size: 20pt;
+    font-style: italic;
+  }
+
+  .history-list {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .history-link {
+    display: block;
+    overflow-wrap: anywhere;
+    color: #0f0;
+    text-decoration: underline;
+  }
+
+  .history-link:hover,
+  .history-link:focus-visible {
+    color: #f0f;
+  }
+
+  .history-timestamp {
+    display: block;
+    margin-top: 2px;
+    color: #aaa;
+    font-size: 9pt;
+    font-weight: normal;
+  }
+
+  .history-empty {
+    margin: 0;
+    color: #aaa;
+    font-weight: normal;
+  }
+
   .top-nav__sidebar--left,
   .top-nav__sidebar--ghost {
     left: 0;
@@ -187,6 +242,17 @@
   .top-nav__page-choice {
     text-align: left;
     text-decoration: underline;
+  }
+
+  .top-nav__bracket {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    cursor: pointer;
   }
 
   .top-nav__ghost,
@@ -350,7 +416,7 @@
 <body>
   <nav class="top-nav" aria-label="Main navigation">
     <div class="top-nav__site"><button class="top-nav__skull" id="sidebar-toggle" type="button" aria-label="Toggle left sidebar" aria-expanded="false">☠</button> <a class="top-nav__site-label" href="/" target="_top">theinternet<br class="top-nav__domain-break">isdead.org</a> <button class="top-nav__ghost" id="ghost-sidebar-toggle" type="button" aria-label="Toggle ghost sidebar" aria-expanded="false">&#x1F47B;&#xFE0E;</button></div>
-    <div class="top-nav__page"><span class="top-nav__scaled-content"><span class="top-nav__bracket">&lt;</span>
+    <div class="top-nav__page"><span class="top-nav__scaled-content"><button class="top-nav__bracket" id="history-back" type="button" aria-label="Go back">&lt;</button>
       <span class="top-nav__page-menu" id="section-menu">
         <button class="top-nav__page-select" id="section-select" type="button" aria-haspopup="true" aria-expanded="false">Main Page</button>
         <span class="top-nav__page-menu-list" id="section-menu-list" role="menu" aria-label="Content section">
@@ -360,7 +426,7 @@
           <span class="top-nav__page-row" data-section="dead-chat" data-path="/dead/chat/chat.html"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Dead Chat" title="Favorite Dead Chat">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Dead Chat</button></span>
         </span>
       </span>
-      <span class="top-nav__bracket">&gt;</span></span></div>
+      <button class="top-nav__bracket" id="history-forward" type="button" aria-label="Go forward">&gt;</button></span></div>
     <time class="top-nav__clock" id="top-nav-clock" aria-label="Current Toronto time"><span class="top-nav__scaled-content"><button class="top-nav__clock-icon" id="clock-sidebar-toggle" type="button" aria-label="Toggle clock sidebar" aria-expanded="false">&#x1F558;&#xFE0E;</button> <span class="top-nav__clock-time" id="top-nav-clock-time">11:22:20 PM</span> <button class="top-nav__gear" id="right-sidebar-toggle" type="button" aria-label="Toggle right sidebar" aria-expanded="false">⚙</button></span></time>
   </nav>
   <aside class="top-nav__sidebar top-nav__sidebar--left" id="left-sidebar" aria-label="Left sidebar" aria-hidden="true"></aside>
@@ -375,7 +441,11 @@
     ></iframe>
   </aside>
   <aside class="top-nav__sidebar top-nav__sidebar--right" id="right-sidebar" aria-label="Right sidebar" aria-hidden="true"></aside>
-  <aside class="top-nav__sidebar top-nav__sidebar--clock" id="clock-sidebar" aria-label="Clock sidebar" aria-hidden="true"></aside>
+  <aside class="top-nav__sidebar top-nav__sidebar--clock" id="clock-sidebar" aria-label="Browsing history" aria-hidden="true">
+    <h2 class="history-title">History</h2>
+    <ol class="history-list" id="history-list"></ol>
+    <p class="history-empty" id="history-empty">No pages visited yet.</p>
+  </aside>
 
 <script>
 (() => {
@@ -387,6 +457,8 @@
   const sectionRows = Array.from(document.querySelectorAll(".top-nav__page-row"));
   const FAVORITE_SECTION_KEY = "theinternetisdead.favoriteSection";
   let currentSection = "main";
+  const historyBack = document.getElementById("history-back");
+  const historyForward = document.getElementById("history-forward");
   const leftSidebar = document.getElementById("left-sidebar");
   const ghostSidebar = document.getElementById("ghost-sidebar");
   const rightSidebar = document.getElementById("right-sidebar");
@@ -396,6 +468,68 @@
   const ghostChatFrame = document.getElementById("ghost-chat-frame");
   const rightSidebarToggle = document.getElementById("right-sidebar-toggle");
   const clockSidebarToggle = document.getElementById("clock-sidebar-toggle");
+  const historyList = document.getElementById("history-list");
+  const historyEmpty = document.getElementById("history-empty");
+  const historyStorageKey = "theinternetisdeadHistory";
+  const historyLimit = 10;
+
+  function readHistory() {
+    try {
+      const history = JSON.parse(localStorage.getItem(historyStorageKey) || "[]");
+      return Array.isArray(history) ? history.slice(0, historyLimit) : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function renderHistory(history = readHistory()) {
+    const entries = history.map(entry => {
+      const item = document.createElement("li");
+      const link = document.createElement("a");
+      const timestamp = document.createElement("time");
+      const visitedAt = new Date(entry.visitedAt);
+
+      link.className = "history-link";
+      link.href = entry.path;
+      link.target = "_top";
+      link.textContent = entry.title || entry.path;
+      timestamp.className = "history-timestamp";
+      timestamp.dateTime = Number.isNaN(visitedAt.getTime()) ? "" : visitedAt.toISOString();
+      timestamp.textContent = Number.isNaN(visitedAt.getTime())
+        ? "Time unavailable"
+        : visitedAt.toLocaleString([], { dateStyle: "medium", timeStyle: "medium" });
+      item.append(link, timestamp);
+      return item;
+    });
+
+    historyList.replaceChildren(...entries);
+    historyEmpty.hidden = entries.length > 0;
+  }
+
+  function recordHistoryEntry(path, title) {
+    let url;
+    try {
+      url = new URL(path, window.location.origin);
+    } catch (_) {
+      return;
+    }
+    if (url.origin !== window.location.origin) return;
+
+    const history = readHistory();
+    history.unshift({
+      path: url.pathname + url.search + url.hash,
+      title: String(title || url.pathname),
+      visitedAt: new Date().toISOString()
+    });
+    history.length = Math.min(history.length, historyLimit);
+
+    try {
+      localStorage.setItem(historyStorageKey, JSON.stringify(history));
+    } catch (_) {}
+    renderHistory(history);
+  }
+
+  renderHistory();
 
   function publishSection(section) {
     if (window.parent === window) return;
@@ -493,6 +627,17 @@
 
   renderFavoriteStars();
 
+  function traverseHistory(delta) {
+    if (window.parent === window) {
+      window.history.go(delta);
+      return;
+    }
+    window.parent.postMessage({ type: "portal-shell-history", delta }, window.location.origin);
+  }
+
+  historyBack.addEventListener("click", () => traverseHistory(-1));
+  historyForward.addEventListener("click", () => traverseHistory(1));
+
   window.addEventListener("message", event => {
     if (event.origin !== window.location.origin) return;
 
@@ -513,6 +658,9 @@
       : event.data.section;
     if (["main", "games", "experiments", "dead-chat"].includes(stateSection)) {
       setCurrentSection(stateSection, false);
+    }
+    if (typeof event.data.path === "string") {
+      recordHistoryEntry(event.data.path, event.data.title);
     }
   });
   const torontoClock = new Intl.DateTimeFormat("en-US", {

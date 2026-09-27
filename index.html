@@ -284,6 +284,7 @@ let splashReadAloudActive = false;
 let splashReadAloudRun = 0;
 let splashCycleRun = 0;
 let shellSection = "main";
+let shellRoute = { path: "/", title: "Main Page" };
 let activeContentFrame = null;
 let starfieldPaused = false;
 
@@ -588,7 +589,8 @@ function syncTopNavSection() {
     {
       type: "portal-shell-section-state",
       section: shellSection,
-      path: shellHistoryWindow.location.pathname
+      path: shellRoute.path,
+      title: shellRoute.title
     },
     window.location.origin
   );
@@ -633,6 +635,7 @@ function setShellRoute(destination, historyMode = "push") {
   }
 
   shellSection = section;
+  shellRoute = { path: destination.path, title: destination.title };
   shellHistoryWindow.document.title = section === "main"
     ? "theinternetisdead.org"
     : `TheInternetIsDead.org - ${destination.title}`;
@@ -799,6 +802,12 @@ window.addEventListener("message", event => {
 
   if (event.data.type === "portal-shell-route" && event.source === topNavFrame.contentWindow) {
     setShellRoute(routeFromPath(event.data.path));
+    return;
+  }
+
+  if (event.data.type === "portal-shell-history" && event.source === topNavFrame.contentWindow) {
+    const delta = Number(event.data.delta);
+    if (delta === -1 || delta === 1) shellHistoryWindow.history.go(delta);
     return;
   }
 
