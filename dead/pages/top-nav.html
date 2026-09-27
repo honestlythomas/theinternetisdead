@@ -351,6 +351,7 @@
           <span class="top-nav__page-row" data-section="experiments"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Experiments" title="Favorite Experiments">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Experiments</button></span>
           <span class="top-nav__page-row" data-section="games"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Games" title="Favorite Games">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Games</button></span>
           <span class="top-nav__page-row" data-section="main"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Main Page" title="Favorite Main Page">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Main Page</button></span>
+          <span class="top-nav__page-row" data-section="dead-chat" data-path="/dead/chat/chat.html"><button class="top-nav__favorite-star" type="button" aria-label="Favorite Dead Chat" title="Favorite Dead Chat">☆</button><button class="top-nav__page-choice" type="button" role="menuitem">Dead Chat</button></span>
         </span>
       </span>
       <span class="top-nav__bracket">&gt;</span></span></div>
@@ -395,18 +396,24 @@
     window.parent.postMessage({ type: "portal-shell-section", section }, window.location.origin);
   }
 
+  function publishRoute(path) {
+    if (window.parent === window) return;
+    window.parent.postMessage({ type: "portal-shell-route", path }, window.location.origin);
+  }
+
   function sectionLabel(section) {
     return {
       experiments: "Experiments",
       games: "Games",
-      main: "Main Page"
+      main: "Main Page",
+      "dead-chat": "Dead Chat"
     }[section] || "Main Page";
   }
 
   function loadFavoriteSection() {
     try {
       const saved = localStorage.getItem(FAVORITE_SECTION_KEY) || "";
-      return ["main", "games", "experiments"].includes(saved) ? saved : "";
+      return ["main", "games", "experiments", "dead-chat"].includes(saved) ? saved : "";
     } catch (error) {
       return "";
     }
@@ -438,7 +445,7 @@
   }
 
   function setCurrentSection(section, publish = false) {
-    if (!["main", "games", "experiments"].includes(section)) return;
+    if (!["main", "games", "experiments", "dead-chat"].includes(section)) return;
     currentSection = section;
     sectionSelect.textContent = sectionLabel(section);
     setSectionMenuOpen(false);
@@ -453,7 +460,10 @@
   sectionRows.forEach(row => {
     const section = row.dataset.section;
     row.querySelector(".top-nav__page-choice")?.addEventListener("click", () => {
-      setCurrentSection(section, true);
+      const path = row.dataset.path || "";
+      setCurrentSection(section, false);
+      if (path) publishRoute(path);
+      else publishSection(section);
     });
     row.querySelector(".top-nav__favorite-star")?.addEventListener("click", event => {
       event.stopPropagation();
@@ -483,8 +493,11 @@
     }
 
     if (event.data?.type !== "portal-shell-section-state") return;
-    if (["main", "games", "experiments"].includes(event.data.section)) {
-      setCurrentSection(event.data.section, false);
+    const stateSection = event.data.path === "/dead/chat/chat.html"
+      ? "dead-chat"
+      : event.data.section;
+    if (["main", "games", "experiments", "dead-chat"].includes(stateSection)) {
+      setCurrentSection(stateSection, false);
     }
   });
   const torontoClock = new Intl.DateTimeFormat("en-US", {
