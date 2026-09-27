@@ -629,6 +629,13 @@ function setShellRoute(destination, historyMode = "push") {
           ?.querySelectorAll(".starfield-background, .top-bar-frame")
           .forEach(element => element.remove());
       } catch (_) {}
+
+      if (destination.src === "/dead/chat/chat.html") {
+        frame.contentWindow?.postMessage(
+          { type: "chatSandboxOpen", focus: false },
+          window.location.origin
+        );
+      }
     });
     contentArea.replaceChildren(frame);
     contentArea.setAttribute("aria-label", destination.title + " content");
