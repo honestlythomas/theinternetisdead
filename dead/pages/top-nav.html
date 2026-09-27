@@ -440,8 +440,15 @@
   }
 
   function setSectionMenuOpen(open) {
-    sectionMenuList.classList.toggle("open", !!open);
-    sectionSelect.setAttribute("aria-expanded", String(!!open));
+    const isOpen = !!open;
+    sectionMenuList.classList.toggle("open", isOpen);
+    sectionSelect.setAttribute("aria-expanded", String(isOpen));
+    if (window.parent !== window) {
+      window.parent.postMessage(
+        { type: "top-nav-menu", open: isOpen },
+        window.location.origin
+      );
+    }
   }
 
   function setCurrentSection(section, publish = false) {
