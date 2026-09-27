@@ -187,6 +187,11 @@
     height: 100%;
   }
 
+  #top-nav-frame.menu-open {
+    z-index: 20;
+    height: min(320px, 70vh);
+  }
+
   #bottom-nav-frame {
     position: fixed;
     right: 0;
@@ -813,6 +818,11 @@ window.addEventListener("message", event => {
 
   if (event.data.type === "top-nav-sidebar") {
     document.getElementById("top-nav-frame").classList.toggle("sidebar-open", Boolean(event.data.open));
+    return;
+  }
+
+  if (event.data.type === "top-nav-menu") {
+    document.getElementById("top-nav-frame").classList.toggle("menu-open", Boolean(event.data.open));
     return;
   }
 
