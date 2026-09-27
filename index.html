@@ -559,6 +559,14 @@ function routeFromPath(pathname) {
   if (path === "/dead/experiments" || path === "/dead/experiments/") {
     return { ...shellSections.experiments, section: "experiments" };
   }
+  if (path === "/dead/chat/chat.html" || path === "/dead/chat/" || path === "/dead/chat") {
+    return {
+      path: route,
+      src: "/dead/chat/chat.html",
+      title: "Dead Chat",
+      section: "main"
+    };
+  }
   if (path.startsWith("/dead/games/") || path.startsWith("/dead/experiments/")) {
     return {
       path: route,
@@ -572,7 +580,11 @@ function routeFromPath(pathname) {
 
 function syncTopNavSection() {
   topNavFrame.contentWindow?.postMessage(
-    { type: "portal-shell-section-state", section: shellSection },
+    {
+      type: "portal-shell-section-state",
+      section: shellSection,
+      path: shellHistoryWindow.location.pathname
+    },
     window.location.origin
   );
 }
@@ -587,7 +599,7 @@ function setShellRoute(destination, historyMode = "push") {
   else cancelSplashReadAloud();
   window.getSelection()?.removeAllRanges();
 
-  if (section === "main") {
+  if (section === "main" && !destination.src) {
     activeContentFrame = null;
     contentArea.classList.remove("content-area--framed");
     contentArea.replaceChildren(splashContent);
@@ -777,6 +789,11 @@ window.addEventListener("message", event => {
 
   if (event.data.type === "portal-shell-section" && event.source === topNavFrame.contentWindow) {
     setShellSection(event.data.section);
+    return;
+  }
+
+  if (event.data.type === "portal-shell-route" && event.source === topNavFrame.contentWindow) {
+    setShellRoute(routeFromPath(event.data.path));
     return;
   }
 
