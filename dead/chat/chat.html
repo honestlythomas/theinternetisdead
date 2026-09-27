@@ -2112,7 +2112,7 @@
         const entries = Array.isArray(repoIndex) ? repoIndex : [];
         const itemLinks = entries
           .filter((item) => item && item.type === 'file' && item.path)
-          .map((item) => `/${String(item.path).replace(/^\\/+/, '')}`);
+          .map((item) => `/${String(item.path).replace(/^\/+/, '')}`);
         const paths = Array.from(new Set(itemLinks.map(normalizeRandomPagePath).filter(isSearchableHtmlPath)));
         const docs = [];
         for (let index = 0; index < paths.length; index += SITE_SEARCH_FETCH_CONCURRENCY) {
@@ -2214,7 +2214,7 @@
         const entries = Array.isArray(repoIndex) ? repoIndex : [];
         const paths = entries
           .filter((item) => item && item.path)
-          .map((item) => `/${String(item.path).replace(/^\\/+/, '')}`);
+          .map((item) => `/${String(item.path).replace(/^\/+/, '')}`);
         return Array.from(new Set(paths.map(normalizeRandomPagePath).filter(isRandomPageCandidate)));
       } catch (error) {
         return [];
