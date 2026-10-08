@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172019">
+  <meta name="description" content="A private photo tour of 167 Sunset Beach Road waterfront cottage/home property.">
+  <title>167 Sunset Beach Road | Waterfront Cottage/Home Property</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f7f4ed;
+      --muted: rgba(247, 244, 237, .68);
+      --line: rgba(255, 255, 255, .18);
+      --panel: #18211b;
+      --accent: #d7b874;
+      --ease: cubic-bezier(.22, .72, .18, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      overflow: hidden;
+      background: #101511;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+    .app {
+      position: relative;
+      min-height: 100dvh;
+      isolation: isolate;
+      background: radial-gradient(circle at 70% 15%, #34463a, #172019 46%, #101511 100%);
+    }
+
+    .ambient {
+      position: fixed;
+      inset: -5%;
+      z-index: -2;
+      background-position: center;
+      background-size: cover;
+      filter: blur(36px) saturate(.7) brightness(.35);
+      opacity: .72;
+      transform: scale(1.1);
+      transition: background-image .6s ease;
+    }
+    .app::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(10, 15, 11, .15), rgba(10, 15, 11, .58));
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: max(1rem, env(safe-area-inset-top)) clamp(1rem, 4vw, 3rem) 1rem;
+      pointer-events: none;
+    }
+    .brand, .top-actions { pointer-events: auto; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      color: var(--ink);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .brand::before {
+      content: "";
+      width: 2rem;
+      height: 1px;
+      background: var(--accent);
+    }
+    .top-actions { display: flex; gap: .55rem; }
+    .icon-button {
+      width: 2.75rem;
+      height: 2.75rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: rgba(16, 21, 17, .42);
+      color: var(--ink);
+      cursor: pointer;
+      backdrop-filter: blur(14px);
+      transition: background .25s ease, transform .25s ease;
+    }
+    .icon-button:hover { background: rgba(247, 244, 237, .16); transform: translateY(-2px); }
+    .icon-button svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; }
+
+    .stage {
+      position: relative;
+      height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: clamp(4.8rem, 9vh, 7rem) clamp(1rem, 6vw, 5rem) clamp(7rem, 16vh, 10rem);
+      perspective: 1400px;
+      touch-action: pan-y;
+    }
+
+    .deck {
+      position: relative;
+      width: min(86vw, 1280px);
+      height: min(68vh, 760px);
+    }
+    .slide {
+      --depth: 0;
+      --x: 0px;
+      --drag-rotate: 0deg;
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: clamp(1rem, 2vw, 1.75rem);
+      background: #273129;
+      box-shadow: 0 2rem 5rem rgba(0, 0, 0, .38);
+      transform-origin: 50% 88%;
+      transform: translate3d(var(--x), calc(var(--depth) * 14px), calc(var(--depth) * -40px))
+                 scale(calc(1 - var(--depth) * .035)) rotate(var(--drag-rotate));
+      opacity: calc(1 - var(--depth) * .18);
+      transition: transform .78s var(--ease), opacity .5s ease;
+      will-change: transform, opacity;
+      user-select: none;
+    }
+    .slide[data-depth="0"] { z-index: 4; cursor: grab; }
+    .slide[data-depth="1"] { z-index: 3; }
+    .slide[data-depth="2"] { z-index: 2; }
+    .slide[data-depth="3"] { z-index: 1; }
+    .slide.is-dragging { transition: none; cursor: grabbing; }
+    .slide.exit-left { transform: translate3d(-125%, -2%, 100px) rotate(-8deg); opacity: 0; }
+    .slide.exit-right { transform: translate3d(125%, -2%, 100px) rotate(8deg); opacity: 0; }
+    .slide img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .slide::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    .cover {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      align-items: end;
+      padding: clamp(1.4rem, 5vw, 5rem);
+      overflow: hidden;
+      background: #151b16;
+      transition: opacity .75s ease, visibility .75s;
+    }
+    .cover.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .cover-media { position: absolute; inset: 0; }
+    .cover-media img { width: 100%; height: 100%; object-fit: cover; animation: reveal 1.4s var(--ease) both; }
+    .cover-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(12, 17, 13, .78) 0%, rgba(12, 17, 13, .28) 58%, rgba(12, 17, 13, .08)),
+                  linear-gradient(0deg, rgba(12, 17, 13, .66), transparent 56%);
+    }
+    .cover-content { position: relative; width: min(780px, 92vw); padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      margin: 0 0 1.3rem;
+      color: var(--accent);
+      font-size: .72rem;
+      font-weight: 750;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 2.5rem; height: 1px; background: currentColor; }
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.6rem, 7vw, 6.9rem);
+      font-weight: 400;
+      line-height: .91;
+      letter-spacing: -.045em;
+      text-wrap: balance;
+    }
+    .cover-footer { display: flex; align-items: center; gap: 1.2rem; margin-top: clamp(1.8rem, 4vw, 3.4rem); }
+    .enter-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      min-height: 3.4rem;
+      padding: 0 1.5rem;
+      border: 0;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #172019;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform .25s ease, background .25s ease;
+    }
+    .enter-button:hover { transform: translateY(-2px); background: #fff; }
+    .enter-button span { font-size: 1.25rem; transition: transform .25s ease; }
+    .enter-button:hover span { transform: translateX(4px); }
+    .photo-count { color: rgba(255, 255, 255, .72); font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
+
+    .controls {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: max(1.2rem, env(safe-area-inset-bottom));
+      z-index: 15;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: end;
+      gap: 1.5rem;
+      padding: 0 clamp(1rem, 4vw, 3rem);
+    }
+    .controls[hidden] { display: none; }
+    .position { align-self: center; font-variant-numeric: tabular-nums; color: var(--muted); font-size: .75rem; letter-spacing: .12em; }
+    .position strong { color: var(--ink); font-size: 1.2rem; font-weight: 500; }
+    .nav { display: flex; gap: .7rem; }
+    .nav .icon-button { width: 3.2rem; height: 3.2rem; background: rgba(16, 21, 17, .66); }
+    .thumbs {
+      justify-self: end;
+      width: min(34vw, 440px);
+      display: flex;
+      gap: .45rem;
+      overflow-x: auto;
+      padding: .35rem;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+      mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    }
+    .thumbs::-webkit-scrollbar { display: none; }
+    .thumb {
+      flex: 0 0 3.2rem;
+      height: 2.2rem;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid transparent;
+      border-radius: .35rem;
+      background: #263129;
+      opacity: .48;
+      cursor: pointer;
+      transition: opacity .2s ease, transform .2s ease, border-color .2s ease;
+    }
+    .thumb:hover { opacity: .82; transform: translateY(-2px); }
+    .thumb.is-active { opacity: 1; border-color: var(--accent); }
+    .thumb img { width: 100%; height: 100%; display: block; object-fit: cover; }
+
+    .progress { position: fixed; left: 0; right: 0; bottom: 0; z-index: 16; height: 2px; background: rgba(255,255,255,.08); }
+    .progress span { display: block; width: 0; height: 100%; background: var(--accent); transition: width .6s var(--ease); }
+    .status { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--muted); }
+
+    @keyframes reveal { from { transform: scale(1.08); filter: brightness(.72); } to { transform: scale(1); filter: brightness(1); } }
+
+    @media (max-width: 760px) {
+      .brand { font-size: .62rem; letter-spacing: .12em; }
+      .deck { width: 91vw; height: min(67vh, 640px); }
+      .controls { grid-template-columns: 1fr auto; }
+      .thumbs { display: none; }
+      .slide img { object-position: center; }
+      .cover { padding-bottom: 2.2rem; }
+      h1 { font-size: clamp(2.55rem, 13vw, 4.7rem); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" id="app">
+    <div class="ambient" id="ambient" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">Sunset Beach Road</div>
+      <div class="top-actions">
+        <button class="icon-button" id="fullscreen" type="button" aria-label="Enter fullscreen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="stage" id="stage" aria-label="Property photo slideshow">
+      <p class="status" id="status">Loading photo tour…</p>
+      <div class="deck" id="deck" aria-live="polite"></div>
+    </section>
+
+    <div class="controls" id="controls" hidden>
+      <div class="position"><strong id="current">01</strong> / <span id="total">26</span></div>
+      <nav class="nav" aria-label="Slideshow controls">
+        <button class="icon-button" id="previous" type="button" aria-label="Previous photo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button class="icon-button" id="next" type="button" aria-label="Next photo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </nav>
+      <div class="thumbs" id="thumbs" aria-label="Photo thumbnails"></div>
+    </div>
+
+    <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+
+    <section class="cover" id="cover" aria-labelledby="property-title">
+      <div class="cover-media"><img id="cover-image" alt="Exterior view of 167 Sunset Beach Road"></div>
+      <div class="cover-content">
+        <p class="eyebrow">Waterfront property · Photo tour</p>
+        <h1 id="property-title">167 Sunset Beach Road Waterfront Cottage/Home Property</h1>
+        <div class="cover-footer">
+          <button class="enter-button" id="enter" type="button">View the property <span aria-hidden="true">→</span></button>
+          <span class="photo-count" id="cover-count">26 photographs</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const deck = document.querySelector('#deck');
+      const stage = document.querySelector('#stage');
+      const cover = document.querySelector('#cover');
+      const coverImage = document.querySelector('#cover-image');
+      const enter = document.querySelector('#enter');
+      const controls = document.querySelector('#controls');
+      const status = document.querySelector('#status');
+      const ambient = document.querySelector('#ambient');
+      const currentLabel = document.querySelector('#current');
+      const totalLabel = document.querySelector('#total');
+      const progress = document.querySelector('#progress');
+      const thumbs = document.querySelector('#thumbs');
+      let photos = [];
+      let current = 0;
+      let locked = false;
+      let startX = 0;
+      let dragging = false;
+
+      const pad = value => String(value).padStart(2, '0');
+      const wrapped = value => (value + photos.length) % photos.length;
+
+      function makeSlide(photo, depth) {
+        const figure = document.createElement('figure');
+        figure.className = 'slide';
+        figure.dataset.depth = depth;
+        figure.style.setProperty('--depth', depth);
+        const img = document.createElement('img');
+        img.src = photo.src;
+        img.alt = depth === 0 ? photo.alt : '';
+        img.draggable = false;
+        if (depth > 0) img.loading = 'eager';
+        figure.append(img);
+        return figure;
+      }
+
+      function render() {
+        deck.replaceChildren();
+        for (let depth = 3; depth >= 0; depth -= 1) {
+          deck.append(makeSlide(photos[wrapped(current + depth)], depth));
+        }
+        const src = photos[current].src;
+        ambient.style.backgroundImage = `url("${src}")`;
+        currentLabel.textContent = pad(current + 1);
+        totalLabel.textContent = pad(photos.length);
+        progress.style.width = `${((current + 1) / photos.length) * 100}%`;
+        document.querySelectorAll('.thumb').forEach((thumb, index) => {
+          const active = index === current;
+          thumb.classList.toggle('is-active', active);
+          thumb.setAttribute('aria-current', active ? 'true' : 'false');
+          if (active) thumb.scrollIntoView({ block: 'nearest', inline: 'center' });
+        });
+      }
+
+      function move(direction, target = null) {
+        if (locked || photos.length < 2) return;
+        locked = true;
+        const active = deck.querySelector('[data-depth="0"]');
+        active.classList.add(direction > 0 ? 'exit-left' : 'exit-right');
+        window.setTimeout(() => {
+          current = target === null ? wrapped(current + direction) : wrapped(target);
+          render();
+          locked = false;
+        }, 520);
+      }
+
+      function buildThumbs() {
+        photos.forEach((photo, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'thumb';
+          button.setAttribute('aria-label', `Go to photo ${index + 1}`);
+          const img = document.createElement('img');
+          img.src = photo.src;
+          img.alt = '';
+          img.loading = 'lazy';
+          button.append(img);
+          button.addEventListener('click', () => {
+            if (index !== current) move(index > current ? 1 : -1, index);
+          });
+          thumbs.append(button);
+        });
+      }
+
+      stage.addEventListener('pointerdown', event => {
+        const active = deck.querySelector('[data-depth="0"]');
+        if (!active || locked) return;
+        startX = event.clientX;
+        dragging = true;
+        active.classList.add('is-dragging');
+        active.setPointerCapture(event.pointerId);
+      });
+
+      stage.addEventListener('pointermove', event => {
+        if (!dragging) return;
+        const active = deck.querySelector('[data-depth="0"]');
+        const delta = event.clientX - startX;
+        active.style.setProperty('--x', `${delta}px`);
+        active.style.setProperty('--drag-rotate', `${delta / 80}deg`);
+      });
+
+      function finishDrag(event) {
+        if (!dragging) return;
+        dragging = false;
+        const active = deck.querySelector('[data-depth="0"]');
+        const delta = event.clientX - startX;
+        active.classList.remove('is-dragging');
+        active.style.removeProperty('--x');
+        active.style.removeProperty('--drag-rotate');
+        if (Math.abs(delta) > Math.min(110, stage.clientWidth * .16)) move(delta < 0 ? 1 : -1);
+      }
+      stage.addEventListener('pointerup', finishDrag);
+      stage.addEventListener('pointercancel', finishDrag);
+
+      document.querySelector('#next').addEventListener('click', () => move(1));
+      document.querySelector('#previous').addEventListener('click', () => move(-1));
+      document.addEventListener('keydown', event => {
+        if (!cover.classList.contains('is-hidden') && (event.key === 'Enter' || event.key === ' ')) enter.click();
+        else if (event.key === 'ArrowRight') move(1);
+        else if (event.key === 'ArrowLeft') move(-1);
+        else if (event.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+      });
+
+      enter.addEventListener('click', () => {
+        cover.classList.add('is-hidden');
+        deck.querySelector('[data-depth="0"]')?.focus?.();
+      });
+
+      document.querySelector('#fullscreen').addEventListener('click', async () => {
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+          else await document.documentElement.requestFullscreen();
+        } catch (_) {}
+      });
+
+      fetch('./photos.json')
+        .then(response => {
+          if (!response.ok) throw new Error('Unable to load photos.json');
+          return response.json();
+        })
+        .then(data => {
+          photos = data.photos || [];
+          if (!photos.length) throw new Error('No photos found in manifest');
+          document.title = data.title || document.title;
+          coverImage.src = photos[0].src;
+          document.querySelector('#cover-count').textContent = `${photos.length} photographs`;
+          status.hidden = true;
+          controls.hidden = false;
+          buildThumbs();
+          render();
+          photos.slice(1, 5).forEach(photo => { const image = new Image(); image.src = photo.src; });
+        })
+        .catch(error => {
+          status.textContent = 'The photo tour could not be loaded. Please serve this folder through a web server.';
+          console.error(error);
+        });
+    })();
+  </script>
+</body>
+</html>
