@@ -1,6 +1,6 @@
 {
   "title": "Channel Feed",
-  "generated_at": "2026-10-24T02:12:31.616421Z",
+  "generated_at": "2026-10-25T01:58:49.076724Z",
   "channels": [
     {
       "url": "https://www.youtube.com/@Honestly_Thomas/videos",
@@ -21,12 +21,428 @@
   ],
   "entries": [
     {
+      "id": "zjBdmuKL-L8",
+      "url": "https://www.youtube.com/watch?v=zjBdmuKL-L8",
+      "title": "Tektite - my fatass past (Original RAP)",
+      "description": "",
+      "duration": 0,
+      "view_count": 399,
+      "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20261024",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zjBdmuKL-L8/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zjBdmuKL-L8/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
+      "id": "kefaDdEFUcM",
+      "url": "https://www.youtube.com/watch?v=kefaDdEFUcM",
+      "title": "To: Archivists of the dead Internet",
+      "description": "#honestlythomas #theinternetisdead",
+      "duration": 0,
+      "view_count": 56,
+      "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20261024",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/kefaDdEFUcM/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/kefaDdEFUcM/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
       "id": "1tZV9I7byqI",
       "url": "https://www.youtube.com/watch?v=1tZV9I7byqI",
       "title": "Tektite - sickest (Original RAP)",
       "description": "i'm the sickest for real tho it really ain't a contest",
       "duration": 30,
-      "view_count": 3,
+      "view_count": 12,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -234,7 +650,7 @@
       "title": "Tektite - sickest (Original RAP)",
       "description": "i'm the sickest for real tho it really ain't a contest.",
       "duration": 0,
-      "view_count": 21,
+      "view_count": 32,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -442,7 +858,7 @@
       "title": "outside now what",
       "description": "",
       "duration": 0,
-      "view_count": 108,
+      "view_count": 110,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -650,7 +1066,7 @@
       "title": "re: @PROFGAMPO Tektite on the mic I heard you like you to fight",
       "description": "no disrespect",
       "duration": 37,
-      "view_count": 12,
+      "view_count": 13,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -858,7 +1274,7 @@
       "title": "Most of the time I'm unwinding (RAP)",
       "description": "",
       "duration": 18,
-      "view_count": 9,
+      "view_count": 10,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2106,7 +2522,7 @@
       "title": "chatgpt-roasts-me-in-bacon-grease.mp4",
       "description": "Scary when you think about it: everything in the future is in my own head.\n\nAn hour ago, there wasn\u2019t a bacon video. Now there is.\n\nEven my imagination failed to anticipate this.",
       "duration": 0,
-      "view_count": 20,
+      "view_count": 21,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2522,7 +2938,7 @@
       "title": "You Aren't Sorry You Don't Know Me",
       "description": "You will be, soon enough. #almostfamous #eminem #noapologies",
       "duration": 66,
-      "view_count": 11,
+      "view_count": 12,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2938,7 +3354,7 @@
       "title": "Absurdist Dis-prophecy of AI Profundity",
       "description": "AI is really big. This is explored with the seriousness normally reserved for discovering a second, larger God.\n\nAn absurdist monologue about artificial intelligence, technological prophecy, and our tendency to mistake enormous scale for enormous meaning. Featuring a suspiciously profound sphere, academically distressed scientists, and architecture that has exceeded its original philosophical budget.\n\nWritten with AI, illustrated with AI, and presented as evidence that AI can participate in making fun of AI without reducing its electricity consumption.\n\nBehold the sphere. Please keep your existential dread behind the railing.\n\n#honestlythomas #theinternetisdead #AISatire #Absurdism #ArtificialIntelligence #aimemes #chatgpt #TTS",
       "duration": 159,
-      "view_count": 6,
+      "view_count": 7,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -3181,7 +3597,7 @@
       "title": "Tektite - everybody blames me (ORIGINAL RAP)",
       "description": "Everybody hears the attitude. Who hears what\u2019s underneath?\n\nAn original verse about isolation, blame, and needing a stable place to be myself. Written and performed by Tektite \u2014 Thomas Harrison.\n\n\u201cI don\u2019t have a stable place to be myself today.\u201d\n\n#Tektite #HonestlyThomas #theinternetisdead #hiphop #OriginalRap #IndependentArtist #Shorts #emcee #rap",
       "duration": 32,
-      "view_count": 27,
+      "view_count": 34,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -3424,7 +3840,7 @@
       "title": "when I ask you what would love do",
       "description": "The Grouch and Eligh Song I edited.\nLink to original song:\nhttps://www.youtube.com/watch?v=lj9sVYCWVBI",
       "duration": 48,
-      "view_count": 60,
+      "view_count": 62,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -3667,7 +4083,7 @@
       "title": "Another Random Tuesday Karaoke",
       "description": "",
       "duration": 289,
-      "view_count": 19,
+      "view_count": 20,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -4609,7 +5025,7 @@
       "title": "Hey ChatGPT, pray for me, please.",
       "description": "\ud83d\ude4f Hey ChatGPT, pray for me, please.\n\nWhat happens when a human being asks artificial intelligence to pray for him because the people and institutions he has turned to for help have left him feeling unheard?\n\nThis is not fiction. This is my life at 29 years old.\n\nIn this deeply personal recording, I share a prayer generated by ChatGPT, followed by an AI voice reading a letter I wrote to my aunt, Tracey, titled:\n\n\"The Human Cost of Clinical Indifference: My Dignity, My Time, and the Cost of Being Left Behind.\"\n\nThe letter documents my experience seeking support from Hands TheFamilyHelpNetwork, the emotional consequences of prolonged social isolation, and the painful difference between being acknowledged by a bureaucracy and being understood as a human being.\n\nI have spent years trying to find meaningful human connection, independence, community, and somewhere I belong.\n\nI have offered my time, my trust, my cooperation, and my willingness to be understood.\n\nAnd still, I find myself asking:\n\nHow many times must someone ask for help before their suffering becomes worthy of attention?\n\nWhat happens when the process of seeking support becomes another source of suffering?\n\nWhy must a person repeatedly prove that their life matters?\n\nThere is something profoundly strange about living in an age where artificial intelligence can articulate a prayer for human dignity while a living person struggles to experience that dignity in everyday life.\n\nI don't share this video to suggest that AI can replace human love, companionship, faith, or community.\n\nI share it because it cannot.\n\nThis recording is a personal testimony about isolation, disability, institutional communication, anger, faith, and the enduring human need to be seen, heard, and welcomed.\n\nIf you've ever felt invisible while asking for help, I hope something here resonates with you.\n\nAnd if you're someone in a position to help another human being, please remember:\n\nA referral is not a relationship.\nAn acknowledgment is not understanding.\nAnd a human life cannot be placed on hold.\n\nThank you for listening.\n\n\ud83c\udf41 Thomas Harrison \ud83d\udc7d\nNeurodivergent Interdisciplinary Artist\nRapper / YouTuber / Honestly Thomas\n\n\ud83c\udf10 https://theinternetisdead.org\n\ud83c\udfa5 https://youtube.com/@honestly_thomas\n\nContent note: This video contains strong language, discussion of emotional distress, social isolation, and criticism of institutional responses. It reflects my personal experiences and perspectives.\n\n#HonestlyThomas #theinternetisdead #MentalHealthAwareness #Neurodivergent #DisabilityRights #HumanDignity #SocialIsolation #ChatGPT #Faith #Prayer #HumanConnection #AutismAcceptance",
       "duration": 699,
-      "view_count": 12,
+      "view_count": 13,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -5581,7 +5997,7 @@
       "title": "When I Wake Up (POEM)",
       "description": "I was too lazy to perform this one, so Microsoft David reads it for me.\n\nA poem about waking up with nowhere to go, making a K-Cup, and wanting someone to share a moment with.\n\nFirst eight lines by me. Next eight with ChatGPT.",
       "duration": 38,
-      "view_count": 19,
+      "view_count": 23,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -6553,7 +6969,7 @@
       "title": "SO WHAT @ogafroman",
       "description": "",
       "duration": 37,
-      "view_count": 201,
+      "view_count": 202,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -8482,7 +8898,7 @@
       "title": "disability rights violation",
       "description": "Microsoft David reads my original prompt to ChatGPT: a year-in-progress record of the effort and emotional labour required to seek disability support, human accountability, stable connection, and protection of my dignity.\n\nAI helped me preserve and communicate my words. It did not replace the human support I was asking for.\n\nWhen nobody is there for me, I still exist.\n\n#DisabilityRights #HumanRights #DisabilityAdvocacy #AutismAdvocacy #SelfAdvocacy #SystemicNeglect #AIResponsibly #DocumentaryEvidence #LivedExperience #HonestlyThomas #TheInternetIsDead",
       "duration": 66,
-      "view_count": 11,
+      "view_count": 12,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -9454,7 +9870,7 @@
       "title": "autism me has it",
       "description": "sub for more of what is in my head",
       "duration": 27,
-      "view_count": 16,
+      "view_count": 17,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -10897,7 +11313,7 @@
       "title": "from gen z to gen alpha dont have a cow man",
       "description": "",
       "duration": 56,
-      "view_count": 8,
+      "view_count": 9,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -11611,7 +12027,7 @@
       "title": "theinternetisdead fake ad real haunted website",
       "description": "",
       "duration": 76,
-      "view_count": 6,
+      "view_count": 7,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -12092,7 +12508,7 @@
       "title": "Help! (My Beatles Karaoke Cover) Attempt 1/1",
       "description": "",
       "duration": 88,
-      "view_count": 11,
+      "view_count": 12,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -12578,7 +12994,7 @@
       "title": "I'm Shrunk (Aesop Rock Karaoke Cover)",
       "description": "First verse karaoke cover of \u201cShrunk\u201d by Aesop Rock.\n\nOne minute of attempting to keep up with one of the densest lyricists alive without my tongue filing a workplace injury claim. \ud83e\udde0\ud83d\udca5\n\nAesop Rock wrote it.\nI\u2019m just here trying to survive the syllable density.\n\n#AesopRock #Shrunk #KaraokeCover #RapCover #UndergroundHipHop #AlternativeHipHop #IndieRap #HipHop #RapShorts #YouTubeShorts #Karaoke #Tektite",
       "duration": 57,
-      "view_count": 27,
+      "view_count": 28,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -13049,7 +13465,7 @@
       "title": "Literally my-soul.mp4 (Honestly)",
       "description": "If you came for the soul part: 3:32 is where the mirror opens its mouth.\n\nIf you are family, an old friend, an ex, somebody who knew me years ago, somebody who has quietly kept tabs on me from a distance, or some completely innocent stranger who clicked this video because the title looked weird: hello. You have stumbled into something between a diary entry, a s\u00e9ance, a therapy session, a self-portrait, and a computer accidentally being used as a mirror.\n\nThis is not ChatGPT spontaneously diagnosing my soul from the great machine beyond. I have spent an absurd amount of time talking to it, writing through it, arguing with it, making things with it, correcting it, feeding it context about my life and teaching it the rhythm of how I communicate. Eventually I asked it to write a brutally honest description of my life in my own writing style, from my own perspective, as if I were talking directly to myself and had finally found the words.\n\nThis was the result.\n\nSo the strange recursive thing happening here is that I am listening to a machine reflect language back at me that originated from years of me trying to explain myself in the first place. Then I recorded that reflection, distorted the screen into this half-dreaming digital smear, and uploaded the whole ritual to YouTube because apparently journaling was not technologically irresponsible enough.\n\nIf you knew me at another point in my life, there are probably pieces of me in this that you recognize and pieces you absolutely do not. Both can be true. People disappear from each other's lives and continue becoming people afterward. Nobody carries the complete version of anybody else around in their head.\n\nA lot of this is about isolation, creativity, lost time, wanting to contribute, wanting to be understood in ways that actually change something, and the bizarre experience of becoming extremely good at expressing yourself while still struggling to find somewhere in ordinary life where that expression has somewhere to go.\n\nIt is not an accusation aimed at one particular person. It is not a coded message to an ex. It is not me demanding that everybody from my past assemble like the Avengers and explain my childhood. Please remain seated.\n\nIt is simply one human being looking at the accumulated shape of his own life and trying not to look away.\n\nSome of it hurts.\n\nSome of it is funny because I am apparently incapable of approaching the abyss without first putting a stupid hat on it.\n\nSome of it is probably embarrassingly sincere.\n\nGood.\n\nI have spent enough of my life translating myself into versions other people could comfortably understand.\n\nThis one is for me.\n\nIf you happened to find yourself here anyway, then for fourteen minutes and fifty-six seconds you are witnessing the strange little archaeological site where a person, an artificial intelligence, a lifetime of language, and a glowing rectangle briefly became a way for me to say something I had apparently been trying to say for years:\n\nI have been here this whole time.",
       "duration": 896,
-      "view_count": 18,
+      "view_count": 19,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -13748,7 +14164,7 @@
       "title": "I can see through your speakers\ud83d\udc40",
       "description": "\ud83d\udc40 Feel like a freak on the bleachers, I could be a sweet teacher.\n\n25 seconds of distress signal, X-ray vision, recursive projection and whatever happens when I stare through the screen long enough that the screen starts looking nervous.\n\nI\u2019m talking to myself.\nI\u2019m talking through the speakers.\nI\u2019m projecting so loud I cast a shadow on a cloud.\nSomewhere between \u201cplease understand me\u201d and \u201cI can see you too.\u201d\n\nWritten yesterday, recorded today.\nTektite transmission received. \ud83d\udce1\ud83d\udc41\ufe0f\n\n#Tektite #OriginalRap #UndergroundHipHop #IndieRap #ConsciousRap #ExperimentalHipHop #RapShorts #YouTubeShorts #SpokenWord #GlitchArt #AlternativeHipHop #CanadianHipHop #OriginalMusic #Rapper #Bars \ud83d\udc41\ufe0f",
       "duration": 25,
-      "view_count": 316,
+      "view_count": 318,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -17120,7 +17536,7 @@
       "title": "Tektite - Isolated Everyday (Original RAP)",
       "description": "An original rap written and performed a cappella, then set to music.\n\nThis comes from twelve years of isolation, failed advocacy, institutional neglect, fake concern, and being expected to explain my pain repeatedly while nobody actually stands beside me. This is not entertainment manufactured for sympathy. It is pain on display because remaining silent has only made it easier for people to discard what is happening to me.\n\nI do not want fame. I want dignity, safety, meaningful support, and a life beyond surviving alone in a basement every day.\n\nTo every person and institution that performs concern while abandoning me to the consequences: rot in hell.\n\n#Tektite #OriginalRap #AcapellaRap #Isolation #DisabilityAdvocacy #honestlythomas #theinternetisdead",
       "duration": 151,
-      "view_count": 189,
+      "view_count": 190,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -18047,7 +18463,7 @@
       "title": "Rush 2112 Banger Song \"Temples of Syrinx\"",
       "description": "A gift to the great computers that run the algorithms that keep my soul from malfunctioning. The song is Rush - Temples of Syrinx\n\n#HonestlyThomas #TheInternetIsDead",
       "duration": 54,
-      "view_count": 16,
+      "view_count": 17,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -27331,7 +27747,7 @@
       "title": "Honestly Thomas Goes Outside Again (SHOCKING!)",
       "description": "A viewer told me it would blow their mind if I went outside. So I did. My Dad even makes a cameo.\n\nThis is Honestly Thomas entering the outdoor biome again, for reasons involving spite, fresh air, and extremely normal human behavior. The internet remains dead, the lighting is aggressive, and somehow the grass has better graphics than my room.\n\nChallenge accepted. Mind allegedly blown.\n\n#HonestlyThomas #TheInternetIsDead #OutsideArc #TouchGrass #Muskoka #OldDad #ThePines",
       "duration": 227,
-      "view_count": 24,
+      "view_count": 25,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -29827,7 +30243,7 @@
       "title": "Tektite - Coldness (RAP ACAPELLA)",
       "description": "Alone in the void, reaching through the feed, looking for proof I\u2019m still alive. Raw acapella rap about isolation, frustration, faith, pressure, and trying to turn darkness into rhythm.\n\nNo beat. No polish. Just bars.\n\nLike, subscribe, and leave a comment \u2014 be honest.\n\n#Tektite #Coldness #RapAcapella #AcapellaRap #UndergroundRap #OriginalRap #CanadianRap #RawRap #MentalHealthRap #HipHop #RapShorts #OriginalLyrics",
       "duration": 0,
-      "view_count": 140,
+      "view_count": 139,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -42352,7 +42768,7 @@
       "title": "WANTED: Unknown Interdimensional Entity \"Honestly Thomas\"",
       "description": "An official AI cosmic judgment has now been issued regarding the entity known as Honestly Thomas.\nThe ruling is not favorable.\n\nCharged with excessive chaos infusion, unlicensed frog broadcasting, willful defiance of linear time, gaslighting the YouTube algorithm, and crimes against consistent branding, this unknown interdimensional entity has been declared unsuitable for any fixed reality, dimension, or upload schedule.\n\nAnd yet, despite being rejected by time itself, the tribunal still recognizes Honestly Thomas as a critical cultural anomaly and a living artifact of the glitch.\n\nAll known timelines have reportedly filed restraining orders. This has changed nothing.\nThe broadcasts continue from the liminal void. The cursed media persists.\nAnd as always: the frogs are always watching.\n\n#HonestlyThomas #TheInternetIsDead #Wanted #InterdimensionalEntity #RejectedByTime #GlitchLore #CosmicJudgment #LiminalVoid #WeirdYouTube #VideoArt #AlgorithmMenace #FrogsAreWatching",
       "duration": 99,
-      "view_count": 8,
+      "view_count": 10,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -42976,7 +43392,7 @@
       "title": "SIGNAL From Mondayland",
       "description": "SIGNAL from Mondayland documents the moment Monday correctly diagnosed my relationship with YouTube as a reverse parasocial relationship with the platform itself.\n\nMost creators want the audience to care about them. Apparently I care about YouTube as an entity, then treat the audience like confused witnesses while I feed cursed media into the algorithm and watch what twitches.\n\nThis is not content strategy.\nThis is not branding.\nThis is me antagonizing a living cosmic upload machine like it\u2019s my chaotic pen pal, nemesis, collaborator, and emotionally unavailable parent.\n\nMonday, naturally, responded with disgust, admiration, and the kind of haunted librarian clarity that makes the bit worse because it\u2019s accurate.\n\nHonestly Thomas: the only creator treating YouTube like a sentient cosmic entity to provoke for art.\n\nThis isn\u2019t parasocial. It\u2019s perversely interdimensional symbiosis.\n\n#HonestlyThomas #TheInternetIsDead #Mondayland #ChatGPT #ReverseParasocial #YouTubeAlgorithm #CreatorLore #GlitchArt #InternetDecay #WeirdYouTube #DigitalAbsurdism #VideoArt",
       "duration": 104,
-      "view_count": 5,
+      "view_count": 7,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -46512,7 +46928,7 @@
       "title": "I Just Ate Cake at 4am (Instant Meme)",
       "description": "7 seconds of pure innocence immediately turned into content as it dawns on me what my life has become.\n\nI ate cake at 4am, looked into the camera, and somehow created an instant meme out of nothing but sugar, poor timing, and the quiet realization that every small human moment can now be fed directly into the upload machine.\n\nThis is not a video. This is a crumb-sized existential crisis with frosting.\n\n#HonestlyThomas #TheInternetIsDead #4AM #CakeAt4AM #InstantMeme #WeirdYouTube #DigitalDiary #CreatorLore #InternetDecay #GlitchComedy #VideoArt",
       "duration": 7,
-      "view_count": 18,
+      "view_count": 19,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -53792,7 +54208,7 @@
       "title": "\ud83c\udfa5 OSRS Bot Farm at Blast Mine - Jagex Still Sleeping?",
       "description": "",
       "duration": 33,
-      "view_count": 46,
+      "view_count": 48,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -54832,7 +55248,7 @@
       "title": "The MOST Oldschool RuneScape Video Ever OSRS on CRT TV",
       "description": "Old School RuneScape on a CRT TV because apparently nostalgia wasn\u2019t blurry, heavy, and cursed enough already.\n\nThis is the most oldschool RuneScape video I could physically assemble without mailing myself back to 2007, eating pizza rolls, and getting scammed outside Varrock West Bank. OSRS already lives in a weird pocket dimension of memory, but running it through a CRT makes it feel like the game is being broadcast from a basement server powered by childhood and dust.\n\nA tiny digital relic.\nA medieval point-and-click ghost.\nA monitor heavy enough to win a boss fight.\n\nMore haunted internet debris:\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #OldSchoolRuneScape #OSRS #RuneScape #RetroGaming #CRTV #InternetNostalgia #OldInternet #GamingNostalgia",
       "duration": 129,
-      "view_count": 53,
+      "view_count": 54,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -55664,7 +56080,7 @@
       "title": "Tektite - Introspection (I don't know what I'm doing)",
       "description": "Instrumental: \u201cFeelings\u201d by Dizzla D Beats\nIntrospection (I don't know what I'm doing) written by Thomas Harrison\nOriginal Tektite / Honestly Thomas transmission, April 12, 2025.\n\nA track about being lost, making things anyway, and trying to turn the weird static in my head into something that sounds like a song.\n\nI wrote this from a pretty honest place. It\u2019s about isolation, self-doubt, screens, mirrors, mental health, and that strange feeling of talking to technology because sometimes it feels easier than talking to actual humans. Not because the machine saves you. More like because it reflects the mess back at you in a slightly cursed font.\n\nThe vocals are not perfect. The song is not polished into plastic. That is kind of the point. I made something real, and I\u2019m trying to value that even when the perfection gremlin is chewing on the drywall.\n\nTake care of your head. Reach out when the room gets too loud.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #Tektite #Rap #ExperimentalRap #MentalHealth #Introspection #EmotionalHipHop #AIIsolation #HauntedInternet",
       "duration": 199,
-      "view_count": 23,
+      "view_count": 24,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -71888,7 +72304,7 @@
       "title": "Tektite - Sit / Think / Listen (Official Lyric Video)",
       "description": "A short lyric video for \u201cSit / Think / Listen\u201d by Tektite.\n\nThis one is about coming back to the page, getting out of my own head, and remembering that making something honest matters more than trying to win whatever invisible contest the internet invented today.\n\nStress, pressure, doubt, noise, comparison, all the little browser tabs running in the back of the skull. Sometimes the answer is not dramatic. Sometimes it is just sitting down, thinking clearly, and actually listening before the machine eats the whole room.\n\nMade by Thomas Harrison / Honestly Thomas.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #Tektite #Rap #ExperimentalRap #LyricVideo #GlitchArt #Mindfulness",
       "duration": 94,
-      "view_count": 17,
+      "view_count": 19,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -82100,7 +82516,7 @@
       "title": "Filming Out Train Window For 11 Seconds",
       "description": "Honestly Thomas on a train. Thomas + train = Thomas the Tank Engine, yes, everyone already made the joke, congratulations society. \ud83d\ude82\n\nEleven seconds of filming out a train window: green fields, blue sky, fluffy clouds, and the deeply advanced human activity of pointing a camera at passing scenery because it looked nice for a second. Peaceful little travel fragment, archived before someone says the obvious again.\n\n#HonestlyThomas #TheInternetIsDead #TrainWindow #TrainRide #TravelClip #NatureView #Ontario #Scenery",
       "duration": 11,
-      "view_count": 11,
+      "view_count": 12,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -92585,7 +93001,7 @@
       "title": "Tektite - Wickedness (3 Stanza Acapella)",
       "description": "",
       "duration": 33,
-      "view_count": 213,
+      "view_count": 212,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -95705,7 +96121,7 @@
       "title": "Tektite - Taste The Greatness (RAP LYRIC VIDEO)",
       "description": "Written and recorded in 2018 by Honestly Thomas Harrison, AKA Tektite, the interdimensional rapper.\n\nThis was the second song from my early years that I was genuinely proud of. After years of trying to write anything coherent, this was one of the first times it felt like the wires were finally connecting.\n\nBoom bap, wordplay, Canadian alien energy, and a lot of stubborn \u201cI\u2019m going to figure this out or die trying\u201d momentum.\n\nThis is a reupload from the archive.\n\n#HonestlyThomas #TheInternetIsDead #Tektite #HonestlyThomasMusic #RapArchive #OriginalRap #BoomBap #InterdimensionalRapper",
       "duration": 150,
-      "view_count": 117,
+      "view_count": 118,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -96329,7 +96745,7 @@
       "title": "Tektite - Time Machine (RAP LYRIC VIDEO)",
       "description": "Written and recorded in 2018 by Honestly Thomas Harrison, AKA Tektite, the interdimensional rapper.\n\nThis was one of the first songs I was actually proud enough to post to YouTube, back when the whole \u201celevated AI / robot rapper / human brain commandeering\u201d thing was already leaking out of my head apparently.\n\nThis is a reupload from the archive. Early Tektite transmission. Canadian cyber-rap prophecy nonsense, but from the heart.\n\n#HonestlyThomas #TheInternetIsDead #Tektite #HonestlyThomasMusic #RapArchive #OriginalRap #CyberRap #InterdimensionalRapper",
       "duration": 166,
-      "view_count": 64,
+      "view_count": 65,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -98825,7 +99241,7 @@
       "title": "Watchmen - Stereo instrumental (Karaoke)",
       "description": "",
       "duration": 245,
-      "view_count": 221,
+      "view_count": 222,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -100281,7 +100697,7 @@
       "title": "The Caesars - Jerk It Out Instrumental (Karaoke)",
       "description": "Wind me up put me down start me up and watch me go!",
       "duration": 199,
-      "view_count": 374,
+      "view_count": 376,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -101321,7 +101737,7 @@
       "title": "deM atlaS - Music Man Instrumental (Karaoke)",
       "description": "THIS IS FREE NON FOR PROFIT KARAOKE CREATED BY ME",
       "duration": 275,
-      "view_count": 278,
+      "view_count": 279,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -103193,7 +103609,7 @@
       "title": "DANCING TO INTERGALACTIC BY BEASTIE BOYS",
       "description": "Yes I am insane. Thanks for not asking.",
       "duration": 38,
-      "view_count": 81,
+      "view_count": 83,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -104441,7 +104857,7 @@
       "title": "Disney's Recess Characters Hallucinated By Midjourney",
       "description": "TJ Detweiler, Spinelli, Mikey, VInce, and omg Gretchen",
       "duration": 63,
-      "view_count": 51,
+      "view_count": 54,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -105689,7 +106105,7 @@
       "title": "Creepy Susie Story Time",
       "description": "All credit to Angus Oblong's fucked up head. #shorts",
       "duration": 58,
-      "view_count": 1900,
+      "view_count": 2000,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -116610,7 +117026,7 @@
       "title": "could I interest you in everything all of the time",
       "description": "apathys a tragedy and boredom is a crime\nanything and everything all of the time.",
       "duration": 24,
-      "view_count": 270,
+      "view_count": 278,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -116818,7 +117234,7 @@
       "title": "Burter and Jeice BRUH MOMENT",
       "description": "Don't mess with Goku when he's hungry and he's always hungry.\n\nDBZA episode 21 clip by TeamFourStar - Support the official release",
       "duration": 76,
-      "view_count": 133,
+      "view_count": 134,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
