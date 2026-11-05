@@ -919,6 +919,7 @@ function buildHtml({ csvFiles, totalRows, skippedRows, duplicatesRemoved, entrie
       <p class="kicker">/dead/messages/youtube-comments</p>
       <h1>YouTube Comments Archive</h1>
       <p class="subtitle">recovered from Google Takeout, sorted oldest first</p>
+      <p class="archive-coverage"><strong>Archive coverage:</strong> Comments from ${new Date(entries[0].timestamp).getUTCFullYear()} through ${new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(entries[entries.length - 1].timestamp))} (UTC). Comments posted after that date are not included in this snapshot.</p>
       <section class="stats" aria-label="Archive statistics">
         <div class="stat"><strong>${entries.length.toLocaleString("en-US")}</strong><span>comments rendered</span></div>
         <div class="stat"><strong>${csvFiles.length.toLocaleString("en-US")}</strong><span>csv files read</span></div>
