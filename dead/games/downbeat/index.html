@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>IMPOSSIBLE // DOWNBEAT</title>
+<style>
+:root{color-scheme:dark;--bg:#000;--panel:#080808;--surface:#111;--edge:#777;--bright:#ddd;--dim:#777;--green:#8cf6a3;--danger:#ed8080}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#ccc;font:14px/1.45 'Lucida Console',Consolas,'Courier New',monospace;touch-action:none}button{font:inherit;cursor:pointer}canvas#game{display:block;width:100%;height:100%;background:#000}
+#boot,#launcher{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:12;padding:22px;overflow:auto}
+#boot{z-index:30;cursor:pointer;transition:opacity .32s ease,visibility .32s ease}#boot.off{opacity:0;visibility:hidden;pointer-events:none}
+.bootbrand{width:min(580px,100%);padding:26px;border:1px solid #777;background:#080808;box-shadow:4px 4px 0 #333;text-align:left;color:#bbb}.bootbrand .sigil{height:22px;width:22px;display:inline-grid;place-items:center;border:1px solid #82e69a;color:var(--green);font-size:14px}.bootbrand .sigil span{font-size:0}.bootbrand .sigil span:before{content:'>' ;font-size:14px}.bootbrand h2{font-size:clamp(25px,5vw,42px);font-weight:400;letter-spacing:0;margin:15px 0;color:var(--green)}.bootbrand h2:before{content:'C:\\GAMES\\>' ;display:block;color:#aaa;font-size:13px;margin-bottom:9px}.bootbrand p{font-size:12px;color:#777;letter-spacing:1px}.loadtrack{height:17px;border:1px solid #888;background:#000;margin:22px 0 15px;padding:2px}.loadtrack>div{height:100%;width:100%;background:repeating-linear-gradient(90deg,#9cdeb0 0 8px,#000 8px 10px);transform-origin:left;animation:bootprogress 1.55s steps(22,end) both}@keyframes bootprogress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+#launcher{transition:opacity .2s ease,visibility .2s ease}#launcher.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.tv-shell{width:min(1120px,100%);max-height:calc(100dvh - 36px);overflow:auto;background:#090909;border:2px solid #777;box-shadow:5px 5px 0 #282828;padding:0}.tv-content{padding:0 20px 14px}.tv-header{margin:0 -20px 20px;padding:7px 12px;background:#b9b9b9;color:#000;border-bottom:2px solid #eee;display:flex;align-items:center;justify-content:space-between;gap:10px}.tv-logo{display:flex;gap:11px;align-items:center}.tv-mark{border:1px solid #111;background:#111;color:var(--green);font-size:18px;display:grid;place-items:center;width:32px;height:30px}.tv-eyebrow{font-size:9px;letter-spacing:.06em;font-weight:700;color:#222}.tv-title{font-size:18px;font-weight:bold;line-height:1.1;letter-spacing:0}.tv-title b{color:#111}.tv-clock{font-size:13px;text-align:right;font-weight:bold}.tv-clock small{display:block;font-size:9px;color:#333}
+.tv-instruction{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;color:#888;font-size:11px;border-bottom:1px dashed #444;padding-bottom:13px}.tv-instruction strong{color:var(--green);font-weight:400}.tv-instruction strong:before{content:'> ';color:#aaa}
+.channels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.channel{position:relative;aspect-ratio:1.13/1;min-width:0;overflow:hidden;background:#050505;border:1px solid #666;border-radius:0;color:#bbb;display:flex;flex-direction:column;justify-content:space-between;padding:10px;text-align:left;box-shadow:inset 0 0 0 2px #151515;transition:border-color .12s,background .12s}.channel:before{content:'';position:absolute;pointer-events:none;inset:0;background:repeating-linear-gradient(0deg,transparent 0 12px,#45634c21 12px 13px);opacity:.5}.channel:after{display:none}.channel .ch-id,.channel .ch-art,.channel .ch-name,.channel .ch-meta{position:relative;z-index:1}.ch-id{font-size:9px;color:#999;letter-spacing:0}.ch-art{font:normal clamp(29px,4vw,52px)/1 Consolas,monospace;text-align:center;color:#a5e5b0;letter-spacing:-.08em}.ch-name{font-size:12px;color:#d2e9d6}.ch-meta{font-size:9px;color:#848484;margin-top:3px}.channel.level-one{cursor:pointer;border-color:#a4d4ac;background:#071008}.channel.level-one:hover,.channel.level-one:focus-visible{outline:1px solid #b1f7bd;outline-offset:2px;background:#102015}.channel.level-one .ch-name:before{content:'> ';color:var(--green)}
+.channel.empty-channel{cursor:default;background:#080808;border-color:#333;color:#777;align-items:stretch}.channel.empty-channel:hover{background:#080808}.empty-channel .static-picture{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:.13;filter:grayscale(1) contrast(2)}.empty-channel .ch-id,.empty-channel .empty-label,.empty-channel .empty-bottom{position:relative;z-index:1}.empty-channel .empty-label{font-size:11px;text-align:center;color:#aaa;background:#050505d9;border:1px solid #333;padding:4px}.empty-channel .empty-bottom{font-size:9px;color:#555}
+.tv-footer{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:18px;padding-top:12px;border-top:1px solid #484848;font-size:11px;color:#aaa}.tv-footer .orb{display:inline-block;background:#8cf6a3;width:7px;height:7px;margin-right:7px}.tv-footer .mini{color:#666;font-size:10px}#menuSound,#home,#mute,#panel button{background:#b5b5b5;color:#050505;border:2px solid;border-color:#eee #444 #444 #eee;border-radius:0;box-shadow:1px 1px 0 #000;font:normal 11px 'Lucida Console',Consolas,monospace;padding:9px 12px;letter-spacing:0}#menuSound:active,#home:active,#mute:active,#panel button:active{border-color:#444 #eee #eee #444}#home{position:fixed;z-index:6;top:18px;left:clamp(12px,3vw,35px);transform:none;display:none;white-space:nowrap}#mute{position:fixed;z-index:7;right:18px;bottom:18px;background:#151515;color:var(--green);border-color:#777 #333 #333 #777}
+#hud{position:fixed;z-index:3;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:18px clamp(12px,3vw,35px);pointer-events:none;text-shadow:1px 1px 0 #000}#hud>div{border:1px solid #4a4a4a;background:#060606e6;min-width:155px;padding:10px 12px}#hud>div:first-child{position:fixed;right:clamp(12px,3vw,35px);top:18px;text-align:right}#hud>div:last-child{position:fixed;left:clamp(12px,3vw,35px);bottom:18px;text-align:left}.label{font-size:10px;letter-spacing:.04em;color:#858585}.number{font-size:clamp(18px,2.3vw,28px);color:var(--green);font-weight:400;font-variant-numeric:tabular-nums}
+#center{position:fixed;z-index:8;inset:0;display:none;align-items:center;justify-content:center;background:#000d;padding:20px}#panel{border:1px solid #999;max-width:500px;width:100%;background:#0a0a0a;box-shadow:4px 4px 0 #333;text-align:left;padding:0 20px 22px}#panel:before{content:' X  LEVEL_01.EXE                                      _  □  X';display:block;background:#b9b9b9;color:#111;font-size:10px;white-space:nowrap;overflow:hidden;margin:0 -20px 22px;padding:7px 10px}h1{font-weight:400;letter-spacing:0;font-size:clamp(22px,4vw,35px);margin:0 0 12px;line-height:1.1;color:#eee}h1 span{display:block;color:var(--green)}#subtitle{font-size:12px;color:#aaa;line-height:1.7}#subtitle strong{color:var(--green)}#hint{font-size:10px;color:#777;line-height:1.7;margin-top:18px}
+#roundBanner{position:fixed;z-index:4;top:24%;left:50%;transform:translateX(-50%);padding:12px 23px;border:1px solid #555;background:#050505eb;text-align:center;pointer-events:none;opacity:0;white-space:nowrap;transition:opacity .2s}#roundBanner strong{display:block;font-size:11px;color:#8bbb94;letter-spacing:0;font-weight:400}#roundBanner span{font-size:clamp(17px,3vw,27px);color:#eee;letter-spacing:0}
+#victoryOverlay{position:fixed;z-index:5;top:30%;left:50%;transform:translateX(-50%);width:min(90vw,620px);display:none;padding:18px;background:#020602e8;border:2px solid #7ec38d;box-shadow:5px 5px 0 #161c17;text-align:center;pointer-events:none}#victoryOverlay .eyebrow{color:#8bbb94;font-size:12px;letter-spacing:.05em}#victoryOverlay .headline{color:var(--green);font-size:clamp(24px,5vw,44px);letter-spacing:0;font-weight:400;margin:11px 0}#victoryOverlay .caption{font-size:11px;color:#a9a9a9;letter-spacing:0}
+#nextLevelButton{display:block;margin:19px auto 0;padding:10px 20px;min-width:220px;background:#090909;color:#8cf6a3;border:2px solid #8cf6a3;border-radius:0;font:14px 'Lucida Console',Consolas,monospace;cursor:pointer;pointer-events:auto;box-shadow:3px 3px 0 #233829}#nextLevelButton:hover:not(:disabled),#nextLevelButton:focus-visible{background:#16331e;color:#fff;outline:1px dotted #fff;outline-offset:3px}#nextLevelButton:disabled{border-color:#777;background:#141414;color:#999;cursor:not-allowed;box-shadow:none}body.level-two #nextLevelButton{background:#d4dacf;color:#29432d;border-color:#42594b;box-shadow:3px 3px 0 #a8b5a8}body.level-two #nextLevelButton:disabled{background:#d5d9d2;color:#68756a;border-color:#9ca89f;box-shadow:none}
+#flash{position:fixed;inset:0;background:#b95555;opacity:0;pointer-events:none}#mobile{position:fixed;z-index:6;bottom:16px;left:16px;display:none;gap:7px}#mobile button{width:52px;height:52px;background:#111e13bd;color:#bdf8c7;border:1px solid #708c75;border-radius:0;font:20px Consolas,monospace;touch-action:none}
+@media(max-width:760px){.channels{grid-template-columns:repeat(3,minmax(0,1fr))}.tv-content{padding:0 12px 12px}.tv-header{margin:0 -12px 16px}.tv-instruction{display:block}.tv-instruction span{display:block;margin-top:5px}.tv-footer .mini{display:none}.channel{aspect-ratio:1.2/1}}@media(max-width:490px){#home{left:9px;top:9px}#hud>div:first-child{right:9px;top:9px}.channels{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.channel{aspect-ratio:1.5/1}.tv-clock{display:none}#hud{padding:9px}#hud>div{min-width:0;padding:7px}.label{font-size:9px}.number{font-size:18px}.ch-art{font-size:34px}}@media(pointer:coarse){#mobile{display:flex}#mute{bottom:88px}#hud>div:last-child{bottom:88px}}@media(prefers-reduced-motion:reduce){.loadtrack>div{animation:none;transform:scaleX(1)}#boot,#launcher{transition:none}}
+
+/* Level 02: restrained inverse-phosphor desktop, no harsh #fff. */
+.complete-mark{color:#8cf6a3;font-size:19px;font-weight:bold;float:right;text-shadow:0 0 5px #25482d}
+.channel.locked-level{opacity:.62;cursor:not-allowed;border-color:#494949;filter:grayscale(1)}
+.channel.locked-level:hover{background:#050505;border-color:#494949}
+body.level-two,body.level-two #game{background:#e3e5df;color:#24342a}
+body.level-two #hud>div,body.level-two #roundBanner{background:#e0e4ddec;color:#334438;border-color:#77877c;text-shadow:none}
+body.level-two #hud .label,body.level-two #hud .number,body.level-two #roundBanner strong,body.level-two #roundBanner span{color:#304637}
+body.level-two #hud .number span{color:#4a6451!important}
+body.level-two #home,body.level-two #mute{background:#d1d8cf;color:#283b2d;border-color:#708174}
+body.level-two #victoryOverlay{background:#dae4d9f0;color:#23382a;border-color:#596f5c;box-shadow:5px 5px 0 #b9c4b8}
+body.level-two #victoryOverlay .eyebrow,body.level-two #victoryOverlay .headline,body.level-two #victoryOverlay .caption{color:#284c34}
+body.level-two #center{background:#d4d9d8bb}
+body.level-two #panel{background:#e5e8e2;color:#2f4433;border-color:#536e58}
+body.level-two #panel h1,body.level-two #panel p,body.level-two #panel strong{color:#2e4634}
+body.level-two #panel button{background:#ccd8ce;color:#203a29;border-color:#536b59}
+body.level-two #flash{background:#a87c78}
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="Vertical rhythm dodge game"></canvas>
+<div id="boot" role="status" aria-label="Booting Impossible Downbeat"><div class="bootbrand"><div class="sigil"><span>▣</span></div><h2>DOWNBEAT</h2><p>INITIALIZING AUDIO_ENGINE.SYS ...</p><div class="loadtrack"><div></div></div><p>[ CLICK TO SKIP BOOT ]</p></div></div>
+<div id="launcher" aria-label="Level selection screen"><div class="tv-shell"><div class="tv-content">
+ <header class="tv-header"><div class="tv-logo"><div class="tv-mark">▣</div><div><div class="tv-eyebrow">theinternetisdead.org/dead/games/downbeat/</div><div class="tv-title">WELCOME TO MY GAME IMPOSSIBLE / DOWNBEAT</div></div></div><div class="tv-clock" id="tvClock">--:--<small>LEVEL SELECTION</small></div></header>
+ <div class="tv-instruction"><strong>SELECT PROGRAM TO EXECUTE</strong><span>[LEVEL_01: 10 WAVES] [LEVEL_02: LOCKED]</span></div>
+ <div class="channels" id="channels"></div>
+ <footer class="tv-footer"><div><span class="orb"></span> READY_ <span class="mini">· WASD MOVE · LSHIFT + FORWARD / BACK: SPEED · ESC MENU</span></div><button id="menuSound" type="button">[AUDIO: ON]</button></footer>
+</div></div></div>
+<button id="home" type="button" aria-label="Back to level select">[ESC] LEVEL SELECT</button>
+
+<div id="hud"><div><div class="label">DISTANCE</div><div class="number" id="score">0000</div><div class="label" style="margin-top:10px">ROUND <span id="round">01</span> / 10 · <span id="roundname">FIRST STEPS</span></div></div><div><div class="label">BEST / BPM</div><div class="number"><span id="best">0000</span> <span style="color:#36e9ff;font-size:.52em">/ <span id="bpm">120</span></span></div><div class="label" style="margin-top:10px"><span id="progress">0</span>% COMPLETE</div><div class="label" style="margin-top:10px">MAP: <span id="mapMode">NORMAL</span> <span id="mapRate">1.00x</span></div></div></div>
+<div id="center"><div id="panel"><h1>IMPOSSIBLE<span>DOWNBEAT.EXE</span></h1><p id="subtitle">The world falls. You steer. Conquer <strong>10 handcrafted rounds</strong> with navigable corridors, progressively tighter gaps, and a live procedural soundtrack.</p><button id="start">START RUN</button><p id="hint">W / S / A / D or arrow keys to move · Space to retry<br>LEFT SHIFT + FORWARD: OVERCLOCK · LEFT SHIFT + BACK: BRAKE / STOP</p></div></div>
+<button id="mute" aria-label="Toggle audio">SOUND: ON</button>
+<div id="mobile"><button data-key="ArrowLeft" aria-label="Move left">◀</button><button data-key="ArrowUp" aria-label="Move up">▲</button><button data-key="ArrowDown" aria-label="Move down">▼</button><button data-key="ArrowRight" aria-label="Move right">▶</button></div>
+<div id="victoryOverlay" aria-live="polite"><div class="eyebrow">PROCESS FINISHED // EXIT CODE 0</div><div class="headline" id="victoryTitle">LEVEL 1 COMPLETE</div><div class="caption" id="victoryCaption">FREE ROAM ACTIVE | WASD: MOVE | ESC: MENU</div><button id="nextLevelButton" type="button">[ &gt; ] NEXT LEVEL: 02</button></div>
+<div id="flash"></div><div id="roundBanner" aria-live="polite"><strong id="bannerNumber">ROUND 01 / 10</strong><span id="bannerName">FIRST STEPS</span></div>
+<script>
+(()=>{'use strict';
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),center=document.getElementById('center'),startButton=document.getElementById('start'),subtitle=document.getElementById('subtitle');
+const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),bpmEl=document.getElementById('bpm'),roundEl=document.getElementById('round'),nameEl=document.getElementById('roundname'),progressEl=document.getElementById('progress'),banner=document.getElementById('roundBanner'),bannerNumber=document.getElementById('bannerNumber'),bannerName=document.getElementById('bannerName'),muteButton=document.getElementById('mute'),flash=document.getElementById('flash'),victoryOverlay=document.getElementById('victoryOverlay');
+const nextLevelButton=document.getElementById('nextLevelButton');
+const launcher=document.getElementById('launcher'),boot=document.getElementById('boot'),channels=document.getElementById('channels'),home=document.getElementById('home'),menuSound=document.getElementById('menuSound');
+const TAU=Math.PI*2,LANES=8,MOVE_SPEED=340,MAX_OVERCLOCK=1.8,MAP_RAMP_UP=2.5,MAP_RAMP_DOWN=2.6;
+const mapModeEl=document.getElementById('mapMode'),mapRateEl=document.getElementById('mapRate');
+let mapRate=1;
+// Ten authored corridors. Each number marks the leftmost safe lane in a row.
+// Differences never exceed one lane, and the gap never closes below two cells.
+const ROUNDS=[
+ {name:'FIRST STEPS', gap:4, bpm:120,speed:235, beats:2.4,route:[2,2,2,3,3,3,2,2,2,2,3,3]},
+ {name:'THE SIDESTEP',gap:4,bpm:124,speed:250,beats:2.2,route:[2,3,3,2,1,1,2,3,3,2,2,3]},
+ {name:'SLALOM',gap:3,bpm:128,speed:265,beats:2.1,route:[3,3,2,1,1,2,3,4,4,3,2,2]},
+ {name:'NARROW PASS',gap:3,bpm:132,speed:280,beats:2,route:[2,3,4,4,3,2,1,1,2,3,3,2]},
+ {name:'SWITCHBACK',gap:3,bpm:136,speed:300,beats:1.9,route:[3,4,4,3,2,1,1,2,3,4,4,3]},
+ {name:'TWIN NEEDLES',gap:2,bpm:140,speed:320,beats:1.85,route:[3,3,4,5,5,4,3,2,2,3,4,4]},
+ {name:'PRESSURE GRID',gap:2,bpm:146,speed:340,beats:1.8,route:[4,3,2,1,1,2,3,4,5,5,4,3]},
+ {name:'THE SERPENT',gap:2,bpm:152,speed:360,beats:1.7,route:[3,4,5,5,4,3,2,1,1,2,3,4,5,5]},
+ {name:'HYPERSTEP',gap:2,bpm:158,speed:380,beats:1.6,route:[4,5,5,4,3,2,1,1,2,3,4,5,4,3]},
+ {name:'IMPOSSIBLE?',gap:2,bpm:164,speed:400,beats:1.55,route:[3,4,5,4,3,2,1,2,3,4,5,4,3,2,1,2,3,4]}
+];
+let level=1,level1Complete=false,finishPrompt=false;
+try{level1Complete=localStorage.getItem('downbeat-level1-complete')==='1'}catch(e){}
+let W=0,H=0,DPR=1,playLeft=0,playWidth=0,gridSize=0,state='menu',lastFrame=0,scroll=0,score=0,best=0,shake=0,flashOpacity=0,beat=0,beatTime=0,currentBpm=120,roundIndex=0,bannerClock=0,course=[],roundStart=[],finishDistance=0,runSeed=1,sparks=[];
+const player={x:0,y:0,size:23,trail:[]},keys=new Set();let audio=null,master=null,mute=false;
+try{best=Number(localStorage.getItem('downbeat-best')||0)||0}catch(e){}bestEl.textContent=String(best).padStart(4,'0');
+function resize(){const previousWidth=playWidth,oldLeft=playLeft;DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);playWidth=Math.min(W*.86,620);playLeft=(W-playWidth)/2;gridSize=playWidth/LANES;if(previousWidth)player.x=playLeft+((player.x-oldLeft)/previousWidth)*playWidth;else player.x=W/2;player.x=Math.max(playLeft+17,Math.min(playLeft+playWidth-17,player.x));player.y=Math.max(H*.20,Math.min(H*.86,player.y||H*.72));}window.addEventListener('resize',resize);resize();
+function rand(){runSeed=(Math.imul(runSeed,1664525)+1013904223)>>>0;return runSeed/4294967296}
+function initAudio(){if(audio){if(audio.state==='suspended')audio.resume();return}const C=window.AudioContext||window.webkitAudioContext;if(!C)return;try{audio=new C();master=audio.createGain();master.gain.value=.24;const compressor=audio.createDynamicsCompressor();compressor.threshold.value=-14;compressor.ratio.value=4;master.connect(compressor);compressor.connect(audio.destination)}catch(e){audio=null}}
+function tone(freq,when,duration,type='sine',volume=.22,slide=0){if(!audio||mute)return;const osc=audio.createOscillator(),gain=audio.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,when);if(slide)osc.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),when+duration);gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),when+.008);gain.gain.exponentialRampToValueAtTime(.0001,when+duration);osc.connect(gain);gain.connect(master);osc.start(when);osc.stop(when+duration+.03)}
+function noise(when,duration,volume,highpass=3000){if(!audio||mute)return;let len=Math.ceil(audio.sampleRate*duration),buffer=audio.createBuffer(1,len,audio.sampleRate),d=buffer.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;const source=audio.createBufferSource(),filter=audio.createBiquadFilter(),env=audio.createGain();source.buffer=buffer;filter.type='highpass';filter.frequency.value=highpass;env.gain.setValueAtTime(volume,when);env.gain.exponentialRampToValueAtTime(.0001,when+duration);source.connect(filter);filter.connect(env);env.connect(master);source.start(when);source.stop(when+duration)}
+const scales=[[0,3,5,7,10],[0,2,5,7,9],[0,3,7,8,10],[0,2,4,7,9]];
+function drumAndMelody(n){if(!audio||mute)return;const t=audio.currentTime+.008,step=n%16,root=[110,98,130.81,116.54][Math.floor(n/32)%4],notes=scales[Math.floor(n/32)%4];if(step%4===0){tone(125,t,.19,'sine',.78,-88);tone(58,t,.17,'sine',.35,-10)}if(step===4||step===12){noise(t,.105,.15,1400);tone(175,t,.085,'triangle',.19,-65)}if(step%2===0)noise(t,.032,step%4===2?.065:.035,5500);if(step%2===0){let index=Math.floor(rand()*notes.length);tone(root*2**(notes[index]/12),t,.16,'triangle',.09)}if(step===0||step===6||step===10||step===14){let index=notes[(Math.floor(n/4)+Math.floor(rand()*2))%notes.length];tone(root/2*2**(index/12),t,.22,'sawtooth',.115)}}
+function victoryMusic(n){if(!audio||mute)return;const t=audio.currentTime+.008,step=n%16,scale=[0,4,7,11,12,16,19,23],root=[130.81,174.61,196,146.83][Math.floor(n/16)%4];if(step%4===0){tone(112,t,.22,'sine',.48,-78);tone(root/2,t,.42,'triangle',.18)}if(step===4||step===12){noise(t,.08,.085,2600)}if(step%2===0)noise(t,.025,.033,6500);tone(root*2**(scale[(step+Math.floor(n/16))%scale.length]/12),t,.24,'triangle',.14);if(step===0){for(const interval of [0,4,7])tone(root*2**(interval/12),t,.9,'sine',.085)}}
+function fxDeath(){if(!audio||mute)return;let t=audio.currentTime;noise(t,.4,.26,450);tone(380,t,.5,'sawtooth',.33,-320)}
+function particle(x,y,col,count){for(let i=0;i<count;i++){let a=rand()*TAU,s=80+rand()*260;sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.35+rand()*.5,col})}}
+// Each row is authored in world-distance coordinates, not randomly spawned on screen.
+// Validate the intended centerline against the exact horizontal movement budget.
+function buildCourse(selected=0){course=[];roundStart=[];let distance=H*.28;let previous=null;for(let r=selected;r<ROUNDS.length;r++){const round=ROUNDS[r],spacing=round.speed*(60/round.bpm)*round.beats;roundStart.push(distance);for(let i=0;i<round.route.length;i++){const lane=round.route[i],centerLane=lane+round.gap/2;if(lane<0||lane+round.gap>LANES)throw Error('Blocked route in round '+(r+1));if(previous){const maxShift=Math.abs(centerLane-previous.centerLane)*gridSize;const timeAvailable=(distance-previous.distance)/Math.max(previous.speed,round.speed);if(maxShift+player.size>MOVE_SPEED*timeAvailable)throw Error('Unreachable corridor in round '+(r+1)+', row '+i)}const kind=(r>=5&&(i%3===1))||(r>=2&&i%4===2)?'spike':'block';course.push({distance,round:r,lane,gap:round.gap,kind,h:22+Math.floor(r/2)*3+(i%3)*2});previous={distance,centerLane,speed:round.speed};distance+=spacing}distance+=Math.max(145,spacing*.72)}finishDistance=distance+H*.65;
+if(level===2){
+ const old=course.slice().reverse(),first=old[0].distance;
+ // Reversing the array starts with the LAST authored row and keeps every gap intact.
+ course=old.map(row=>({...row,distance:H*.28+first-row.distance}));
+ roundStart=[];let prev=-1;
+ for(const row of course){if(row.round!==prev){roundStart.push({distance:row.distance,round:row.round});prev=row.round}}
+ finishDistance=course[course.length-1].distance+H+135;
+ }
+}
+function showRound(i){roundIndex=i;const r=ROUNDS[i];currentBpm=r.bpm;roundEl.textContent=String(i+1).padStart(2,'0');nameEl.textContent=r.name;bpmEl.textContent=currentBpm;bannerNumber.textContent=`WAVE ${String(i+1).padStart(2,'0')} / 10`;bannerName.textContent=r.name;bannerClock=2.1;banner.style.opacity='1'}
+let chosenRound=0;
+function start(selectedLevel=1){if(selectedLevel===2&&!level1Complete)return;level=selectedLevel;chosenRound=level;document.body.classList.toggle('level-two',level===2);finishPrompt=false;initAudio();state='playing';launcher.classList.add('hidden');boot.classList.add('off');home.style.display='block';center.style.display='none';victoryOverlay.style.display='none';keys.clear();scroll=0;mapRate=1;mapModeEl.textContent='NORMAL';mapRateEl.textContent='1.00x';score=0;shake=0;flashOpacity=0;beat=0;beatTime=0;runSeed=0x5EED1234;sparks=[];player.x=W/2;player.y=level===2?H*.26:H*.72;player.trail=[];buildCourse(0);showRound(level===2?9:0);scoreEl.textContent='0000';progressEl.textContent='0';lastFrame=performance.now()}
+function showMenu(){document.body.classList.remove('level-two');refreshLevels();state='menu';keys.clear();mapRate=1;center.style.display='none';victoryOverlay.style.display='none';home.style.display='none';launcher.classList.remove('hidden');banner.style.opacity='0';updateClock()}
+function updateClock(){const el=document.getElementById('tvClock');el.firstChild.textContent=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
+// Each level is a complete ten-wave program. Channels 03-10 are not installed.
+for(let i=0;i<10;i++){
+ if(i<2){
+  const b=document.createElement('button');b.type='button';b.className='channel level-one';b.id='channel'+(i+1);
+  b.addEventListener('click',()=>start(i+1));channels.appendChild(b);
+ }else{
+  const tile=document.createElement('div');tile.className='channel empty-channel';
+  tile.setAttribute('role','img');tile.setAttribute('aria-label',`Empty channel ${String(i+1).padStart(2,'0')}, TV static`);
+  tile.innerHTML=`<canvas class="static-picture" width="64" height="48" aria-hidden="true"></canvas><span class="ch-id">CHANNEL ${String(i+1).padStart(2,'0')}</span><span class="empty-label">NO SIGNAL</span><span class="empty-bottom">-- EMPTY --</span>`;
+  channels.appendChild(tile);
+ }
+}
+function refreshLevels(){
+ const a=document.getElementById('channel1'),b=document.getElementById('channel2');
+ a.setAttribute('aria-label','Play Level 1, ten waves');
+ a.innerHTML=`<span class="ch-id">01 / EXECUTABLE <span class="complete-mark">${level1Complete?'✓':''}</span></span><span class="ch-art">&gt;_</span><span><div class="ch-name">LEVEL_01.EXE</div><div class="ch-meta">10 WAVES // ${level1Complete?'COMPLETE':'[ENTER]'}</div></span>`;
+ b.disabled=!level1Complete;b.classList.toggle('locked-level',!level1Complete);
+ b.setAttribute('aria-label',level1Complete?'Play unlocked Level 2, reversed 10 waves':'Level 2 locked, complete Level 1 first');
+ b.innerHTML=`<span class="ch-id">02 / ${level1Complete?'EXECUTABLE':'LOCKED'}</span><span class="ch-art">${level1Complete?'&lt;_':'[ X ]'}</span><span><div class="ch-name">LEVEL_02.EXE</div><div class="ch-meta">${level1Complete?'REVERSE MODE // [ENTER]':'COMPLETE LEVEL 01'}</div></span>`;
+ document.querySelector('.tv-instruction span').textContent=level1Complete?'[LEVEL_01: ✓] [LEVEL_02: UNLOCKED] [03-10: EMPTY]':'[LEVEL_01: 10 WAVES] [LEVEL_02: LOCKED]';
+}
+refreshLevels();
+const staticCanvases=[...document.querySelectorAll('.static-picture')];
+function animateStatic(){
+ if(launcher.classList.contains('hidden'))return;
+ for(const c of staticCanvases){
+  const g=c.getContext('2d'),img=g.createImageData(64,48),d=img.data;
+  const band=(Math.random()*48)|0;
+  for(let y=0;y<48;y++)for(let x=0;x<64;x++){
+   const k=(y*64+x)*4,bright=(Math.random()*155+32+(Math.abs(y-band)<3?46:0))|0;
+   d[k]=bright;d[k+1]=bright;d[k+2]=bright;d[k+3]=255;
+  }
+  g.putImageData(img,0,0);
+ }
+}
+setInterval(animateStatic,115);animateStatic();
+updateClock();setInterval(updateClock,30000);
+let bootTimer=setTimeout(()=>boot.classList.add('off'),1700);boot.addEventListener('click',()=>{clearTimeout(bootTimer);boot.classList.add('off')});
+home.addEventListener('click',showMenu);nextLevelButton.addEventListener('click',()=>{if(state==='victory'&&level===1)start(2)});menuSound.addEventListener('click',()=>{mute=!mute;menuSound.textContent=mute?'[AUDIO: OFF]':'[AUDIO: ON]';muteButton.textContent=mute?'SOUND: OFF':'SOUND: ON';if(!mute){initAudio();tone(440,audio.currentTime+.01,.12,'sine',.12)}});
+function endRun(won){if(state!=='playing')return;state=won?'victory':'dead';shake=won?0:20;flashOpacity=won?.18:.72;
+if(!won){fxDeath();particle(player.x,player.y,'#a04f4f',40)}else{particle(player.x,player.y,'#8cf6a3',80);particle(player.x,player.y,'#c7b98a',35);victoryOverlay.style.display='block';nextLevelButton.disabled=level!==1;nextLevelButton.textContent=level===1?'[ > ] NEXT LEVEL: 02':'[ -- ] LEVEL 03 // COMING SOON';nextLevelButton.title=level===1?'Start Level 2':'Level 3 is not available yet';document.getElementById('victoryTitle').textContent=`LEVEL ${level} COMPLETE`;document.getElementById('victoryCaption').textContent=level===1?'LEVEL 02 UNLOCKED | FREE ROAM | ESC: MENU':'REVERSE COURSE CLEARED | FREE ROAM | ESC: MENU';if(level===1){level1Complete=true;try{localStorage.setItem('downbeat-level1-complete','1')}catch(e){}refreshLevels()}roundEl.textContent=level===1?'10':'01';nameEl.textContent='FREE FLIGHT';progressEl.textContent='100';currentBpm=142;bpmEl.textContent=currentBpm;beat=0;beatTime=0;victoryMusic(beat++);}
+if(score>best){best=score;try{localStorage.setItem('downbeat-best',best)}catch(e){}bestEl.textContent=String(best).padStart(4,'0')}
+if(!won){subtitle.innerHTML=`You reached <strong style="color:#8cf6a3">${score}</strong> meters in round ${roundIndex+1} of 10.<br>The course is fair, but the rhythm isn't forgiving.`;startButton.textContent='RETRY';center.style.display='flex'}
+banner.style.opacity='0'}
+function speedAtRound(i){return ROUNDS[i].speed}
+function update(dt){
+ const victorious=state==='victory';
+ // Forward is toward the incoming course. Level 02 reverses this axis.
+ // With LEFT SHIFT held, forward and backward become a world-speed throttle.
+ // They do not displace the avatar along the scrolling axis.
+ const shift=keys.has('shiftleft');
+ const up=keys.has('w')||keys.has('arrowup');
+ const down=keys.has('s')||keys.has('arrowdown');
+ const forward=level===1?up:down,backward=level===1?down:up;
+ const throttle=shift&&forward!==backward?(forward?1:-1):0;
+ const targetRate=throttle===1?MAX_OVERCLOCK:throttle===-1?0:1;
+ const adjustment=(targetRate>mapRate?MAP_RAMP_UP:MAP_RAMP_DOWN)*dt;
+ mapRate+=Math.max(-adjustment,Math.min(adjustment,targetRate-mapRate));
+ if(Math.abs(mapRate-targetRate)<.0001)mapRate=targetRate;
+ mapModeEl.textContent=throttle===1?'OVERCLOCK':throttle===-1?(mapRate===0?'PAUSED':'BRAKING'):mapRate>1.005?'COASTING':mapRate<.995?'RECOVERING':'NORMAL';
+ mapRateEl.textContent=mapRate.toFixed(2)+'x';
+ const speed=(victorious?290:speedAtRound(roundIndex))*mapRate;
+ scroll+=speed*dt;score=Math.floor(scroll/20);scoreEl.textContent=String(score).padStart(4,'0');if(!victorious){progressEl.textContent=String(Math.min(100,Math.floor(scroll/finishDistance*100)));if(level===1){while(roundIndex<9&&scroll>=roundStart[roundIndex+1])showRound(roundIndex+1)}else{for(const next of roundStart){if(scroll>=next.distance&&roundIndex!==next.round)showRound(next.round)}}}beatTime+=dt;const stepDuration=60/currentBpm/4;while(beatTime>=stepDuration){beatTime-=stepDuration;(victorious?victoryMusic:drumAndMelody)(beat++);}if(bannerClock>0){bannerClock-=dt;banner.style.opacity=String(Math.min(1,Math.max(0,bannerClock-.1)))}
+const dx=(keys.has('a')||keys.has('arrowleft')?-1:0)+(keys.has('d')||keys.has('arrowright')?1:0),dy=throttle?0:((up?-1:0)+(down?1:0)),l=Math.hypot(dx,dy)||1;player.x+=dx/l*MOVE_SPEED*dt;player.y+=dy/l*MOVE_SPEED*dt;player.x=Math.max(playLeft+player.size/2+5,Math.min(playLeft+playWidth-player.size/2-5,player.x));player.y=Math.max(H*.20,Math.min(H*.86,player.y));player.trail.unshift({x:player.x,y:player.y,life:1});if(player.trail.length>17)player.trail.pop();for(const t of player.trail)t.life-=dt*2.7;
+const cell=playWidth/LANES,r=player.size*.42;if(!victorious)for(const row of course){const y=level===2?H+100+row.distance-scroll:-100+scroll-row.distance;if(y>H+45||y+row.h<-45)continue;if(player.y+r<=y+2||player.y-r>=y+row.h-2)continue;for(let col=0;col<LANES;col++){if(col>=row.lane&&col<row.lane+row.gap)continue;const x=playLeft+col*cell+2,w=cell-4;if(player.x+r>x+2&&player.x-r<x+w-2){endRun(false);break}}if(state!=='playing')break}
+for(const p of sparks){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=420*dt;p.life-=dt}sparks=sparks.filter(p=>p.life>0);if(state==='playing'&&scroll>=finishDistance){if(level===1)endRun(true);else if(player.y>=H*.80)endRun(true);else{finishPrompt=true;nameEl.textContent='REACH FINISH ↓';progressEl.textContent='99'}}}
+function draw(){const pulse=1-beatTime/(60/currentBpm/4||1);ctx.fillStyle=level===2?'#e3e5df':'#000000';ctx.fillRect(0,0,W,H);const outer=ctx.createLinearGradient(0,0,W,0);outer.addColorStop(0,level===2?'#d5d8d1':'#050705');outer.addColorStop(.5,level===2?'#eceee8':'#000000');outer.addColorStop(1,level===2?'#d5d8d1':'#050705');ctx.fillStyle=outer;ctx.fillRect(0,0,W,H);ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake*=.85;if(shake<.2)shake=0}if(level===2){
+  // Inverted terminal paper: stepped luminance curves, fixed ordered dithering, and visible raster lines.
+  // Quantize in world space so the texture scrolls with the course rather than flickering between frames.
+  ctx.fillStyle='#d7d9d0';ctx.fillRect(playLeft,0,playWidth,H);
+  ctx.save();ctx.beginPath();ctx.rect(playLeft,0,playWidth,H);ctx.clip();
+  const tile=16,cols=Math.ceil(playWidth/tile),phase=((scroll%tile)+tile)%tile;
+  const bayer=[0,8,2,10,12,4,14,6,3,11,1,9,5,13,3,11,1,9];
+  for(let r=-1;r<=Math.ceil(H/tile);r++){
+    const y=r*tile+phase,worldRow=Math.floor((scroll-y)/tile);
+    const t=Math.max(0,Math.min(1,(y+tile*.5)/H));
+    const band=Math.floor((Math.sin(t*Math.PI*2.6+scroll/540)*.5+.5)*5)/5;
+    const shade=Math.round(211+13*band-8*Math.pow(Math.abs(t-.5)*2,1.4));
+    ctx.fillStyle=`rgb(${shade},${Math.min(255,shade+3)},${Math.max(0,shade-3)})`;
+    ctx.fillRect(playLeft,y,playWidth,tile);
+    for(let c=0;c<cols;c++){
+      const threshold=bayer[((worldRow&3)*4)+(c&3)];
+      const grain=((c*37+worldRow*17+((c*worldRow)&15))&15);
+      const intensity=5+band*7+(1-Math.abs(t-.5)*2)*3;
+      if(threshold+grain*.2<intensity){
+        ctx.fillStyle=(c+worldRow)%3===0?'#87968a':'#a2aca0';
+        ctx.globalAlpha=(threshold<5?.30:.18);
+        ctx.fillRect(playLeft+c*tile+2,y+2,tile-4,tile-4);
+      }
+    }
+  }
+  ctx.globalAlpha=1;
+  // Deliberately high-contrast grid that remains legible over the dither texture.
+  for(let i=0;i<=LANES;i++){
+    const x=Math.round(playLeft+i*gridSize)+.5;
+    ctx.strokeStyle=i===0||i===LANES?'#435849':'#6c7f70';ctx.lineWidth=i===0||i===LANES?3:1.4;
+    ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+    ctx.strokeStyle='#f0f0e8';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x+3,0);ctx.lineTo(x+3,H);ctx.stroke();
+  }
+  const spacing=gridSize,gridStart=((scroll%spacing)+spacing)%spacing;
+  for(let y=gridStart-spacing;y<H;y+=spacing){
+    ctx.strokeStyle='#536a59';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(playLeft,y+.5);ctx.lineTo(playLeft+playWidth,y+.5);ctx.stroke();
+    ctx.fillStyle='#475b4c';
+    for(let i=1;i<LANES;i++)ctx.fillRect(Math.round(playLeft+i*gridSize)-2,Math.round(y)-2,4,4);
+  }
+  ctx.restore();
+}else{
+  ctx.fillStyle='#030503';ctx.fillRect(playLeft,0,playWidth,H);
+  ctx.strokeStyle='#7aa78320';ctx.lineWidth=1;
+  for(let i=0;i<=LANES;i++){const x=playLeft+i*gridSize;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  const spacing=gridSize,start=scroll%spacing;
+  for(let y=start-spacing;y<H;y+=spacing){ctx.strokeStyle='#6bb577'+Math.round((.1+.12*y/H)*255).toString(16).padStart(2,'0');ctx.beginPath();ctx.moveTo(playLeft,y);ctx.lineTo(playLeft+playWidth,y);ctx.stroke()}
+  ctx.fillStyle='#7aba84';ctx.globalAlpha=.7;ctx.fillRect(playLeft-3,0,3,H);ctx.fillRect(playLeft+playWidth,0,3,H);ctx.globalAlpha=1;
+}
+const cell=playWidth/LANES;if(state!=='victory')for(const row of course){const y=level===2?H+100+row.distance-scroll:-100+scroll-row.distance;if(y>H+40||y+row.h<-40)continue;for(let col=0;col<LANES;col++){if(col>=row.lane&&col<row.lane+row.gap)continue;const x=playLeft+col*cell+2,w=cell-4;ctx.save();ctx.shadowBlur=2;ctx.shadowColor=level===2?'#7d827a':(row.kind==='spike'?'#a04f4f':'#6ba978');if(row.kind==='block'){ctx.fillStyle=level===2?'#c1c9bf':'#142017';ctx.strokeStyle=level===2?'#4b6352':'#a3d5ab';ctx.lineWidth=2;ctx.fillRect(x,y,w,row.h);ctx.strokeRect(x,y,w,row.h);ctx.fillStyle=level===2?'#6f7e7166':'#577d6066';ctx.fillRect(x+4,y+4,w-8,4)}else{ctx.fillStyle=level===2?'#9d7776':'#a04f4f';ctx.strokeStyle=level===2?'#705351':'#d77c7c';ctx.lineWidth=1;const n=Math.max(1,Math.round(w/20));for(let i=0;i<n;i++){const sx=x+i*w/n;ctx.beginPath();ctx.moveTo(sx,y+row.h);ctx.lineTo(sx+w/n/2,y);ctx.lineTo(sx+w/n,y+row.h);ctx.closePath();ctx.fill();ctx.stroke()}}ctx.restore()}}
+if(level===2&&state==='playing'&&scroll>=finishDistance){ctx.fillStyle='#344d3e';ctx.fillRect(playLeft,H*.83,playWidth,4);ctx.font='bold 14px Consolas,monospace';ctx.fillText('▼ FINISH // MOVE DOWN ▼',playLeft+12,H*.83-12)}
+
+  const playerOuter=level===2?'#111111':'#f5f5f5';
+  const playerInner=level===2?'#ece9dc':'#020202';
+  for(let i=player.trail.length-1;i>=0;i--){
+    const p=player.trail[i];
+    const s=player.size*(.72+i*.012);
+    const inner=Math.max(6,s*.36);
+    ctx.globalAlpha=Math.max(0,p.life)*.28;
+    ctx.fillStyle=playerOuter;
+    ctx.fillRect(p.x-s/2,p.y-s/2,s,s);
+    ctx.fillStyle=playerInner;
+    ctx.fillRect(p.x-inner/2,p.y-inner/2,inner,inner);
+  }
+  ctx.globalAlpha=1;
+  if(state!=='menu'){
+    ctx.save();
+    ctx.translate(player.x,player.y);
+    const outer=player.size;
+    const inner=Math.max(8,player.size*.42);
+    ctx.fillStyle=playerOuter;
+    ctx.fillRect(-outer/2,-outer/2,outer,outer);
+    ctx.fillStyle=playerInner;
+    ctx.fillRect(-inner/2,-inner/2,inner,inner);
+    ctx.restore();
+  }
+  for(const p of sparks){ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle=p.col;ctx.fillRect(p.x-3,p.y-3,6,6)}
+  ctx.globalAlpha=1;ctx.restore();flash.style.opacity=String(Math.max(0,flashOpacity));flashOpacity*=.82}
+function frame(now){const dt=Math.min(.035,Math.max(0,(now-lastFrame)/1000||0));lastFrame=now;if(state==='playing'||state==='victory')update(dt);else{scroll+=dt*45;for(const p of sparks){p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt}sparks=sparks.filter(p=>p.life>0)}draw();requestAnimationFrame(frame)}requestAnimationFrame(frame);
+function keydown(e){if(e.code==='ShiftLeft'){keys.add('shiftleft');e.preventDefault();return}const k=e.key.toLowerCase();if(k==='escape'){if(state!=='menu')showMenu();return}if(state==='menu'){if(k===' '){e.preventDefault();start(1)}return}if(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d'].includes(k))e.preventDefault();if(k===' '&&state!=='playing'){start(level);return}keys.add(k)}function keyup(e){if(e.code==='ShiftLeft')keys.delete('shiftleft');keys.delete(e.key.toLowerCase())}window.addEventListener('keydown',keydown);window.addEventListener('keyup',keyup);window.addEventListener('blur',()=>keys.clear());startButton.addEventListener('click',()=>start(level));muteButton.addEventListener('click',()=>{mute=!mute;muteButton.textContent=mute?'SOUND: OFF':'SOUND: ON';menuSound.textContent=mute?'[AUDIO: OFF]':'[AUDIO: ON]';if(!mute)initAudio()});for(const b of document.querySelectorAll('#mobile button')){const k=b.dataset.key.toLowerCase();b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);keys.add(k)});for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>keys.delete(k))}
+})();
+</script>
+</body>
+</html>
