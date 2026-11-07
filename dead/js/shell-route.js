@@ -3,7 +3,8 @@
 
   const { pathname, search, hash } = window.location;
   if (!pathname.startsWith("/dead/games/") && !pathname.startsWith("/dead/experiments/")) return;
-  if (new URLSearchParams(search).get("standalone") === "true") return;
+  const requireShell = document.currentScript?.hasAttribute("data-require-shell");
+  if (!requireShell && new URLSearchParams(search).get("standalone") === "true") return;
 
   window.__deadShellGuardActive = true;
   const route = pathname + search + hash;
