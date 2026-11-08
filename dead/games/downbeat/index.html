@@ -43,6 +43,27 @@ body.level-two #panel h1,body.level-two #panel p,body.level-two #panel strong{co
 body.level-two #panel button{background:#ccd8ce;color:#203a29;border-color:#536b59}
 body.level-two #flash{background:#a87c78}
 </style>
+<style>
+.menu-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+#cheatsButton{border:1px solid #777;background:#111;padding:9px 12px;font:italic bold 13px Consolas,monospace;cursor:pointer}
+#cheatsButton .cheats-label{display:inline-block;color:#ff4050;animation:cheat-hueshift 3s linear infinite}
+#cheatsButton .cheats-state{margin-left:8px;font-style:normal;color:#ed8080}
+#cheatsButton[aria-pressed="true"] .cheats-state{color:#8cf6a3}
+@keyframes cheat-hueshift{to{filter:hue-rotate(360deg)}}
+#cheatsDialog{width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);border:2px solid #888;background:#090909;color:#ccc;padding:22px;box-shadow:5px 5px 0 #333;font:13px/1.5 Consolas,monospace}
+#cheatsDialog::backdrop{background:#000b}
+#cheatsDialog h2{margin:0 0 12px;color:var(--green);font-size:21px}
+#cheatsDialog label{display:block;margin-bottom:8px}
+#cheatAdmission{width:100%;padding:10px;background:#000;color:var(--green);border:1px solid #888;font:inherit;touch-action:auto}
+.cheat-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+.cheat-actions button{padding:8px 12px;background:#151515;color:var(--green);border:1px solid #777;font:inherit;cursor:pointer}
+#cheatsStatus{min-height:1.5em;margin-bottom:0;color:var(--green)}
+@media(prefers-reduced-motion:reduce){#cheatsButton .cheats-label{animation:none}}
+#roundBanner.reorienting{background:transparent;border-color:transparent;box-shadow:none}
+#launcher,.tv-shell{scrollbar-width:none}
+#launcher::-webkit-scrollbar,.tv-shell::-webkit-scrollbar{display:none}
+.channel .level-preview{position:relative;z-index:1;display:block;width:100%;height:auto;min-height:0;aspect-ratio:16/9;flex:1;object-fit:contain;margin:6px 0;border:1px solid #526358;background:#030503}
+</style>
 </head>
 <body>
 <canvas id="game" aria-label="Vertical rhythm dodge game"></canvas>
@@ -51,8 +72,18 @@ body.level-two #flash{background:#a87c78}
  <header class="tv-header"><div class="tv-logo"><div class="tv-mark">▣</div><div><div class="tv-eyebrow">theinternetisdead.org/dead/games/downbeat/</div><div class="tv-title">WELCOME TO MY GAME IMPOSSIBLE / DOWNBEAT</div></div></div><div class="tv-clock" id="tvClock">--:--<small>LEVEL SELECTION</small></div></header>
  <div class="tv-instruction"><strong>SELECT PROGRAM TO EXECUTE</strong><span>[LEVEL_01: 10 WAVES] [LEVEL_02: LOCKED]</span></div>
  <div class="channels" id="channels"></div>
- <footer class="tv-footer"><div><span class="orb"></span> READY_ <span class="mini">· WASD MOVE · LSHIFT + FORWARD / BACK: SPEED · ESC MENU</span></div><button id="menuSound" type="button">[AUDIO: ON]</button></footer>
+ <footer class="tv-footer"><div><span class="orb"></span> READY_ <span class="mini">· WASD MOVE · LSHIFT + FORWARD / BACK: SPEED · ESC MENU</span></div><div class="menu-actions"><button id="menuSound" type="button">[AUDIO: ON]</button><button id="cheatsButton" type="button" aria-pressed="false"><span class="cheats-label">Cheats!</span><span class="cheats-state" id="cheatsState">OFF</span></button></div></footer>
 </div></div></div>
+<dialog id="cheatsDialog" aria-labelledby="cheatsTitle" aria-describedby="cheatsPrompt">
+ <h2 id="cheatsTitle">CONFESS TO UNLOCK</h2>
+ <p id="cheatsPrompt">Admit you are a cheater. Type <strong>icheat</strong> to unlock all available levels.</p>
+ <form id="cheatsForm">
+  <label for="cheatAdmission">Your confession</label>
+  <input id="cheatAdmission" name="confession" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" required>
+  <p id="cheatsStatus" role="status" aria-live="polite"></p>
+  <div class="cheat-actions"><button id="cheatsClose" type="button">Close</button><button type="submit">I admit it</button></div>
+ </form>
+</dialog>
 <button id="home" type="button" aria-label="Back to level select">[ESC] LEVEL SELECT</button>
 
 <div id="hud"><div><div class="label">DISTANCE</div><div class="number" id="score">0000</div><div class="label" style="margin-top:10px">ROUND <span id="round">01</span> / 10 · <span id="roundname">FIRST STEPS</span></div></div><div><div class="label">BEST / BPM</div><div class="number"><span id="best">0000</span> <span style="color:#36e9ff;font-size:.52em">/ <span id="bpm">120</span></span></div><div class="label" style="margin-top:10px"><span id="progress">0</span>% COMPLETE</div><div class="label" style="margin-top:10px">MAP: <span id="mapMode">NORMAL</span> <span id="mapRate">1.00x</span></div></div></div>
@@ -67,6 +98,33 @@ const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),center=
 const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),bpmEl=document.getElementById('bpm'),roundEl=document.getElementById('round'),nameEl=document.getElementById('roundname'),progressEl=document.getElementById('progress'),banner=document.getElementById('roundBanner'),bannerNumber=document.getElementById('bannerNumber'),bannerName=document.getElementById('bannerName'),muteButton=document.getElementById('mute'),flash=document.getElementById('flash'),victoryOverlay=document.getElementById('victoryOverlay');
 const nextLevelButton=document.getElementById('nextLevelButton');
 const launcher=document.getElementById('launcher'),boot=document.getElementById('boot'),channels=document.getElementById('channels'),home=document.getElementById('home'),menuSound=document.getElementById('menuSound');
+const cheatsButton=document.getElementById('cheatsButton'),cheatsDialog=document.getElementById('cheatsDialog'),cheatAdmission=document.getElementById('cheatAdmission'),cheatsStatus=document.getElementById('cheatsStatus');
+let cheatsAdmitted=false,cheatsEnabled=false;
+try{cheatsAdmitted=localStorage.getItem('downbeat-cheats-admitted')==='1';cheatsEnabled=cheatsAdmitted&&localStorage.getItem('downbeat-cheats-enabled')==='1'}catch(e){}
+function updateCheatsButton(){
+ cheatsButton.setAttribute('aria-pressed',String(cheatsEnabled));
+ document.getElementById('cheatsState').textContent=cheatsEnabled?'ON':'OFF';
+ cheatsButton.title=cheatsAdmitted?'Toggle cheats':'Type icheat once to enable cheats';
+}
+function setCheats(enabled){
+ cheatsEnabled=enabled;
+ if(enabled&&state!=='menu')runUsedCheats=true;
+ try{localStorage.setItem('downbeat-cheats-enabled',enabled?'1':'0')}catch(e){}
+ updateCheatsButton();refreshLevels();
+}
+updateCheatsButton();
+cheatsButton.addEventListener('click',()=>{keys.clear();if(cheatsAdmitted){setCheats(!cheatsEnabled);return}cheatAdmission.value='';cheatsStatus.textContent='';cheatsDialog.showModal();cheatAdmission.focus()});
+document.getElementById('cheatsClose').addEventListener('click',()=>cheatsDialog.close());
+cheatsDialog.addEventListener('close',()=>{keys.clear();cheatsButton.focus()});
+function unlockCheatLevels(){
+ if(cheatAdmission.value!=='icheat')return false;
+ cheatsAdmitted=true;
+ try{localStorage.setItem('downbeat-cheats-admitted','1')}catch(e){}
+ setCheats(true);cheatsStatus.textContent='Confession accepted. Cheats ON. Click Cheats! to toggle anytime.';
+ return true;
+}
+cheatAdmission.addEventListener('input',()=>{cheatsStatus.textContent='';unlockCheatLevels()});
+document.getElementById('cheatsForm').addEventListener('submit',event=>{event.preventDefault();if(!unlockCheatLevels()){cheatsStatus.textContent='Type icheat exactly to admit you are a cheater.';cheatAdmission.focus()}});
 const TAU=Math.PI*2,LANES=8,MOVE_SPEED=340,MAX_OVERCLOCK=1.8,MAP_RAMP_UP=2.5,MAP_RAMP_DOWN=2.6;
 const mapModeEl=document.getElementById('mapMode'),mapRateEl=document.getElementById('mapRate');
 let mapRate=1;
@@ -84,8 +142,12 @@ const ROUNDS=[
  {name:'HYPERSTEP',gap:2,bpm:158,speed:380,beats:1.6,route:[4,5,5,4,3,2,1,1,2,3,4,5,4,3]},
  {name:'IMPOSSIBLE?',gap:2,bpm:164,speed:400,beats:1.55,route:[3,4,5,4,3,2,1,2,3,4,5,4,3,2,1,2,3,4]}
 ];
-let level=1,level1Complete=false,finishPrompt=false;
-try{level1Complete=localStorage.getItem('downbeat-level1-complete')==='1'}catch(e){}
+let level=1,level1Complete=false,level2Complete=false,finishPrompt=false,runUsedCheats=false;
+let mashupWave=0,checkpointDistance=0,completedDistance=0;
+const reverseMode=()=>level===2||(level===3&&mashupWave%2===1);
+try{level2Complete=localStorage.getItem('downbeat-earned-level2-complete')==='1'}catch(e){}
+try{level1Complete=localStorage.getItem('downbeat-earned-level1-complete')==='1'}catch(e){}
+level2Complete=level1Complete&&level2Complete;
 let W=0,H=0,DPR=1,playLeft=0,playWidth=0,gridSize=0,state='menu',lastFrame=0,scroll=0,score=0,best=0,shake=0,flashOpacity=0,beat=0,beatTime=0,currentBpm=120,roundIndex=0,bannerClock=0,course=[],roundStart=[],finishDistance=0,runSeed=1,sparks=[];
 const player={x:0,y:0,size:23,trail:[]},keys=new Set();let audio=null,master=null,mute=false;
 try{best=Number(localStorage.getItem('downbeat-best')||0)||0}catch(e){}bestEl.textContent=String(best).padStart(4,'0');
@@ -101,8 +163,8 @@ function fxDeath(){if(!audio||mute)return;let t=audio.currentTime;noise(t,.4,.26
 function particle(x,y,col,count){for(let i=0;i<count;i++){let a=rand()*TAU,s=80+rand()*260;sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.35+rand()*.5,col})}}
 // Each row is authored in world-distance coordinates, not randomly spawned on screen.
 // Validate the intended centerline against the exact horizontal movement budget.
-function buildCourse(selected=0){course=[];roundStart=[];let distance=H*.28;let previous=null;for(let r=selected;r<ROUNDS.length;r++){const round=ROUNDS[r],spacing=round.speed*(60/round.bpm)*round.beats;roundStart.push(distance);for(let i=0;i<round.route.length;i++){const lane=round.route[i],centerLane=lane+round.gap/2;if(lane<0||lane+round.gap>LANES)throw Error('Blocked route in round '+(r+1));if(previous){const maxShift=Math.abs(centerLane-previous.centerLane)*gridSize;const timeAvailable=(distance-previous.distance)/Math.max(previous.speed,round.speed);if(maxShift+player.size>MOVE_SPEED*timeAvailable)throw Error('Unreachable corridor in round '+(r+1)+', row '+i)}const kind=(r>=5&&(i%3===1))||(r>=2&&i%4===2)?'spike':'block';course.push({distance,round:r,lane,gap:round.gap,kind,h:22+Math.floor(r/2)*3+(i%3)*2});previous={distance,centerLane,speed:round.speed};distance+=spacing}distance+=Math.max(145,spacing*.72)}finishDistance=distance+H*.65;
-if(level===2){
+function buildCourse(selected=0){course=[];roundStart=[];let distance=H*.28;let previous=null;for(let r=selected;r<(level===3?selected+1:ROUNDS.length);r++){const round=ROUNDS[r],spacing=round.speed*(60/round.bpm)*round.beats;roundStart.push(distance);for(let i=0;i<round.route.length;i++){const lane=round.route[i],centerLane=lane+round.gap/2;if(lane<0||lane+round.gap>LANES)throw Error('Blocked route in round '+(r+1));if(previous){const maxShift=Math.abs(centerLane-previous.centerLane)*gridSize;const timeAvailable=(distance-previous.distance)/Math.max(previous.speed,round.speed);if(maxShift+player.size>MOVE_SPEED*timeAvailable)throw Error('Unreachable corridor in round '+(r+1)+', row '+i)}const kind=(r>=5&&(i%3===1))||(r>=2&&i%4===2)?'spike':'block';course.push({distance,round:r,lane,gap:round.gap,kind,h:22+Math.floor(r/2)*3+(i%3)*2});previous={distance,centerLane,speed:round.speed};distance+=spacing}distance+=Math.max(145,spacing*.72)}finishDistance=distance+H*.65;
+if(reverseMode()){
  const old=course.slice().reverse(),first=old[0].distance;
  // Reversing the array starts with the LAST authored row and keeps every gap intact.
  course=old.map(row=>({...row,distance:H*.28+first-row.distance}));
@@ -111,14 +173,14 @@ if(level===2){
  finishDistance=course[course.length-1].distance+H+135;
  }
 }
-function showRound(i){roundIndex=i;const r=ROUNDS[i];currentBpm=r.bpm;roundEl.textContent=String(i+1).padStart(2,'0');nameEl.textContent=r.name;bpmEl.textContent=currentBpm;bannerNumber.textContent=`WAVE ${String(i+1).padStart(2,'0')} / 10`;bannerName.textContent=r.name;bannerClock=2.1;banner.style.opacity='1'}
+function showRound(i){banner.classList.remove('reorienting');roundIndex=i;const r=ROUNDS[i];currentBpm=r.bpm;const wave=i+1;roundEl.textContent=String(wave).padStart(2,'0');nameEl.textContent=r.name;bpmEl.textContent=currentBpm;bannerNumber.textContent=`WAVE ${String(wave).padStart(2,'0')} / 10`;bannerName.textContent=r.name;bannerClock=2.1;banner.style.opacity='1'}
 let chosenRound=0;
-function start(selectedLevel=1){if(selectedLevel===2&&!level1Complete)return;level=selectedLevel;chosenRound=level;document.body.classList.toggle('level-two',level===2);finishPrompt=false;initAudio();state='playing';launcher.classList.add('hidden');boot.classList.add('off');home.style.display='block';center.style.display='none';victoryOverlay.style.display='none';keys.clear();scroll=0;mapRate=1;mapModeEl.textContent='NORMAL';mapRateEl.textContent='1.00x';score=0;shake=0;flashOpacity=0;beat=0;beatTime=0;runSeed=0x5EED1234;sparks=[];player.x=W/2;player.y=level===2?H*.26:H*.72;player.trail=[];buildCourse(0);showRound(level===2?9:0);scoreEl.textContent='0000';progressEl.textContent='0';lastFrame=performance.now()}
-function showMenu(){document.body.classList.remove('level-two');refreshLevels();state='menu';keys.clear();mapRate=1;center.style.display='none';victoryOverlay.style.display='none';home.style.display='none';launcher.classList.remove('hidden');banner.style.opacity='0';updateClock()}
+function start(selectedLevel=1){if((selectedLevel===2&&!level1Complete&&!cheatsEnabled)||(selectedLevel===3&&!level2Complete&&!cheatsEnabled))return;banner.classList.remove('reorienting');level=selectedLevel;runUsedCheats=cheatsEnabled;mashupWave=0;checkpointDistance=0;completedDistance=0;chosenRound=level;document.body.classList.toggle('level-two',reverseMode());finishPrompt=false;initAudio();state='playing';launcher.classList.add('hidden');boot.classList.add('off');home.style.display='block';center.style.display='none';victoryOverlay.style.display='none';keys.clear();scroll=0;mapRate=1;mapModeEl.textContent='NORMAL';mapRateEl.textContent='1.00x';score=0;shake=0;flashOpacity=0;beat=0;beatTime=0;runSeed=0x5EED1234;sparks=[];player.x=W/2;player.y=reverseMode()?H*.26:H*.72;player.trail=[];buildCourse(0);showRound(reverseMode()?9:0);scoreEl.textContent='0000';progressEl.textContent='0';lastFrame=performance.now()}
+function showMenu(){banner.classList.remove('reorienting');document.body.classList.remove('level-two');refreshLevels();state='menu';keys.clear();mapRate=1;center.style.display='none';victoryOverlay.style.display='none';home.style.display='none';launcher.classList.remove('hidden');banner.style.opacity='0';updateClock()}
 function updateClock(){const el=document.getElementById('tvClock');el.firstChild.textContent=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
-// Each level is a complete ten-wave program. Channels 03-10 are not installed.
+// Each installed level is a complete ten-wave program. Channels 04-10 are empty.
 for(let i=0;i<10;i++){
- if(i<2){
+ if(i<3){
   const b=document.createElement('button');b.type='button';b.className='channel level-one';b.id='channel'+(i+1);
   b.addEventListener('click',()=>start(i+1));channels.appendChild(b);
  }else{
@@ -129,13 +191,61 @@ for(let i=0;i<10;i++){
  }
 }
 function refreshLevels(){
+ const level2Unlocked=level1Complete||cheatsEnabled,level3Unlocked=level2Complete||cheatsEnabled;
  const a=document.getElementById('channel1'),b=document.getElementById('channel2');
  a.setAttribute('aria-label','Play Level 1, ten waves');
- a.innerHTML=`<span class="ch-id">01 / EXECUTABLE <span class="complete-mark">${level1Complete?'✓':''}</span></span><span class="ch-art">&gt;_</span><span><div class="ch-name">LEVEL_01.EXE</div><div class="ch-meta">10 WAVES // ${level1Complete?'COMPLETE':'[ENTER]'}</div></span>`;
- b.disabled=!level1Complete;b.classList.toggle('locked-level',!level1Complete);
- b.setAttribute('aria-label',level1Complete?'Play unlocked Level 2, reversed 10 waves':'Level 2 locked, complete Level 1 first');
- b.innerHTML=`<span class="ch-id">02 / ${level1Complete?'EXECUTABLE':'LOCKED'}</span><span class="ch-art">${level1Complete?'&lt;_':'[ X ]'}</span><span><div class="ch-name">LEVEL_02.EXE</div><div class="ch-meta">${level1Complete?'REVERSE MODE // [ENTER]':'COMPLETE LEVEL 01'}</div></span>`;
- document.querySelector('.tv-instruction span').textContent=level1Complete?'[LEVEL_01: ✓] [LEVEL_02: UNLOCKED] [03-10: EMPTY]':'[LEVEL_01: 10 WAVES] [LEVEL_02: LOCKED]';
+  a.innerHTML=`<span class="ch-id">01 / EXECUTABLE <span class="complete-mark">${level1Complete?'✓':''}</span></span><canvas class="level-preview" width="320" height="180" aria-hidden="true"></canvas><span><div class="ch-name">LEVEL_01.EXE</div><div class="ch-meta">10 WAVES // ${level1Complete?'COMPLETE':'[ENTER]'}</div></span>`;
+ b.disabled=!level2Unlocked;b.classList.toggle('locked-level',!level2Unlocked);
+ b.setAttribute('aria-label',level2Unlocked?'Play unlocked Level 2, reversed 10 waves':'Level 2 locked, complete Level 1 first');
+ b.innerHTML=`<span class="ch-id">02 / ${level2Unlocked?'EXECUTABLE':'LOCKED'}</span><canvas class="level-preview" width="320" height="180" aria-hidden="true"></canvas><span><div class="ch-name">LEVEL_02.EXE</div><div class="ch-meta">${level2Unlocked?'REVERSE MODE // [ENTER]':'COMPLETE LEVEL 01'}</div></span>`;
+ drawLevelPreview(a.querySelector('canvas'),1);
+ drawLevelPreview(b.querySelector('canvas'),2);
+ const c=document.getElementById('channel3');
+ c.disabled=!level3Unlocked;c.classList.toggle('locked-level',!level3Unlocked);
+ c.setAttribute('aria-label',level3Unlocked?'Play Level 3, ten waves alternating forward and reverse modes':'Level 3 locked, complete Level 2 first');
+ c.innerHTML=`<span class="ch-id">03 / ${level3Unlocked?'EXECUTABLE':'LOCKED'}</span><canvas class="level-preview" width="320" height="180" aria-hidden="true"></canvas><span><div class="ch-name">LEVEL_03.EXE</div><div class="ch-meta">${level3Unlocked?'UP / DOWN // ALTERNATING':'COMPLETE LEVEL 02'}</div></span>`;
+ drawLevelPreview(c.querySelector('canvas'),3);
+ document.querySelector('.tv-instruction span').textContent=level3Unlocked?'[LEVEL_03: MASHUP] [04-10: EMPTY]':level2Unlocked?'[LEVEL_02: UNLOCKED] [LEVEL_03: LOCKED]':'[LEVEL_01: 10 WAVES] [02-03: LOCKED]';
+}
+function drawLevelPreview(preview,selectedLevel){
+ if(selectedLevel===3){
+  const g=preview.getContext('2d');
+  for(let side=0;side<2;side++){const half=document.createElement('canvas');half.width=preview.width;half.height=preview.height;drawLevelPreview(half,side+1);g.drawImage(half,side*preview.width/2,0,preview.width/2,preview.height)}
+  return;
+ }
+ const g=preview.getContext('2d'),reverse=selectedLevel===2;
+ const width=preview.width,height=preview.height,left=72,fieldWidth=176,cell=fieldWidth/LANES;
+ g.fillStyle=reverse?'#d5d8d1':'#050705';g.fillRect(0,0,width,height);
+ g.fillStyle=reverse?'#d7d9d0':'#030503';g.fillRect(left,0,fieldWidth,height);
+ if(reverse){
+  for(let y=0;y<height;y+=8)for(let x=0;x<fieldWidth;x+=8){
+   g.fillStyle=(x/8+y/8)%3===0?'#a2aca0':'#cdd2c7';
+   g.fillRect(left+x+1,y+1,6,6);
+  }
+ }
+ g.strokeStyle=reverse?'#6c7f70':'#7aa78340';g.lineWidth=1;
+ for(let col=0;col<=LANES;col++){g.beginPath();g.moveTo(left+col*cell,0);g.lineTo(left+col*cell,height);g.stroke()}
+ for(let y=0;y<height;y+=cell){g.beginPath();g.moveTo(left,y);g.lineTo(left+fieldWidth,y);g.stroke()}
+ g.fillStyle=reverse?'#435849':'#7aba84';g.fillRect(left-2,0,2,height);g.fillRect(left+fieldWidth,0,2,height);
+ // Use the same authored opening rows, gap widths and obstacle rules as the game.
+ const roundIndex=reverse?ROUNDS.length-1:0,round=ROUNDS[roundIndex];
+ const rows=reverse?[...round.route].reverse():round.route;
+ for(let row=0;row<4;row++){
+  const sourceIndex=reverse?round.route.length-1-row:row;
+  const spike=(roundIndex>=5&&sourceIndex%3===1)||(roundIndex>=2&&sourceIndex%4===2);
+  const y=reverse?height-35-row*39:22+row*33;
+  for(let col=0;col<LANES;col++){
+   if(col>=rows[row]&&col<rows[row]+round.gap)continue;
+   const x=left+col*cell+1,w=cell-2;
+   g.fillStyle=reverse?(spike?'#9d7776':'#c1c9bf'):(spike?'#a04f4f':'#142017');
+   g.strokeStyle=reverse?(spike?'#705351':'#4b6352'):(spike?'#d77c7c':'#a3d5ab');
+   if(spike){g.beginPath();g.moveTo(x,y+9);g.lineTo(x+w/2,y);g.lineTo(x+w,y+9);g.closePath();g.fill();g.stroke()}
+   else{g.fillRect(x,y,w,8);g.strokeRect(x,y,w,8)}
+  }
+ }
+ const playerX=left+(rows[0]+round.gap/2)*cell,playerY=reverse?25:height-20;
+ g.fillStyle=reverse?'#111111':'#f5f5f5';g.fillRect(playerX-5,playerY-5,10,10);
+ g.fillStyle=reverse?'#ece9dc':'#020202';g.fillRect(playerX-2,playerY-2,4,4);
 }
 refreshLevels();
 const staticCanvases=[...document.querySelectorAll('.static-picture')];
@@ -154,9 +264,9 @@ function animateStatic(){
 setInterval(animateStatic,115);animateStatic();
 updateClock();setInterval(updateClock,30000);
 let bootTimer=setTimeout(()=>boot.classList.add('off'),1700);boot.addEventListener('click',()=>{clearTimeout(bootTimer);boot.classList.add('off')});
-home.addEventListener('click',showMenu);nextLevelButton.addEventListener('click',()=>{if(state==='victory'&&level===1)start(2)});menuSound.addEventListener('click',()=>{mute=!mute;menuSound.textContent=mute?'[AUDIO: OFF]':'[AUDIO: ON]';muteButton.textContent=mute?'SOUND: OFF':'SOUND: ON';if(!mute){initAudio();tone(440,audio.currentTime+.01,.12,'sine',.12)}});
-function endRun(won){if(state!=='playing')return;state=won?'victory':'dead';shake=won?0:20;flashOpacity=won?.18:.72;
-if(!won){fxDeath();particle(player.x,player.y,'#a04f4f',40)}else{particle(player.x,player.y,'#8cf6a3',80);particle(player.x,player.y,'#c7b98a',35);victoryOverlay.style.display='block';nextLevelButton.disabled=level!==1;nextLevelButton.textContent=level===1?'[ > ] NEXT LEVEL: 02':'[ -- ] LEVEL 03 // COMING SOON';nextLevelButton.title=level===1?'Start Level 2':'Level 3 is not available yet';document.getElementById('victoryTitle').textContent=`LEVEL ${level} COMPLETE`;document.getElementById('victoryCaption').textContent=level===1?'LEVEL 02 UNLOCKED | FREE ROAM | ESC: MENU':'REVERSE COURSE CLEARED | FREE ROAM | ESC: MENU';if(level===1){level1Complete=true;try{localStorage.setItem('downbeat-level1-complete','1')}catch(e){}refreshLevels()}roundEl.textContent=level===1?'10':'01';nameEl.textContent='FREE FLIGHT';progressEl.textContent='100';currentBpm=142;bpmEl.textContent=currentBpm;beat=0;beatTime=0;victoryMusic(beat++);}
+home.addEventListener('click',showMenu);nextLevelButton.addEventListener('click',()=>{if(state==='victory'&&level<3)start(level+1)});menuSound.addEventListener('click',()=>{mute=!mute;menuSound.textContent=mute?'[AUDIO: OFF]':'[AUDIO: ON]';muteButton.textContent=mute?'SOUND: OFF':'SOUND: ON';if(!mute){initAudio();tone(440,audio.currentTime+.01,.12,'sine',.12)}});
+function endRun(won){if(state!=='playing')return;if(!won&&level===3&&mashupWave>=5){fxDeath();completedDistance=checkpointDistance;setMashupWave(5,true);return}state=won?'victory':'dead';shake=won?0:20;flashOpacity=won?.18:.72;
+if(!won){fxDeath();particle(player.x,player.y,'#a04f4f',40)}else{particle(player.x,player.y,'#8cf6a3',80);particle(player.x,player.y,'#c7b98a',35);victoryOverlay.style.display='block';nextLevelButton.disabled=level===3;nextLevelButton.textContent=level<3?'[ > ] NEXT LEVEL: 0'+(level+1):'[ OK ] ALL LEVELS COMPLETE';nextLevelButton.title=level<3?'Start Level '+(level+1):'All installed levels complete';document.getElementById('victoryTitle').textContent=`LEVEL ${level} COMPLETE`;document.getElementById('victoryCaption').textContent=runUsedCheats?'CHEAT RUN CLEARED | NORMAL PROGRESSION UNCHANGED | ESC: MENU':level===1?'LEVEL 02 UNLOCKED | FREE ROAM | ESC: MENU':level===2?'LEVEL 03 UNLOCKED | FREE ROAM | ESC: MENU':'MASHUP CLEARED | FREE ROAM | ESC: MENU';if(level===1&&!runUsedCheats){level1Complete=true;try{localStorage.setItem('downbeat-earned-level1-complete','1')}catch(e){}refreshLevels()}if(level===2&&!runUsedCheats&&level1Complete){level2Complete=true;try{localStorage.setItem('downbeat-earned-level2-complete','1')}catch(e){}refreshLevels()}roundEl.textContent=level===2?'01':'10';nameEl.textContent='FREE FLIGHT';progressEl.textContent='100';currentBpm=142;bpmEl.textContent=currentBpm;beat=0;beatTime=0;victoryMusic(beat++);}
 if(score>best){best=score;try{localStorage.setItem('downbeat-best',best)}catch(e){}bestEl.textContent=String(best).padStart(4,'0')}
 if(!won){subtitle.innerHTML=`You reached <strong style="color:#8cf6a3">${score}</strong> meters in round ${roundIndex+1} of 10.<br>The course is fair, but the rhythm isn't forgiving.`;startButton.textContent='RETRY';center.style.display='flex'}
 banner.style.opacity='0'}
@@ -169,7 +279,7 @@ function update(dt){
  const shift=keys.has('shiftleft');
  const up=keys.has('w')||keys.has('arrowup');
  const down=keys.has('s')||keys.has('arrowdown');
- const forward=level===1?up:down,backward=level===1?down:up;
+ const forward=reverseMode()?down:up,backward=reverseMode()?up:down;
  const throttle=shift&&forward!==backward?(forward?1:-1):0;
  const targetRate=throttle===1?MAX_OVERCLOCK:throttle===-1?0:1;
  const adjustment=(targetRate>mapRate?MAP_RAMP_UP:MAP_RAMP_DOWN)*dt;
@@ -178,11 +288,11 @@ function update(dt){
  mapModeEl.textContent=throttle===1?'OVERCLOCK':throttle===-1?(mapRate===0?'PAUSED':'BRAKING'):mapRate>1.005?'COASTING':mapRate<.995?'RECOVERING':'NORMAL';
  mapRateEl.textContent=mapRate.toFixed(2)+'x';
  const speed=(victorious?290:speedAtRound(roundIndex))*mapRate;
- scroll+=speed*dt;score=Math.floor(scroll/20);scoreEl.textContent=String(score).padStart(4,'0');if(!victorious){progressEl.textContent=String(Math.min(100,Math.floor(scroll/finishDistance*100)));if(level===1){while(roundIndex<9&&scroll>=roundStart[roundIndex+1])showRound(roundIndex+1)}else{for(const next of roundStart){if(scroll>=next.distance&&roundIndex!==next.round)showRound(next.round)}}}beatTime+=dt;const stepDuration=60/currentBpm/4;while(beatTime>=stepDuration){beatTime-=stepDuration;(victorious?victoryMusic:drumAndMelody)(beat++);}if(bannerClock>0){bannerClock-=dt;banner.style.opacity=String(Math.min(1,Math.max(0,bannerClock-.1)))}
+ scroll+=speed*dt;score=Math.floor((completedDistance+scroll)/20);scoreEl.textContent=String(score).padStart(4,'0');if(!victorious){progressEl.textContent=String(Math.min(100,Math.floor((level===3?mashupWave*10:0)+scroll/finishDistance*(level===3?10:100))));if(level!==3&&!reverseMode()){while(roundIndex<9&&scroll>=roundStart[roundIndex+1])showRound(roundIndex+1)}else if(level!==3){const next=roundStart.filter(row=>scroll>=row.distance).at(-1);if(next&&roundIndex!==next.round)showRound(next.round)}}beatTime+=dt;const stepDuration=60/currentBpm/4;while(beatTime>=stepDuration){beatTime-=stepDuration;(victorious?victoryMusic:drumAndMelody)(beat++);}if(bannerClock>0){bannerClock-=dt;banner.style.opacity=String(Math.min(1,Math.max(0,bannerClock-.1)))}
 const dx=(keys.has('a')||keys.has('arrowleft')?-1:0)+(keys.has('d')||keys.has('arrowright')?1:0),dy=throttle?0:((up?-1:0)+(down?1:0)),l=Math.hypot(dx,dy)||1;player.x+=dx/l*MOVE_SPEED*dt;player.y+=dy/l*MOVE_SPEED*dt;player.x=Math.max(playLeft+player.size/2+5,Math.min(playLeft+playWidth-player.size/2-5,player.x));player.y=Math.max(H*.20,Math.min(H*.86,player.y));player.trail.unshift({x:player.x,y:player.y,life:1});if(player.trail.length>17)player.trail.pop();for(const t of player.trail)t.life-=dt*2.7;
-const cell=playWidth/LANES,r=player.size*.42;if(!victorious)for(const row of course){const y=level===2?H+100+row.distance-scroll:-100+scroll-row.distance;if(y>H+45||y+row.h<-45)continue;if(player.y+r<=y+2||player.y-r>=y+row.h-2)continue;for(let col=0;col<LANES;col++){if(col>=row.lane&&col<row.lane+row.gap)continue;const x=playLeft+col*cell+2,w=cell-4;if(player.x+r>x+2&&player.x-r<x+w-2){endRun(false);break}}if(state!=='playing')break}
-for(const p of sparks){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=420*dt;p.life-=dt}sparks=sparks.filter(p=>p.life>0);if(state==='playing'&&scroll>=finishDistance){if(level===1)endRun(true);else if(player.y>=H*.80)endRun(true);else{finishPrompt=true;nameEl.textContent='REACH FINISH ↓';progressEl.textContent='99'}}}
-function draw(){const pulse=1-beatTime/(60/currentBpm/4||1);ctx.fillStyle=level===2?'#e3e5df':'#000000';ctx.fillRect(0,0,W,H);const outer=ctx.createLinearGradient(0,0,W,0);outer.addColorStop(0,level===2?'#d5d8d1':'#050705');outer.addColorStop(.5,level===2?'#eceee8':'#000000');outer.addColorStop(1,level===2?'#d5d8d1':'#050705');ctx.fillStyle=outer;ctx.fillRect(0,0,W,H);ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake*=.85;if(shake<.2)shake=0}if(level===2){
+const cell=playWidth/LANES,r=player.size*.42;if(!victorious)for(const row of course){const y=reverseMode()?H+100+row.distance-scroll:-100+scroll-row.distance;if(y>H+45||y+row.h<-45)continue;if(player.y+r<=y+2||player.y-r>=y+row.h-2)continue;for(let col=0;col<LANES;col++){if(col>=row.lane&&col<row.lane+row.gap)continue;const x=playLeft+col*cell+2,w=cell-4;if(player.x+r>x+2&&player.x-r<x+w-2){endRun(false);return}}if(state!=='playing')break}
+for(const p of sparks){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=420*dt;p.life-=dt}sparks=sparks.filter(p=>p.life>0);if(state==='playing'&&scroll>=finishDistance){if(level===3){if(mashupWave<9){completedDistance+=scroll;setMashupWave(mashupWave+1)}else endRun(true)}else if(!reverseMode())endRun(true);else if(player.y>=H*.80)endRun(true);else{finishPrompt=true;nameEl.textContent='REACH FINISH ↓';progressEl.textContent='99'}}}
+function draw(){const pulse=1-beatTime/(60/currentBpm/4||1);ctx.fillStyle=reverseMode()?'#e3e5df':'#000000';ctx.fillRect(0,0,W,H);const outer=ctx.createLinearGradient(0,0,W,0);outer.addColorStop(0,reverseMode()?'#d5d8d1':'#050705');outer.addColorStop(.5,reverseMode()?'#eceee8':'#000000');outer.addColorStop(1,reverseMode()?'#d5d8d1':'#050705');ctx.fillStyle=outer;ctx.fillRect(0,0,W,H);ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake*=.85;if(shake<.2)shake=0}if(reverseMode()){
   // Inverted terminal paper: stepped luminance curves, fixed ordered dithering, and visible raster lines.
   // Quantize in world space so the texture scrolls with the course rather than flickering between frames.
   ctx.fillStyle='#d7d9d0';ctx.fillRect(playLeft,0,playWidth,H);
@@ -232,11 +342,11 @@ function draw(){const pulse=1-beatTime/(60/currentBpm/4||1);ctx.fillStyle=level=
   for(let y=start-spacing;y<H;y+=spacing){ctx.strokeStyle='#6bb577'+Math.round((.1+.12*y/H)*255).toString(16).padStart(2,'0');ctx.beginPath();ctx.moveTo(playLeft,y);ctx.lineTo(playLeft+playWidth,y);ctx.stroke()}
   ctx.fillStyle='#7aba84';ctx.globalAlpha=.7;ctx.fillRect(playLeft-3,0,3,H);ctx.fillRect(playLeft+playWidth,0,3,H);ctx.globalAlpha=1;
 }
-const cell=playWidth/LANES;if(state!=='victory')for(const row of course){const y=level===2?H+100+row.distance-scroll:-100+scroll-row.distance;if(y>H+40||y+row.h<-40)continue;for(let col=0;col<LANES;col++){if(col>=row.lane&&col<row.lane+row.gap)continue;const x=playLeft+col*cell+2,w=cell-4;ctx.save();ctx.shadowBlur=2;ctx.shadowColor=level===2?'#7d827a':(row.kind==='spike'?'#a04f4f':'#6ba978');if(row.kind==='block'){ctx.fillStyle=level===2?'#c1c9bf':'#142017';ctx.strokeStyle=level===2?'#4b6352':'#a3d5ab';ctx.lineWidth=2;ctx.fillRect(x,y,w,row.h);ctx.strokeRect(x,y,w,row.h);ctx.fillStyle=level===2?'#6f7e7166':'#577d6066';ctx.fillRect(x+4,y+4,w-8,4)}else{ctx.fillStyle=level===2?'#9d7776':'#a04f4f';ctx.strokeStyle=level===2?'#705351':'#d77c7c';ctx.lineWidth=1;const n=Math.max(1,Math.round(w/20));for(let i=0;i<n;i++){const sx=x+i*w/n;ctx.beginPath();ctx.moveTo(sx,y+row.h);ctx.lineTo(sx+w/n/2,y);ctx.lineTo(sx+w/n,y+row.h);ctx.closePath();ctx.fill();ctx.stroke()}}ctx.restore()}}
-if(level===2&&state==='playing'&&scroll>=finishDistance){ctx.fillStyle='#344d3e';ctx.fillRect(playLeft,H*.83,playWidth,4);ctx.font='bold 14px Consolas,monospace';ctx.fillText('▼ FINISH // MOVE DOWN ▼',playLeft+12,H*.83-12)}
+const cell=playWidth/LANES;if(state!=='victory')for(const row of course){const y=reverseMode()?H+100+row.distance-scroll:-100+scroll-row.distance;if(y>H+40||y+row.h<-40)continue;for(let col=0;col<LANES;col++){if(col>=row.lane&&col<row.lane+row.gap)continue;const x=playLeft+col*cell+2,w=cell-4;ctx.save();ctx.shadowBlur=2;ctx.shadowColor=reverseMode()?'#7d827a':(row.kind==='spike'?'#a04f4f':'#6ba978');if(row.kind==='block'){ctx.fillStyle=reverseMode()?'#c1c9bf':'#142017';ctx.strokeStyle=reverseMode()?'#4b6352':'#a3d5ab';ctx.lineWidth=2;ctx.fillRect(x,y,w,row.h);ctx.strokeRect(x,y,w,row.h);ctx.fillStyle=reverseMode()?'#6f7e7166':'#577d6066';ctx.fillRect(x+4,y+4,w-8,4)}else{ctx.fillStyle=reverseMode()?'#9d7776':'#a04f4f';ctx.strokeStyle=reverseMode()?'#705351':'#d77c7c';ctx.lineWidth=1;const n=Math.max(1,Math.round(w/20));for(let i=0;i<n;i++){const sx=x+i*w/n;ctx.beginPath();ctx.moveTo(sx,y+row.h);ctx.lineTo(sx+w/n/2,y);ctx.lineTo(sx+w/n,y+row.h);ctx.closePath();ctx.fill();ctx.stroke()}}ctx.restore()}}
+if(reverseMode()&&state==='playing'&&scroll>=finishDistance){ctx.fillStyle='#344d3e';ctx.fillRect(playLeft,H*.83,playWidth,4);ctx.font='bold 14px Consolas,monospace';ctx.fillText('▼ FINISH // MOVE DOWN ▼',playLeft+12,H*.83-12)}
 
-  const playerOuter=level===2?'#111111':'#f5f5f5';
-  const playerInner=level===2?'#ece9dc':'#020202';
+  const playerOuter=reverseMode()?'#111111':'#f5f5f5';
+  const playerInner=reverseMode()?'#ece9dc':'#020202';
   for(let i=player.trail.length-1;i>=0;i--){
     const p=player.trail[i];
     const s=player.size*(.72+i*.012);
@@ -261,8 +371,24 @@ if(level===2&&state==='playing'&&scroll>=finishDistance){ctx.fillStyle='#344d3e'
   }
   for(const p of sparks){ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle=p.col;ctx.fillRect(p.x-3,p.y-3,6,6)}
   ctx.globalAlpha=1;ctx.restore();flash.style.opacity=String(Math.max(0,flashOpacity));flashOpacity*=.82}
+function setMashupWave(wave,respawn=false){
+ mashupWave=wave;state='playing';scroll=0;finishPrompt=false;
+ if(wave===5&&!respawn)checkpointDistance=completedDistance;
+ document.body.classList.toggle('level-two',reverseMode());buildCourse(wave);
+ // Keep position, held controls, throttle and music running through each mode flip.
+ if(respawn){
+  keys.clear();mapRate=1;beat=0;beatTime=0;sparks=[];player.trail=[];shake=0;flashOpacity=0;
+  player.x=playLeft+(course[0].lane+course[0].gap/2)*gridSize;player.y=H*.26;
+  center.style.display='none';victoryOverlay.style.display='none';
+ }
+ showRound(wave);banner.classList.add('reorienting');
+ bannerName.textContent=ROUNDS[wave].name+(reverseMode()?' // FORWARD ↓':' // FORWARD ↑');
+ score=Math.floor(completedDistance/20);scoreEl.textContent=String(score).padStart(4,'0');
+ progressEl.textContent=String(wave*10);
+ mapModeEl.textContent='NORMAL';mapRateEl.textContent=mapRate.toFixed(2)+'x';
+}
 function frame(now){const dt=Math.min(.035,Math.max(0,(now-lastFrame)/1000||0));lastFrame=now;if(state==='playing'||state==='victory')update(dt);else{scroll+=dt*45;for(const p of sparks){p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt}sparks=sparks.filter(p=>p.life>0)}draw();requestAnimationFrame(frame)}requestAnimationFrame(frame);
-function keydown(e){if(e.code==='ShiftLeft'){keys.add('shiftleft');e.preventDefault();return}const k=e.key.toLowerCase();if(k==='escape'){if(state!=='menu')showMenu();return}if(state==='menu'){if(k===' '){e.preventDefault();start(1)}return}if(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d'].includes(k))e.preventDefault();if(k===' '&&state!=='playing'){start(level);return}keys.add(k)}function keyup(e){if(e.code==='ShiftLeft')keys.delete('shiftleft');keys.delete(e.key.toLowerCase())}window.addEventListener('keydown',keydown);window.addEventListener('keyup',keyup);window.addEventListener('blur',()=>keys.clear());startButton.addEventListener('click',()=>start(level));muteButton.addEventListener('click',()=>{mute=!mute;muteButton.textContent=mute?'SOUND: OFF':'SOUND: ON';menuSound.textContent=mute?'[AUDIO: OFF]':'[AUDIO: ON]';if(!mute)initAudio()});for(const b of document.querySelectorAll('#mobile button')){const k=b.dataset.key.toLowerCase();b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);keys.add(k)});for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>keys.delete(k))}
+function keydown(e){if(cheatsDialog.open)return;if(e.code==='ShiftLeft'){keys.add('shiftleft');e.preventDefault();return}const k=e.key.toLowerCase();if(k==='escape'){if(state!=='menu')showMenu();return}if(state==='menu'){if(k===' '){e.preventDefault();start(1)}return}if(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d'].includes(k))e.preventDefault();if(k===' '&&state!=='playing'){start(level);return}keys.add(k)}function keyup(e){if(e.code==='ShiftLeft')keys.delete('shiftleft');keys.delete(e.key.toLowerCase())}window.addEventListener('keydown',keydown);window.addEventListener('keyup',keyup);window.addEventListener('blur',()=>keys.clear());startButton.addEventListener('click',()=>start(level));muteButton.addEventListener('click',()=>{mute=!mute;muteButton.textContent=mute?'SOUND: OFF':'SOUND: ON';menuSound.textContent=mute?'[AUDIO: OFF]':'[AUDIO: ON]';if(!mute)initAudio()});for(const b of document.querySelectorAll('#mobile button')){const k=b.dataset.key.toLowerCase();b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);keys.add(k)});for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>keys.delete(k))}
 })();
 </script>
 </body>
