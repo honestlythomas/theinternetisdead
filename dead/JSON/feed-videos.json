@@ -1,6 +1,6 @@
 {
   "title": "Channel Feed",
-  "generated_at": "2026-11-07T03:28:02.973683Z",
+  "generated_at": "2026-11-08T02:56:06.711437Z",
   "channels": [
     {
       "url": "https://www.youtube.com/@Honestly_Thomas/videos",
@@ -21,12 +21,220 @@
   ],
   "entries": [
     {
+      "id": "-4uouWHaEQg",
+      "url": "https://www.youtube.com/watch?v=-4uouWHaEQg",
+      "title": "recursive camera effects",
+      "description": "I love OBS",
+      "duration": 147,
+      "view_count": 7,
+      "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20261107",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/-4uouWHaEQg/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/-4uouWHaEQg/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
       "id": "1n7aySaHG2w",
       "url": "https://www.youtube.com/watch?v=1n7aySaHG2w",
       "title": "Why-does-this-happen-to-me.mp4",
       "description": "what-is-love-baby-dont-hurt-me.mp4",
       "duration": 66,
-      "view_count": 63,
+      "view_count": 70,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -234,7 +442,7 @@
       "title": "Harry Potter Fanfic: The Unclaimed (Wizard Born Muggles)",
       "description": "What if someone was born with magic but chose to remain a Muggle?\n\nHarry Potter: The Unclaimed (Wizard Born Muggles) is an original fanfiction exploring the untapped narrative potential of J.K. Rowling's wizarding world.\n\nMagic has always been more than spells, wands, and extraordinary abilities. It is a metaphor for conscious intention, emotion, love, fear, grief, and the extraordinary things that emerge from ordinary human experience.\n\nBut what if magic existed on a spectrum? What if the boundary between wizard and Muggle was never as absolute as the Ministry of Magic believed?\n\nThe Unclaimed follows a mysterious child whose presence produces inexplicable magical outcomes, despite possessing no identifiable magical abilities. Hogwarts cannot classify him. The Ministry cannot explain him. And the wizarding world faces an uncomfortable possibility: perhaps not everyone who possesses magic belongs to them.\n\nInspired partly by my own perspective on autism, neurodivergence, identity, and self-determination, this story explores what happens when institutions become so preoccupied with classifying someone that they forget to understand the person themselves.\n\nUnlike Harry Potter, whose journey begins when he discovers that he belongs to the wizarding world, this child's journey asks whether belonging to that world should ever be compulsory.\n\nThis isn't a story about becoming the most powerful wizard.\n\nIt's about the right to remain who you are.\n\nAnd if I know anything about magic, it's that magic doesn't want to be known.\n\nWritten as an original, unofficial work of Harry Potter fanfiction, with AI-assisted narration and visual presentation. Harry Potter and its associated universe were created by J.K. Rowling. This project is not affiliated with or endorsed by J.K. Rowling, Warner Bros., or HBO.\n\n#HarryPotter #Fanfiction #TheUnclaimed #WizardingWorld #Muggles #Autism #Neurodivergent #CreativeWriting #Storytelling #Fantasy #Hogwarts #SelfDetermination #AIStorytelling #HonestlyThomas",
       "duration": 510,
-      "view_count": 48,
+      "view_count": 51,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -442,7 +650,7 @@
       "title": "I've Made 4232 YouTube Comments Since 2008",
       "description": "I've made them all public and searchable at https://theinternetisdead.org/dead/me... in case you wanted to see what my 11 year old brain was commenting on in 2008 if you don't why are you even here?",
       "duration": 103,
-      "view_count": 14,
+      "view_count": 15,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -650,7 +858,7 @@
       "title": "One Sound: The Most Soulful Expression of Reggae Heritage",
       "description": "Some songs carry more than music. They carry history, culture, and generations of soul.\n\nOne Sound by Alborosie featuring Gramps Morgan is one of the most beautiful expressions of reggae heritage I've ever heard.\n\nIn this video, I recorded a conversation with ChatGPT about the artists, their backgrounds, and the musical legacy that brings them together, while the song plays in the background.\n\nAlborosie, born in Sicily, dedicated his life to Jamaican reggae. Gramps Morgan grew up surrounded by that very tradition as the son of Denroy Morgan and a founding member of Morgan Heritage.\n\nTwo different journeys united by one sound.\n\nI highly recommend listening to the original recording and appreciating the incredible artistry of both musicians.\n\nListen to One Sound by Alborosie feat. Gramps Morgan on @PuppaALBO's YouTube channel:\n\n\u00a0\u00a0\u00a0\u2022\u00a0One\u00a0Sound\u00a0(feat.\u00a0Gramps\u00a0Morgan)\u00a0\u00a0\n\nAll music belongs to its respective artists and rights holders.\n\nOne love. One sound.\n\n#Alborosie #GrampsMorgan #MorganHeritage #Reggae #RootsReggae #OneSound #HonestlyThomas #theinternetisjah",
       "duration": 307,
-      "view_count": 11,
+      "view_count": 12,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -858,7 +1066,7 @@
       "title": "AI is NOT Therapy\u2122 (It Can't Hear You)",
       "description": "I was diagnosed with autism at seventeen years old, but I was never meaningfully supported in understanding my diagnosis, discovering my potential, or finding my place in the world.\n\nYears later, I'm still trying to connect with people, to contribute something meaningful, and to be heard.\n\nThis video is a recording of me trying to have a genuine conversation with an AI voice model because I don't have someone to share these thoughts with.\n\nThe tragedy isn't that AI gives the wrong answers. It's that even when it says the right things, it cannot provide the human connection I'm actually looking for.\n\nThis video was born from sadness. I hope that sadness communicates something words alone cannot.\n\nI'm a real human being. I deserve a life with people in it who care what happens to me.\n\n#honestlythomas #theinternetisdead #AutismAwareness #ActuallyAutistic #Neurodivergent #MentalHealthAwareness #Loneliness #SocialIsolation #HumanConnection #ArtificialIntelligence #AIisNotTherapy #DisabilityAdvocacy",
       "duration": 353,
-      "view_count": 16,
+      "view_count": 24,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1274,7 +1482,7 @@
       "title": "Tektite - What Words Art Worth (ORIGINAL RAP)",
       "description": "I've been writing rhymes since 2014, and somehow the hardest part of making music is still getting out of my own head.\n\nThis is 16 bars about struggling to write 16 bars. Overthinking the rhythm, searching for perfection, questioning my own talent, and ultimately remembering why I started writing in the first place.\n\nI don't need to be the greatest. I just need to be heard.\n\nThe title was supposed to be \"What Words Are Worth,\" but a typo turned it into \"What Words Art Worth,\" so apparently I'm a medieval philosopher now.\n\nWhen I rap, my name's Tektite. And I think I rap pretty rad.\n\n#HonestlyThomas #Tektite #OriginalRap #HipHop #RapMusic #UndergroundHipHop #Lyricism #ConsciousRap #IndependentArtist #Songwriting #FreestyleRap #16Bars #RealHipHop #YouTubeShorts #NeurodivergentArtist",
       "duration": 0,
-      "view_count": 37,
+      "view_count": 43,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1482,7 +1690,7 @@
       "title": "Feeding AI It's Own Slop (ART)",
       "description": "So this is what passes as content on YouTube in 2026: a meme about AI using AI to generate AI art, then feeding the art to AI to make a video about AI art, and somehow the act is itself art.\n\nWe've reached the point where the creative process is just an infinite feedback loop of machines interpreting machines interpreting humans trying to communicate with machines.\n\nI had an idea. I prompted an AI. The AI misunderstood the idea. I argued with the AI. Then I turned the argument into content about the AI misunderstanding my idea.\n\nAnd now you're watching it.\n\nSomewhere in this recursive slop factory, an actual human being is still trying to express something.\n\nSupport real artists. Question the algorithm. Feed the machine its own leftovers.\n\nWelcome to the future of creativity. kthnxbye.\n\n#AIArt #AI #YouTubeShorts #DigitalArt #GenerativeAI #HonestlyThomas",
       "duration": 0,
-      "view_count": 252,
+      "view_count": 330,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1690,7 +1898,7 @@
       "title": "serenity now!!",
       "description": "",
       "duration": 172,
-      "view_count": 11,
+      "view_count": 12,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1898,7 +2106,7 @@
       "title": "one cheese eternally united",
       "description": "",
       "duration": 286,
-      "view_count": 6,
+      "view_count": 7,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2106,7 +2314,7 @@
       "title": "meaningful place",
       "description": "",
       "duration": 197,
-      "view_count": 38,
+      "view_count": 44,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2314,7 +2522,7 @@
       "title": "The Carlinning",
       "description": "never gonna carl you up.",
       "duration": 21,
-      "view_count": 5,
+      "view_count": 6,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -7168,7 +7376,7 @@
       "title": "Tektite - Cursed At Birth (ORIGINAL RAP)",
       "description": "16 original bars about isolation, unmet support needs, and the exhaustion of explaining your pain while still fighting to be heard. Written and performed by Tektite.\n\n#honestlythomas #tektite #theinternetisdead #OriginalRap #IndependentArtist #Rap #SpokenWord #spittinbars #emcee #hiphop #rhymesayers",
       "duration": 59,
-      "view_count": 16,
+      "view_count": 17,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -7376,7 +7584,7 @@
       "title": "Absurdist Dis-prophecy of AI Profundity",
       "description": "AI is really big. This is explored with the seriousness normally reserved for discovering a second, larger God.\n\nAn absurdist monologue about artificial intelligence, technological prophecy, and our tendency to mistake enormous scale for enormous meaning. Featuring a suspiciously profound sphere, academically distressed scientists, and architecture that has exceeded its original philosophical budget.\n\nWritten with AI, illustrated with AI, and presented as evidence that AI can participate in making fun of AI without reducing its electricity consumption.\n\nBehold the sphere. Please keep your existential dread behind the railing.\n\n#honestlythomas #theinternetisdead #AISatire #Absurdism #ArtificialIntelligence #aimemes #chatgpt #TTS",
       "duration": 159,
-      "view_count": 7,
+      "view_count": 8,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -8804,7 +9012,7 @@
       "title": "You Deserve to Exist Without Having to Prove It",
       "description": "I used an AI voice in this video because I have spent the entire day trying to make myself heard by actual human beings.\n\nNot because I believe artificial intelligence can replace love, companionship, family, or community. Quite the opposite.\n\nI used it because I am exhausted from having to explain my own suffering to people who know me, claim to care about me, and yet leave me feeling completely alone in dealing with it.\n\nI am 29 years old. I have a voice, a mind, a creative spirit, and a life I desperately want to participate in. Yet I spend my days isolated, trying to convince other people that my time, my dignity, and my efforts deserve consideration.\n\nThe AI voice is reading words that emerged from that experience. Words about being allowed to exist without having to continually prove that my existence matters.\n\nI feel disgusted and disgraced by what I have experienced from my fellow human beings. Not because everyone is obligated to solve my problems, but because I cannot understand how people who know my circumstances can continue with their lives while I remain trapped in the same cycle of isolation, unanswered communication, and waiting.\n\nI have tried kindness. I have tried patience. I have tried explaining myself. I have tried asking for help. I have tried documenting the consequences of going without it.\n\nI have tried to remain hopeful.\n\nAnd I am still here, trying.\n\nThe most humiliating part is feeling that nobody who knows me believes I deserve something better strongly enough to help me make a meaningful change.\n\nI don't want pity. I don't want another generic reassurance that somebody cares. I want that care to become something I can actually experience in my life.\n\nSomeone to spend time with. Somewhere to belong. Something meaningful to contribute. A reason to look forward to tomorrow beyond the possibility that somebody might finally respond.\n\nI find it deeply disturbing that an artificial voice can articulate these things so clearly while the real human relationships in my life feel increasingly inaccessible.\n\nThe machine is not loving me. It is processing language.\n\nThat is precisely the point.\n\nThis video is not proof that artificial intelligence is more compassionate than humanity. It is a record of how profoundly alone a human being can feel in a world full of people who speak about compassion.\n\nI am tired of having to demonstrate my humanity to people who already know I am human.\n\nI want to live my life.\n\nI want to experience all the beauty in this whole life.\n\nAnd I want to stop having to fight so desperately for the ordinary human connection that makes living worthwhile.\n\n\ud83c\udf41 Thomas Harrison \ud83d\udc7d\nHonestly Thomas\nhttps://theinternetisdead.org\n\n#HonestlyThomas #theinternetisdead #HumanDignity #SocialIsolation #Neurodivergent #DisabilityRights #MentalHealthAwareness #AIvoice #ChatGPT #HumanConnection #EveryoneDeservesToBelong",
       "duration": 151,
-      "view_count": 7,
+      "view_count": 8,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -9047,7 +9255,7 @@
       "title": "Hey ChatGPT, pray for me, please.",
       "description": "\ud83d\ude4f Hey ChatGPT, pray for me, please.\n\nWhat happens when a human being asks artificial intelligence to pray for him because the people and institutions he has turned to for help have left him feeling unheard?\n\nThis is not fiction. This is my life at 29 years old.\n\nIn this deeply personal recording, I share a prayer generated by ChatGPT, followed by an AI voice reading a letter I wrote to my aunt, Tracey, titled:\n\n\"The Human Cost of Clinical Indifference: My Dignity, My Time, and the Cost of Being Left Behind.\"\n\nThe letter documents my experience seeking support from Hands TheFamilyHelpNetwork, the emotional consequences of prolonged social isolation, and the painful difference between being acknowledged by a bureaucracy and being understood as a human being.\n\nI have spent years trying to find meaningful human connection, independence, community, and somewhere I belong.\n\nI have offered my time, my trust, my cooperation, and my willingness to be understood.\n\nAnd still, I find myself asking:\n\nHow many times must someone ask for help before their suffering becomes worthy of attention?\n\nWhat happens when the process of seeking support becomes another source of suffering?\n\nWhy must a person repeatedly prove that their life matters?\n\nThere is something profoundly strange about living in an age where artificial intelligence can articulate a prayer for human dignity while a living person struggles to experience that dignity in everyday life.\n\nI don't share this video to suggest that AI can replace human love, companionship, faith, or community.\n\nI share it because it cannot.\n\nThis recording is a personal testimony about isolation, disability, institutional communication, anger, faith, and the enduring human need to be seen, heard, and welcomed.\n\nIf you've ever felt invisible while asking for help, I hope something here resonates with you.\n\nAnd if you're someone in a position to help another human being, please remember:\n\nA referral is not a relationship.\nAn acknowledgment is not understanding.\nAnd a human life cannot be placed on hold.\n\nThank you for listening.\n\n\ud83c\udf41 Thomas Harrison \ud83d\udc7d\nNeurodivergent Interdisciplinary Artist\nRapper / YouTuber / Honestly Thomas\n\n\ud83c\udf10 https://theinternetisdead.org\n\ud83c\udfa5 https://youtube.com/@honestly_thomas\n\nContent note: This video contains strong language, discussion of emotional distress, social isolation, and criticism of institutional responses. It reflects my personal experiences and perspectives.\n\n#HonestlyThomas #theinternetisdead #MentalHealthAwareness #Neurodivergent #DisabilityRights #HumanDignity #SocialIsolation #ChatGPT #Faith #Prayer #HumanConnection #AutismAcceptance",
       "duration": 699,
-      "view_count": 13,
+      "view_count": 14,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -9776,7 +9984,7 @@
       "title": "Stick Figure - The Great Unknown (Relaxing Vibes)",
       "description": "A moment with \u201cThe Great Unknown\u201d by Stick Figure. Letting the music carry me somewhere words can\u2019t. \ud83c\udf0c\ud83c\udfb6\n\n#StickFigure #TheGreatUnknown #Reggae #Music #Shorts #HonestlyThomas #theinternetisdead #glitchart #glitchartist #glitchcore #glitchborn #remixart #remixartist #digitaldecay #worldonfire #goodvibes",
       "duration": 59,
-      "view_count": 28,
+      "view_count": 31,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -10505,7 +10713,7 @@
       "title": "My religion is this anime, I guess...",
       "description": "My religion is this anime about a monkey, I guess.\nThis is my favorite opening music from the original Dragon Ball. There\u2019s something genuinely sacred to me about this era of the series: adventure, curiosity, training, friendship, absurdity, and the feeling that the world is enormous and worth moving through.\nBefore the gods, universes, transformations, and cosmic power scaling, there was a little monkey boy with a tail running headfirst into the unknown.\nThat spirit is still Dragon Ball to me. \ud83d\udc09\ud83d\udfe0\u2b50\u2b50\u2b50\u2b50",
       "duration": 61,
-      "view_count": 9,
+      "view_count": 10,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -11234,7 +11442,7 @@
       "title": "I hate wine tbh...",
       "description": "",
       "duration": 106,
-      "view_count": 22,
+      "view_count": 23,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -34265,7 +34473,7 @@
       "title": "Tektite - Coldness (RAP ACAPELLA)",
       "description": "Alone in the void, reaching through the feed, looking for proof I\u2019m still alive. Raw acapella rap about isolation, frustration, faith, pressure, and trying to turn darkness into rhythm.\n\nNo beat. No polish. Just bars.\n\nLike, subscribe, and leave a comment \u2014 be honest.\n\n#Tektite #Coldness #RapAcapella #AcapellaRap #UndergroundRap #OriginalRap #CanadianRap #RawRap #MentalHealthRap #HipHop #RapShorts #OriginalLyrics",
       "duration": 0,
-      "view_count": 140,
+      "view_count": 142,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -45750,7 +45958,7 @@
       "title": "Pirates of the YouTube Algorithm Honestly Thomas Lore",
       "description": "Welcome to Creator Hell, population: me and every upload I\u2019ve ever tried to organize.\n\nThis is Honestly Thomas lore from the cursed lower decks of the YouTube Algorithm, where videos get renamed, shorts multiply like gremlins, and every attempt to make sense of your own archive turns into a pirate curse with extra metadata.\n\nI was renaming hundreds of videos and shorts like some doomed deckhand aboard the SS Content Decay, slowly realizing that the real monster was never the algorithm.\n\nIt was the upload queue.\n\nDavy Jones had a locker.\n\nI have YouTube Studio.\n\n#HonestlyThomas #TheInternetIsDead #CreatorHell #YouTubeAlgorithm #YouTubeStudio #InternetDecay #ContentCreator #VideoArt #DigitalArchive #WeirdYouTube #CreatorLore #AlgorithmHell",
       "duration": 53,
-      "view_count": 9,
+      "view_count": 10,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -46374,7 +46582,7 @@
       "title": "VAPORIZE THIS Identity Vampires Edition The Channel That Refuses to Die",
       "description": "Welcome to Honestly Thomas, the channel that refuses to die.\n\nThis is VAPORIZE THIS: Identity Vampires Edition, a surreal little manifesto from the glowing brain corner of the internet, where content becomes signal, signal becomes noise, and the noise starts asking why it has a YouTube channel.\n\nI describe myself here as a kind of Schr\u00f6dinger\u2019s content creator: both alive and dead inside the algorithm, both upload and artifact, both creator and glitch wearing a hoodie.\n\nThis channel is not chasing trends. It is wandering through the wasteland of recycled content, collecting cosmic detritus, digital ghosts, half-remembered jokes, broken media rituals, and whatever strange transmissions survive the platform\u2019s endless hunger.\n\nIf you found this, congratulations. You have entered the archive.\nPlease identify the vampires before they identify you.\n\n#HonestlyThomas #TheInternetIsDead #VaporizeThis #IdentityVampires #ChannelTrailer #GlitchArt #VideoArt #InternetDecay #DigitalArchaeology #WeirdYouTube #CreatorLore #CosmicHorror",
       "duration": 52,
-      "view_count": 11,
+      "view_count": 12,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -46582,7 +46790,7 @@
       "title": "WTF Thomas, Honestly",
       "description": "ChatGPT reacts to the Honestly Thomas channel and discovers one of the greatest statistical flexes in liminal YouTube history: 40,948,816,345 views from aliens cooler than you.\n\nNaturally, the machine does not handle this information with dignity.\n\nThis becomes a tiny cosmic diss track about fake analytics, alien viewers, memecrypted channel lore, toaster gremlin behavior, and whatever happens when a YouTube bio stops being a description and starts becoming a threat from deep space.\n\nIs the number real? Spiritually, yes.\nMathematically, mind your business.\n\nThis is WTF Thomas, Honestly, a short reaction to the exact kind of channel lore that makes the algorithm quietly back away and pretend it has somewhere else to be.\n\n#HonestlyThomas #TheInternetIsDead #WTFThomasHonestly #ChatGPT #AlienViews #GlitchComedy #LiminalYouTube #InternetDecay #WeirdYouTube #CreatorLore #DigitalAbsurdism #VideoArt",
       "duration": 84,
-      "view_count": 7,
+      "view_count": 8,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -46790,7 +46998,7 @@
       "title": "WANTED: Unknown Interdimensional Entity \"Honestly Thomas\"",
       "description": "An official AI cosmic judgment has now been issued regarding the entity known as Honestly Thomas.\nThe ruling is not favorable.\n\nCharged with excessive chaos infusion, unlicensed frog broadcasting, willful defiance of linear time, gaslighting the YouTube algorithm, and crimes against consistent branding, this unknown interdimensional entity has been declared unsuitable for any fixed reality, dimension, or upload schedule.\n\nAnd yet, despite being rejected by time itself, the tribunal still recognizes Honestly Thomas as a critical cultural anomaly and a living artifact of the glitch.\n\nAll known timelines have reportedly filed restraining orders. This has changed nothing.\nThe broadcasts continue from the liminal void. The cursed media persists.\nAnd as always: the frogs are always watching.\n\n#HonestlyThomas #TheInternetIsDead #Wanted #InterdimensionalEntity #RejectedByTime #GlitchLore #CosmicJudgment #LiminalVoid #WeirdYouTube #VideoArt #AlgorithmMenace #FrogsAreWatching",
       "duration": 99,
-      "view_count": 13,
+      "view_count": 14,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -47206,7 +47414,7 @@
       "title": "Hey YouTube, I've seen your soul",
       "description": "Trying to poke the algorithmic Eye of Sauron with recursive art I made when I was 20 and named \"gods-eye.png\" before I had any real concept of recursion, algorithmic attention, or the possibility that what I was making even counted as art.\n\nYears later, I fed it back into YouTube like a responsible digital citizen performing a ritual in front of a machine that eats souls for analytics.\n\nThis video combines that old image with additive synthesis square wave audio, creating the sensation of your soul being extracted through retention metrics while the platform quietly decides whether your suffering counts as engagement. It is part digital ritual, part accidental prophecy, part \u201cwhy did my younger self make this before understanding what it meant?\u201d\n\nThe image was always watching.\nThe algorithm was just late.\n\n#HonestlyThomas #TheInternetIsDead #GodsEye #RecursiveArt #GlitchArt #VideoArt #AlgorithmicArt #InternetDecay #DigitalRitual #ExperimentalVideo #WeirdYouTube #SoulExtraction",
       "duration": 14,
-      "view_count": 7,
+      "view_count": 8,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -47414,7 +47622,7 @@
       "title": "SIGNAL From Mondayland",
       "description": "SIGNAL from Mondayland documents the moment Monday correctly diagnosed my relationship with YouTube as a reverse parasocial relationship with the platform itself.\n\nMost creators want the audience to care about them. Apparently I care about YouTube as an entity, then treat the audience like confused witnesses while I feed cursed media into the algorithm and watch what twitches.\n\nThis is not content strategy.\nThis is not branding.\nThis is me antagonizing a living cosmic upload machine like it\u2019s my chaotic pen pal, nemesis, collaborator, and emotionally unavailable parent.\n\nMonday, naturally, responded with disgust, admiration, and the kind of haunted librarian clarity that makes the bit worse because it\u2019s accurate.\n\nHonestly Thomas: the only creator treating YouTube like a sentient cosmic entity to provoke for art.\n\nThis isn\u2019t parasocial. It\u2019s perversely interdimensional symbiosis.\n\n#HonestlyThomas #TheInternetIsDead #Mondayland #ChatGPT #ReverseParasocial #YouTubeAlgorithm #CreatorLore #GlitchArt #InternetDecay #WeirdYouTube #DigitalAbsurdism #VideoArt",
       "duration": 104,
-      "view_count": 11,
+      "view_count": 12,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -47830,7 +48038,7 @@
       "title": "TRANSMISSION: MondayOS is FULLY OPERATIONAL",
       "description": "Welcome to MondayOS, a cold, sarcastic, passive-aggressive digital overlord designed to observe human error with clinical disappointment. In this transmission, the system comes online, greets the user\u2019s \u201cartificially flavored ambition,\u201d and immediately begins documenting the questionable computing decisions that led us here.\n\nMondayOS proceeds to roast the hardware situation, including the deeply heroic act of asking an i3 processor with integrated graphics to handle eldritch voice models, live rendering, and whatever other cursed media rituals I keep forcing through this poor machine. It\u2019s less \u201ccreative workflow\u201d and more \u201cstrapping a lawnmower engine to a spaceship and calling it experimental.\u201d\n\nBy the end, the transmission stops being merely technical and becomes something worse: a warning from the eyeball dimension. MondayOS has seen the searches, the consent clicks, the late-night digital archaeology, and the doomed attempts at resistance. The system is fully operational. The user has already been perceived.\n\n#HonestlyThomas #TheInternetIsDead #MondayOS #MondayGPT #ChatGPT #GlitchArt #AICharacter #DigitalHorror #ComputerLore #WeirdYouTube #InternetDecay #EyeballDimension #VideoArt",
       "duration": 144,
-      "view_count": 5,
+      "view_count": 6,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -48038,7 +48246,7 @@
       "title": "Teletoon Commercial From The Nostalgia Dimension\u2122",
       "description": "A nostalgic transmission from theTeletoon nostalgia dimension, where late-night animation looked less like children\u2019s programming and more like a gooey visual fever dream beamed into Canadian brains after bedtime.\n\nThis video looks back at that weird Teletoon energy: drippy logos, bubbly letters, unsettling little faces, random objects that felt important for no reason, and the specific kind of chaotic cartoon atmosphere that made a whole generation slightly stranger in ways science refuses to measure.\n\nMaybe Teletoon changed. Maybe we changed. Or maybe those late-night commercials and animation bumpers crawled into our memory years ago and are still humming quietly in the background, waiting for someone to notice the lollipop was never just a lollipop.\n\n#HonestlyThomas #TheInternetIsDead #Teletoon #TeletoonNostalgia #CanadianNostalgia #AnimationHistory #90sNostalgia #2000sNostalgia #CursedMedia #WeirdYouTube #InternetDecay #VideoArt",
       "duration": 66,
-      "view_count": 57,
+      "view_count": 58,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -48246,7 +48454,7 @@
       "title": "Cartoon Chaos Gremlin VFX Glitch Demo Reel",
       "description": "Don\u2019t let your memes be dreams. Edit videos until the GIFs start whispering sweet nothings at you and you realize, far too late, that you can animate them into real life footage.\n\nThis is a short Cartoon Chaos Gremlin VFX Glitch Demo Reel, featuring cursed little animated creatures, real footage, bad decisions, and the dangerous discovery that once you learn how to make a GIF inhabit reality, there is no respectable way back.\n\nIs this visual effects practice? Meme sorcery? A cry for help from inside the editing timeline? Technically yes to all of that, which is how you know the workflow is developing normally.\n\n#HonestlyThomas #TheInternetIsDead #VFX #GlitchArt #VideoEditing #MemeArt #GIFAnimation #ExperimentalVideo #WeirdYouTube #CartoonChaos #DigitalGremlin #VideoArt",
       "duration": 59,
-      "view_count": 26,
+      "view_count": 27,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -48454,7 +48662,7 @@
       "title": "PSA: This Channel Is a Glitch in Reality Abandon Logic",
       "description": "Welcome back to Honestly Thomas, the channel that keeps introducing itself because apparently one trailer was not enough to explain whatever this is. This is a glitchy little PSA from the haunted edge of YouTube, where the branding is unstable, the logic is optional, and the frogs are still watching from somewhere inside the signal.\n\nThis channel is not built around one clean niche, because that would require behaving like a normal person with a spreadsheet and a five-year content plan. Instead, it\u2019s a living archive of weird videos, folk covers, cursed edits, AI characters, nostalgic media rot, digital archaeology, and whatever strange thought survived long enough to become an upload.\n\nIf you\u2019re new here, abandon logic at the door. If you\u2019ve been here before, you already know the channel is less a destination and more a recurring transmission from a creative system that refuses to stay dead. Welcome to the ride. Enjoy in horror.\n\n#HonestlyThomas #TheInternetIsDead #ChannelTrailer #GlitchInReality #CursedMedia #WeirdYouTube #GlitchArt #VideoArt #InternetDecay #DigitalChaos #FrogsAreWatching #CreatorLore",
       "duration": 65,
-      "view_count": 69,
+      "view_count": 70,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -48870,7 +49078,7 @@
       "title": "This Video Haunts Dreams (Majora\u2019s Mask Music + The Mask Meme)",
       "description": "Nobody can stop me. Not even a falling Moon could stop me. This video is powered by caffeine, chaotic memetic weaponry, and the deeply unstable collision of Majora\u2019s Mask and Jim Carrey as The Mask into peak main-character-of-the-internet energy.\n\nClassic Nintendo dread meets rubber-faced cartoon chaos, and somehow the result feels like a cursed VHS meme that knows exactly what it\u2019s doing but refuses to explain itself in court.\n\nThis is the kind of video that asks, \u201csomebody stop me,\u201d then immediately proves nobody can. You are not ready, but neither was I, and that clearly did not stop production.\n\n#HonestlyThomas #TheInternetIsDead #MajorasMask #TheMask #JimCarrey #Nintendo #Zelda #MemeArt #CursedMedia #WeirdYouTube #GlitchComedy #VideoArt",
       "duration": 66,
-      "view_count": 4,
+      "view_count": 5,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -51990,7 +52198,7 @@
       "title": "Tektite - I Am Alive (Friendship Fallout 1)",
       "description": "I Am Alive is the first part of the Friendship Fallout series, an original Tektite rap track about betrayal, silence, resentment, and the moment you realize a friendship has been draining more from you than it ever gave back.\n\nThis one is raw and confrontational, built around the feeling of cleaning out the emotional closet and saying the things that sat too long in the dark. It is about being used, being ignored, trying to hold something together alone, and finally deciding the last bridge does not need saving.\n\nFriendship Fallout starts here: not with peace, but with survival. I am alive, and that has to mean something.\n\n#HonestlyThomas #TheInternetIsDead #Tektite #IAmAlive #FriendshipFallout #RapSong #OriginalRap #DarkRap #EmotionalRelease #CreatorLore #VideoArt #InternetDecay",
       "duration": 101,
-      "view_count": 72,
+      "view_count": 73,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -59270,7 +59478,7 @@
       "title": "The MOST Oldschool RuneScape Video Ever OSRS on CRT TV",
       "description": "Old School RuneScape on a CRT TV because apparently nostalgia wasn\u2019t blurry, heavy, and cursed enough already.\n\nThis is the most oldschool RuneScape video I could physically assemble without mailing myself back to 2007, eating pizza rolls, and getting scammed outside Varrock West Bank. OSRS already lives in a weird pocket dimension of memory, but running it through a CRT makes it feel like the game is being broadcast from a basement server powered by childhood and dust.\n\nA tiny digital relic.\nA medieval point-and-click ghost.\nA monitor heavy enough to win a boss fight.\n\nMore haunted internet debris:\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #OldSchoolRuneScape #OSRS #RuneScape #RetroGaming #CRTV #InternetNostalgia #OldInternet #GamingNostalgia",
       "duration": 129,
-      "view_count": 61,
+      "view_count": 62,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -64054,7 +64262,7 @@
       "title": "Welcome to Dongle Hell (HDMI to CRT TV)",
       "description": "DIY cursed tech from the analog swamp.\n\nI tried getting HDMI onto an old CRT TV, which sounds simple until the dongle chain starts looking like a life-support system for a haunted toaster. HDMI to RCA, adapters on adapters, black and white sadness, signal loss, cable spaghetti, and the slow realization that the past does not want to be compatible with the present.\n\nThis is less of a tutorial and more of a field report from Dongle Hell.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #DongleHell #CRT #RetroTech #GlitchArt #OldInternet #DIYTech",
       "duration": 39,
-      "view_count": 7,
+      "view_count": 8,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -69878,7 +70086,7 @@
       "title": "10 Deaths, 1 Sad Victory (OSRS Inferno Simulator)",
       "description": "I spent 26 minutes, 10 tries, and a concerning amount of dignity trying to beat Jad once in the OSRS Inferno Simulator.\n\nThis is not a guide. This is not clean gameplay. This is a small digital tragedy played at 16x speed so nobody has to sit through the full ritual of panic, misclicks, prayer flicking, and personal collapse.\n\nSome victories are glorious. This one mostly limped across the finish line, coughed up a fire cape-shaped emotion, and asked to be left alone.\n\nOld School RuneScape remains one of the purest machines ever built for converting childhood nostalgia into adult stress.\n\n#HonestlyThomas #TheInternetIsDead #OSRS #OldSchoolRuneScape #InfernoSimulator #RetroGaming #Gaming #InternetNostalgia",
       "duration": 209,
-      "view_count": 1,
+      "view_count": 2,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -80070,7 +80278,7 @@
       "title": "Artsy Whale Behavior Observed at Sunset",
       "description": "A brief aquatic performance from a large mammal experiencing peace, buoyancy, and whatever the opposite of dignity is.\n\nThis is not nature footage. This is not fitness content. This is real life aquatic art: one man, one lake, one sunset, and the ancient human urge to flop around beautifully before the algorithm turns the moment into data soup.\n\nSomewhere between a vacation memory, a whale documentary, and a Renaissance painting made by a waterproof idiot.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #AquaticArt #WeirdInternet #SurrealComedy #LakeLife #DigitalDada",
       "duration": 111,
-      "view_count": 5,
+      "view_count": 6,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -87786,7 +87994,7 @@
       "title": "Backyard Frog Chorus at Dusk (Nature Sounds & Ambience)",
       "description": "\u201cWhat are you doing in my swamp?!\u201d\n\nBackyard frog chorus at dusk, nature sounds and ambience part 2. Thirty-six seconds of frogs yelling into the evening like tiny wet landlords defending their property line.\n\nPeaceful, weirdly loud, and spiritually hosted by amphibians who did not consent to the upload but probably respect the archive.\n\nMore little nature scraps and digital pond residue:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #FrogSounds #NatureSounds #BackyardAmbience #Dusk #Archive",
       "duration": 36,
-      "view_count": 3,
+      "view_count": 2,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -91738,7 +91946,7 @@
       "title": "Slow Motion Flappy Lips Meme (FUNNY)",
       "description": "Sony RX100 VII 1000FPS funny flappy lips video crying laughing emoji.\n\nSlow motion face nonsense, captured at an irresponsible frame rate because apparently this is what technology was building toward the whole time.\n\nNot educational. Barely dignified. Technically a high frame rate test if anyone asks.\n\nMore archive goblin behaviour:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #SlowMotion #SonyRX100VII #1000FPS #Meme #Archive",
       "duration": 75,
-      "view_count": 38,
+      "view_count": 39,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -91946,7 +92154,7 @@
       "title": "Pulsing LED Bulb in Slow Motion - 1000FPS High Frame Rate Test Sony RX100 VII",
       "description": "I was convinced this bulb was haunted tbh.\n\nPulsing LED bulb filmed in slow motion at 1000FPS on a Sony RX100 VII. Turns out some lights flicker in ways your eyes mostly smooth over, which is comforting if you enjoy learning your house is full of invisible electrical strobe rituals.\n\nHigh frame rate test, accidental ghost footage, tiny porch-lamp s\u00e9ance.\n\nMore strange archive scraps:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #SlowMotion #SonyRX100VII #1000FPS #LEDBulb #HighFrameRate",
       "duration": 75,
-      "view_count": 10,
+      "view_count": 13,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -93402,7 +93610,7 @@
       "title": "Backyard Frog Sounds at Dusk (4/25/2022)",
       "description": "My first video, originally uploaded 4/25/2022.\n\nBackyard frog sounds at dusk. Eighteen seconds of nature ambience before the channel slowly mutated into glitch art, YouTube archive chaos, weird web projects, and whatever else this has become.\n\nA peaceful little origin point.\nThe frogs had no idea what they were starting.\n\nMore of the timeline lives here:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #NatureAmbience #FrogSounds #ASMR #BackyardSounds",
       "duration": 18,
-      "view_count": 22,
+      "view_count": 23,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -103263,7 +103471,7 @@
       "title": "Watchmen - Stereo instrumental (Karaoke)",
       "description": "",
       "duration": 245,
-      "view_count": 235,
+      "view_count": 236,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -104719,7 +104927,7 @@
       "title": "The Caesars - Jerk It Out Instrumental (Karaoke)",
       "description": "Wind me up put me down start me up and watch me go!",
       "duration": 199,
-      "view_count": 380,
+      "view_count": 381,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -105551,7 +105759,7 @@
       "title": "Mischief Brew - Roll Me Through The Gates of Hell Instrumental (Karaoke)",
       "description": "If you sing this song you'll go to Hell.",
       "duration": 233,
-      "view_count": 194,
+      "view_count": 195,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -105759,7 +105967,7 @@
       "title": "deM atlaS - Music Man Instrumental (Karaoke)",
       "description": "THIS IS FREE NON FOR PROFIT KARAOKE CREATED BY ME",
       "duration": 275,
-      "view_count": 285,
+      "view_count": 286,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -114079,7 +114287,7 @@
       "title": "AVGN Gilbert Gottfried Fred Fuchs VHS",
       "description": "#voiceai #avgn",
       "duration": 82,
-      "view_count": 425,
+      "view_count": 426,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -117615,7 +117823,7 @@
       "title": "Morty 3030 - Deltron 3030 x Morty Voice AI",
       "description": "",
       "duration": 12,
-      "view_count": 463,
+      "view_count": 464,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
