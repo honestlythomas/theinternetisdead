@@ -90,7 +90,7 @@ def normalize_channel_source_urls(url):
     ]
 
 
-def run_yt_dlp_json(url, flat_playlist=False):
+def run_yt_dlp_json(url, flat_playlist=False, public_only=False):
     base_command = [
         sys.executable,
         "-m",
@@ -112,8 +112,10 @@ def run_yt_dlp_json(url, flat_playlist=False):
         attempts.append({"browser": cookies_from_browser})
     if cookies_path:
         attempts.append({"cookies": cookies_path})
-    if not attempts:
-        attempts.append({})
+    if public_only:
+        # Anonymous listings represent what public website visitors can see.
+        # Authenticated cookies might include the owner's private uploads.
+        attempts = [{}]
     else:
         attempts.append({})
 
@@ -503,14 +505,16 @@ def main():
     discovered_entries = []
     seen_video_ids = set()
     discovered_duplicate_ids = set()
+    fully_scanned_channel_ids = set()
 
     for channel_config in config["channels"]:
         channel_url = channel_config["url"]
         source_urls = channel_config.get("source_urls") or [channel_url]
         channel_meta = None
+        successful_sources = set()
         log_progress(f"channel start: {channel_url}")
         try:
-            primary_channel_data = run_yt_dlp_json(channel_url, flat_playlist=True)
+            primary_channel_data = run_yt_dlp_json(channel_url, flat_playlist=True, public_only=True)
         except Exception as exc:  # noqa: BLE001 - keep building from remaining sources.
             print(f"Warning: failed to load {channel_url}: {exc}", file=sys.stderr)
             primary_channel_data = None
@@ -535,14 +539,15 @@ def main():
                 channel_data = primary_channel_data
             else:
                 try:
-                    channel_data = run_yt_dlp_json(source_url, flat_playlist=True)
+                    channel_data = run_yt_dlp_json(source_url, flat_playlist=True, public_only=True)
                 except Exception as exc:  # noqa: BLE001 - keep building from remaining sources.
                     print(f"Warning: failed to load {source_url}: {exc}", file=sys.stderr)
                     continue
 
-            if not isinstance(channel_data, dict):
+            if not isinstance(channel_data, dict) or not isinstance(channel_data.get("entries"), list):
                 continue
 
+            successful_sources.add(source_url)
             source_added = 0
             source_duplicates = 0
             if channel_meta is None:
@@ -559,6 +564,8 @@ def main():
             for entry in channel_data.get("entries") or []:
                 if not isinstance(entry, dict):
                     continue
+                if str(entry.get("availability") or "").lower() in {"private", "needs_auth", "premium_only", "subscriber_only"}:
+                    continue
                 video_id = get_video_id(entry)
                 if not video_id or video_id in seen_video_ids:
                     if video_id:
@@ -571,6 +578,10 @@ def main():
 
             log_progress(f"source done ({source_kind}, added={source_added}, duplicates={source_duplicates}): {source_url}")
 
+        if channel_meta and channel_meta.get("channel_id") and set(source_urls).issubset(successful_sources):
+            fully_scanned_channel_ids.add(str(channel_meta["channel_id"]))
+        else:
+            log_progress(f"channel listing incomplete; retaining old entries: {channel_url}")
         log_progress(f"channel done: {channel_url}")
 
     new_entries = []
@@ -617,6 +628,18 @@ def main():
 
     if not discovered_channels:
         discovered_channels = existing_feed["channels"]
+
+    # Prune stale/private/unlisted entries only when both public listings succeeded.
+    # Avoid deleting old entries on an incomplete or failed fetch.
+    if fully_scanned_channel_ids:
+        discovered_ids = {get_video_id(item["entry"]) for item in discovered_entries}
+        before_prune = len(merged_entries)
+        merged_entries = [
+            entry for entry in merged_entries
+            if str(entry.get("channel_id") or "") not in fully_scanned_channel_ids
+            or get_video_id(entry) in discovered_ids
+        ]
+        log_progress(f"pruned {before_prune - len(merged_entries)} entries absent from complete public listings")
 
     merged_entries = sort_entries_by_date(merged_entries)
 
