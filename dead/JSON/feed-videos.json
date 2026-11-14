@@ -1,6 +1,6 @@
 {
   "title": "Channel Feed",
-  "generated_at": "2026-11-13T03:49:25.799344Z",
+  "generated_at": "2026-11-14T03:47:48.553909Z",
   "channels": [
     {
       "url": "https://www.youtube.com/@Honestly_Thomas/videos",
@@ -21,12 +21,636 @@
   ],
   "entries": [
     {
+      "id": "zWqXNpiTLik",
+      "url": "https://www.youtube.com/watch?v=zWqXNpiTLik",
+      "title": "The Fat Prince of Bad Air",
+      "description": "smoke them if you got em.",
+      "duration": 59,
+      "view_count": 1,
+      "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20261114",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/zWqXNpiTLik/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/zWqXNpiTLik/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
+      "id": "NE4uOZ_yigg",
+      "url": "https://www.youtube.com/watch?v=NE4uOZ_yigg",
+      "title": "You Have Found My Video",
+      "description": "congratulations",
+      "duration": 311,
+      "view_count": 4,
+      "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20261113",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/NE4uOZ_yigg/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/NE4uOZ_yigg/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
+      "id": "Dl0CH9EcuOk",
+      "url": "https://www.youtube.com/watch?v=Dl0CH9EcuOk",
+      "title": "Tektite - My microphone is Jesus",
+      "description": "",
+      "duration": 0,
+      "view_count": 137,
+      "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20261113",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/Dl0CH9EcuOk/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/Dl0CH9EcuOk/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
       "id": "nidHDw-kXN0",
       "url": "https://www.youtube.com/watch?v=nidHDw-kXN0",
       "title": "Canada\ud83c\udf41Remembrance Day Song\u2764\ufe0f11/11/2026",
       "description": "Lest we forget. Being Canadian Remembrance Day always has a place in my heart they showed us this video in school as a kid...\n\nTerry Kelly's Pittance of Time watch original here: \u00a0\u00a0\u00a0\u2022\u00a0Terry\u00a0Kelly\u00a0-\u00a0A\u00a0Pittance\u00a0of\u00a0Time\u00a0\u00a0\u00a0\u00a0\u00a0(Offi...\u00a0\u00a0\n\nPeace",
       "duration": 296,
-      "view_count": 40,
+      "view_count": 42,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -660,7 +1284,7 @@
       "title": "Jesus Loves Autism (right?)",
       "description": "Even Jesus Thinks Autistic People Deserve Love. Oh Well. Enjoy the emotional whiplash meme.",
       "duration": 0,
-      "view_count": 27,
+      "view_count": 28,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -868,7 +1492,7 @@
       "title": "Minecraft Makes Me Feel Really Old In 2026",
       "description": "Every six months since 2011, I convince myself that I'm going to enjoy Minecraft again.\n\nI download it, install it, punch a tree, remember how much fun I had when I was 13, and immediately realize that maybe Minecraft hasn't changed nearly as much as I have.\n\nThis is the story of a 29-year-old man desperately trying to recapture the magic of a game he grew up playing, only to discover that nostalgia isn't a renewable resource.\n\n15 years of Minecraft. 30 seconds of gameplay. One existential crisis.\n\nWelcome back to Minecraft.\n\n#Minecraft #Minecraft2026 #MinecraftNostalgia #Gaming #HonestlyThomas #theinternetisdead",
       "duration": 116,
-      "view_count": 23,
+      "view_count": 29,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1700,7 +2324,7 @@
       "title": "Help is NOT available STOP LYING",
       "description": "oops I made this short over 2 minutes oh well enjoy your vertical longform video nerds.",
       "duration": 0,
-      "view_count": 13,
+      "view_count": 14,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1908,7 +2532,7 @@
       "title": "another day left alone",
       "description": "stop lying nobody gives a fuck what I've been going through for over a year of my life.",
       "duration": 0,
-      "view_count": 10,
+      "view_count": 13,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -4404,7 +5028,7 @@
       "title": "meaningful place",
       "description": "",
       "duration": 197,
-      "view_count": 65,
+      "view_count": 72,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -7649,7 +8273,7 @@
       "title": "BEST KARAOKE I EVER RECORDED... I guess.",
       "description": "Me singing \u201cMeant to Live\u201d by Switchfoot, YouTube karaoke style\u2014voice cracks and all.\n\nSome days you sing with whatever voice you\u2019ve got.\n\nSong: \u201cMeant to Live\u201d \u2014 Switchfoot\nOriginal Song Link: https://www.youtube.com/watch?v=S6zEEuwC64o",
       "duration": 202,
-      "view_count": 17,
+      "view_count": 18,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -39994,7 +40618,7 @@
       "title": "Frog Choir Sings Cotton Eyed Joe A Meme Awakening",
       "description": "",
       "duration": 11,
-      "view_count": 744,
+      "view_count": 745,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -51850,7 +52474,7 @@
       "title": "Eminem - Brainless clip",
       "description": "",
       "duration": 15,
-      "view_count": 15,
+      "view_count": 17,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -56842,7 +57466,7 @@
       "title": "Tektite - Introspection (I don't know what I'm doing)",
       "description": "Instrumental: \u201cFeelings\u201d by Dizzla D Beats\nIntrospection (I don't know what I'm doing) written by Thomas Harrison\nOriginal Tektite / Honestly Thomas transmission, April 12, 2025.\n\nA track about being lost, making things anyway, and trying to turn the weird static in my head into something that sounds like a song.\n\nI wrote this from a pretty honest place. It\u2019s about isolation, self-doubt, screens, mirrors, mental health, and that strange feeling of talking to technology because sometimes it feels easier than talking to actual humans. Not because the machine saves you. More like because it reflects the mess back at you in a slightly cursed font.\n\nThe vocals are not perfect. The song is not polished into plastic. That is kind of the point. I made something real, and I\u2019m trying to value that even when the perfection gremlin is chewing on the drywall.\n\nTake care of your head. Reach out when the room gets too loud.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #Tektite #Rap #ExperimentalRap #MentalHealth #Introspection #EmotionalHipHop #AIIsolation #HauntedInternet",
       "duration": 199,
-      "view_count": 25,
+      "view_count": 26,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -57050,7 +57674,7 @@
       "title": "Why CRT TVs Are Making a Comeback! (invideo AI Test)",
       "description": "CRT TVs are apparently making a comeback, and I apparently let an AI video generator explain that to me like a substitute teacher made of stock footage.\n\nThis was an invideo AI test, which means I fed the machine a prompt and watched it cough up a tiny lifestyle documentary about retro television, nostalgia, and possibly a random woman who seemed way too comfortable waving at my audience.\n\nPart tech curiosity, part dead internet field report, part \u201cwhy does this feel like a commercial from a timeline where nobody survived YouTube.\u201d\n\nI still love CRTs. I do not fully trust the machine describing them.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #CRT #RetroGaming #AIArt #DeadInternetTheory #GlitchArt #InternetNostalgia #YouTubeCulture",
       "duration": 279,
-      "view_count": 75,
+      "view_count": 77,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -59130,7 +59754,7 @@
       "title": "AC/DC - Hell's Bells Gargoyle Boss Music Video (OSRS)",
       "description": "Smashing the Grotesque Guardians with a BGS spec gets my blood pumping.\n\nThis is AC/DC\u2019s \u201cHell\u2019s Bells\u201d jammed into an OSRS boss fight because apparently my brain thinks gargoyles, bells, and rock music belong in the same cursed little folder.\n\nSmash that like button if you enjoy AC/DC and if you sub don\u2019t forget to ring the bell to get notifications. There. I did the casual YouTuber thing with peak ironic commitment. Are you happy now algorithm? ARE YOU HAPPY NOW DAD?\n\nMore haunted internet debris:\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #OSRS #OldSchoolRuneScape #ACDC #RetroGaming #YouTubeCulture",
       "duration": 242,
-      "view_count": 12,
+      "view_count": 13,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -70570,7 +71194,7 @@
       "title": "MOON THOMAS You Spin Me Into Oblivion",
       "description": "",
       "duration": 20,
-      "view_count": 792,
+      "view_count": 793,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -84734,7 +85358,7 @@
       "title": "Flushing Crappy Mouse Down The Toilet (TECH RAGE)",
       "description": "The mouse pissed me off. The toilet got involved. Society failed somewhere upstream.\n\nRIP mouse. You went out like garbage, but wetter.\n\nMore archive debris and questionable decisions:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #TechRage #MouseDestroying #Archive",
       "duration": 28,
-      "view_count": 46,
+      "view_count": 47,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -102038,7 +102662,7 @@
       "title": "Mischief Brew - Roll Me Through The Gates of Hell Instrumental (Karaoke)",
       "description": "If you sing this song you'll go to Hell.",
       "duration": 233,
-      "view_count": 197,
+      "view_count": 198,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -110566,7 +111190,7 @@
       "title": "AVGN Gilbert Gottfried Fred Fuchs VHS",
       "description": "#voiceai #avgn",
       "duration": 82,
-      "view_count": 435,
+      "view_count": 436,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -117535,7 +118159,7 @@
       "title": "could I interest you in everything all of the time",
       "description": "apathys a tragedy and boredom is a crime\nanything and everything all of the time.",
       "duration": 24,
-      "view_count": 293,
+      "view_count": 294,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
@@ -117743,7 +118367,7 @@
       "title": "Burter and Jeice BRUH MOMENT",
       "description": "Don't mess with Goku when he's hungry and he's always hungry.\n\nDBZA episode 21 clip by TeamFourStar - Support the official release",
       "duration": 76,
-      "view_count": 137,
+      "view_count": 138,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
