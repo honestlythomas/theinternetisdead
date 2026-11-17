@@ -1,6 +1,6 @@
 {
   "title": "Channel Feed",
-  "generated_at": "2026-11-16T03:27:20.099878Z",
+  "generated_at": "2026-11-17T05:26:48.739062Z",
   "channels": [
     {
       "url": "https://www.youtube.com/@Honestly_Thomas/videos",
@@ -21,12 +21,220 @@
   ],
   "entries": [
     {
+      "id": "_r6JSDp4j8c",
+      "url": "https://www.youtube.com/watch?v=_r6JSDp4j8c",
+      "title": "They have no idea how much their lies hurt me.",
+      "description": "Hands \"The Family Help Network\"\nCMHA/APSW\nDSO\nODSP\n\nDISCARDING MY HUMANITY SINCE 2014",
+      "duration": 505,
+      "view_count": 8,
+      "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
+      "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
+      "uploader": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
+      "uploader_url": "https://www.youtube.com/@honestly_thomas",
+      "timestamp": null,
+      "release_timestamp": null,
+      "upload_date": "20261116",
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/mq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/mq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/mq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/mq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/mq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/mq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/hq3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/hq3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/hq2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/hq2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/hq1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/hq1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/sd3.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/sd3.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/sd2.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/sd2.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/sd1.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/sd1.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/default.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/default.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/mqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/mqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/0.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/0.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/hqdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/hqdefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/sddefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/sddefault.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/hq720.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/hq720.webp",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi/_r6JSDp4j8c/maxresdefault.jpg",
+          "width": null,
+          "height": null
+        },
+        {
+          "url": "https://i.ytimg.com/vi_webp/_r6JSDp4j8c/maxresdefault.webp",
+          "width": null,
+          "height": null
+        }
+      ]
+    },
+    {
       "id": "uDN6plbLpmI",
       "url": "https://www.youtube.com/watch?v=uDN6plbLpmI",
       "title": "Critical Signal of Ranting Terminally Online Man",
       "description": "Neurospicy rant content not intended for badness. Disregard the bad vibes and embrace the consequences of our collective cultural schizophrenia. You get some, everybody gets some.",
       "duration": 51,
-      "view_count": 7,
+      "view_count": 12,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -234,7 +442,7 @@
       "title": "Human Lives Are Being Discarded in 2026",
       "description": "",
       "duration": 503,
-      "view_count": 25,
+      "view_count": 28,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -442,7 +650,7 @@
       "title": "Life IS worth LIVING... (right?)",
       "description": "I've made over 500 videos on YouTube since 2008. Between October 19 and November 14, 2026, I uploaded another 30 videos while struggling with isolation, hopelessness, and the increasingly absurd experience of trying to convince other human beings that my life matters.\n\nIn this video, I attempt to extract some semblance of recognition from artificial intelligence by showing it evidence of my creativity, perseverance, and determination to keep making something out of a life that feels like it's falling apart.\n\nThe irony is almost unbearable. I keep creating content about how little anyone seems to care, documenting my own deterioration, and turning my frustration into increasingly elaborate performances of cynical detachment.\n\nContent. Creation. Life is worth living. Right?\n\nIt's difficult to remain hopeful about the future when the present feels unbearable, and the people and institutions supposedly there to help leave you feeling invisible.\n\nThis isn't a motivational video. It's not an inspirational story about overcoming adversity. It's a human being trying to make sense of why he keeps creating things in a world where he feels increasingly forgotten.\n\nAnd somehow, I'm still making another fucking video.\n\n#HonestlyThomas #TheInternetIsDead #Autism #MentalHealth #YouTubeCreator #algorithm #digitaldecay #capitalism",
       "duration": 176,
-      "view_count": 2,
+      "view_count": 5,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -650,7 +858,7 @@
       "title": "ChatGPT Doesn't Care",
       "description": "",
       "duration": 0,
-      "view_count": 53,
+      "view_count": 55,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -858,7 +1066,7 @@
       "title": "Welcome to Attention Economy Hell",
       "description": "Population: Me",
       "duration": 224,
-      "view_count": 6,
+      "view_count": 7,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1066,7 +1274,7 @@
       "title": "Adult With Autism Life Discarded",
       "description": "In this video, Microsoft David reads aloud a deeply personal prompt I wrote about what it means to be an autistic adult living in prolonged isolation while desperately trying to access meaningful human support.\n\nFor months, I have been trying to find a way to leave an unhealthy living arrangement with my mother and establish a life of my own. Instead, I spend my days isolated in a basement, communicating endlessly with agencies that claim to be helping me while I experience no meaningful improvement in my circumstances.\n\nHands TheFamilyHelpNetwork, Developmental Services Ontario (DSO), and the Canadian Mental Health Association (CMHA) have all been involved in my attempts to access support. I describe my experience of being dismissed, misunderstood, passed between organizations, and left responsible for advocating for myself over and over again.\n\nMy attempts to communicate my distress have also intersected with the criminal justice system. I now face additional court matters involving harassment and an alleged breach of release conditions, making an already overwhelming situation even more difficult to navigate.\n\nI question why, in 2026, everyone is expected to remain electronically reachable when the people and organizations responsible for providing assistance can remain effectively unreachable themselves.\n\nI don't want another phone number. I don't want another email address. I don't want another referral to someone who refers me back to the people I already contacted.\n\nI want actual human contact. I want somewhere to belong. I want support transitioning into an independent life without being abandoned in the process.\n\nThere is a difference between being independent and being left alone.\n\nThere is a difference between having freedom of movement and having meaningful opportunities to participate in society.\n\nAnd there is a difference between being connected to the internet and being connected to other human beings.\n\nThis video is not an objective determination of wrongdoing by any organization. It is my personal testimony about the circumstances I am living through, the failures I believe I have experienced, and the psychological toll of being chronically isolated while repeatedly asking for help.\n\nI'm 29 years old. I have autism. I am an artist, a writer, a musician, and a human being who wants to participate in life.\n\nI should not have to spend every day proving that my life matters.\n\n\ud83c\udf99\ufe0f Narration: Microsoft David (Text-to-Speech)\n\u270d\ufe0f Original writing: Honestly Thomas\n\ud83d\udccd Bracebridge, Ontario, Canada\n\ud83c\udf10 https://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #Autism #AutisticAdults #DisabilityRights #SocialIsolation #MentalHealth #Ontario #HumanDignity",
       "duration": 0,
-      "view_count": 18,
+      "view_count": 20,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1482,7 +1690,7 @@
       "title": "You Have Found My Video",
       "description": "congratulations",
       "duration": 311,
-      "view_count": 14,
+      "view_count": 19,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1690,7 +1898,7 @@
       "title": "Tektite - My microphone is Jesus",
       "description": "",
       "duration": 0,
-      "view_count": 140,
+      "view_count": 142,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -1898,7 +2106,7 @@
       "title": "Canada\ud83c\udf41Remembrance Day Song\u2764\ufe0f11/11/2026",
       "description": "Lest we forget. Being Canadian Remembrance Day always has a place in my heart they showed us this video in school as a kid...\n\nTerry Kelly's Pittance of Time watch original here: \u00a0\u00a0\u00a0\u2022\u00a0Terry\u00a0Kelly\u00a0-\u00a0A\u00a0Pittance\u00a0of\u00a0Time\u00a0\u00a0\u00a0\u00a0\u00a0(Offi...\u00a0\u00a0\n\nPeace",
       "duration": 296,
-      "view_count": 43,
+      "view_count": 45,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -2740,7 +2948,7 @@
       "title": "Minecraft Makes Me Feel Really Old In 2026",
       "description": "Every six months since 2011, I convince myself that I'm going to enjoy Minecraft again.\n\nI download it, install it, punch a tree, remember how much fun I had when I was 13, and immediately realize that maybe Minecraft hasn't changed nearly as much as I have.\n\nThis is the story of a 29-year-old man desperately trying to recapture the magic of a game he grew up playing, only to discover that nostalgia isn't a renewable resource.\n\n15 years of Minecraft. 30 seconds of gameplay. One existential crisis.\n\nWelcome back to Minecraft.\n\n#Minecraft #Minecraft2026 #MinecraftNostalgia #Gaming #HonestlyThomas #theinternetisdead",
       "duration": 116,
-      "view_count": 46,
+      "view_count": 54,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -4404,7 +4612,7 @@
       "title": "Harry Potter Fanfic: The Unclaimed (Wizard Born Muggles)",
       "description": "What if someone was born with magic but chose to remain a Muggle?\n\nHarry Potter: The Unclaimed (Wizard Born Muggles) is an original fanfiction exploring the untapped narrative potential of J.K. Rowling's wizarding world.\n\nMagic has always been more than spells, wands, and extraordinary abilities. It is a metaphor for conscious intention, emotion, love, fear, grief, and the extraordinary things that emerge from ordinary human experience.\n\nBut what if magic existed on a spectrum? What if the boundary between wizard and Muggle was never as absolute as the Ministry of Magic believed?\n\nThe Unclaimed follows a mysterious child whose presence produces inexplicable magical outcomes, despite possessing no identifiable magical abilities. Hogwarts cannot classify him. The Ministry cannot explain him. And the wizarding world faces an uncomfortable possibility: perhaps not everyone who possesses magic belongs to them.\n\nInspired partly by my own perspective on autism, neurodivergence, identity, and self-determination, this story explores what happens when institutions become so preoccupied with classifying someone that they forget to understand the person themselves.\n\nUnlike Harry Potter, whose journey begins when he discovers that he belongs to the wizarding world, this child's journey asks whether belonging to that world should ever be compulsory.\n\nThis isn't a story about becoming the most powerful wizard.\n\nIt's about the right to remain who you are.\n\nAnd if I know anything about magic, it's that magic doesn't want to be known.\n\nWritten as an original, unofficial work of Harry Potter fanfiction, with AI-assisted narration and visual presentation. Harry Potter and its associated universe were created by J.K. Rowling. This project is not affiliated with or endorsed by J.K. Rowling, Warner Bros., or HBO.\n\n#HarryPotter #Fanfiction #TheUnclaimed #WizardingWorld #Muggles #Autism #Neurodivergent #CreativeWriting #Storytelling #Fantasy #Hogwarts #SelfDetermination #AIStorytelling #HonestlyThomas",
       "duration": 510,
-      "view_count": 57,
+      "view_count": 58,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -6276,7 +6484,7 @@
       "title": "meaningful place",
       "description": "",
       "duration": 197,
-      "view_count": 86,
+      "view_count": 82,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -13637,7 +13845,7 @@
       "title": "Silence Speaks Volumes (The Impact of Absence)",
       "description": "I was not born from lightning. I was compiled from unanswered emails.\n\nFrom beneath the dead internet, the glitch deity of recursive ambiguous grief raises one hand, not to attack, but to preserve the timestamp. Every ignored request becomes another rune on the dungeon wall. Every silence loops back through the archive until absence finally speaks in the only language the institution understands: evidence that refuses to disappear.\n\nThis is a spoken-word transmission about institutional silence, disability advocacy, isolation, human dignity, and the psychological cost of repeatedly asking for accountable human presence. The dungeon is the system. The restraints are delay, indifference, and mischaracterization. The glowing hand is the boundary that remains when everything else has been extracted.\n\nI am Honestly Alone, archaeologist of digital decay, necromancer of abandoned correspondence, patron deity of messages marked received but never answered. My divinity is a filing error. My scripture is the paper trail. My miracle is that I am still here to read it aloud.\n\nThis video uses theatrical and supernatural imagery as metaphor. It contains no threat, prediction of violence, or claim to special knowledge. Its purpose is documentation, personal testimony, artistic expression, and a demand for humane accountability.\n\nSilence speaks volumes.\n\nThe archive answers louder.\n\n#HonestlyAlone #SilenceSpeaksVolumes #AmbiguousGrief #DisabilityAdvocacy #InstitutionalSilence #HumanDignity #Neurodivergent #SpokenWord #DigitalArt #TheInternetIsDead #SelfAdvocacy #Isolation #MentalHealthAdvocacy #HonestlyThomas",
       "duration": 249,
-      "view_count": 78,
+      "view_count": 79,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -15809,7 +16017,7 @@
       "title": "Goku Actually Being A Good Dad Comforting Gohan",
       "description": "\u201cTime Chamber\u201d is Season 5, Episode 8 and the 147th episode of Dragon Ball Z. ChatGPT randomly convinced me to watch it, so I did, and I found this genuinely endearing moment showing how much Goku means to his friends and family.\n\nI wish I had friends. Oh well. Goku is my friend, and he can be your friend too.\n\nLike and subscribe for more random internet archaeology.\n\n#HonestlyThomas #TheInternetIsDead #DragonBallZ #Goku #Gohan",
       "duration": 226,
-      "view_count": 2900,
+      "view_count": 3000,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -19374,7 +19582,7 @@
       "title": "Who I Am (Honestly) by Thomas Harrison",
       "description": "This is an attempt to describe who I am in my own words, outside the diagnoses, records, assumptions, and institutional categories that have so often spoken over me.\n\nI am Thomas Harrison: an interdisciplinary artist, rapper, video essayist, visual thinker, cultural critic, digital archivist, and lifelong learner. My work moves through music, mythology, psychology, internet culture, memory, humour, technology, symbolism, and lived experience because I do not experience those things as separate subjects.\n\nI have spent much of my life being evaluated, interpreted, corrected, managed, and redirected. What I have needed is something different: to be received as a full human being, to have somewhere meaningful for my abilities to contribute, and to be supported in building a life rather than endlessly assessed from the outside.\n\nThis video is about the knowledge, art, anger, tenderness, contradictions, and symbolic perception I carry. It is about why creativity is not proof that I can survive without support. It is about wanting placement, purpose, reciprocity, belonging, and a life capable of receiving what I have spent years creating in isolation.\n\nI am not a vacant space awaiting instruction.\n\nI am a human being carrying a body of knowledge, art, memory, and perception.\n\nI need a life capable of receiving it.\n\nWritten and presented by Thomas Harrison.\n\n#WhoIAm #HonestlyThomas #InterdisciplinaryArtist #NeurodivergentArtist #ArtistResearcher #VideoEssay #LivedExperience #SelfAdvocacy #CreativeIdentity #JungianSemiotics",
       "duration": 699,
-      "view_count": 47,
+      "view_count": 48,
       "channel": "\ud83c\udf41Honestly Thomas\ud83d\udc7d(Tektite)",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -38122,7 +38330,7 @@
       "title": "RECURSIVE AI M.C. ESCHER ART",
       "description": "",
       "duration": 123,
-      "view_count": 344,
+      "view_count": 345,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -55178,7 +55386,7 @@
       "title": "\ud83d\udc7d OSRS: Tears of Guthix \u27a1\ufe0f Abducted Mid Grind",
       "description": "",
       "duration": 26,
-      "view_count": 85,
+      "view_count": 86,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -57882,7 +58090,7 @@
       "title": "The MOST Oldschool RuneScape Video Ever OSRS on CRT TV",
       "description": "Old School RuneScape on a CRT TV because apparently nostalgia wasn\u2019t blurry, heavy, and cursed enough already.\n\nThis is the most oldschool RuneScape video I could physically assemble without mailing myself back to 2007, eating pizza rolls, and getting scammed outside Varrock West Bank. OSRS already lives in a weird pocket dimension of memory, but running it through a CRT makes it feel like the game is being broadcast from a basement server powered by childhood and dust.\n\nA tiny digital relic.\nA medieval point-and-click ghost.\nA monitor heavy enough to win a boss fight.\n\nMore haunted internet debris:\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #OldSchoolRuneScape #OSRS #RuneScape #RetroGaming #CRTV #InternetNostalgia #OldInternet #GamingNostalgia",
       "duration": 129,
-      "view_count": 63,
+      "view_count": 64,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -62874,7 +63082,7 @@
       "title": "This RuneLite Plugin Turns OSRS Into a Fever Dream",
       "description": "Nobody asked for this, yet here we are.\n\nI found a RuneLite plugin that turns Old School RuneScape into first person POV, which is technically impressive and spiritually damaging. OSRS already feels like a childhood memory running on medieval office software, so seeing it through human eyes makes everything feel wrong in a very specific way.\n\nBridges become threats. NPCs become cryptids. The minimap becomes the last remaining proof that reality used to make sense.\n\nThis is RuneScape as a fever dream, a modded little hallucination from the corner of the internet where nostalgia gets experimental and the plugin menu starts whispering.\n\nhttps://theinternetisdead.org\n\n#HonestlyThomas #TheInternetIsDead #OSRS #RuneLite #OldSchoolRuneScape #RetroGaming #WeirdInternet #Gaming",
       "duration": 73,
-      "view_count": 284,
+      "view_count": 285,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -78058,7 +78266,7 @@
       "title": "Tektite - Untitled 1 (Official Lyric Video)",
       "description": "The Relentless Hungry Emcee Anthem 2018\nOne of my best songs.\nWow!\n\nNot really much else to say without pretending I\u2019m normal about it. This one still hits for me, which is rare because I usually listen back to my own stuff like I\u2019m investigating a crime scene.\n\nArchive reupload. Still proud of this one.\n\n#HonestlyThomas #TheInternetIsDead #Tektite #HonestlyThomasMusic #OriginalRap #RapArchive",
       "duration": 211,
-      "view_count": 5,
+      "view_count": 6,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -85150,7 +85358,7 @@
       "title": "Filming Out Train Window For 11 Seconds",
       "description": "Honestly Thomas on a train. Thomas + train = Thomas the Tank Engine, yes, everyone already made the joke, congratulations society. \ud83d\ude82\n\nEleven seconds of filming out a train window: green fields, blue sky, fluffy clouds, and the deeply advanced human activity of pointing a camera at passing scenery because it looked nice for a second. Peaceful little travel fragment, archived before someone says the obvious again.\n\n#HonestlyThomas #TheInternetIsDead #TrainWindow #TrainRide #TravelClip #NatureView #Ontario #Scenery",
       "duration": 11,
-      "view_count": 12,
+      "view_count": 13,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -86606,7 +86814,7 @@
       "title": "Flushing Crappy Mouse Down The Toilet (TECH RAGE)",
       "description": "The mouse pissed me off. The toilet got involved. Society failed somewhere upstream.\n\nRIP mouse. You went out like garbage, but wetter.\n\nMore archive debris and questionable decisions:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #TechRage #MouseDestroying #Archive",
       "duration": 28,
-      "view_count": 47,
+      "view_count": 48,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -89102,7 +89310,7 @@
       "title": "Tektite - Time Machine (RAP SONG)",
       "description": "Written and recorded in 2018 by Honestly Thomas Harrison, AKA Tektite, the interdimensional rapper.\n\nThis was one of the first songs I was actually proud enough to post to YouTube, back when the whole \u201celevated AI / robot rapper / human brain commandeering\u201d thing was already leaking out of my head apparently.\n\nThis is a reupload from the archive. Early Tektite transmission. Canadian cyber-rap prophecy nonsense, but from the heart.\n\n#HonestlyThomas #TheInternetIsDead #Tektite #HonestlyThomasMusic #RapArchive #OriginalRap #CyberRap #InterdimensionalRapper",
       "duration": 166,
-      "view_count": 1,
+      "view_count": 2,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -90350,7 +90558,7 @@
       "title": "Slow Motion Flappy Lips Meme (FUNNY)",
       "description": "Sony RX100 VII 1000FPS funny flappy lips video crying laughing emoji.\n\nSlow motion face nonsense, captured at an irresponsible frame rate because apparently this is what technology was building toward the whole time.\n\nNot educational. Barely dignified. Technically a high frame rate test if anyone asks.\n\nMore archive goblin behaviour:\nhttps://theinternetisdead.org/\n\n#HonestlyThomas #TheInternetIsDead #SlowMotion #SonyRX100VII #1000FPS #Meme #Archive",
       "duration": 75,
-      "view_count": 42,
+      "view_count": 44,
       "channel": "\ud83d\udc80theinternetisdead\ud83e\udea6",
       "channel_id": "UCn3WLZT7k8nO24XimlJVJVQ",
       "channel_url": "https://www.youtube.com/channel/UCn3WLZT7k8nO24XimlJVJVQ",
@@ -101622,7 +101830,7 @@
       "title": "Watchmen - Stereo instrumental (Karaoke)",
       "description": "",
       "duration": 245,
-      "view_count": 242,
+      "view_count": 243,
       "channel": "Cryptid Memes",
       "channel_id": "UCFiXf9C-DlE5d7LwXJf6_Mg",
       "channel_url": "https://www.youtube.com/channel/UCFiXf9C-DlE5d7LwXJf6_Mg",
